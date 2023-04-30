@@ -20,9 +20,9 @@ class AuthActivity : AppCompatActivity() {
         binding = ActivityAuthBinding.inflate(layoutInflater)
         val view = binding!!.root
         setContentView(view)
-       // VOID.Logo(baseContext, binding!!.logo)
-       // VOID.Intro(baseContext, binding!!.background, binding!!.backWhite, binding!!.backBlack)
-       // binding!!.loginBtn.setOnClickListener { v: View? -> VOID.Intent1(context, CLASS.LOGIN) }
-       // binding!!.skipBtn.setOnClickListener { v: View? -> VOID.Intent1(context, CLASS.REGISTER) }
+        VOID.Logo(baseContext, binding!!.logo)
+        VOID.Intro(baseContext, binding!!.background, binding!!.backWhite, binding!!.backBlack)
+        binding!!.loginBtn.setOnClickListener { v: View? -> VOID.Intent1(context, CLASS.LOGIN) }
+        binding!!.skipBtn.setOnClickListener { v: View? -> VOID.Intent1(context, CLASS.REGISTER) }
     }
 }
