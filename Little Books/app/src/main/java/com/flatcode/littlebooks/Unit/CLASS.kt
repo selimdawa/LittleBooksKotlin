@@ -1,10 +1,7 @@
 package com.flatcode.littlebooks.Unit
 
 import com.flatcode.littlebooks.Activity.*
-import com.flatcode.littlebooks.Auth.AuthActivity
-import com.flatcode.littlebooks.Auth.ForgetPasswordActivity
-import com.flatcode.littlebooks.Auth.LoginActivity
-import com.flatcode.littlebooks.Auth.RegisterActivity
+import com.flatcode.littlebooks.Auth.*
 
 object CLASS {
     var AUTH: Class<*> = AuthActivity::class.java
