@@ -7,7 +7,6 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.text.TextUtils
-import android.view.View
 import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
@@ -18,7 +17,11 @@ import com.flatcode.littlebooks.Unit.DATA
 import com.flatcode.littlebooks.Unit.THEME
 import com.flatcode.littlebooks.Unit.VOID
 import com.flatcode.littlebooks.databinding.ActivityBookAddBinding
-import com.google.firebase.database.*
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.UploadTask
 
@@ -44,11 +47,11 @@ class BookAddActivity : AppCompatActivity() {
         dialog!!.setTitle("Please wait...")
         dialog!!.setCanceledOnTouchOutside(false)
         binding!!.toolbar.nameSpace.setText(R.string.add_new_book)
-        binding!!.toolbar.back.setOnClickListener { v: View? -> onBackPressed() }
-        binding!!.image.setOnClickListener { v: View? -> pickImageGallery() }
-        binding!!.chooseBook.setOnClickListener { v: View? -> bookPickIntent() }
-        binding!!.category.setOnClickListener { v: View? -> categoryPickDialog() }
-        binding!!.toolbar.ok.setOnClickListener { v: View? -> validateData() }
+        binding!!.toolbar.back.setOnClickListener { onBackPressed() }
+        binding!!.image.setOnClickListener { pickImageGallery() }
+        binding!!.chooseBook.setOnClickListener { bookPickIntent() }
+        binding!!.category.setOnClickListener { categoryPickDialog() }
+        binding!!.toolbar.ok.setOnClickListener { validateData() }
     }
 
     private var title = DATA.EMPTY
@@ -75,6 +78,7 @@ class BookAddActivity : AppCompatActivity() {
     private fun uploadBookToStorage() {
         dialog!!.setMessage("Uploading Book...")
         dialog!!.show()
+
         val ref = FirebaseDatabase.getInstance().getReference(DATA.BOOKS)
         val id = ref.push().key
         val filePathAndName = "PDF/Books/$id"
@@ -92,13 +96,13 @@ class BookAddActivity : AppCompatActivity() {
                     context,
                     "Book upload failed due to " + e.message,
                     Toast.LENGTH_SHORT
-                )
-                    .show()
+                ).show()
             }
     }
 
     private fun uploadBookInfoDB(uploadedBookUrl: String, id: String?, ref: DatabaseReference) {
         dialog!!.setMessage("Uploading book info...")
+        dialog!!.show()
 
         //setup data to upload
         val hashMap = HashMap<String?, Any?>()

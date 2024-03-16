@@ -43,87 +43,89 @@ class SliderShowActivity : AppCompatActivity() {
 
         binding!!.toolbar.nameSpace.setText(R.string.slider_show)
         binding!!.toolbar.back.setOnClickListener { onBackPressed() }
+
         dialog = ProgressDialog(context)
         dialog!!.setTitle("Please wait...")
         dialog!!.setCanceledOnTouchOutside(false)
+
         binding!!.addOne.setOnClickListener {
-            VOID.CropImageSlider(activity)
+            VOID.cropImageSlider(activity)
             IMAGE_NUMBER = 1
         }
         binding!!.addTwo.setOnClickListener {
-            VOID.CropImageSlider(activity)
+            VOID.cropImageSlider(activity)
             IMAGE_NUMBER = 2
         }
         binding!!.addThree.setOnClickListener {
-            VOID.CropImageSlider(activity)
+            VOID.cropImageSlider(activity)
             IMAGE_NUMBER = 3
         }
         binding!!.addFour.setOnClickListener {
-            VOID.CropImageSlider(activity)
+            VOID.cropImageSlider(activity)
             IMAGE_NUMBER = 4
         }
         binding!!.addFive.setOnClickListener {
-            VOID.CropImageSlider(activity)
+            VOID.cropImageSlider(activity)
             IMAGE_NUMBER = 5
         }
         binding!!.addSix.setOnClickListener {
-            VOID.CropImageSlider(activity)
+            VOID.cropImageSlider(activity)
             IMAGE_NUMBER = 6
         }
         binding!!.addSeven.setOnClickListener {
-            VOID.CropImageSlider(activity)
+            VOID.cropImageSlider(activity)
             IMAGE_NUMBER = 7
         }
         binding!!.addEight.setOnClickListener {
-            VOID.CropImageSlider(activity)
+            VOID.cropImageSlider(activity)
             IMAGE_NUMBER = 8
         }
         binding!!.addNine.setOnClickListener {
-            VOID.CropImageSlider(activity)
+            VOID.cropImageSlider(activity)
             IMAGE_NUMBER = 9
         }
         binding!!.addTeen.setOnClickListener {
-            VOID.CropImageSlider(activity)
+            VOID.cropImageSlider(activity)
             IMAGE_NUMBER = 10
         }
         binding!!.addEleven.setOnClickListener {
-            VOID.CropImageSlider(activity)
+            VOID.cropImageSlider(activity)
             IMAGE_NUMBER = 11
         }
         binding!!.addTwelfth.setOnClickListener {
-            VOID.CropImageSlider(activity)
+            VOID.cropImageSlider(activity)
             IMAGE_NUMBER = 12
         }
         binding!!.addThirteen.setOnClickListener {
-            VOID.CropImageSlider(activity)
+            VOID.cropImageSlider(activity)
             IMAGE_NUMBER = 13
         }
         binding!!.addFourteenth.setOnClickListener {
-            VOID.CropImageSlider(activity)
+            VOID.cropImageSlider(activity)
             IMAGE_NUMBER = 14
         }
         binding!!.addFifteenth.setOnClickListener {
-            VOID.CropImageSlider(activity)
+            VOID.cropImageSlider(activity)
             IMAGE_NUMBER = 15
         }
         binding!!.addSixteen.setOnClickListener {
-            VOID.CropImageSlider(activity)
+            VOID.cropImageSlider(activity)
             IMAGE_NUMBER = 16
         }
         binding!!.addSeventeen.setOnClickListener {
-            VOID.CropImageSlider(activity)
+            VOID.cropImageSlider(activity)
             IMAGE_NUMBER = 17
         }
         binding!!.addEighteen.setOnClickListener {
-            VOID.CropImageSlider(activity)
+            VOID.cropImageSlider(activity)
             IMAGE_NUMBER = 18
         }
         binding!!.addNineteen.setOnClickListener {
-            VOID.CropImageSlider(activity)
+            VOID.cropImageSlider(activity)
             IMAGE_NUMBER = 19
         }
         binding!!.addTwenty.setOnClickListener {
-            VOID.CropImageSlider(activity)
+            VOID.cropImageSlider(activity)
             IMAGE_NUMBER = 20
         }
     }
@@ -267,6 +269,7 @@ class SliderShowActivity : AppCompatActivity() {
                 val eighteen = DATA.EMPTY + dataSnapshot.child("18").value
                 val nineteen = DATA.EMPTY + dataSnapshot.child("19").value
                 val twenty = DATA.EMPTY + dataSnapshot.child("20").value
+
                 VOID.Glide(false, context, one, binding!!.imageOne)
                 VOID.Glide(false, context, two, binding!!.imageTwo)
                 VOID.Glide(false, context, three, binding!!.imageThree)
@@ -297,18 +300,17 @@ class SliderShowActivity : AppCompatActivity() {
         dialog!!.setMessage("Posting photo...")
         dialog!!.show()
         val filePathAndName = "Images/SliderShow/" + (DATA.EMPTY + name)
-        val reference = FirebaseStorage.getInstance()
+        val ref = FirebaseStorage.getInstance()
             .getReference(filePathAndName + DATA.DOT + VOID.getFileExtension(imageUri, context))
-        reference.putFile(imageUri!!)
-            .addOnSuccessListener { taskSnapshot: UploadTask.TaskSnapshot ->
-                val uriTask = taskSnapshot.storage.downloadUrl
-                while (!uriTask.isSuccessful);
-                val uploadedImageUrl = DATA.EMPTY + uriTask.result
-                updateImage(uploadedImageUrl, DATA.EMPTY + name)
-            }.addOnFailureListener { e: Exception ->
-                dialog!!.dismiss()
-                Toast.makeText(context, "Error! " + e.message, Toast.LENGTH_SHORT).show()
-            }
+        ref.putFile(imageUri!!).addOnSuccessListener { taskSnapshot: UploadTask.TaskSnapshot ->
+            val uriTask = taskSnapshot.storage.downloadUrl
+            while (!uriTask.isSuccessful);
+            val uploadedImageUrl = DATA.EMPTY + uriTask.result
+            updateImage(uploadedImageUrl, DATA.EMPTY + name)
+        }.addOnFailureListener { e: Exception ->
+            dialog!!.dismiss()
+            Toast.makeText(context, "Error! " + e.message, Toast.LENGTH_SHORT).show()
+        }
     }
 
     private fun updateImage(imageUrl: String, name: String) {
@@ -336,7 +338,7 @@ class SliderShowActivity : AppCompatActivity() {
                 imageUri = uri
                 requestPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), 0)
             } else {
-                VOID.CropImageSlider(activity)
+                VOID.cropImageSlider(activity)
             }
         }
         if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {

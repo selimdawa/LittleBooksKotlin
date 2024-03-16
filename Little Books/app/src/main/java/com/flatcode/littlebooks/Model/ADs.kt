@@ -5,7 +5,8 @@ class ADs {
     var adsLoadedCount = 0
     var adsClickedCount = 0
 
-    constructor() {}
+    constructor()
+
     constructor(name: String?, adsLoadedCount: Int, adsClickedCount: Int) {
         this.name = name
         this.adsLoadedCount = adsLoadedCount

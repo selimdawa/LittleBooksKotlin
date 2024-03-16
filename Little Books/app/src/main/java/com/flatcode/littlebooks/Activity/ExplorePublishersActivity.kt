@@ -13,7 +13,11 @@ import com.flatcode.littlebooks.Unit.DATA
 import com.flatcode.littlebooks.Unit.THEME
 import com.flatcode.littlebooks.Unit.VOID
 import com.flatcode.littlebooks.databinding.ActivityPageStaggeredBinding
-import com.google.firebase.database.*
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.Query
+import com.google.firebase.database.ValueEventListener
 import java.text.MessageFormat
 
 class ExplorePublishersActivity : AppCompatActivity() {
@@ -31,14 +35,15 @@ class ExplorePublishersActivity : AppCompatActivity() {
         setContentView(view)
 
         binding!!.toolbar.nameSpace.setText(R.string.explore_publishers)
+        binding!!.toolbar.back.setOnClickListener { onBackPressed() }
+        binding!!.toolbar.close.setOnClickListener { onBackPressed() }
         VOID.BannerAd(context, binding!!.adView, DATA.BANNER_SMART_EXPLORE_PUBLISHERS)
 
-        binding!!.toolbar.search.setOnClickListener { v: View? ->
+        binding!!.toolbar.search.setOnClickListener {
             binding!!.toolbar.toolbar.visibility = View.GONE
             binding!!.toolbar.toolbarSearch.visibility = View.VISIBLE
             DATA.searchStatus = true
         }
-        binding!!.toolbar.close.setOnClickListener { v: View? -> onBackPressed() }
         binding!!.toolbar.textSearch.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
@@ -56,7 +61,6 @@ class ExplorePublishersActivity : AppCompatActivity() {
         list = ArrayList()
         adapter = PublisherAdapter(context, list!!)
         binding!!.recyclerView.adapter = adapter
-        binding!!.toolbar.back.setOnClickListener { onBackPressed() }
     }
 
     private val data: Unit
@@ -67,9 +71,7 @@ class ExplorePublishersActivity : AppCompatActivity() {
                     list!!.clear()
                     var i = 0
                     for (snapshot in dataSnapshot.children) {
-                        val item = snapshot.getValue(
-                            User::class.java
-                        )!!
+                        val item = snapshot.getValue(User::class.java)!!
                         if (item.id != DATA.FirebaseUserUid) if (item.booksCount >= 1) {
                             list!!.add(item)
                             i++

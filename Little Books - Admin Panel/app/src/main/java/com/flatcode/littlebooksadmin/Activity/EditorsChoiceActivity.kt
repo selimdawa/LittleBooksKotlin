@@ -23,6 +23,7 @@ class EditorsChoiceActivity : AppCompatActivity() {
         binding = ActivityEditorsChoiceBinding.inflate(layoutInflater)
         val view = binding!!.root
         setContentView(view)
+
         binding!!.toolbar.nameSpace.setText(R.string.editors_choice)
         binding!!.toolbar.back.setOnClickListener { onBackPressed() }
 

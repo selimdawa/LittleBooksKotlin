@@ -28,21 +28,21 @@ class FavoritesActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         THEME.setThemeOfApp(context)
         super.onCreate(savedInstanceState)
-        binding = ActivityPageStaggeredSwitchBinding.inflate(
-            layoutInflater
-        )
+        binding = ActivityPageStaggeredSwitchBinding.inflate(layoutInflater)
         val view = binding!!.root
         setContentView(view)
+
         binding!!.toolbar.nameSpace.setText(R.string.favorites)
         binding!!.toolbar.back.setOnClickListener { onBackPressed() }
+        binding!!.toolbar.close.setOnClickListener { onBackPressed() }
         type = DATA.TIMESTAMP
+
         VOID.BannerAd(context, binding!!.adView, DATA.BANNER_SMART_FAVORITES)
         binding!!.toolbar.search.setOnClickListener {
             binding!!.toolbar.toolbar.visibility = View.GONE
             binding!!.toolbar.toolbarSearch.visibility = View.VISIBLE
             DATA.searchStatus = true
         }
-        binding!!.toolbar.close.setOnClickListener { onBackPressed() }
         binding!!.toolbar.textSearch.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
@@ -60,6 +60,7 @@ class FavoritesActivity : AppCompatActivity() {
         list = ArrayList()
         adapter = StaggeredBookAdapter(context, list!!)
         binding!!.recyclerView.adapter = adapter
+
         binding!!.switchBar.all.setOnClickListener {
             type = DATA.TIMESTAMP
             getData(type)
@@ -106,9 +107,7 @@ class FavoritesActivity : AppCompatActivity() {
                 list!!.clear()
                 var i = 0
                 for (snapshot in dataSnapshot.children) {
-                    val pdf = snapshot.getValue(
-                        Book::class.java
-                    )
+                    val pdf = snapshot.getValue(Book::class.java)
                     for (id in item!!) {
                         assert(pdf != null)
                         if (pdf!!.id != null) if (pdf.id == id) {

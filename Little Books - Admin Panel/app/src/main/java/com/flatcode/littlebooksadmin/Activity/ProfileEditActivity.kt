@@ -22,7 +22,7 @@ import com.google.firebase.database.ValueEventListener
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.UploadTask
 import com.theartofdev.edmodo.cropper.CropImage
-import java.util.*
+import java.util.Objects
 
 class ProfileEditActivity : AppCompatActivity() {
 
@@ -43,9 +43,11 @@ class ProfileEditActivity : AppCompatActivity() {
         dialog!!.setTitle("Please wait...")
         dialog!!.setCanceledOnTouchOutside(false)
         loadUserInfo()
+
         binding!!.toolbar.nameSpace.setText(R.string.edit_profile)
         binding!!.toolbar.back.setOnClickListener { onBackPressed() }
-        binding!!.image.setOnClickListener { VOID.CropImageSquare(activity) }
+
+        binding!!.image.setOnClickListener { VOID.cropImageSquare(activity) }
         binding!!.go.setOnClickListener { validateData() }
     }
 
@@ -67,22 +69,19 @@ class ProfileEditActivity : AppCompatActivity() {
         dialog!!.setMessage("Uploading Image...")
         dialog!!.show()
         val filePathAndName = "Images/Profile/" + DATA.FirebaseUserUid
-        val reference = FirebaseStorage.getInstance()
+        val ref = FirebaseStorage.getInstance()
             .getReference(filePathAndName + DATA.DOT + VOID.getFileExtension(imageUri, context))
-        reference.putFile(imageUri!!)
-            .addOnSuccessListener { taskSnapshot: UploadTask.TaskSnapshot ->
-                val uriTask = taskSnapshot.storage.downloadUrl
-                while (!uriTask.isSuccessful);
-                val uploadedImageUrl = DATA.EMPTY + uriTask.result
-                updateProfile(uploadedImageUrl)
-            }.addOnFailureListener { e: Exception ->
-                dialog!!.dismiss()
-                Toast.makeText(
-                    context,
-                    "Failed to upload image due to " + e.message,
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
+        ref.putFile(imageUri!!).addOnSuccessListener { taskSnapshot: UploadTask.TaskSnapshot ->
+            val uriTask = taskSnapshot.storage.downloadUrl
+            while (!uriTask.isSuccessful);
+            val uploadedImageUrl = DATA.EMPTY + uriTask.result
+            updateProfile(uploadedImageUrl)
+        }.addOnFailureListener { e: Exception ->
+            dialog!!.dismiss()
+            Toast.makeText(
+                context, "Failed to upload image due to " + e.message, Toast.LENGTH_SHORT
+            ).show()
+        }
     }
 
     private fun updateProfile(imageUrl: String?) {
@@ -101,11 +100,8 @@ class ProfileEditActivity : AppCompatActivity() {
             }.addOnFailureListener { e: Exception ->
                 dialog!!.dismiss()
                 Toast.makeText(
-                    context,
-                    "Failed to update db duo to " + e.message,
-                    Toast.LENGTH_SHORT
-                )
-                    .show()
+                    context, "Failed to update db duo to " + e.message, Toast.LENGTH_SHORT
+                ).show()
             }
     }
 
@@ -132,7 +128,7 @@ class ProfileEditActivity : AppCompatActivity() {
                 imageUri = uri
                 requestPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), 0)
             } else {
-                VOID.CropImageSquare(activity)
+                VOID.cropImageSquare(activity)
             }
         }
         if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {

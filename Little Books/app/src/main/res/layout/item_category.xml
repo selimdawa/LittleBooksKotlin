@@ -14,7 +14,7 @@
             android:layout_marginHorizontal="5sp"
             android:scaleType="centerCrop"
             android:src="@color/image_profile"
-            app:civ_border_color="@color/black"
+            app:civ_border_color="?colorError"
             app:civ_border_overlay="true"
             app:civ_border_width="0.75sp"
             app:civ_circle_background_color="@color/image_profile" />

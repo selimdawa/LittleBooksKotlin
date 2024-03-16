@@ -15,7 +15,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scaleType="centerCrop"
-                android:src="@drawable/background_day" />
+                android:src="@drawable/background" />
 
             <ImageView
                 android:id="@+id/backWhite"
@@ -82,25 +82,32 @@
 
                     </LinearLayout>
 
-                    <Button
+                    <TextView
                         android:id="@+id/loginBtn"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_above="@+id/skipBtn"
                         android:layout_marginBottom="10sp"
                         android:background="@drawable/button6"
-                        android:backgroundTint="?trackColor"
+                        android:gravity="center"
+                        android:padding="15sp"
                         android:text="@string/login"
-                        android:textColor="@color/white" />
+                        android:textColor="@color/white"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
 
-                    <Button
+                    <TextView
                         android:id="@+id/skipBtn"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_alignParentBottom="true"
                         android:background="@drawable/button"
+                        android:padding="15sp"
+                        android:gravity="center"
+                        android:textColor="?tickColor"
                         android:text="@string/register"
-                        android:textColor="?colorError" />
+                        android:textSize="18sp"
+                        android:textStyle="bold"/>
 
                 </RelativeLayout>
 

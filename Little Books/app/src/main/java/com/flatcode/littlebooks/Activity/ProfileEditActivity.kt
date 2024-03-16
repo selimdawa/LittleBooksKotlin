@@ -8,7 +8,6 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.text.TextUtils
-import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.flatcode.littlebooks.R
@@ -23,7 +22,7 @@ import com.google.firebase.database.ValueEventListener
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.UploadTask
 import com.theartofdev.edmodo.cropper.CropImage
-import java.util.*
+import java.util.Objects
 
 class ProfileEditActivity : AppCompatActivity() {
 
@@ -36,19 +35,19 @@ class ProfileEditActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         THEME.setThemeOfApp(context)
         super.onCreate(savedInstanceState)
-        binding = ActivityProfileEditBinding.inflate(
-            layoutInflater
-        )
+        binding = ActivityProfileEditBinding.inflate(layoutInflater)
         val view = binding!!.root
         setContentView(view)
+
         dialog = ProgressDialog(context)
         dialog!!.setTitle("Please wait...")
         dialog!!.setCanceledOnTouchOutside(false)
+
         loadUserInfo()
         binding!!.toolbar.nameSpace.setText(R.string.edit_profile)
-        binding!!.toolbar.back.setOnClickListener { v: View? -> onBackPressed() }
-        binding!!.image.setOnClickListener { v: View? -> VOID.CropImageSquare(activity) }
-        binding!!.go.setOnClickListener { v: View? -> validateData() }
+        binding!!.toolbar.back.setOnClickListener { onBackPressed() }
+        binding!!.image.setOnClickListener { VOID.CropImageSquare(activity) }
+        binding!!.go.setOnClickListener { validateData() }
     }
 
     private var username = DATA.EMPTY
@@ -97,17 +96,14 @@ class ProfileEditActivity : AppCompatActivity() {
         }
         val reference = FirebaseDatabase.getInstance().getReference(DATA.USERS)
         reference.child(Objects.requireNonNull(DATA.FirebaseUserUid)).updateChildren(hashMap)
-            .addOnSuccessListener { unused: Void? ->
+            .addOnSuccessListener {
                 dialog!!.dismiss()
                 Toast.makeText(context, "Profile updated...", Toast.LENGTH_SHORT).show()
             }.addOnFailureListener { e: Exception ->
                 dialog!!.dismiss()
                 Toast.makeText(
-                    context,
-                    "Failed to update db duo to " + e.message,
-                    Toast.LENGTH_SHORT
-                )
-                    .show()
+                    context, "Failed to update db duo to " + e.message, Toast.LENGTH_SHORT
+                ).show()
             }
     }
 
@@ -118,7 +114,7 @@ class ProfileEditActivity : AppCompatActivity() {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     val username = DATA.EMPTY + snapshot.child(DATA.USER_NAME).value
                     val profileImage = DATA.EMPTY + snapshot.child(DATA.PROFILE_IMAGE).value
-                    VOID.Glide_(true, context, profileImage, binding!!.profileImage)
+                    VOID.Glide_(true, context, profileImage, binding!!.image)
                     binding!!.nameEt.setText(username)
                 }
 
@@ -141,7 +137,7 @@ class ProfileEditActivity : AppCompatActivity() {
             val result = CropImage.getActivityResult(data)
             if (resultCode == RESULT_OK) {
                 imageUri = result.uri
-                binding!!.profileImage.setImageURI(imageUri)
+                binding!!.image.setImageURI(imageUri)
             } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
                 val error = result.error
                 Toast.makeText(this, "Error! $error", Toast.LENGTH_SHORT).show()

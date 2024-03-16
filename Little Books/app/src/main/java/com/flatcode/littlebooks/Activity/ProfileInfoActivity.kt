@@ -13,9 +13,12 @@ import com.flatcode.littlebooks.Unit.DATA
 import com.flatcode.littlebooks.Unit.THEME
 import com.flatcode.littlebooks.Unit.VOID
 import com.flatcode.littlebooks.databinding.ActivityPageStaggeredSwitchBinding
-import com.google.firebase.database.*
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.Query
+import com.google.firebase.database.ValueEventListener
 import java.text.MessageFormat
-import java.util.*
 
 class ProfileInfoActivity : AppCompatActivity() {
 
@@ -36,16 +39,18 @@ class ProfileInfoActivity : AppCompatActivity() {
 
         val intent = intent
         profileId = intent.getStringExtra(DATA.PROFILE_ID)
+
         binding!!.toolbar.nameSpace.setText(R.string.publishers_books)
-        binding!!.toolbar.back.setOnClickListener { v: View? -> onBackPressed() }
+        binding!!.toolbar.close.setOnClickListener { onBackPressed() }
+        binding!!.toolbar.back.setOnClickListener { onBackPressed() }
         type = DATA.TIMESTAMP
         VOID.BannerAd(context, binding!!.adView, DATA.BANNER_SMART_PUBLISHERS_BOOKS)
-        binding!!.toolbar.search.setOnClickListener { v: View? ->
+
+        binding!!.toolbar.search.setOnClickListener {
             binding!!.toolbar.toolbar.visibility = View.GONE
             binding!!.toolbar.toolbarSearch.visibility = View.VISIBLE
             DATA.searchStatus = true
         }
-        binding!!.toolbar.close.setOnClickListener { v: View? -> onBackPressed() }
         binding!!.toolbar.textSearch.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
@@ -63,23 +68,24 @@ class ProfileInfoActivity : AppCompatActivity() {
         list = ArrayList()
         adapter = StaggeredBookAdapter(context, list!!)
         binding!!.recyclerView.adapter = adapter
-        binding!!.switchBar.all.setOnClickListener { v: View? ->
+
+        binding!!.switchBar.all.setOnClickListener {
             type = DATA.TIMESTAMP
             getData(type)
         }
-        binding!!.switchBar.name.setOnClickListener { v: View? ->
+        binding!!.switchBar.name.setOnClickListener {
             type = DATA.TITLE
             getData(type)
         }
-        binding!!.switchBar.mostViews.setOnClickListener { v: View? ->
+        binding!!.switchBar.mostViews.setOnClickListener {
             type = DATA.VIEWS_COUNT
             getData(type)
         }
-        binding!!.switchBar.mostLoves.setOnClickListener { v: View? ->
+        binding!!.switchBar.mostLoves.setOnClickListener {
             type = DATA.LOVES_COUNT
             getData(type)
         }
-        binding!!.switchBar.mostDownloads.setOnClickListener { v: View? ->
+        binding!!.switchBar.mostDownloads.setOnClickListener {
             type = DATA.DOWNLOADS_COUNT
             getData(type)
         }
@@ -92,9 +98,7 @@ class ProfileInfoActivity : AppCompatActivity() {
                 list!!.clear()
                 var i = 0
                 for (data in dataSnapshot.children) {
-                    val item = data.getValue(
-                        Book::class.java
-                    )!!
+                    val item = data.getValue(Book::class.java)!!
                     if (item.publisher == profileId) {
                         list!!.add(item)
                         i++
@@ -103,10 +107,10 @@ class ProfileInfoActivity : AppCompatActivity() {
                 binding!!.toolbar.number.text = MessageFormat.format("( {0} )", i)
                 adapter!!.notifyDataSetChanged()
                 binding!!.progress.visibility = View.GONE
-                if (!list!!.isEmpty()) {
+                if (list!!.isNotEmpty()) {
                     binding!!.recyclerView.visibility = View.VISIBLE
                     binding!!.emptyText.visibility = View.GONE
-                    Collections.reverse(list)
+                    list!!.reverse()
                 } else {
                     binding!!.recyclerView.visibility = View.GONE
                     binding!!.emptyText.visibility = View.VISIBLE

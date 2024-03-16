@@ -4,7 +4,11 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.*
+import android.widget.Filter
+import android.widget.Filterable
+import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.flatcode.littlebooks.Filter.MoreBooksFilter
 import com.flatcode.littlebooks.Model.Book
@@ -25,11 +29,7 @@ class LinearBookAdapter(
     var isUser: Boolean
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        binding = ItemBookLinearBinding.inflate(
-            LayoutInflater.from(
-                context
-            ), parent, false
-        )
+        binding = ItemBookLinearBinding.inflate(LayoutInflater.from(context), parent, false)
         return ViewHolder(binding!!.root)
     }
 
@@ -42,24 +42,29 @@ class LinearBookAdapter(
         val nrViews = DATA.EMPTY + item.viewsCount
         val nrLoves = DATA.EMPTY + item.lovesCount
         val nrDownloads = DATA.EMPTY + item.downloadsCount
+
         if (isUser) {
             holder.more.visibility = View.VISIBLE
         } else {
             holder.more.visibility = View.GONE
         }
+
         VOID.Glide_(false, context, image, holder.image)
+
         if (item.title == DATA.EMPTY) {
             holder.title.visibility = View.GONE
         } else {
             holder.title.visibility = View.VISIBLE
             holder.title.text = title
         }
+
         if (item.description == DATA.EMPTY) {
             holder.description.visibility = View.GONE
         } else {
             holder.description.visibility = View.VISIBLE
             holder.description.text = description
         }
+
         holder.numberViews.text = nrViews
         holder.numberLoves.text = nrLoves
         holder.numberDownloads.text = nrDownloads
@@ -68,24 +73,16 @@ class LinearBookAdapter(
             holder.favorites.setVisibility(View.GONE);
         } else {
             holder.favorites.setVisibility(View.VISIBLE);
-        }*/VOID.isFavorite(holder.favorites, item.id, DATA.FirebaseUserUid)
+        }*/
+
+        VOID.isFavorite(holder.favorites, item.id, DATA.FirebaseUserUid)
         VOID.isLoves(holder.loves, item.id)
-        holder.favorites.setOnClickListener { view: View? ->
-            VOID.checkFavorite(
-                holder.favorites,
-                bookId
-            )
-        }
-        holder.loves.setOnClickListener { view: View? -> VOID.checkLove(holder.loves, bookId) }
-        holder.more.setOnClickListener { view: View? ->
-            VOID.moreOptionDialog(
-                context, item
-            )
-        }
-        holder.item.setOnClickListener { view: View? ->
-            VOID.IntentExtra(
-                context, CLASS.BOOK_DETAIL, DATA.BOOK_ID, item.id
-            )
+
+        holder.favorites.setOnClickListener { VOID.checkFavorite(holder.favorites, bookId) }
+        holder.loves.setOnClickListener { VOID.checkLove(holder.loves, bookId) }
+        holder.more.setOnClickListener { VOID.moreOptionDialog(context, item) }
+        holder.item.setOnClickListener {
+            VOID.IntentExtra(context, CLASS.BOOK_DETAIL, DATA.BOOK_ID, item.id)
         }
     }
 

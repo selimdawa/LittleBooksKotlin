@@ -6,11 +6,9 @@ import com.flatcode.littlebooks.Model.Book
 import java.util.*
 
 class StaggerdFilter(var list: ArrayList<Book?>, var adapter: StaggeredBookAdapter) : Filter() {
-
     override fun performFiltering(constraint: CharSequence): FilterResults {
         var constraint: CharSequence? = constraint
         val results = FilterResults()
-
         if (constraint != null && constraint.length > 0) {
             constraint = constraint.toString().uppercase(Locale.getDefault())
             val filter = ArrayList<Book?>()

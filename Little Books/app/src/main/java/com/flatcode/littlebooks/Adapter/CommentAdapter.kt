@@ -26,11 +26,7 @@ class CommentAdapter(private val context: Context, var list: ArrayList<Comment?>
     RecyclerView.Adapter<CommentAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        binding = ItemCommentBinding.inflate(
-            LayoutInflater.from(
-                context
-            ), parent, false
-        )
+        binding = ItemCommentBinding.inflate(LayoutInflater.from(context), parent, false)
         return ViewHolder(binding!!.root)
     }
 
@@ -42,37 +38,15 @@ class CommentAdapter(private val context: Context, var list: ArrayList<Comment?>
         val publisher = DATA.EMPTY + item.publisher
         val timestamp = DATA.EMPTY + item.timestamp
 
-         val date: String = MyApplication.formatTimestamp(timestamp.toLong())
-         holder.date.text = date
-         holder.comment.text = comment
+        val date: String = MyApplication.formatTimestamp(timestamp.toLong())
+        holder.date.text = date
+        holder.comment.text = comment
 
-         loadUserDetails(publisher, holder.name)
+        loadUserDetails(publisher, holder.name)
 
         holder.itemView.setOnClickListener {
-            if (publisher == DATA.FirebaseUserUid) deleteComment(
-                id,
-                bookId
-            )
+            if (publisher == DATA.FirebaseUserUid) deleteComment(id, bookId)
         }
-    }
-
-    private fun deleteComment(commentId: String?, bookId: String?) {
-        val builder = AlertDialog.Builder(context)
-        builder.setTitle("Delete Comment")
-            .setMessage("Are you sure you want to delete this comment?")
-            .setPositiveButton("DELETE") { dialog: DialogInterface?, which: Int ->
-                val ref = FirebaseDatabase.getInstance().getReference(DATA.BOOKS)
-                ref.child(bookId!!).child(DATA.COMMENTS).child(commentId!!).removeValue()
-                    .addOnSuccessListener {
-                        Toast.makeText(context, "Deleted...", Toast.LENGTH_SHORT).show()
-                    }.addOnFailureListener { e: Exception ->
-                        Toast.makeText(
-                            context, "Failed to delete duo to " + e.message, Toast.LENGTH_SHORT
-                        ).show()
-                    }
-            }
-            .setNegativeButton("CANCEL") { dialog: DialogInterface, which: Int -> dialog.dismiss() }
-            .show()
     }
 
     override fun getItemCount(): Int {
@@ -110,6 +84,25 @@ class CommentAdapter(private val context: Context, var list: ArrayList<Comment?>
 
             override fun onCancelled(error: DatabaseError) {}
         })
+    }
+
+    private fun deleteComment(commentId: String?, bookId: String?) {
+        val builder = AlertDialog.Builder(context)
+        builder.setTitle("Delete Comment")
+            .setMessage("Are you sure you want to delete this comment?")
+            .setPositiveButton("DELETE") { dialog: DialogInterface?, which: Int ->
+                val ref = FirebaseDatabase.getInstance().getReference(DATA.BOOKS)
+                ref.child(bookId!!).child(DATA.COMMENTS).child(commentId!!).removeValue()
+                    .addOnSuccessListener {
+                        Toast.makeText(context, "Deleted...", Toast.LENGTH_SHORT).show()
+                    }.addOnFailureListener { e: Exception ->
+                        Toast.makeText(
+                            context, "Failed to delete duo to " + e.message, Toast.LENGTH_SHORT
+                        ).show()
+                    }
+            }
+            .setNegativeButton("CANCEL") { dialog: DialogInterface, which: Int -> dialog.dismiss() }
+            .show()
     }
 
     companion object {

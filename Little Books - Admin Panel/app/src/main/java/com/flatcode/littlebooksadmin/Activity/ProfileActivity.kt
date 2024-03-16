@@ -34,28 +34,21 @@ class ProfileActivity : AppCompatActivity() {
 
         val intent = intent
         profileId = intent.getStringExtra(DATA.PROFILE_ID)
+
+        binding!!.back.setOnClickListener { onBackPressed() }
+
         if (profileId == DATA.FirebaseUserUid) {
             binding!!.follow.visibility = View.GONE
             binding!!.editOrInfo.setImageResource(R.drawable.ic_edit_white)
-            binding!!.editOrInfo.setOnClickListener {
-                VOID.Intent1(
-                    context,
-                    CLASS.PROFILE_EDIT
-                )
-            }
+            binding!!.editOrInfo.setOnClickListener { VOID.Intent1(context, CLASS.PROFILE_EDIT) }
         } else {
             binding!!.follow.visibility = View.VISIBLE
             binding!!.editOrInfo.setImageResource(R.drawable.ic_books)
-            binding!!.editOrInfo.setOnClickListener { v: View? ->
-                VOID.IntentExtra(
-                    context,
-                    CLASS.PROFILE_INFO,
-                    DATA.PROFILE_ID,
-                    profileId
-                )
+            binding!!.editOrInfo.setOnClickListener {
+                VOID.IntentExtra(context, CLASS.PROFILE_INFO, DATA.PROFILE_ID, profileId)
             }
         }
-        binding!!.back.setOnClickListener { onBackPressed() }
+
         isFollowing(binding!!.follow, profileId)
         binding!!.follow.setOnClickListener {
             if (binding!!.follow.tag == "add") {
@@ -130,9 +123,8 @@ class ProfileActivity : AppCompatActivity() {
     }
 
     private fun nrItemFavorites() {
-        val reference = FirebaseDatabase.getInstance().reference
-            .child(DATA.FAVORITES).child(profileId!!)
-        reference.addListenerForSingleValueEvent(object : ValueEventListener {
+        val ref = FirebaseDatabase.getInstance().reference.child(DATA.FAVORITES).child(profileId!!)
+        ref.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 binding!!.numberFavorites.text =
                     MessageFormat.format("{0}", dataSnapshot.childrenCount)

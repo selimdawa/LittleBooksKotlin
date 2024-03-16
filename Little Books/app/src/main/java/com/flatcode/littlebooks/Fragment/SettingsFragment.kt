@@ -18,7 +18,7 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
-import java.util.*
+import java.util.Objects
 
 class SettingsFragment : Fragment() {
 
@@ -27,23 +27,18 @@ class SettingsFragment : Fragment() {
     private var adapter: SettingAdapter? = null
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        binding = FragmentSettingsBinding.inflate(
-            LayoutInflater.from(
-                context
-            ), container, false
-        )
-        binding!!.recyclerView.setHasFixedSize(true)
+        binding = FragmentSettingsBinding.inflate(LayoutInflater.from(context), container, false)
+
+        //binding!!.recyclerView.setHasFixedSize(true)
         list = ArrayList()
         adapter = SettingAdapter(context, list!!)
         binding!!.recyclerView.adapter = adapter
-        binding!!.toolbar.item.setOnClickListener { v: View? ->
-            VOID.IntentExtra(
-                context, CLASS.PROFILE, DATA.PROFILE_ID, DATA.FirebaseUserUid
-            )
+
+        binding!!.toolbar.item.setOnClickListener {
+            VOID.IntentExtra(context, CLASS.PROFILE, DATA.PROFILE_ID, DATA.FirebaseUserUid)
         }
         return binding!!.root
     }
@@ -59,9 +54,7 @@ class SettingsFragment : Fragment() {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 E = 0
                 for (snapshot in dataSnapshot.children) {
-                    val item = snapshot.getValue(
-                        User::class.java
-                    )!!
+                    val item = snapshot.getValue(User::class.java)!!
                     if (item.id != DATA.FirebaseUserUid) if (item.booksCount >= 1) E++
                 }
                 nrBooks()
@@ -73,9 +66,7 @@ class SettingsFragment : Fragment() {
                     override fun onDataChange(dataSnapshot: DataSnapshot) {
                         M = 0
                         for (data in dataSnapshot.children) {
-                            val item = data.getValue(
-                                Book::class.java
-                            )!!
+                            val item = data.getValue(Book::class.java)!!
                             if (item.publisher == DATA.FirebaseUserUid) M++
                         }
                         nrFollowers()
@@ -136,15 +127,14 @@ class SettingsFragment : Fragment() {
         reference.child(Objects.requireNonNull(DATA.FirebaseUserUid))
             .addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
-                    val item = snapshot.getValue(
-                        User::class.java
-                    )!!
-                    val ProfileImage = item.profileImage
-                    val Username = item.username
-                    val Contact = item.email
-                    VOID.Glide_(true, context, ProfileImage, binding!!.toolbar.imageProfile)
-                    binding!!.toolbar.username.text = Username
-                    binding!!.toolbar.email.text = Contact
+                    val item = snapshot.getValue(User::class.java)!!
+                    val profileImage = item.profileImage
+                    val username = item.username
+                    val contact = item.email
+
+                    VOID.Glide_(true, context, profileImage, binding!!.toolbar.imageProfile)
+                    binding!!.toolbar.username.text = username
+                    binding!!.toolbar.email.text = contact
                 }
 
                 override fun onCancelled(error: DatabaseError) {}
@@ -152,20 +142,13 @@ class SettingsFragment : Fragment() {
     }
 
     private fun loadSettings(
-        explorePublishers: Int,
-        myBooks: Int,
-        followers: Int,
-        following: Int,
-        favorites: Int
+        explorePublishers: Int, myBooks: Int, followers: Int, following: Int, favorites: Int
     ) {
         list!!.clear()
         val item = Setting("1", "Edit Profile", R.drawable.ic_edit_white, 0, CLASS.PROFILE_EDIT)
         val item2 = Setting(
-            "2",
-            "Explore Publishers",
-            R.drawable.ic_search_person,
-            explorePublishers,
-            CLASS.EXPLORE_PUBLISHERS
+            "2", "Explore Publishers", R.drawable.ic_search_person,
+            explorePublishers, CLASS.EXPLORE_PUBLISHERS
         )
         val item3 = Setting("3", "Followers", R.drawable.ic_followers, followers, CLASS.FOLLOWERS)
         val item4 = Setting("4", "Following", R.drawable.ic_following, following, CLASS.FOLLOWING)

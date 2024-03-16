@@ -19,7 +19,11 @@ import com.flatcode.littlebooksadmin.Unit.DATA
 import com.flatcode.littlebooksadmin.Unit.THEME
 import com.flatcode.littlebooksadmin.Unit.VOID
 import com.flatcode.littlebooksadmin.databinding.ActivityBookAddBinding
-import com.google.firebase.database.*
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.UploadTask
 
@@ -44,8 +48,10 @@ class BookAddActivity : AppCompatActivity() {
         dialog = ProgressDialog(context)
         dialog!!.setTitle("Please wait...")
         dialog!!.setCanceledOnTouchOutside(false)
+
         binding!!.toolbar.nameSpace.setText(R.string.add_new_book)
         binding!!.toolbar.back.setOnClickListener { onBackPressed() }
+
         binding!!.image.setOnClickListener { pickImageGallery() }
         binding!!.chooseBook.setOnClickListener { bookPickIntent() }
         binding!!.category.setOnClickListener { categoryPickDialog() }
@@ -90,9 +96,7 @@ class BookAddActivity : AppCompatActivity() {
             }.addOnFailureListener { e: Exception ->
                 dialog!!.dismiss()
                 Toast.makeText(
-                    context,
-                    "Book upload failed due to " + e.message,
-                    Toast.LENGTH_SHORT
+                    context, "Book upload failed due to " + e.message, Toast.LENGTH_SHORT
                 ).show()
             }
     }
@@ -125,9 +129,7 @@ class BookAddActivity : AppCompatActivity() {
         }.addOnFailureListener { e: Exception ->
             dialog!!.dismiss()
             Toast.makeText(
-                context,
-                "Failure to upload to db due to :" + e.message,
-                Toast.LENGTH_SHORT
+                context, "Failure to upload to db due to :" + e.message, Toast.LENGTH_SHORT
             ).show()
         }
     }
@@ -191,9 +193,7 @@ class BookAddActivity : AppCompatActivity() {
             }.addOnFailureListener { e: Exception ->
                 dialog!!.dismiss()
                 Toast.makeText(
-                    context,
-                    "Failed to upload image due to " + e.message,
-                    Toast.LENGTH_SHORT
+                    context, "Failed to upload image due to " + e.message, Toast.LENGTH_SHORT
                 ).show()
             }
     }
@@ -223,9 +223,7 @@ class BookAddActivity : AppCompatActivity() {
     }
 
     private val galleryActivityResultLauncher: ActivityResultLauncher<Intent> =
-        registerForActivityResult(
-            ActivityResultContracts.StartActivityForResult()
-        ) { result: ActivityResult ->
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
             if (result.resultCode == RESULT_OK) {
                 val data = result.data!!
                 imageUri = data.data

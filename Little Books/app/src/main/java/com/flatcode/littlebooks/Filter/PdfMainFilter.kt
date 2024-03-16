@@ -5,7 +5,7 @@ import com.flatcode.littlebooks.Adapter.MainBookAdapter
 import com.flatcode.littlebooks.Model.Book
 import java.util.*
 
-class PdfMainFilter(var list: ArrayList<Book?>, var adapter: MainBookAdapter) : Filter() {
+class PDFMainFilter(var list: ArrayList<Book?>, var adapter: MainBookAdapter) : Filter() {
     override fun performFiltering(constraint: CharSequence): FilterResults {
         var constraint: CharSequence? = constraint
         val results = FilterResults()

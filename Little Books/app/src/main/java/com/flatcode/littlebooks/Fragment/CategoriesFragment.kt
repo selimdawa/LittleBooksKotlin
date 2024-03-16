@@ -9,7 +9,11 @@ import com.flatcode.littlebooks.Adapter.CategoryMainAdapter
 import com.flatcode.littlebooks.Model.Category
 import com.flatcode.littlebooks.Unit.DATA
 import com.flatcode.littlebooks.databinding.FragmentCategoriesBinding
-import com.google.firebase.database.*
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.Query
+import com.google.firebase.database.ValueEventListener
 
 class CategoriesFragment : Fragment() {
 
@@ -18,15 +22,10 @@ class CategoriesFragment : Fragment() {
     private var adapter: CategoryMainAdapter? = null
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        binding = FragmentCategoriesBinding.inflate(
-            LayoutInflater.from(
-                context
-            ), container, false
-        )
+        binding = FragmentCategoriesBinding.inflate(LayoutInflater.from(context), container, false)
 
         //binding.recyclerCategory.setHasFixedSize(true);
         list = ArrayList()

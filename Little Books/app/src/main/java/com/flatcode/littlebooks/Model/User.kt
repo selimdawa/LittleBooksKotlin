@@ -11,7 +11,8 @@ class User {
     var adLoad = 0
     var adClick = 0
 
-    constructor() {}
+    constructor()
+
     constructor(
         id: String?, username: String?, profileImage: String?, email: String?, timestamp: Long,
         version: Int, booksCount: Int, adLoad: Int, adClick: Int

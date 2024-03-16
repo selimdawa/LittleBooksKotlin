@@ -28,31 +28,25 @@ class EditorsChoiceAdapter(private val context: Context, var list: List<EditorsC
     private var binding: ItemBookEditorsChoiceBinding? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        binding = ItemBookEditorsChoiceBinding.inflate(
-            LayoutInflater.from(
-                context
-            ), parent, false
-        )
+        binding = ItemBookEditorsChoiceBinding.inflate(LayoutInflater.from(context), parent, false)
         return ViewHolder(binding!!.root)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val id = position + 1
         val editorsChoiceId = DATA.EMPTY + id
+
         loadBookDetails(
             id, editorsChoiceId, holder.title, holder.description, holder.numberViews,
             holder.numberLoves, holder.numberDownloads, holder.image, holder.remove, holder.change,
             holder.addCard, holder.detailsCard
         )
+
         holder.numberEditorsChoice.text = MessageFormat.format("{0}{1}", DATA.EMPTY, id)
         holder.add.setOnClickListener {
             VOID.IntentExtra2(
-                context,
-                CLASS.EDITORS_CHOICE_ADD,
-                DATA.EDITORS_CHOICE_ID,
-                editorsChoiceId,
-                DATA.OLD_BOOK_ID,
-                null
+                context, CLASS.EDITORS_CHOICE_ADD,
+                DATA.EDITORS_CHOICE_ID, editorsChoiceId, DATA.OLD_BOOK_ID, null
             )
         }
     }
@@ -100,18 +94,9 @@ class EditorsChoiceAdapter(private val context: Context, var list: List<EditorsC
     }
 
     private fun loadBookDetails(
-        i: Int,
-        position: String,
-        title: TextView,
-        description: TextView,
-        viewsCount: TextView,
-        lovesCount: TextView,
-        downloadsCount: TextView,
-        image: ImageView,
-        remove: ImageView,
-        change: ImageView,
-        addCard: CardView,
-        detailsCard: CardView
+        i: Int, position: String, title: TextView, description: TextView, viewsCount: TextView,
+        lovesCount: TextView, downloadsCount: TextView, image: ImageView, remove: ImageView,
+        change: ImageView, addCard: CardView, detailsCard: CardView
     ) {
         val ref = FirebaseDatabase.getInstance().getReference(DATA.BOOKS)
         ref.addValueEventListener(object : ValueEventListener {
@@ -120,19 +105,19 @@ class EditorsChoiceAdapter(private val context: Context, var list: List<EditorsC
                     val item = snapshot.getValue(Book::class.java)!!
                     if (item.editorsChoice == i) {
                         val id = DATA.EMPTY + item.id
+
                         loadBook(id)
                         addCard.visibility = View.GONE
                         detailsCard.visibility = View.VISIBLE
                         remove.visibility = View.VISIBLE
                         change.visibility = View.VISIBLE
                         detailsCard.setOnClickListener {
-                            VOID.IntentExtra(
-                                context, CLASS.BOOK_DETAIL, DATA.BOOK_ID, id
-                            )
+                            VOID.IntentExtra(context, CLASS.BOOK_DETAIL, DATA.BOOK_ID, id)
                         }
                         remove.setOnClickListener {
                             VOID.dialogOptionDelete(
-                                context, null, id, null, null, false, true, null, null
+                                context, null, id, null, null,
+                                false, true, null, null
                             )
                         }
                         change.setOnClickListener {
@@ -155,15 +140,14 @@ class EditorsChoiceAdapter(private val context: Context, var list: List<EditorsC
                 ref.child(text).addListenerForSingleValueEvent(object : ValueEventListener {
                     override fun onDataChange(dataSnapshot: DataSnapshot) {
                         //get data
-                        val item = dataSnapshot.getValue(
-                            Book::class.java
-                        )!!
+                        val item = dataSnapshot.getValue(Book::class.java)!!
                         val Title = DATA.EMPTY + item.title
                         val Description = DATA.EMPTY + item.description
                         val ViewsCount = DATA.EMPTY + item.viewsCount
                         val LovesCount = DATA.EMPTY + item.lovesCount
                         val DownloadsCount = DATA.EMPTY + item.downloadsCount
                         val BookImage = DATA.EMPTY + item.image
+
                         title.text = Title
                         description.text = Description
                         viewsCount.text = ViewsCount

@@ -12,7 +12,11 @@ import com.flatcode.littlebooksadmin.R
 import com.flatcode.littlebooksadmin.Unit.DATA
 import com.flatcode.littlebooksadmin.Unit.THEME
 import com.flatcode.littlebooksadmin.databinding.ActivityPageStaggeredBinding
-import com.google.firebase.database.*
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.Query
+import com.google.firebase.database.ValueEventListener
 import java.text.MessageFormat
 
 class TopPublishersActivity : AppCompatActivity() {
@@ -30,12 +34,14 @@ class TopPublishersActivity : AppCompatActivity() {
         setContentView(view)
 
         binding!!.toolbar.nameSpace.setText(R.string.top_publishers)
+        binding!!.toolbar.close.setOnClickListener { onBackPressed() }
+        binding!!.toolbar.back.setOnClickListener { onBackPressed() }
+
         binding!!.toolbar.search.setOnClickListener {
             binding!!.toolbar.toolbar.visibility = View.GONE
             binding!!.toolbar.toolbarSearch.visibility = View.VISIBLE
             DATA.searchStatus = true
         }
-        binding!!.toolbar.close.setOnClickListener { onBackPressed() }
         binding!!.toolbar.textSearch.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
@@ -53,7 +59,6 @@ class TopPublishersActivity : AppCompatActivity() {
         list = ArrayList()
         adapter = TopPublisherAdapter(context, list!!, true)
         binding!!.recyclerView.adapter = adapter
-        binding!!.toolbar.back.setOnClickListener { onBackPressed() }
     }
 
     private fun getTopPublisher(orderBy: String?) {
@@ -63,9 +68,7 @@ class TopPublishersActivity : AppCompatActivity() {
                 list!!.clear()
                 var i = 0
                 for (data in dataSnapshot.children) {
-                    val item = data.getValue(
-                        User::class.java
-                    )!!
+                    val item = data.getValue(User::class.java)!!
                     if (item.booksCount >= 1) {
                         list!!.add(item)
                         i++

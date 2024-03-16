@@ -17,8 +17,11 @@ import com.flatcode.littlebooks.Unit.CLASS
 import com.flatcode.littlebooks.Unit.DATA
 import com.flatcode.littlebooks.Unit.VOID
 import com.flatcode.littlebooks.databinding.FragmentHomeBinding
-import com.google.firebase.database.*
-import java.util.*
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.Query
+import com.google.firebase.database.ValueEventListener
 
 class HomeFragment : Fragment() {
 
@@ -43,55 +46,49 @@ class HomeFragment : Fragment() {
     private var categoryAdapter: CategoryAdapter? = null
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        binding = FragmentHomeBinding.inflate(
-            LayoutInflater.from(
-                context
-            ), container, false
-        )
+        binding = FragmentHomeBinding.inflate(LayoutInflater.from(context), container, false)
+
         VOID.BannerAdTwo(
-            context,
-            binding!!.adView,
-            DATA.BANNER_SMART_HOME,
-            binding!!.adView2,
-            DATA.BANNER_SMART_HOME_2
+            context, binding!!.adView, DATA.BANNER_SMART_HOME,
+            binding!!.adView2, DATA.BANNER_SMART_HOME_2
         )
-        binding!!.showMore.setOnClickListener { v: View? ->
+
+        binding!!.showMore.setOnClickListener {
             VOID.IntentExtra3(
-                context, CLASS.MORE_BOOKS,
-                DATA.SHOW_MORE_TYPE, DATA.EDITORS_CHOICE, DATA.SHOW_MORE_NAME,
-                binding!!.name.text.toString(), DATA.SHOW_MORE_BOOLEAN, DATA.EMPTY + B_one
+                context, CLASS.MORE_BOOKS, DATA.SHOW_MORE_TYPE, DATA.EDITORS_CHOICE,
+                DATA.SHOW_MORE_NAME, binding!!.name.text.toString(),
+                DATA.SHOW_MORE_BOOLEAN, DATA.EMPTY + B_one
             )
         }
-        binding!!.showMore2.setOnClickListener { v: View? ->
+        binding!!.showMore2.setOnClickListener {
             VOID.IntentExtra3(
-                context, CLASS.MORE_BOOKS,
-                DATA.SHOW_MORE_TYPE, DATA.VIEWS_COUNT, DATA.SHOW_MORE_NAME,
-                binding!!.mostViews.text.toString(), DATA.SHOW_MORE_BOOLEAN, DATA.EMPTY + B_two
+                context, CLASS.MORE_BOOKS, DATA.SHOW_MORE_TYPE,
+                DATA.VIEWS_COUNT, DATA.SHOW_MORE_NAME, binding!!.mostViews.text.toString(),
+                DATA.SHOW_MORE_BOOLEAN, DATA.EMPTY + B_two
             )
         }
-        binding!!.showMore3.setOnClickListener { v: View? ->
+        binding!!.showMore3.setOnClickListener {
             VOID.IntentExtra3(
-                context, CLASS.MORE_BOOKS,
-                DATA.SHOW_MORE_TYPE, DATA.LOVES_COUNT, DATA.SHOW_MORE_NAME,
-                binding!!.name3.text.toString(), DATA.SHOW_MORE_BOOLEAN, DATA.EMPTY + B_three
+                context, CLASS.MORE_BOOKS, DATA.SHOW_MORE_TYPE,
+                DATA.LOVES_COUNT, DATA.SHOW_MORE_NAME, binding!!.name3.text.toString(),
+                DATA.SHOW_MORE_BOOLEAN, DATA.EMPTY + B_three
             )
         }
-        binding!!.showMore4.setOnClickListener { v: View? ->
+        binding!!.showMore4.setOnClickListener {
             VOID.IntentExtra3(
-                context, CLASS.MORE_BOOKS,
-                DATA.SHOW_MORE_TYPE, DATA.DOWNLOADS_COUNT, DATA.SHOW_MORE_NAME,
-                binding!!.name4.text.toString(), DATA.SHOW_MORE_BOOLEAN, DATA.EMPTY + B_four
+                context, CLASS.MORE_BOOKS, DATA.SHOW_MORE_TYPE,
+                DATA.DOWNLOADS_COUNT, DATA.SHOW_MORE_NAME, binding!!.name4.text.toString(),
+                DATA.SHOW_MORE_BOOLEAN, DATA.EMPTY + B_four
             )
         }
-        binding!!.showMore5.setOnClickListener { v: View? ->
+        binding!!.showMore5.setOnClickListener {
             VOID.IntentExtra3(
-                context, CLASS.MORE_BOOKS,
-                DATA.SHOW_MORE_TYPE, DATA.TIMESTAMP, DATA.SHOW_MORE_NAME,
-                binding!!.name5.text.toString(), DATA.SHOW_MORE_BOOLEAN, DATA.EMPTY + B_five
+                context, CLASS.MORE_BOOKS, DATA.SHOW_MORE_TYPE,
+                DATA.TIMESTAMP, DATA.SHOW_MORE_NAME, binding!!.name5.text.toString(),
+                DATA.SHOW_MORE_BOOLEAN, DATA.EMPTY + B_five
             )
         }
 
@@ -132,7 +129,7 @@ class HomeFragment : Fragment() {
         binding!!.recyclerView5.adapter = adapter5
 
         FirebaseDatabase.getInstance().getReference(DATA.SLIDER_SHOW)
-            .addValueEventListener(object : ValueEventListener {
+            .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     val counts = snapshot.childrenCount
                     TotalCounts = counts.toInt()
@@ -149,44 +146,24 @@ class HomeFragment : Fragment() {
     private fun init() {
         loadCategories()
         loadPostEditorsChoice(
-            DATA.EDITORS_CHOICE,
-            list,
-            adapter,
-            binding!!.bar,
-            binding!!.recyclerView,
-            binding!!.empty
+            DATA.EDITORS_CHOICE, list, adapter, binding!!.bar,
+            binding!!.recyclerView, binding!!.empty
         )
         loadPostBy(
-            DATA.VIEWS_COUNT,
-            list2,
-            adapter2,
-            binding!!.bar2,
-            binding!!.recyclerView2,
-            binding!!.empty2
+            DATA.VIEWS_COUNT, list2, adapter2, binding!!.bar2,
+            binding!!.recyclerView2, binding!!.empty2
         )
         loadPostBy(
-            DATA.LOVES_COUNT,
-            list3,
-            adapter3,
-            binding!!.bar3,
-            binding!!.recyclerView3,
-            binding!!.empty3
+            DATA.LOVES_COUNT, list3, adapter3, binding!!.bar3,
+            binding!!.recyclerView3, binding!!.empty3
         )
         loadPostBy(
-            DATA.DOWNLOADS_COUNT,
-            list4,
-            adapter4,
-            binding!!.bar4,
-            binding!!.recyclerView4,
-            binding!!.empty4
+            DATA.DOWNLOADS_COUNT, list4, adapter4, binding!!.bar4,
+            binding!!.recyclerView4, binding!!.empty4
         )
         loadPostBy(
-            DATA.TIMESTAMP,
-            list5,
-            adapter5,
-            binding!!.bar5,
-            binding!!.recyclerView5,
-            binding!!.empty5
+            DATA.TIMESTAMP, list5, adapter5, binding!!.bar5,
+            binding!!.recyclerView5, binding!!.empty5
         )
     }
 
@@ -196,9 +173,7 @@ class HomeFragment : Fragment() {
             override fun onDataChange(snapshot: DataSnapshot) {
                 categoryList!!.clear()
                 for (data in snapshot.children) {
-                    val category = data.getValue(
-                        Category::class.java
-                    )
+                    val category = data.getValue(Category::class.java)
                     categoryList!!.add(category)
                 }
                 categoryAdapter!!.notifyDataSetChanged()
@@ -218,17 +193,15 @@ class HomeFragment : Fragment() {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     list!!.clear()
                     for (data in snapshot.children) {
-                        val item = data.getValue(
-                            Book::class.java
-                        )!!
+                        val item = data.getValue(Book::class.java)!!
                         if (orderBy != DATA.EDITORS_CHOICE) list.add(item)
                     }
                     adapter!!.notifyDataSetChanged()
                     bar.visibility = View.GONE
-                    if (!list.isEmpty()) {
+                    if (list.isNotEmpty()) {
                         recyclerView.visibility = View.VISIBLE
                         empty.visibility = View.GONE
-                        if (orderBy != DATA.EDITORS_CHOICE) Collections.reverse(list)
+                        if (orderBy != DATA.EDITORS_CHOICE) list.reverse()
                     } else {
                         recyclerView.visibility = View.GONE
                         empty.visibility = View.VISIBLE
@@ -248,19 +221,17 @@ class HomeFragment : Fragment() {
             override fun onDataChange(snapshot: DataSnapshot) {
                 list!!.clear()
                 for (data in snapshot.children) {
-                    val item = data.getValue(
-                        Book::class.java
-                    )!!
+                    val item = data.getValue(Book::class.java)!!
                     if (orderBy == DATA.EDITORS_CHOICE) {
                         if (item.editorsChoice == 1 || item.editorsChoice == 2) list.add(item)
                     }
                 }
                 adapter!!.notifyDataSetChanged()
                 bar.visibility = View.GONE
-                if (!list.isEmpty()) {
+                if (list.isNotEmpty()) {
                     recyclerView.visibility = View.VISIBLE
                     empty.visibility = View.GONE
-                    if (orderBy != DATA.EDITORS_CHOICE) Collections.reverse(list)
+                    if (orderBy != DATA.EDITORS_CHOICE) list.reverse()
                 } else {
                     recyclerView.visibility = View.GONE
                     empty.visibility = View.VISIBLE

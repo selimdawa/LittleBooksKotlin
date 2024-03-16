@@ -7,8 +7,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="?colorOnBackground"
-        android:orientation="vertical"
-        tools:context=".Activity.UsersActivity">
+        android:orientation="vertical">
 
         <include
             android:id="@+id/toolbar"
@@ -69,7 +68,8 @@
                             </LinearLayout>
 
                         </androidx.cardview.widget.CardView>
-z
+                        z
+
                         <androidx.cardview.widget.CardView
                             android:id="@+id/users"
                             android:layout_width="wrap_content"
@@ -177,9 +177,7 @@ z
                             android:orientation="vertical"
                             android:visibility="gone"
                             app:layoutManager="androidx.recyclerview.widget.StaggeredGridLayoutManager"
-                            app:reverseLayout="true"
                             app:spanCount="2"
-                            app:stackFromEnd="true"
                             tools:listitem="@layout/item_publisher" />
 
                     </LinearLayout>

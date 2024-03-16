@@ -25,8 +25,10 @@ class CategoryAdapter(private val context: Context?, var list: ArrayList<Categor
         val id = item!!.id
         val name = item.category
         val image = item.image
+
         VOID.Glide_(false, context, image, binding!!.image)
-        holder.itemView.setOnClickListener { v: View? ->
+
+        holder.itemView.setOnClickListener {
             VOID.IntentExtra2(
                 context, CLASS.CATEGORY_BOOKS, DATA.CATEGORY_ID, id, DATA.CATEGORY_NAME, name
             )

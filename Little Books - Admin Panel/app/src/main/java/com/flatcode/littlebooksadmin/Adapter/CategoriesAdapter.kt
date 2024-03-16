@@ -4,7 +4,12 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.*
+import android.widget.Filter
+import android.widget.Filterable
+import android.widget.ImageButton
+import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.flatcode.littlebooksadmin.Filter.CategoriesFilter
 import com.flatcode.littlebooksadmin.Modelimport.Book
@@ -26,15 +31,8 @@ class CategoriesAdapter(private val context: Context, var list: ArrayList<Catego
     var filterList: ArrayList<Category?>
     private var filter: CategoriesFilter? = null
 
-    override fun onCreateViewHolder(
-        parent: ViewGroup,
-        viewType: Int
-    ): CategoriesAdapter.ViewHolder {
-        binding = ItemCategoriesBinding.inflate(
-            LayoutInflater.from(
-                context
-            ), parent, false
-        )
+    override fun onCreateViewHolder(parent: ViewGroup, VT: Int): CategoriesAdapter.ViewHolder {
+        binding = ItemCategoriesBinding.inflate(LayoutInflater.from(context), parent, false)
         return ViewHolder(binding!!.root)
     }
 
@@ -52,20 +50,14 @@ class CategoriesAdapter(private val context: Context, var list: ArrayList<Catego
             holder.name.visibility = View.VISIBLE
             holder.name.text = name
         }
+
         nrBooks(holder.numberBooks, categoryId)
-        holder.more.setOnClickListener {
-            VOID.moreCategories(
-                context, item
-            )
-        }
+
+        holder.more.setOnClickListener { VOID.moreCategories(context, item) }
         holder.item.setOnClickListener {
             VOID.IntentExtra2(
-                context,
-                CLASS.CATEGORY_BOOKS,
-                DATA.CATEGORY_ID,
-                categoryId,
-                DATA.CATEGORY_NAME,
-                name
+                context, CLASS.CATEGORY_BOOKS,
+                DATA.CATEGORY_ID, categoryId, DATA.CATEGORY_NAME, name
             )
         }
     }

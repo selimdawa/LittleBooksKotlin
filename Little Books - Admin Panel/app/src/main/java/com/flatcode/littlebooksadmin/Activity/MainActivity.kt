@@ -54,19 +54,17 @@ class MainActivity : AppCompatActivity(), OnSharedPreferenceChangeListener {
         } else if (sharedPreferences.getString(DATA.COLOR_OPTION, "NIGHT_ONE") == "NIGHT_ONE") {
             binding!!.toolbar.mode.setBackgroundResource(R.drawable.moon)
         }
-        binding!!.toolbar.image.setOnClickListener { v: View? ->
-            VOID.IntentExtra(
-                context,
-                CLASS.PROFILE,
-                DATA.PROFILE_ID,
-                DATA.FirebaseUserUid
-            )
-        }
+
         userInfo()
-        binding!!.recyclerView.setHasFixedSize(true)
+        binding!!.toolbar.image.setOnClickListener {
+            VOID.IntentExtra(context, CLASS.PROFILE, DATA.PROFILE_ID, DATA.FirebaseUserUid)
+        }
+
+        //binding!!.recyclerView.setHasFixedSize(true)
         list = ArrayList()
         adapter = MainAdapter(context, list!!)
         binding!!.recyclerView.adapter = adapter
+
         nrItems()
     }
 
@@ -209,17 +207,8 @@ class MainActivity : AppCompatActivity(), OnSharedPreferenceChangeListener {
     }
 
     private fun IdeaPosts(
-        users: Int,
-        publishers: Int,
-        myBooks: Int,
-        allBooks: Int,
-        sliderShow: Int,
-        followers: Int,
-        following: Int,
-        favorites: Int,
-        ads: Int,
-        editorsChoice: Int,
-        categories: Int
+        users: Int, publishers: Int, myBooks: Int, allBooks: Int, sliderShow: Int, followers: Int,
+        following: Int, favorites: Int, ads: Int, editorsChoice: Int, categories: Int
     ) {
         list!!.clear()
         val item1 = Main(R.drawable.ic_person, "Users", users, CLASS.USERS)
@@ -256,7 +245,7 @@ class MainActivity : AppCompatActivity(), OnSharedPreferenceChangeListener {
     }
 
     // Color Mode ----------------------------- Start
-    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String) {
+    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
         if (key == "color_option") {
             recreate()
         }

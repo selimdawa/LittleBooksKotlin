@@ -12,7 +12,11 @@ import com.flatcode.littlebooksadmin.R
 import com.flatcode.littlebooksadmin.Unit.DATA
 import com.flatcode.littlebooksadmin.Unit.THEME
 import com.flatcode.littlebooksadmin.databinding.ActivityAdsBinding
-import com.google.firebase.database.*
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.Query
+import com.google.firebase.database.ValueEventListener
 import java.text.MessageFormat
 
 class ADsActivity : AppCompatActivity() {
@@ -31,12 +35,15 @@ class ADsActivity : AppCompatActivity() {
         setContentView(view)
 
         type = DATA.AD_LOAD
+        binding!!.toolbar.nameSpace.setText(R.string.users_ads)
+        binding!!.toolbar.back.setOnClickListener { onBackPressed() }
+        binding!!.toolbar.close.setOnClickListener { onBackPressed() }
+
         binding!!.toolbar.search.setOnClickListener {
             binding!!.toolbar.toolbar.visibility = View.GONE
             binding!!.toolbar.toolbarSearch.visibility = View.VISIBLE
             DATA.searchStatus = true
         }
-        binding!!.toolbar.close.setOnClickListener { onBackPressed() }
         binding!!.toolbar.textSearch.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
@@ -49,13 +56,12 @@ class ADsActivity : AppCompatActivity() {
 
             override fun afterTextChanged(s: Editable) {}
         })
-        binding!!.toolbar.nameSpace.setText(R.string.users_ads)
-        binding!!.toolbar.back.setOnClickListener { onBackPressed() }
 
         //binding.recyclerView.setHasFixedSize(true);
         list = ArrayList()
         adapter = ADsUserAdapter(context, list!!, true)
         binding!!.recyclerView.adapter = adapter
+
         binding!!.name.setOnClickListener {
             type = DATA.USER_NAME
             getData(type)
@@ -81,9 +87,7 @@ class ADsActivity : AppCompatActivity() {
                 list!!.clear()
                 var i = 0
                 for (data in dataSnapshot.children) {
-                    val item = data.getValue(
-                        User::class.java
-                    )!!
+                    val item = data.getValue(User::class.java)!!
                     if (!(item.adLoad == 0 && item.adClick == 0)) {
                         list!!.add(item)
                         i++

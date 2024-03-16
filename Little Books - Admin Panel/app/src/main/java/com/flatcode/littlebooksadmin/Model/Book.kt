@@ -15,19 +15,11 @@ class Book {
     var editorsChoice = 0
 
     constructor()
+
     constructor(
-        publisher: String?,
-        id: String?,
-        title: String?,
-        description: String?,
-        categoryId: String?,
-        url: String?,
-        image: String?,
-        timestamp: Long,
-        viewsCount: Int,
-        downloadsCount: Int,
-        lovesCount: Int,
-        editorsChoice: Int
+        publisher: String?, id: String?, title: String?, description: String?, categoryId: String?,
+        url: String?, image: String?, timestamp: Long, viewsCount: Int, downloadsCount: Int,
+        lovesCount: Int, editorsChoice: Int
     ) {
         this.publisher = publisher
         this.id = id

@@ -8,7 +8,6 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.text.TextUtils
-import android.view.View
 import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
@@ -18,7 +17,6 @@ import com.flatcode.littlebooks.Unit.DATA
 import com.flatcode.littlebooks.Unit.THEME
 import com.flatcode.littlebooks.Unit.VOID
 import com.flatcode.littlebooks.databinding.ActivityBookEditBinding
-import com.google.android.gms.tasks.Task
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
@@ -42,17 +40,20 @@ class BookEditActivity : AppCompatActivity() {
         binding = ActivityBookEditBinding.inflate(layoutInflater)
         val view = binding!!.root
         setContentView(view)
+
         bookId = intent.getStringExtra(DATA.BOOK_ID)
         dialog = ProgressDialog(context)
         dialog!!.setTitle("Please wait...")
         dialog!!.setCanceledOnTouchOutside(false)
+
         loadCategories()
         loadBooksInfo()
+
         binding!!.toolbar.nameSpace.setText(R.string.edit_book)
-        binding!!.toolbar.back.setOnClickListener { v: View? -> onBackPressed() }
-        binding!!.image.setOnClickListener { v: View? -> pickImageGallery() }
-        binding!!.category.setOnClickListener { v: View? -> categoryDialog() }
-        binding!!.toolbar.ok.setOnClickListener { v: View? -> validateData() }
+        binding!!.toolbar.back.setOnClickListener { onBackPressed() }
+        binding!!.image.setOnClickListener { pickImageGallery() }
+        binding!!.category.setOnClickListener { categoryDialog() }
+        binding!!.toolbar.ok.setOnClickListener { validateData() }
     }
 
     private var selectedId = DATA.EMPTY
@@ -81,10 +82,10 @@ class BookEditActivity : AppCompatActivity() {
         hashMap[DATA.DESCRIPTION] = DATA.EMPTY + description
         hashMap[DATA.CATEGORY_ID] = DATA.EMPTY + selectedId
         val ref = FirebaseDatabase.getInstance().getReference(DATA.BOOKS)
-        ref.child(bookId!!).updateChildren(hashMap).addOnSuccessListener { unused: Void? ->
+        ref.child(bookId!!).updateChildren(hashMap).addOnSuccessListener {
             dialog!!.dismiss()
             Toast.makeText(context, "Book info updated...", Toast.LENGTH_SHORT).show()
-        }.addOnCompleteListener { task: Task<Void?>? -> if (imageUri != null) uploadImage(bookId) }
+        }.addOnCompleteListener { if (imageUri != null) uploadImage(bookId) }
             .addOnFailureListener { e: Exception ->
                 dialog!!.dismiss()
                 Toast.makeText(context, DATA.EMPTY + e.message, Toast.LENGTH_SHORT).show()
@@ -164,7 +165,7 @@ class BookEditActivity : AppCompatActivity() {
             hashMap[DATA.IMAGE] = DATA.EMPTY + imageUrl
         }
         val reference = FirebaseDatabase.getInstance().getReference(DATA.BOOKS)
-        reference.child(bookId!!).updateChildren(hashMap).addOnSuccessListener { unused: Void? ->
+        reference.child(bookId!!).updateChildren(hashMap).addOnSuccessListener {
             dialog!!.dismiss()
             Toast.makeText(context, "Image updated...", Toast.LENGTH_SHORT).show()
         }.addOnFailureListener { e: Exception ->

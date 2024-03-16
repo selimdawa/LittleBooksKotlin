@@ -8,8 +8,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="?colorOnBackground"
-        android:orientation="vertical"
-        tools:context=".Activity.BooksCategoryActivity">
+        android:orientation="vertical">
 
         <include
             android:id="@+id/toolbar"
@@ -99,7 +98,7 @@
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
                         android:visibility="gone"
-                        ads:stackFromEnd="true"
+                        app:stackFromEnd="true"
                         app:layoutManager="androidx.recyclerview.widget.StaggeredGridLayoutManager"
                         app:spanCount="2"
                         tools:listitem="@layout/item_book_staggered" />

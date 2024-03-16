@@ -3,7 +3,11 @@ package com.flatcode.littlebooks.Unit
 import android.app.Activity
 import android.app.Dialog
 import android.app.ProgressDialog
-import android.content.*
+import android.content.ActivityNotFoundException
+import android.content.ContentResolver
+import android.content.Context
+import android.content.DialogInterface
+import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.net.Uri
@@ -16,10 +20,8 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
-import androidx.preference.PreferenceManager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
-import com.flatcode.littlebooks.BuildConfig
 import com.flatcode.littlebooks.Model.ADs
 import com.flatcode.littlebooks.Model.Book
 import com.flatcode.littlebooks.R
@@ -28,7 +30,11 @@ import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdView
 import com.google.android.gms.ads.MobileAds
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.*
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageMetadata
 import com.google.firebase.storage.StorageReference
@@ -316,9 +322,9 @@ object VOID {
         shareIntent.putExtra(Intent.EXTRA_SUBJECT, "share app")
         shareIntent.putExtra(
             Intent.EXTRA_TEXT,
-            " Download the app now from Google Play " + " https://play.google.com/store/apps/details?id=" + BuildConfig.APPLICATION_ID
+            " Download the app now from Google Play " + " https://play.google.com/store/apps/details?id=" + context!!.packageName
         )
-        context!!.startActivity(Intent.createChooser(shareIntent, "Choose how to share"))
+        context.startActivity(Intent.createChooser(shareIntent, "Choose how to share"))
     }
 
     fun rateApp(context: Context?) {
@@ -422,12 +428,10 @@ object VOID {
         val options = arrayOf("Edit", "Delete")
 
         //alert dialog
-        val builder = AlertDialog.Builder(
-            context!!
-        )
+        val builder = AlertDialog.Builder(context!!)
         builder.setTitle("Choose Options").setItems(
             options
-        ) { dialog: DialogInterface?, which: Int ->
+        ) { _: DialogInterface?, which: Int ->
             //handle dialog option click
             if (which == 0) {
                 //Edit clicked ,Open new activity to edit the book info
@@ -473,11 +477,7 @@ object VOID {
     }
 
     fun dialogOptionDelete(
-        context: Context?,
-        publisher: String?,
-        bookId: String?,
-        bookUrl: String?,
-        bookTitle: String,
+        context: Context?, publisher: String?, bookId: String?, bookUrl: String?, bookTitle: String,
     ) {
         val dialog = Dialog(context!!)
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
@@ -491,14 +491,7 @@ object VOID {
         val title: TextView = dialog.findViewById(R.id.title)
         title.setText(R.string.do_you_want_to_delete_the_book)
         dialog.findViewById<View>(R.id.yes).setOnClickListener {
-            deleteBook(
-                dialog,
-                context,
-                publisher,
-                bookId,
-                bookUrl,
-                bookTitle
-            )
+            deleteBook(dialog, context, publisher, bookId, bookUrl, bookTitle)
         }
         dialog.findViewById<View>(R.id.no).setOnClickListener { dialog.dismiss() }
         dialog.show()
@@ -633,30 +626,6 @@ object VOID {
 
             override fun onCancelled(error: DatabaseError) {}
         })
-    }
-
-    fun Intro(context: Context?, background: ImageView, backWhite: ImageView, backDark: ImageView) {
-        val sharedPreferences: SharedPreferences = PreferenceManager
-            .getDefaultSharedPreferences(context!!)
-        if (sharedPreferences.getString("color_option", "ONE") == "ONE") {
-            background.setImageResource(R.drawable.background_day)
-            backWhite.visibility = View.VISIBLE
-            backDark.visibility = View.GONE
-        } else if (sharedPreferences.getString("color_option", "NIGHT_ONE") == "NIGHT_ONE") {
-            background.setImageResource(R.drawable.background_night)
-            backWhite.visibility = View.GONE
-            backDark.visibility = View.VISIBLE
-        }
-    }
-
-    fun Logo(context: Context?, background: ImageView) {
-        val sharedPreferences: SharedPreferences = PreferenceManager
-            .getDefaultSharedPreferences(context!!)
-        if (sharedPreferences.getString("color_option", "ONE") == "ONE") {
-            background.setImageResource(R.drawable.logo)
-        } else if (sharedPreferences.getString("color_option", "NIGHT_ONE") == "NIGHT_ONE") {
-            background.setImageResource(R.drawable.logo_night)
-        }
     }
 
     fun getFileExtension(uri: Uri?, context: Context): String {

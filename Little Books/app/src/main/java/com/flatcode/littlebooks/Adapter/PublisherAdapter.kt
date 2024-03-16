@@ -4,7 +4,11 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.*
+import android.widget.Filter
+import android.widget.Filterable
+import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.flatcode.littlebooks.Filter.PublisherFilter
 import com.flatcode.littlebooks.Model.User
@@ -27,31 +31,35 @@ class PublisherAdapter(private val context: Context, var list: ArrayList<User?>)
     private var filter: PublisherFilter? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        binding = ItemPublisherBinding.inflate(
-            LayoutInflater.from(
-                context
-            ), parent, false
-        )
+        binding = ItemPublisherBinding.inflate(LayoutInflater.from(context), parent, false)
         return ViewHolder(binding!!.root)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = list[position]
-        VOID.Glide_(true, context, item!!.profileImage, holder.image)
-        if (item.username == DATA.EMPTY) {
+        val pubId = DATA.EMPTY + item!!.id
+        val username = DATA.EMPTY + item.username
+        val profileImage = DATA.EMPTY + item.profileImage
+
+        VOID.Glide_(true, context, profileImage, holder.image)
+
+        if (username == DATA.EMPTY) {
             holder.username.visibility = View.GONE
         } else {
             holder.username.visibility = View.VISIBLE
-            holder.username.text = item.username
+            holder.username.text = username
         }
-        if (item.id == DATA.FirebaseUserUid) {
+
+        if (pubId == DATA.FirebaseUserUid) {
             holder.add.visibility = View.GONE
         } else {
             holder.add.visibility = View.VISIBLE
         }
+
         NrFollowers(holder.numberFollowers, item.id)
         NrBooks(holder.numberBooks, item.id)
         isFollowing(holder.add, item.id)
+
         holder.add.setOnClickListener {
             if (holder.add.tag == "add") {
                 FirebaseDatabase.getInstance().reference.child(DATA.FOLLOW)
@@ -67,10 +75,9 @@ class PublisherAdapter(private val context: Context, var list: ArrayList<User?>)
                     .child(DATA.FOLLOWERS).child(DATA.FirebaseUserUid).removeValue()
             }
         }
+
         holder.item.setOnClickListener {
-            VOID.IntentExtra(
-                context, CLASS.PROFILE, DATA.PROFILE_ID, item.id
-            )
+            VOID.IntentExtra(context, CLASS.PROFILE, DATA.PROFILE_ID, item.id)
         }
     }
 
@@ -85,9 +92,7 @@ class PublisherAdapter(private val context: Context, var list: ArrayList<User?>)
         return filter!!
     }
 
-    inner class ViewHolder(view: View?) : RecyclerView.ViewHolder(
-        view!!
-    ) {
+    inner class ViewHolder(view: View?) : RecyclerView.ViewHolder(view!!) {
         var image: ImageView
         var add: ImageView
         var username: TextView
@@ -106,9 +111,9 @@ class PublisherAdapter(private val context: Context, var list: ArrayList<User?>)
     }
 
     private fun isFollowing(add: ImageView, userId: String?) {
-        val reference = FirebaseDatabase.getInstance().reference
-            .child(DATA.FOLLOW).child(DATA.FirebaseUserUid).child(DATA.FOLLOWING)
-        reference.addListenerForSingleValueEvent(object : ValueEventListener {
+        val reference = FirebaseDatabase.getInstance().reference.child(DATA.FOLLOW)
+            .child(DATA.FirebaseUserUid).child(DATA.FOLLOWING)
+        reference.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 if (dataSnapshot.child(userId!!).exists()) {
                     add.setImageResource(R.drawable.ic_heart_selected)
@@ -136,9 +141,7 @@ class PublisherAdapter(private val context: Context, var list: ArrayList<User?>)
     }
 
     private fun NrBooks(numberConnected: TextView, userId: String?) {
-        val reference = FirebaseDatabase.getInstance().reference.child(DATA.USERS).child(
-            userId!!
-        )
+        val reference = FirebaseDatabase.getInstance().reference.child(DATA.USERS).child(userId!!)
         reference.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 val number = DATA.EMPTY + dataSnapshot.child(DATA.BOOKS_COUNT).value

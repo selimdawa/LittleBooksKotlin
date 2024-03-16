@@ -1,17 +1,15 @@
 package com.flatcode.littlebooks.Unit
 
 import com.flatcode.littlebooks.Activity.*
-import com.flatcode.littlebooks.Auth.AuthActivity
-import com.flatcode.littlebooks.Auth.ForgetPasswordActivity
-import com.flatcode.littlebooks.Auth.LoginActivity
-import com.flatcode.littlebooks.Auth.RegisterActivity
+import com.flatcode.littlebooks.Auth.*
 
 object CLASS {
-    var AUTH: Class<*> = AuthActivity::class.java
-    var MAIN: Class<*> = MainActivity::class.java
     var SPLASH: Class<*> = SplashActivity::class.java
-    var LOGIN: Class<*> = LoginActivity::class.java
+    var AUTH: Class<*> = AuthActivity::class.java
     var REGISTER: Class<*> = RegisterActivity::class.java
+    var LOGIN: Class<*> = LoginActivity::class.java
+    var FORGET_PASSWORD: Class<*> = ForgetPasswordActivity::class.java
+    var MAIN: Class<*> = MainActivity::class.java
     var CATEGORY_BOOKS: Class<*> = BooksCategoryActivity::class.java
     var BOOK_ADD: Class<*> = BookAddActivity::class.java
     var BOOK_EDIT: Class<*> = BookEditActivity::class.java
@@ -26,6 +24,5 @@ object CLASS {
     var MY_BOOKS: Class<*> = MyBooksActivity::class.java
     var FAVORITES: Class<*> = FavoritesActivity::class.java
     var PRIVACY_POLICY: Class<*> = PrivacyPolicyActivity::class.java
-    var FORGET_PASSWORD: Class<*> = ForgetPasswordActivity::class.java
     var MORE_BOOKS: Class<*> = MoreBooksActivity::class.java
 }

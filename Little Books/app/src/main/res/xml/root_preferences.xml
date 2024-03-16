@@ -2,7 +2,7 @@
 <PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <ListPreference
-        app:defaultValue="ONE"
+        app:defaultValue="BASIC"
         app:entries="@array/reply_entries"
         app:entryValues="@array/reply_values"
         app:key="color_option" />

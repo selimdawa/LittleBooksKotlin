@@ -21,11 +21,7 @@ class MainAdapter(private val context: Context, var list: List<Main>) :
     private var binding: ItemMainBinding? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        binding = ItemMainBinding.inflate(
-            LayoutInflater.from(
-                context
-            ), parent, false
-        )
+        binding = ItemMainBinding.inflate(LayoutInflater.from(context), parent, false)
         return ViewHolder(binding!!.root)
     }
 
@@ -42,6 +38,7 @@ class MainAdapter(private val context: Context, var list: List<Main>) :
         } else {
             holder.image.setImageResource(R.drawable.ic_load)
         }
+
         if (number != 0) {
             holder.number.visibility = View.VISIBLE
             holder.number.text = MessageFormat.format("{0}{1}", DATA.EMPTY, number)
@@ -49,6 +46,7 @@ class MainAdapter(private val context: Context, var list: List<Main>) :
             holder.number.visibility = View.GONE
 
         }
+
         holder.name.text = name
 
         holder.itemView.setOnClickListener {

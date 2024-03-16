@@ -10,7 +10,11 @@ import com.flatcode.littlebooks.Model.Book
 import com.flatcode.littlebooks.Unit.DATA
 import com.flatcode.littlebooks.Unit.VOID
 import com.flatcode.littlebooks.databinding.FragmentFollowersBinding
-import com.google.firebase.database.*
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.Query
+import com.google.firebase.database.ValueEventListener
 
 class FollowersFragment : Fragment() {
 
@@ -21,34 +25,32 @@ class FollowersFragment : Fragment() {
     private var type: String? = null
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        binding = FragmentFollowersBinding.inflate(
-            LayoutInflater.from(
-                context
-            ), container, false
-        )
+        binding = FragmentFollowersBinding.inflate(LayoutInflater.from(context), container, false)
+
         type = DATA.TIMESTAMP
         VOID.BannerAd(context, binding!!.adView, DATA.BANNER_SMART_FOLLOWERS_BOOKS)
-        binding!!.recyclerView.setHasFixedSize(true)
+
+        //binding!!.recyclerView.setHasFixedSize(true)
         list = ArrayList()
         adapter = LinearBookAdapter(context, list!!, false)
         binding!!.recyclerView.adapter = adapter
-        binding!!.switchBar.all.setOnClickListener { v: View? ->
+
+        binding!!.switchBar.all.setOnClickListener {
             type = DATA.TIMESTAMP
             getData(type)
         }
-        binding!!.switchBar.mostViews.setOnClickListener { v: View? ->
+        binding!!.switchBar.mostViews.setOnClickListener {
             type = DATA.VIEWS_COUNT
             getData(type)
         }
-        binding!!.switchBar.mostLoves.setOnClickListener { v: View? ->
+        binding!!.switchBar.mostLoves.setOnClickListener {
             type = DATA.LOVES_COUNT
             getData(type)
         }
-        binding!!.switchBar.mostDownloads.setOnClickListener { v: View? ->
+        binding!!.switchBar.mostDownloads.setOnClickListener {
             type = DATA.DOWNLOADS_COUNT
             getData(type)
         }
@@ -78,9 +80,7 @@ class FollowersFragment : Fragment() {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 list!!.clear()
                 for (data in dataSnapshot.children) {
-                    val item = data.getValue(
-                        Book::class.java
-                    )
+                    val item = data.getValue(Book::class.java)
                     for (id in check!!) {
                         assert(item != null)
                         if (item!!.publisher == id) list!!.add(item)

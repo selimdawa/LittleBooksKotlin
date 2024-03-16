@@ -8,7 +8,6 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.text.TextUtils
-import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.flatcode.littlebooksadmin.R
@@ -40,9 +39,11 @@ class CategoryAddActivity : AppCompatActivity() {
         dialog = ProgressDialog(context)
         dialog!!.setTitle("Please wait...")
         dialog!!.setCanceledOnTouchOutside(false)
+
         binding!!.toolbar.nameSpace.setText(R.string.add_new_book)
         binding!!.toolbar.back.setOnClickListener { onBackPressed() }
-        binding!!.image.setOnClickListener { VOID.CropImageSquare(activity) }
+
+        binding!!.image.setOnClickListener { VOID.cropImageSquare(activity) }
         binding!!.toolbar.ok.setOnClickListener { validateData() }
     }
 
@@ -78,9 +79,7 @@ class CategoryAddActivity : AppCompatActivity() {
             }.addOnFailureListener { e: Exception ->
                 dialog!!.dismiss()
                 Toast.makeText(
-                    context,
-                    "Category upload failed due to " + e.message,
-                    Toast.LENGTH_SHORT
+                    context, "Category upload failed due to " + e.message, Toast.LENGTH_SHORT
                 ).show()
             }
     }
@@ -103,9 +102,7 @@ class CategoryAddActivity : AppCompatActivity() {
         }.addOnFailureListener { e: Exception ->
             dialog!!.dismiss()
             Toast.makeText(
-                context,
-                "Failure to upload to db due to :" + e.message,
-                Toast.LENGTH_SHORT
+                context, "Failure to upload to db due to :" + e.message, Toast.LENGTH_SHORT
             ).show()
         }
     }
@@ -118,7 +115,7 @@ class CategoryAddActivity : AppCompatActivity() {
                 imageUri = uri
                 requestPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), 0)
             } else {
-                VOID.CropImageSquare(activity)
+                VOID.cropImageSquare(activity)
             }
         }
         if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {

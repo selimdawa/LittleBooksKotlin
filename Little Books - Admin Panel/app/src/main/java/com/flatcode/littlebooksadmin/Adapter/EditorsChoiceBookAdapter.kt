@@ -5,7 +5,11 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.*
+import android.widget.Filter
+import android.widget.Filterable
+import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.flatcode.littlebooksadmin.Filterimport.EditorsChoiceBookFilter
 import com.flatcode.littlebooksadmin.Modelimport.Book
@@ -15,11 +19,8 @@ import com.flatcode.littlebooksadmin.Unit.VOID
 import com.flatcode.littlebooksadmin.databinding.ItemEditorsChoiceBinding
 
 class EditorsChoiceBookAdapter(
-    private val context: Context,
-    private val activity: Activity?,
-    var oldBookId: String?,
-    var list: ArrayList<Book?>,
-    number: Int
+    private val context: Context, private val activity: Activity?,
+    var oldBookId: String?, var list: ArrayList<Book?>, number: Int
 ) : RecyclerView.Adapter<EditorsChoiceBookAdapter.ViewHolder>(), Filterable {
     private var binding: ItemEditorsChoiceBinding? = null
 
@@ -28,11 +29,7 @@ class EditorsChoiceBookAdapter(
     var number: Int
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        binding = ItemEditorsChoiceBinding.inflate(
-            LayoutInflater.from(
-                context
-            ), parent, false
-        )
+        binding = ItemEditorsChoiceBinding.inflate(LayoutInflater.from(context), parent, false)
         return ViewHolder(binding!!.root)
     }
 
@@ -54,6 +51,7 @@ class EditorsChoiceBookAdapter(
             holder.title.visibility = View.VISIBLE
             holder.title.text = title
         }
+
         if (item.description == DATA.EMPTY) {
             holder.description.visibility = View.GONE
         } else {
@@ -73,10 +71,9 @@ class EditorsChoiceBookAdapter(
                 VOID.addToEditorsChoice(context, activity, bookId, number)
             }
         }
+
         holder.item.setOnClickListener {
-            VOID.IntentExtra(
-                context, CLASS.BOOK_DETAIL, DATA.BOOK_ID, item.id
-            )
+            VOID.IntentExtra(context, CLASS.BOOK_DETAIL, DATA.BOOK_ID, item.id)
         }
     }
 

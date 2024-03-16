@@ -24,13 +24,13 @@ class BookViewActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         THEME.setThemeOfApp(context)
         super.onCreate(savedInstanceState)
-        binding = ActivityBookViewBinding.inflate(
-            layoutInflater
-        )
+        binding = ActivityBookViewBinding.inflate(layoutInflater)
         val view = binding!!.root
         setContentView(view)
+
         val intent = intent
         bookId = intent.getStringExtra(DATA.BOOK_ID)
+
         loadBookDetails()
         binding!!.toolbar.numberPage.visibility = View.VISIBLE
         binding!!.toolbar.back.setOnClickListener { onBackPressed() }
@@ -60,9 +60,7 @@ class BookViewActivity : AppCompatActivity() {
                             MessageFormat.format("{0}/{1}", correctPage, pageCount)
                     }.onError { t: Throwable ->
                         Toast.makeText(
-                            context,
-                            DATA.EMPTY + t.message,
-                            Toast.LENGTH_SHORT
+                            context, DATA.EMPTY + t.message, Toast.LENGTH_SHORT
                         ).show()
                     }
                     .onPageError { page: Int, t: Throwable ->

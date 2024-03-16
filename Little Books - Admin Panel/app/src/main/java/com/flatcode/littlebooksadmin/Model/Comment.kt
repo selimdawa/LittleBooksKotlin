@@ -10,11 +10,7 @@ class Comment {
     constructor()
 
     constructor(
-        id: String?,
-        bookId: String?,
-        timestamp: Long,
-        comment: String?,
-        publisher: String?,
+        id: String?, bookId: String?, timestamp: Long, comment: String?, publisher: String?,
     ) {
         this.id = id
         this.bookId = bookId

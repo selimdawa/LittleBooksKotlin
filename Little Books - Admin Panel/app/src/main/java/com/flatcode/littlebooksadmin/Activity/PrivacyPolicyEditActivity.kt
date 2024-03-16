@@ -30,7 +30,8 @@ class PrivacyPolicyEditActivity : AppCompatActivity() {
         binding!!.toolbar.nameSpace.setText(R.string.privacy_policy)
         binding!!.toolbar.back.setOnClickListener { onBackPressed() }
         binding!!.go.setOnClickListener { validateData() }
-        VOID.Logo(context, binding!!.logo)
+
+        VOID.logo(context, binding!!.logo)
         privacyPolicy()
     }
 
@@ -49,24 +50,15 @@ class PrivacyPolicyEditActivity : AppCompatActivity() {
         hashMap[DATA.PRIVACY_POLICY] = DATA.EMPTY + description
         val ref = FirebaseDatabase.getInstance().getReference(DATA.TOOLS)
         ref.updateChildren(hashMap).addOnSuccessListener {
-            Toast.makeText(
-                context,
-                "Privacy Policy updated...",
-                Toast.LENGTH_SHORT
-            ).show()
+            Toast.makeText(context, "Privacy Policy updated...", Toast.LENGTH_SHORT).show()
+        }.addOnFailureListener { e: Exception ->
+            Toast.makeText(context, DATA.EMPTY + e.message, Toast.LENGTH_SHORT).show()
         }
-            .addOnFailureListener { e: Exception ->
-                Toast.makeText(
-                    context,
-                    DATA.EMPTY + e.message,
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
     }
 
     private fun privacyPolicy() {
-        val reference = FirebaseDatabase.getInstance().reference.child(DATA.TOOLS)
-            .child(DATA.PRIVACY_POLICY)
+        val reference =
+            FirebaseDatabase.getInstance().reference.child(DATA.TOOLS).child(DATA.PRIVACY_POLICY)
         reference.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 val name = dataSnapshot.value.toString()

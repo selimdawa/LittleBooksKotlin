@@ -30,6 +30,7 @@ class BookViewActivity : AppCompatActivity() {
 
         val intent = intent
         bookId = intent.getStringExtra(DATA.BOOK_ID)
+
         loadBookDetails()
         binding!!.toolbar.numberPage.visibility = View.VISIBLE
         binding!!.toolbar.back.setOnClickListener { onBackPressed() }
@@ -57,16 +58,11 @@ class BookViewActivity : AppCompatActivity() {
                     binding!!.toolbar.numberPage.text =
                         MessageFormat.format("{0}/{1}", correctPage, pageCount)
                 }.onError { t: Throwable ->
-                    Toast.makeText(
-                        context,
-                        DATA.EMPTY + t.message,
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    Toast.makeText(context, DATA.EMPTY + t.message, Toast.LENGTH_SHORT).show()
                 }
                 .onPageError { page: Int, t: Throwable ->
                     Toast.makeText(
-                        context,
-                        "Error on page " + page + DATA.SPACE + t.message,
+                        context, "Error on page " + page + DATA.SPACE + t.message,
                         Toast.LENGTH_SHORT
                     ).show()
                 }.load()

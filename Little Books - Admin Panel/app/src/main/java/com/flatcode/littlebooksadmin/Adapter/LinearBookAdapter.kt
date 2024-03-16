@@ -4,7 +4,11 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.*
+import android.widget.Filter
+import android.widget.Filterable
+import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.flatcode.littlebooksadmin.Filterimport.MoreBooksFilter
 import com.flatcode.littlebooksadmin.Modelimport.Book
@@ -22,11 +26,7 @@ class LinearBookAdapter(private val context: Context, var list: ArrayList<Book?>
     var isUser: Boolean
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        binding = ItemBookLinearBinding.inflate(
-            LayoutInflater.from(
-                context
-            ), parent, false
-        )
+        binding = ItemBookLinearBinding.inflate(LayoutInflater.from(context), parent, false)
         return ViewHolder(binding!!.root)
     }
 
@@ -54,12 +54,14 @@ class LinearBookAdapter(private val context: Context, var list: ArrayList<Book?>
             holder.title.visibility = View.VISIBLE
             holder.title.text = title
         }
+
         if (item.description == DATA.EMPTY) {
             holder.description.visibility = View.GONE
         } else {
             holder.description.visibility = View.VISIBLE
             holder.description.text = description
         }
+
         holder.numberViews.text = nrViews
         holder.numberLoves.text = nrLoves
         holder.numberDownloads.text = nrDownloads
@@ -73,21 +75,14 @@ class LinearBookAdapter(private val context: Context, var list: ArrayList<Book?>
         VOID.isFavorite(holder.favorites, item.id, DATA.FirebaseUserUid)
         VOID.isLoves(holder.loves, item.id)
         holder.favorites.setOnClickListener {
-            VOID.checkFavorite(
-                holder.favorites,
-                bookId
-            )
+            VOID.checkFavorite(holder.favorites, bookId)
         }
         holder.loves.setOnClickListener { VOID.checkLove(holder.loves, bookId) }
         holder.more.setOnClickListener {
-            VOID.moreOptionDialog(
-                context, item
-            )
+            VOID.moreOptionDialog(context, item)
         }
         holder.item.setOnClickListener {
-            VOID.IntentExtra(
-                context, CLASS.BOOK_DETAIL, DATA.BOOK_ID, item.id
-            )
+            VOID.IntentExtra(context, CLASS.BOOK_DETAIL, DATA.BOOK_ID, item.id)
         }
     }
 

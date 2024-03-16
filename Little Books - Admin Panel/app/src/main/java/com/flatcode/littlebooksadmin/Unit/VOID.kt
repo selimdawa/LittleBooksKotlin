@@ -53,12 +53,8 @@ object VOID {
     }
 
     fun IntentExtra2(
-        context: Context,
-        c: Class<*>?,
-        key: String?,
-        value: String?,
-        key2: String?,
-        value2: String?,
+        context: Context, c: Class<*>?, key: String?, value: String?,
+        key2: String?, value2: String?,
     ) {
         val intent = Intent(context, c)
         intent.putExtra(key, value)
@@ -67,12 +63,8 @@ object VOID {
     }
 
     fun deleteBook(
-        dialogDelete: Dialog,
-        context: Context?,
-        publisher: String?,
-        bookId: String?,
-        bookUrl: String?,
-        bookTitle: String?,
+        dialogDelete: Dialog, context: Context?, publisher: String?, bookId: String?,
+        bookUrl: String?, bookTitle: String?,
     ) {
         val dialog = ProgressDialog(context)
         dialog.setTitle("Please wait")
@@ -201,21 +193,16 @@ object VOID {
                 saveDownloadedBook(context, progressDialog, bytes, nameWithExtension, bookId)
                 incrementItemCount(DATA.BOOKS, bookId, DATA.DOWNLOADS_COUNT)
             }.addOnFailureListener { e: Exception ->
-            progressDialog.dismiss()
-            Toast.makeText(
-                context,
-                "Failed to download due to " + e.message,
-                Toast.LENGTH_SHORT
-            ).show()
-        }
+                progressDialog.dismiss()
+                Toast.makeText(
+                    context, "Failed to download due to " + e.message, Toast.LENGTH_SHORT
+                ).show()
+            }
     }
 
     private fun saveDownloadedBook(
-        context: Context,
-        progressDialog: ProgressDialog,
-        bytes: ByteArray,
-        nameWithExtension: String,
-        bookId: String,
+        context: Context, progressDialog: ProgressDialog, bytes: ByteArray,
+        nameWithExtension: String, bookId: String,
     ) {
         try {
             val downloadsFolder =
@@ -230,9 +217,7 @@ object VOID {
             incrementItemCount(DATA.BOOKS, bookId, DATA.DOWNLOADS_COUNT)
         } catch (e: Exception) {
             Toast.makeText(
-                context,
-                "Failed saving to Download Folder due to " + e.message,
-                Toast.LENGTH_SHORT
+                context, "Failed saving to Download Folder due to " + e.message, Toast.LENGTH_SHORT
             ).show()
             progressDialog.dismiss()
         }
@@ -275,12 +260,10 @@ object VOID {
     fun checkFavorite(image: ImageView, bookId: String?) {
         if (image.tag == "add") {
             FirebaseDatabase.getInstance().reference.child(DATA.FAVORITES)
-                .child(DATA.FirebaseUserUid)
-                .child(bookId!!).setValue(true)
+                .child(DATA.FirebaseUserUid).child(bookId!!).setValue(true)
         } else {
             FirebaseDatabase.getInstance().reference.child(DATA.FAVORITES)
-                .child(DATA.FirebaseUserUid)
-                .child(bookId!!).removeValue()
+                .child(DATA.FirebaseUserUid).child(bookId!!).removeValue()
         }
     }
 
@@ -317,7 +300,8 @@ object VOID {
                     //Delete Clicked
                     dialogOptionDelete(
                         context, DATA.EMPTY + publisher, DATA.EMPTY + bookId,
-                        DATA.EMPTY + bookUrl, DATA.EMPTY + bookTitle, false, false, null, null
+                        DATA.EMPTY + bookUrl, DATA.EMPTY + bookTitle,
+                        false, false, null, null
                     )
                 }
             }.show()
@@ -343,7 +327,8 @@ object VOID {
                     //Delete Clicked
                     dialogOptionDelete(
                         context, DATA.EMPTY + publisher, null,
-                        null, null, true, false, DATA.EMPTY + id, DATA.EMPTY + name
+                        null, null, true, false,
+                        DATA.EMPTY + id, DATA.EMPTY + name
                     )
                 }
             }.show()
@@ -369,9 +354,7 @@ object VOID {
     }
 
     fun nrLoves(number: TextView, bookId: String?) {
-        val reference = FirebaseDatabase.getInstance().reference.child(DATA.LOVES).child(
-            bookId!!
-        )
+        val reference = FirebaseDatabase.getInstance().reference.child(DATA.LOVES).child(bookId!!)
         reference.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 number.text = MessageFormat.format(" {0} ", dataSnapshot.childrenCount)
@@ -382,15 +365,9 @@ object VOID {
     }
 
     fun dialogOptionDelete(
-        context: Context?,
-        publisher: String?,
-        bookId: String?,
-        bookUrl: String?,
-        bookTitle: String?,
-        isCategory: Boolean,
-        isEditorsChoice: Boolean,
-        categoryId: String?,
-        categoryName: String?,
+        context: Context?, publisher: String?, bookId: String?, bookUrl: String?,
+        bookTitle: String?, isCategory: Boolean, isEditorsChoice: Boolean,
+        categoryId: String?, categoryName: String?,
     ) {
         val dialog = Dialog(context!!)
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
@@ -411,7 +388,7 @@ object VOID {
             if (isCategory) {
                 deleteCategory(dialog, context, categoryId, categoryName)
             } else if (isEditorsChoice) {
-                dialogUpdateEditorsChoice(dialog, context, bookId)
+                dialogUpdateEditorChoice(dialog, context, bookId)
             } else {
                 deleteBook(dialog, context, publisher, bookId, bookUrl, bookTitle)
             }
@@ -421,7 +398,7 @@ object VOID {
         dialog.window!!.attributes = lp
     }
 
-    fun CropImageSquare(activity: Activity?) {
+    fun cropImageSquare(activity: Activity?) {
         CropImage.activity()
             .setGuidelines(CropImageView.Guidelines.ON)
             .setMultiTouchEnabled(true)
@@ -431,7 +408,7 @@ object VOID {
             .start(activity!!)
     }
 
-    fun CropImageSlider(activity: Activity?) {
+    fun cropImageSlider(activity: Activity?) {
         CropImage.activity()
             .setGuidelines(CropImageView.Guidelines.ON)
             .setMultiTouchEnabled(true)
@@ -441,7 +418,7 @@ object VOID {
             .start(activity!!)
     }
 
-    fun dialogUpdateEditorsChoice(dialogDelete: Dialog, context: Context?, bookId: String?) {
+    fun dialogUpdateEditorChoice(dialogDelete: Dialog, context: Context?, bookId: String?) {
         val dialog = ProgressDialog(context)
         dialog.setMessage("Updating Editors Choice...")
         dialog.show()
@@ -478,7 +455,7 @@ object VOID {
         }
     }
 
-    fun Intro(context: Context?, background: ImageView, backWhite: ImageView, backDark: ImageView) {
+    fun intro(context: Context?, background: ImageView, backWhite: ImageView, backDark: ImageView) {
         val sharedPreferences = PreferenceManager
             .getDefaultSharedPreferences(context!!)
         if (sharedPreferences.getString("color_option", "ONE") == "ONE") {
@@ -492,7 +469,7 @@ object VOID {
         }
     }
 
-    fun Logo(context: Context?, background: ImageView) {
+    fun logo(context: Context?, background: ImageView) {
         val sharedPreferences = PreferenceManager
             .getDefaultSharedPreferences(context!!)
         if (sharedPreferences.getString("color_option", "ONE") == "ONE") {

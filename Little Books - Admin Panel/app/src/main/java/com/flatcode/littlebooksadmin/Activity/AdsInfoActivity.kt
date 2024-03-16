@@ -12,7 +12,11 @@ import com.flatcode.littlebooksadmin.Unit.DATA
 import com.flatcode.littlebooksadmin.Unit.THEME
 import com.flatcode.littlebooksadmin.Unit.VOID
 import com.flatcode.littlebooksadmin.databinding.ActivityAdsInfoBinding
-import com.google.firebase.database.*
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.Query
+import com.google.firebase.database.ValueEventListener
 
 class AdsInfoActivity : AppCompatActivity() {
 
@@ -31,6 +35,7 @@ class AdsInfoActivity : AppCompatActivity() {
 
         val intent: Intent = intent
         profileId = intent.getStringExtra(DATA.PROFILE_ID)
+
         binding!!.toolbar.nameSpace.setText(R.string.info_ads)
         binding!!.toolbar.back.setOnClickListener { onBackPressed() }
 
@@ -55,9 +60,7 @@ class AdsInfoActivity : AppCompatActivity() {
     }
 
     private fun loadAds(orderBy: String?) {
-        val ref: Query = FirebaseDatabase.getInstance().getReference(DATA.AD_S).child(
-            profileId!!
-        )
+        val ref: Query = FirebaseDatabase.getInstance().getReference(DATA.AD_S).child(profileId!!)
         ref.orderByChild(orderBy!!).addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 list!!.clear()

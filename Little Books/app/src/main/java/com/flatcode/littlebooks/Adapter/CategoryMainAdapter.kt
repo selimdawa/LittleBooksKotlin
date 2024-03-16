@@ -29,15 +29,18 @@ class CategoryMainAdapter(private val context: Context?, var list: ArrayList<Cat
         val id = DATA.EMPTY + item!!.id
         val name = DATA.EMPTY + item.category
         val image = DATA.EMPTY + item.image
+
         VOID.Glide_(false, context, image, holder.image)
         VOID.GlideBlur(false, context, image, holder.imageBlur, 50)
+
         if (name == DATA.EMPTY) {
             holder.name.visibility = View.GONE
         } else {
             holder.name.visibility = View.VISIBLE
             holder.name.text = name
         }
-        holder.card.setOnClickListener { v: View? ->
+
+        holder.card.setOnClickListener {
             VOID.IntentExtra2(
                 context, CLASS.CATEGORY_BOOKS, DATA.CATEGORY_ID, id, DATA.CATEGORY_NAME, name
             )

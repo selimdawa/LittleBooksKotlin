@@ -27,28 +27,21 @@ class RegisterActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         THEME.setThemeOfApp(context)
         super.onCreate(savedInstanceState)
-        binding = ActivityRegisterBinding.inflate(
-            layoutInflater
-        )
+        binding = ActivityRegisterBinding.inflate(layoutInflater)
         val view = binding!!.root
         setContentView(view)
-        VOID.Logo(baseContext, binding!!.logo)
-        VOID.Intro(baseContext, binding!!.background, binding!!.backWhite, binding!!.backBlack)
+
         auth = FirebaseAuth.getInstance()
         dialog = ProgressDialog(this)
         dialog!!.setTitle("Please wait...")
         dialog!!.setCanceledOnTouchOutside(false)
-        binding!!.login.setOnClickListener { v: View? ->
+
+        binding!!.login.setOnClickListener {
             VOID.Intent1(context, CLASS.LOGIN)
             finish()
         }
-        binding!!.forget.setOnClickListener { v: View? ->
-            VOID.Intent1(
-                context,
-                CLASS.FORGET_PASSWORD
-            )
-        }
-        binding!!.go.setOnClickListener { v: View? -> validateData() }
+        binding!!.forget.setOnClickListener { VOID.Intent1(context, CLASS.FORGET_PASSWORD) }
+        binding!!.go.setOnClickListener { validateData() }
     }
 
     private var name = ""
@@ -85,7 +78,7 @@ class RegisterActivity : AppCompatActivity() {
 
         //create user in firebase auth
         auth!!.createUserWithEmailAndPassword(email, password)
-            .addOnSuccessListener { authResult: AuthResult? -> updateUserinfo() }
+            .addOnSuccessListener { updateUserinfo() }
             .addOnFailureListener { e: Exception ->
                 dialog!!.dismiss()
                 Toast.makeText(context, DATA.EMPTY + e.message, Toast.LENGTH_SHORT).show()
@@ -112,7 +105,7 @@ class RegisterActivity : AppCompatActivity() {
         //set data to db
         val ref = FirebaseDatabase.getInstance().getReference(DATA.USERS)
         assert(id != null)
-        ref.child(id!!).setValue(hashMap).addOnSuccessListener { unused: Void? ->
+        ref.child(id!!).setValue(hashMap).addOnSuccessListener {
             //data added to db
             dialog!!.dismiss()
             Toast.makeText(context, "Account created...", Toast.LENGTH_SHORT).show()

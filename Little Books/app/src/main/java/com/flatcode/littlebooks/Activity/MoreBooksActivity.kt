@@ -13,7 +13,11 @@ import com.flatcode.littlebooks.Unit.DATA
 import com.flatcode.littlebooks.Unit.THEME
 import com.flatcode.littlebooks.Unit.VOID
 import com.flatcode.littlebooks.databinding.ActivityPageLinearBinding
-import com.google.firebase.database.*
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.Query
+import com.google.firebase.database.ValueEventListener
 import java.text.MessageFormat
 
 class MoreBooksActivity : AppCompatActivity() {
@@ -30,28 +34,30 @@ class MoreBooksActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         THEME.setThemeOfApp(context)
         super.onCreate(savedInstanceState)
-        binding = ActivityPageLinearBinding.inflate(
-            layoutInflater
-        )
+        binding = ActivityPageLinearBinding.inflate(layoutInflater)
         val view = binding!!.root
         setContentView(view)
+
         val intent = intent
         type = intent.getStringExtra(DATA.SHOW_MORE_TYPE)
         name = intent.getStringExtra(DATA.SHOW_MORE_NAME)
         isReverse = intent.getStringExtra(DATA.SHOW_MORE_BOOLEAN)
+
         binding!!.toolbar.nameSpace.text = name
+        binding!!.toolbar.close.setOnClickListener { onBackPressed() }
+        binding!!.toolbar.back.setOnClickListener { onBackPressed() }
         VOID.BannerAd(context, binding!!.adView, DATA.BANNER_SMART_MORE_BOOKS)
+
         if (isReverse == "true") {
             recyclerView = binding!!.recyclerViewReverse
         } else if (isReverse == "false") {
             recyclerView = binding!!.recyclerView
         }
-        binding!!.toolbar.search.setOnClickListener { v: View? ->
+        binding!!.toolbar.search.setOnClickListener {
             binding!!.toolbar.toolbar.visibility = View.GONE
             binding!!.toolbar.toolbarSearch.visibility = View.VISIBLE
             DATA.searchStatus = true
         }
-        binding!!.toolbar.close.setOnClickListener { v: View? -> onBackPressed() }
         binding!!.toolbar.textSearch.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
@@ -69,7 +75,6 @@ class MoreBooksActivity : AppCompatActivity() {
         list = ArrayList()
         adapter = LinearBookAdapter(context, list!!, false)
         recyclerView!!.adapter = adapter
-        binding!!.toolbar.back.setOnClickListener { v: View? -> onBackPressed() }
     }
 
     private fun getData(orderBy: String?) {
@@ -79,9 +84,7 @@ class MoreBooksActivity : AppCompatActivity() {
                 list!!.clear()
                 var i = 0
                 for (data in dataSnapshot.children) {
-                    val item = data.getValue(
-                        Book::class.java
-                    )!!
+                    val item = data.getValue(Book::class.java)!!
                     if (orderBy == DATA.EDITORS_CHOICE) {
                         if (item.editorsChoice > 0) list!!.add(item)
                     } else list!!.add(item)
@@ -90,7 +93,7 @@ class MoreBooksActivity : AppCompatActivity() {
                 binding!!.toolbar.number.text = MessageFormat.format("( {0} )", i)
                 adapter!!.notifyDataSetChanged()
                 binding!!.progress.visibility = View.GONE
-                if (!list!!.isEmpty()) {
+                if (list!!.isNotEmpty()) {
                     recyclerView!!.visibility = View.VISIBLE
                     binding!!.emptyText.visibility = View.GONE
                 } else {

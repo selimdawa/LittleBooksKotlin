@@ -12,7 +12,11 @@ import com.flatcode.littlebooksadmin.R
 import com.flatcode.littlebooksadmin.Unit.DATA
 import com.flatcode.littlebooksadmin.Unit.THEME
 import com.flatcode.littlebooksadmin.databinding.ActivityUsersBinding
-import com.google.firebase.database.*
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.Query
+import com.google.firebase.database.ValueEventListener
 import java.text.MessageFormat
 
 class UsersActivity : AppCompatActivity() {
@@ -31,13 +35,14 @@ class UsersActivity : AppCompatActivity() {
         setContentView(view)
 
         binding!!.toolbar.nameSpace.setText(R.string.users)
+        binding!!.toolbar.close.setOnClickListener { onBackPressed() }
         binding!!.toolbar.back.setOnClickListener { onBackPressed() }
+
         binding!!.toolbar.search.setOnClickListener {
             binding!!.toolbar.toolbar.visibility = View.GONE
             binding!!.toolbar.toolbarSearch.visibility = View.VISIBLE
             DATA.searchStatus = true
         }
-        binding!!.toolbar.close.setOnClickListener { onBackPressed() }
         binding!!.toolbar.textSearch.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
@@ -55,6 +60,7 @@ class UsersActivity : AppCompatActivity() {
         list = ArrayList()
         adapter = PublisherAdapter(context, list!!)
         binding!!.recyclerView.adapter = adapter
+
         binding!!.all.setOnClickListener {
             type = DATA.TIMESTAMP
             getData(DATA.ALL)
@@ -83,16 +89,19 @@ class UsersActivity : AppCompatActivity() {
                                 list!!.add(item)
                                 i++
                             }
+
                             "user" -> if (item.booksCount <= 0) {
                                 list!!.add(item)
                                 i++
                             }
+
                             "publisher" -> if (item.booksCount >= 1) {
                                 list!!.add(item)
                                 i++
                             }
                         }
                     }
+                    list!!.reverse()
                     binding!!.toolbar.number.text = MessageFormat.format("( {0} )", i)
                     adapter!!.notifyDataSetChanged()
                     binding!!.progress.visibility = View.GONE

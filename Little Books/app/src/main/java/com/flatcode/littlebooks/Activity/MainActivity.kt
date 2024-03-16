@@ -28,7 +28,7 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
-import java.util.*
+import java.util.Objects
 
 class MainActivity : AppCompatActivity(), OnSharedPreferenceChangeListener {
 
@@ -52,13 +52,13 @@ class MainActivity : AppCompatActivity(), OnSharedPreferenceChangeListener {
             .replace(R.id.settings, SettingFragment())
             .commit()
         // Color Mode -------------------------------- End
-        val sharedPreferences = PreferenceManager
-            .getDefaultSharedPreferences(baseContext)
-        if (sharedPreferences.getString(DATA.COLOR_OPTION, "ONE") == "ONE") {
-            binding!!.toolbar.mode.setBackgroundResource(R.drawable.sun)
-        } else if (sharedPreferences.getString(DATA.COLOR_OPTION, "NIGHT_ONE") == "NIGHT_ONE") {
-            binding!!.toolbar.mode.setBackgroundResource(R.drawable.moon)
-        }
+        //val sharedPreferences = PreferenceManager
+        //    .getDefaultSharedPreferences(baseContext)
+        //if (sharedPreferences.getString(DATA.COLOR_OPTION, "BASIC") == "BASIC") {
+        //    binding!!.toolbar.mode.setBackgroundResource(R.drawable.sun)
+        //} else if (sharedPreferences.getString(DATA.COLOR_OPTION, "NIGHT_ONE") == "NIGHT_ONE") {
+        //    binding!!.toolbar.mode.setBackgroundResource(R.drawable.moon)
+        //}
 
         meowBottomNavigation = binding!!.bottomNavigation
         meowBottomNavigation!!.add(MeowBottomNavigation.Model(1, R.drawable.ic_settings))
@@ -72,14 +72,17 @@ class MainActivity : AppCompatActivity(), OnSharedPreferenceChangeListener {
                     binding!!.toolbar.card.visibility = View.GONE
                     fragment = SettingsFragment()
                 }
+
                 2 -> {
                     binding!!.toolbar.card.visibility = View.VISIBLE
                     fragment = HomeFragment()
                 }
+
                 3 -> {
                     binding!!.toolbar.card.visibility = View.GONE
                     fragment = FollowersFragment()
                 }
+
                 4 -> {
                     binding!!.toolbar.card.visibility = View.GONE
                     fragment = CategoriesFragment()
@@ -95,12 +98,14 @@ class MainActivity : AppCompatActivity(), OnSharedPreferenceChangeListener {
                 1 -> Toast.makeText(
                     applicationContext, R.string.settings, Toast.LENGTH_SHORT
                 ).show()
+
                 2 -> Toast.makeText(applicationContext, R.string.home, Toast.LENGTH_SHORT).show()
                 3 -> Toast.makeText(
                     applicationContext,
                     R.string.followers_books,
                     Toast.LENGTH_SHORT
                 ).show()
+
                 4 -> Toast.makeText(applicationContext, R.string.categories, Toast.LENGTH_SHORT)
                     .show()
             }
@@ -110,12 +115,14 @@ class MainActivity : AppCompatActivity(), OnSharedPreferenceChangeListener {
                 1 -> Toast.makeText(
                     applicationContext, R.string.settings, Toast.LENGTH_SHORT
                 ).show()
+
                 2 -> Toast.makeText(applicationContext, R.string.home, Toast.LENGTH_SHORT).show()
                 3 -> Toast.makeText(
                     applicationContext,
                     R.string.followers_books,
                     Toast.LENGTH_SHORT
                 ).show()
+
                 4 -> Toast.makeText(applicationContext, R.string.categories, Toast.LENGTH_SHORT)
                     .show()
             }
@@ -123,21 +130,14 @@ class MainActivity : AppCompatActivity(), OnSharedPreferenceChangeListener {
 
         MobileAds.initialize(applicationContext) { }
         binding!!.toolbar.image.setOnClickListener {
-            VOID.IntentExtra(
-                context,
-                CLASS.PROFILE,
-                DATA.PROFILE_ID,
-                DATA.FirebaseUserUid
-            )
+            VOID.IntentExtra(context, CLASS.PROFILE, DATA.PROFILE_ID, DATA.FirebaseUserUid)
         }
         loadUserInfo()
     }
 
     private fun loadFragment(fragment: Fragment?) {
-        supportFragmentManager.beginTransaction().replace(
-            R.id.fragmentContainer,
-            fragment!!
-        ).commit()
+        supportFragmentManager.beginTransaction().replace(R.id.fragmentContainer, fragment!!)
+            .commit()
     }
 
     private fun loadUserInfo() {
@@ -154,11 +154,12 @@ class MainActivity : AppCompatActivity(), OnSharedPreferenceChangeListener {
     }
 
     override fun onBackPressed() {
+        super.onBackPressed()
         VOID.closeApp(context, activity)
     }
 
     // Color Mode ----------------------------- Start
-    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String) {
+    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
         if (key == DATA.COLOR_OPTION) {
             recreate()
         }

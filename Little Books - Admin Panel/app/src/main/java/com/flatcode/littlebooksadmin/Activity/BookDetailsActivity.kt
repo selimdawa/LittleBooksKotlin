@@ -50,41 +50,34 @@ class BookDetailsActivity : AppCompatActivity() {
 
         val intent = intent
         bookId = intent.getStringExtra(DATA.BOOK_ID)
+
         binding!!.toolbar.nameSpace.setText(R.string.details_books)
         binding!!.download.visibility = View.GONE
         dialog = ProgressDialog(context)
         dialog!!.setTitle("Please wait...")
         dialog!!.setCanceledOnTouchOutside(false)
-        binding!!.love.setOnClickListener {
-            VOID.checkLove(
-                binding!!.love, bookId
-            )
-        }
+
+        //binding.recyclerView.setHasFixedSize(true);
+        list = ArrayList()
+        adapter = CommentAdapter(context, list!!)
+        binding!!.recyclerView.adapter = adapter
+
+        binding!!.love.setOnClickListener { VOID.checkLove(binding!!.love, bookId) }
         binding!!.favorite.setOnClickListener {
-            VOID.checkFavorite(
-                binding!!.favorite, bookId
-            )
+            VOID.checkFavorite(binding!!.favorite, bookId)
         }
         binding!!.toolbar.back.setOnClickListener { onBackPressed() }
         binding!!.read.setOnClickListener {
-            VOID.IntentExtra(
-                context,
-                CLASS.BOOK_VIEW,
-                DATA.BOOK_ID,
-                bookId
-            )
+            VOID.IntentExtra(context, CLASS.BOOK_VIEW, DATA.BOOK_ID, bookId)
         }
         binding!!.download.setOnClickListener {
             if (ContextCompat.checkSelfPermission(
-                    context,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+                    context, Manifest.permission.WRITE_EXTERNAL_STORAGE
                 ) == PackageManager.PERMISSION_GRANTED
             ) {
                 VOID.downloadBook(
-                    context,
-                    DATA.EMPTY + bookId,
-                    DATA.EMPTY + bookTitle,
-                    DATA.EMPTY + bookUrl
+                    context, DATA.EMPTY + bookId,
+                    DATA.EMPTY + bookTitle, DATA.EMPTY + bookUrl
                 )
             } else {
                 resultPermissionLauncher.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
@@ -109,17 +102,19 @@ class BookDetailsActivity : AppCompatActivity() {
     }
 
     private fun loadComments() {
-        list = ArrayList()
         val ref = FirebaseDatabase.getInstance().getReference(DATA.BOOKS)
         ref.child(bookId!!).child(DATA.COMMENTS).addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
                 list!!.clear()
-                for (data in snapshot.children) {
-                    val comment = data.getValue(Comment::class.java)
-                    list!!.add(comment)
+                for (data in dataSnapshot.children) {
+                    val item = data.getValue(Comment::class.java)!!
+                    if (item.bookId == bookId) {
+                        list!!.add(item)
+                    }
                 }
-                adapter = CommentAdapter(context, list!!)
-                binding!!.recyclerView.adapter = adapter
+                adapter!!.notifyDataSetChanged()
+                if (list!!.isEmpty()) binding!!.textComment.visibility =
+                    View.GONE else binding!!.textComment.visibility = View.VISIBLE
             }
 
             override fun onCancelled(error: DatabaseError) {}
@@ -127,14 +122,12 @@ class BookDetailsActivity : AppCompatActivity() {
     }
 
     private var comment = DATA.EMPTY
-
     private fun addCommentDialog() {
         val commentAddBinding = DialogCommentAddBinding.inflate(LayoutInflater.from(this))
         val builder = AlertDialog.Builder(this, R.style.CustomDialog)
         builder.setView(commentAddBinding.root)
         val alertDialog = builder.create()
         alertDialog.show()
-
         commentAddBinding.back.setOnClickListener { alertDialog.dismiss() }
         commentAddBinding.submit.setOnClickListener {
             comment = commentAddBinding.comment.text.toString().trim { it <= ' ' }
@@ -167,9 +160,7 @@ class BookDetailsActivity : AppCompatActivity() {
             }.addOnFailureListener { e: Exception ->
                 dialog!!.dismiss()
                 Toast.makeText(
-                    context,
-                    "Failed to add comment duo to  " + e.message,
-                    Toast.LENGTH_SHORT
+                    context, "Failed to add comment duo to  " + e.message, Toast.LENGTH_SHORT
                 ).show()
             }
     }
@@ -178,10 +169,8 @@ class BookDetailsActivity : AppCompatActivity() {
         registerForActivityResult(RequestPermission()) { isGranted: Boolean ->
             if (isGranted) {
                 VOID.downloadBook(
-                    context,
-                    DATA.EMPTY + bookId,
-                    DATA.EMPTY + bookTitle,
-                    DATA.EMPTY + bookUrl
+                    context, DATA.EMPTY + bookId,
+                    DATA.EMPTY + bookTitle, DATA.EMPTY + bookUrl
                 )
             } else {
                 Toast.makeText(context, "Permission was denied...", Toast.LENGTH_SHORT).show()
@@ -194,6 +183,7 @@ class BookDetailsActivity : AppCompatActivity() {
             override fun onDataChange(snapshot: DataSnapshot) {
                 //get data
                 val item = snapshot.getValue(Book::class.java)!!
+
                 bookTitle = DATA.EMPTY + item.title
                 val description = DATA.EMPTY + item.description
                 val categoryId = DATA.EMPTY + item.categoryId
@@ -236,13 +226,9 @@ class BookDetailsActivity : AppCompatActivity() {
                     val username = DATA.EMPTY + item.username
                     binding!!.publisherName.text = username
                     VOID.Glide(true, context, imageProfile, binding!!.publisherImage)
+
                     binding!!.userInfo.setOnClickListener {
-                        VOID.IntentExtra(
-                            context,
-                            CLASS.PROFILE,
-                            DATA.PROFILE_ID,
-                            userId
-                        )
+                        VOID.IntentExtra(context, CLASS.PROFILE, DATA.PROFILE_ID, userId)
                     }
                 }
             }

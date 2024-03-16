@@ -8,8 +8,7 @@
         android:layout_height="match_parent"
         android:background="?colorOnBackground"
         android:fitsSystemWindows="true"
-        android:orientation="vertical"
-        tools:context=".Activity.BookDetailsActivity">
+        android:orientation="vertical">
 
         <include
             android:id="@+id/toolbar"
@@ -111,10 +110,10 @@
                                 android:orientation="horizontal">
 
                                 <TextView
-                                    android:layout_marginTop="5sp"
                                     android:id="@+id/publisherName"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
+                                    android:layout_marginTop="5sp"
                                     android:textAppearance="@style/TextAppearance.AppCompat.Caption"
                                     android:textColor="?colorError" />
 
@@ -324,7 +323,7 @@
                                 android:layout_gravity="center"
                                 android:gravity="center"
                                 android:src="@drawable/ic_book_white"
-                                android:tint="?colorError" />
+                                app:tint="?colorError" />
 
                         </LinearLayout>
 
@@ -341,8 +340,8 @@
                                 android:layout_gravity="center"
                                 android:gravity="center"
                                 android:src="@drawable/ic_download_white"
-                                android:tint="?colorError"
-                                android:visibility="visible" />
+                                android:visibility="visible"
+                                app:tint="?colorError" />
 
                         </LinearLayout>
 
@@ -359,7 +358,7 @@
                                 android:layout_gravity="center"
                                 android:gravity="center"
                                 android:src="@drawable/ic_heart_unselected"
-                                android:tint="?colorError" />
+                                app:tint="?colorError" />
 
                         </LinearLayout>
 
@@ -378,7 +377,7 @@
                                 android:layout_gravity="center"
                                 android:gravity="center"
                                 android:src="@drawable/ic_star_unselected"
-                                android:tint="?colorError" />
+                                app:tint="?colorError" />
 
                         </LinearLayout>
 
@@ -397,7 +396,7 @@
                                 android:layout_gravity="center"
                                 android:gravity="center"
                                 android:src="@drawable/ic_add"
-                                android:tint="?colorError" />
+                                app:tint="?colorError" />
 
                         </LinearLayout>
 

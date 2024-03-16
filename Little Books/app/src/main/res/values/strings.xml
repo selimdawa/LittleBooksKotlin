@@ -19,8 +19,8 @@
     <string name="categories">Categories</string>
     <string name="name">Name</string>
     //Theme
-    <string name="one_theme">Day Mode</string>
-    <string name="night_theme">Night Mode</string>
+    <string name="basic_theme">Basic Theme</string>
+    <string name="sec_theme">Sec Theme</string>
     //Needed
     <string name="none_display">There are no items to display</string>
     <string name="editors_choice">Editors Choice</string>
@@ -44,8 +44,8 @@
     <string name="followers">Followers</string>
     <string name="following">Following</string>
     <string name="my_books">My Books</string>
-    <string name="privacy_policy">privacy Policy</string>
-    <string name="publishers_books">Publisher books</string>
+    <string name="privacy_policy">Privacy Policy</string>
+    <string name="publishers_books">Publisher Books</string>
     <string name="ok">Ok</string>
     <string name="choose_book">Choose Book</string>
     <string name="add_new_book">Add new book</string>

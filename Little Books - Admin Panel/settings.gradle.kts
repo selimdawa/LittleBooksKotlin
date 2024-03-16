@@ -1,10 +1,9 @@
 pluginManagement {
     repositories {
-        gradlePluginPortal()
         google()
         mavenCentral()
-        jcenter()
-        //maven { url 'https://maven.google.com' }
+        gradlePluginPortal()
+        maven { url = uri("https://www.jitpack.io" ) }
     }
 }
 dependencyResolutionManagement {
@@ -13,10 +12,10 @@ dependencyResolutionManagement {
         google()
         mavenCentral()
         jcenter()
-        //maven { url "https://jitpack.io" }
-        //maven { url 'https://maven.google.com' }
+        maven { url = uri("https://www.jitpack.io" ) }
+        maven { url = uri("https://maven.google.com" ) }
     }
 }
 
-include ':app'
-rootProject.name = "Little Books"
+rootProject.name = "Little Books - Admin"
+include(":app")

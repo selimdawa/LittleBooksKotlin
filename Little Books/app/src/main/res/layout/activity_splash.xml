@@ -15,23 +15,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scaleType="centerCrop"
-                android:src="@drawable/background_day" />
-
-            <ImageView
-                android:id="@+id/backWhite"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:alpha="0.5"
-                android:src="@color/white"
-                android:visibility="gone" />
-
-            <ImageView
-                android:id="@+id/backBlack"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:alpha="0.5"
-                android:src="@color/black"
-                android:visibility="gone" />
+                android:src="@drawable/background" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -52,7 +36,7 @@
                     android:layout_marginVertical="20sp"
                     android:layout_marginTop="10sp"
                     android:background="@drawable/button6"
-                    android:backgroundTint="?trackColor"
+                    android:backgroundTint="?tickColor"
                     android:fontFamily="sans-serif-condensed"
                     android:paddingHorizontal="30sp"
                     android:paddingVertical="5sp"

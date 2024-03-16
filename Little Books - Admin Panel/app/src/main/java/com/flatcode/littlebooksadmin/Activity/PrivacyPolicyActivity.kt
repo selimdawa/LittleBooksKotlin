@@ -25,20 +25,17 @@ class PrivacyPolicyActivity : AppCompatActivity() {
         binding = ActivityPrivacyPolicyBinding.inflate(layoutInflater)
         val view = binding!!.root
         setContentView(view)
+
         binding!!.toolbar.nameSpace.setText(R.string.privacy_policy)
         binding!!.toolbar.back.setOnClickListener { onBackPressed() }
-        binding!!.edit.setOnClickListener {
-            VOID.Intent1(
-                context,
-                CLASS.PRIVACY_POLICY_EDIT
-            )
-        }
-        VOID.Logo(context, binding!!.logo)
+
+        binding!!.edit.setOnClickListener { VOID.Intent1(context, CLASS.PRIVACY_POLICY_EDIT) }
+        VOID.logo(context, binding!!.logo)
     }
 
     private fun privacyPolicy() {
-        val reference = FirebaseDatabase.getInstance().reference.child(DATA.TOOLS)
-            .child(DATA.PRIVACY_POLICY)
+        val reference =
+            FirebaseDatabase.getInstance().reference.child(DATA.TOOLS).child(DATA.PRIVACY_POLICY)
         reference.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 val name = dataSnapshot.value.toString()

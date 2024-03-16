@@ -26,11 +26,7 @@ class CommentAdapter(private val context: Context, var list: ArrayList<Comment?>
     RecyclerView.Adapter<CommentAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        binding = ItemCommentBinding.inflate(
-            LayoutInflater.from(
-                context
-            ), parent, false
-        )
+        binding = ItemCommentBinding.inflate(LayoutInflater.from(context), parent, false)
         return ViewHolder(binding!!.root)
     }
 
@@ -49,10 +45,7 @@ class CommentAdapter(private val context: Context, var list: ArrayList<Comment?>
         loadUserDetails(publisher, holder.name)
 
         holder.itemView.setOnClickListener {
-            if (publisher == DATA.FirebaseUserUid) deleteComment(
-                commentId,
-                bookId
-            )
+            if (publisher == DATA.FirebaseUserUid) deleteComment(commentId, bookId)
         }
     }
 
@@ -64,10 +57,7 @@ class CommentAdapter(private val context: Context, var list: ArrayList<Comment?>
                 val ref = FirebaseDatabase.getInstance().getReference(DATA.BOOKS)
                 ref.child(bookId!!).child(DATA.COMMENTS).child(commentId!!).removeValue()
                     .addOnSuccessListener {
-                        Toast.makeText(
-                            context,
-                            "Deleted...", Toast.LENGTH_SHORT
-                        ).show()
+                        Toast.makeText(context, "Deleted...", Toast.LENGTH_SHORT).show()
                     }.addOnFailureListener { e: Exception ->
                         Toast.makeText(
                             context, "Failed to delete duo to " + e.message, Toast.LENGTH_SHORT

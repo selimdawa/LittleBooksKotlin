@@ -31,32 +31,23 @@ class ProfileActivity : AppCompatActivity() {
         binding = ActivityProfileBinding.inflate(layoutInflater)
         val view = binding!!.root
         setContentView(view)
+
         val intent = intent
         profileId = intent.getStringExtra(DATA.PROFILE_ID)
+
         if (profileId == DATA.FirebaseUserUid) {
             binding!!.follow.visibility = View.GONE
             binding!!.editOrInfo.setImageResource(R.drawable.ic_edit_white)
-            binding!!.editOrInfo.setOnClickListener { v: View? ->
-                VOID.Intent1(
-                    context,
-                    ProfileEditActivity::class.java
-                )
-            }
+            binding!!.editOrInfo.setOnClickListener { VOID.Intent1(context, CLASS.PROFILE_EDIT) }
         } else {
             binding!!.follow.visibility = View.VISIBLE
             binding!!.editOrInfo.setImageResource(R.drawable.ic_books)
-            binding!!.editOrInfo.setOnClickListener { v: View? ->
-                VOID.IntentExtra(
-                    context,
-                    CLASS.PROFILE_INFO,
-                    DATA.PROFILE_ID,
-                    profileId
-                )
+            binding!!.editOrInfo.setOnClickListener {
+                VOID.IntentExtra(context, CLASS.PROFILE_INFO, DATA.PROFILE_ID, profileId)
             }
         }
-        binding!!.back.setOnClickListener { v: View? -> onBackPressed() }
         isFollowing(binding!!.follow, profileId)
-        binding!!.follow.setOnClickListener { v: View? ->
+        binding!!.follow.setOnClickListener {
             if (binding!!.follow.tag == "add") {
                 FirebaseDatabase.getInstance().reference.child(DATA.FOLLOW)
                     .child(DATA.FirebaseUserUid)
@@ -71,6 +62,7 @@ class ProfileActivity : AppCompatActivity() {
                     .child(DATA.FOLLOWERS).child(DATA.FirebaseUserUid).removeValue()
             }
         }
+        binding!!.back.setOnClickListener { onBackPressed() }
     }
 
     private fun init() {
@@ -100,15 +92,13 @@ class ProfileActivity : AppCompatActivity() {
     }
 
     private val nrBooks: Unit
-        private get() {
+        get() {
             val reference = FirebaseDatabase.getInstance().getReference(DATA.BOOKS)
             reference.addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
                     var i = 0
                     for (data in dataSnapshot.children) {
-                        val item = data.getValue(
-                            Book::class.java
-                        )!!
+                        val item = data.getValue(Book::class.java)!!
                         if (item.publisher == profileId) i++
                     }
                     binding!!.numberBooks.text = MessageFormat.format("{0}{1}", DATA.EMPTY, i)

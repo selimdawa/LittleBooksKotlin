@@ -25,12 +25,14 @@ class ForgetPasswordActivity : AppCompatActivity() {
         val view = binding!!.root
         setContentView(view)
 
-        VOID.Logo(baseContext, binding!!.logo)
-        VOID.Intro(baseContext, binding!!.background, binding!!.backWhite, binding!!.backBlack)
+        VOID.logo(baseContext, binding!!.logo)
+        VOID.intro(baseContext, binding!!.background, binding!!.backWhite, binding!!.backBlack)
+
         auth = FirebaseAuth.getInstance()
         dialog = ProgressDialog(this)
         dialog!!.setTitle("Please wait...")
         dialog!!.setCanceledOnTouchOutside(false)
+
         binding!!.go.setOnClickListener { validateDate() }
         binding!!.login.setOnClickListener { onBackPressed() }
     }
@@ -53,14 +55,13 @@ class ForgetPasswordActivity : AppCompatActivity() {
         auth!!.sendPasswordResetEmail(email).addOnCompleteListener {
             dialog!!.dismiss()
             Toast.makeText(
-                context,
-                "Instructions to reset password sent to $email",
-                Toast.LENGTH_SHORT
+                context, "Instructions to reset password sent to $email", Toast.LENGTH_SHORT
             ).show()
         }.addOnFailureListener { e: Exception ->
             dialog!!.dismiss()
-            Toast.makeText(context, "Failed to send to due to " + e.message, Toast.LENGTH_SHORT)
-                .show()
+            Toast.makeText(
+                context, "Failed to send to due to " + e.message, Toast.LENGTH_SHORT
+            ).show()
         }
     }
 }

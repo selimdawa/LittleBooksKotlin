@@ -4,7 +4,11 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.*
+import android.widget.Filter
+import android.widget.Filterable
+import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.flatcode.littlebooksadmin.Filter.ADsUserFilter
 import com.flatcode.littlebooksadmin.Modelimport.User
@@ -25,11 +29,7 @@ class ADsUserAdapter(private val context: Context, var list: ArrayList<User?>, i
     var all = 0
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        binding = ItemAdsUserBinding.inflate(
-            LayoutInflater.from(
-                context
-            ), parent, false
-        )
+        binding = ItemAdsUserBinding.inflate(LayoutInflater.from(context), parent, false)
         return ViewHolder(binding!!.root)
     }
 
@@ -61,10 +61,8 @@ class ADsUserAdapter(private val context: Context, var list: ArrayList<User?>, i
 
         //ADsNumber(userId, DATA.AD_LOADED, DATA.AD_LOAD, holder.numberADsLoad);
         //ADsNumber(userId, DATA.AD_CLICKED, DATA.AD_CLICK, holder.numberADsClick);
-        holder.item.setOnClickListener { view: View? ->
-            VOID.IntentExtra(
-                context, CLASS.ADS_INFO, DATA.PROFILE_ID, userId
-            )
+        holder.item.setOnClickListener {
+            VOID.IntentExtra(context, CLASS.ADS_INFO, DATA.PROFILE_ID, userId)
         }
     }
 

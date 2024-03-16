@@ -13,7 +13,11 @@ import com.flatcode.littlebooks.Unit.DATA
 import com.flatcode.littlebooks.Unit.THEME
 import com.flatcode.littlebooks.Unit.VOID
 import com.flatcode.littlebooks.databinding.ActivityPageStaggeredBinding
-import com.google.firebase.database.*
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.Query
+import com.google.firebase.database.ValueEventListener
 import java.text.MessageFormat
 
 class FollowingActivity : AppCompatActivity() {
@@ -27,19 +31,20 @@ class FollowingActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         THEME.setThemeOfApp(context)
         super.onCreate(savedInstanceState)
-        binding = ActivityPageStaggeredBinding.inflate(
-            layoutInflater
-        )
+        binding = ActivityPageStaggeredBinding.inflate(layoutInflater)
         val view = binding!!.root
         setContentView(view)
+
         binding!!.toolbar.nameSpace.setText(R.string.following)
+        binding!!.toolbar.close.setOnClickListener { onBackPressed() }
+        binding!!.toolbar.back.setOnClickListener { onBackPressed() }
         VOID.BannerAd(context, binding!!.adView, DATA.BANNER_SMART_FOLLOWING)
-        binding!!.toolbar.search.setOnClickListener { v: View? ->
+
+        binding!!.toolbar.search.setOnClickListener {
             binding!!.toolbar.toolbar.visibility = View.GONE
             binding!!.toolbar.toolbarSearch.visibility = View.VISIBLE
             DATA.searchStatus = true
         }
-        binding!!.toolbar.close.setOnClickListener { v: View? -> onBackPressed() }
         binding!!.toolbar.textSearch.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
@@ -57,11 +62,10 @@ class FollowingActivity : AppCompatActivity() {
         list = ArrayList()
         adapter = PublisherAdapter(context, list!!)
         binding!!.recyclerView.adapter = adapter
-        binding!!.toolbar.back.setOnClickListener { v: View? -> onBackPressed() }
     }
 
     private val data: Unit
-        private get() {
+        get() {
             check = ArrayList()
             val reference = FirebaseDatabase.getInstance().getReference(DATA.FOLLOW)
                 .child(DATA.FirebaseUserUid).child(DATA.FOLLOWING)
@@ -77,17 +81,16 @@ class FollowingActivity : AppCompatActivity() {
                 override fun onCancelled(databaseError: DatabaseError) {}
             })
         }
+
     private val users: Unit
-        private get() {
+        get() {
             val reference: Query = FirebaseDatabase.getInstance().getReference(DATA.USERS)
             reference.addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
                     list!!.clear()
                     var i = 0
                     for (snapshot in dataSnapshot.children) {
-                        val user = snapshot.getValue(
-                            User::class.java
-                        )
+                        val user = snapshot.getValue(User::class.java)
                         for (id in check!!) {
                             assert(user != null)
                             if (user!!.username != null) if (user.id == id) {
@@ -98,7 +101,7 @@ class FollowingActivity : AppCompatActivity() {
                     }
                     binding!!.toolbar.number.text = MessageFormat.format("( {0} )", i)
                     binding!!.progress.visibility = View.GONE
-                    if (!list!!.isEmpty()) {
+                    if (list!!.isNotEmpty()) {
                         binding!!.recyclerView.visibility = View.VISIBLE
                         binding!!.emptyText.visibility = View.GONE
                     } else {

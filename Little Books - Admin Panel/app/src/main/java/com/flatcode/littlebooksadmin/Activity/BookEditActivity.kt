@@ -42,13 +42,16 @@ class BookEditActivity : AppCompatActivity() {
         setContentView(view)
 
         bookId = intent.getStringExtra(DATA.BOOK_ID)
+
         dialog = ProgressDialog(context)
         dialog!!.setTitle("Please wait...")
         dialog!!.setCanceledOnTouchOutside(false)
         loadCategories()
         loadBooksInfo()
+
         binding!!.toolbar.nameSpace.setText(R.string.edit_book)
         binding!!.toolbar.back.setOnClickListener { onBackPressed() }
+
         binding!!.image.setOnClickListener { pickImageGallery() }
         binding!!.category.setOnClickListener { categoryDialog() }
         binding!!.toolbar.ok.setOnClickListener { validateData() }
@@ -99,9 +102,11 @@ class BookEditActivity : AppCompatActivity() {
                 val description = DATA.EMPTY + snapshot.child(DATA.DESCRIPTION).value
                 val title = DATA.EMPTY + snapshot.child(DATA.TITLE).value
                 val image = DATA.EMPTY + snapshot.child(DATA.IMAGE).value
+
                 VOID.Glide(false, context, image, binding!!.image)
                 binding!!.titleEt.setText(title)
                 binding!!.descriptionEt.setText(description)
+
                 val refBookCategory = FirebaseDatabase.getInstance().getReference(DATA.CATEGORIES)
                 refBookCategory.child(selectedId)
                     .addListenerForSingleValueEvent(object : ValueEventListener {
@@ -120,9 +125,7 @@ class BookEditActivity : AppCompatActivity() {
     }
 
     private fun categoryDialog() {
-        val categoriesArray = arrayOfNulls<String>(
-            categoryTitle!!.size
-        )
+        val categoriesArray = arrayOfNulls<String>(categoryTitle!!.size)
         for (i in categoryTitle!!.indices) {
             categoriesArray[i] = categoryTitle!![i]
         }
@@ -188,9 +191,7 @@ class BookEditActivity : AppCompatActivity() {
             }.addOnFailureListener { e: Exception ->
                 dialog!!.dismiss()
                 Toast.makeText(
-                    context,
-                    "Failed to upload image due to " + e.message,
-                    Toast.LENGTH_SHORT
+                    context, "Failed to upload image due to " + e.message, Toast.LENGTH_SHORT
                 ).show()
             }
     }

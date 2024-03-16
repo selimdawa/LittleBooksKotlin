@@ -20,11 +20,7 @@ class SettingAdapter(private val context: Context?, private val list: ArrayList<
     private var binding: ItemSettingBinding? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        binding = ItemSettingBinding.inflate(
-            LayoutInflater.from(
-                context
-            ), parent, false
-        )
+        binding = ItemSettingBinding.inflate(LayoutInflater.from(context), parent, false)
         return ViewHolder(binding!!.root)
     }
 
@@ -35,19 +31,20 @@ class SettingAdapter(private val context: Context?, private val list: ArrayList<
         val image = item.image
         val number = item.number
         val to = item.c
+
         holder.name.text = name
         holder.image.setImageResource(image)
+
         if (number != 0) {
             holder.number.visibility = View.VISIBLE
             holder.number.text = MessageFormat.format("{0}{1}", DATA.EMPTY, number)
         } else {
             holder.number.visibility = View.GONE
         }
-        holder.item.setOnClickListener { view: View? ->
+
+        holder.item.setOnClickListener {
             when (id) {
-                "8" -> VOID.dialogAboutApp(
-                    context
-                )
+                "8" -> VOID.dialogAboutApp(context)
                 "9" -> VOID.dialogLogout(context)
                 "10" -> VOID.shareApp(context)
                 "11" -> VOID.rateApp(context)
