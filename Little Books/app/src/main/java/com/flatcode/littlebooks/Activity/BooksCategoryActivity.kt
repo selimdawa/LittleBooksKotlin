@@ -42,9 +42,12 @@ class BooksCategoryActivity : AppCompatActivity() {
         categoryName = intent.getStringExtra(DATA.CATEGORY_NAME)
         type = DATA.TIMESTAMP
 
+<<<<<<< HEAD
         binding!!.toolbar.nameSpace.text = categoryName
         binding!!.toolbar.back.setOnClickListener { onBackPressed() }
 
+=======
+>>>>>>> origin/main13
         VOID.BannerAd(context, binding!!.adView, DATA.BANNER_SMART_CATEGORY_BOOKS)
         binding!!.toolbar.search.setOnClickListener {
             binding!!.toolbar.toolbar.visibility = View.GONE
@@ -52,7 +55,11 @@ class BooksCategoryActivity : AppCompatActivity() {
             DATA.searchStatus = true
         }
 
+<<<<<<< HEAD
         binding!!.toolbar.close.setOnClickListener { onBackPressed() }
+=======
+        binding!!.toolbar.close.setOnClickListener { v: View? -> onBackPressed() }
+>>>>>>> origin/main13
         binding!!.toolbar.textSearch.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
