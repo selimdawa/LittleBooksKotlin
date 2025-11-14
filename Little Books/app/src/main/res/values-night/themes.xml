@@ -1,0 +1,32 @@
+<resources>
+    <!-- Base application theme. -->
+    <style name="Base.Theme.MainApp" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Customize your dark theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="color">@color/white</item>
+        <item name="background">@drawable/gradient</item>
+        <item name="tickColor">@color/night_corner_2</item>
+        <item name="trackColor">@color/night_corner</item>
+        <item name="colorOnBackground">@color/dark</item>
+        <item name="colorError">@color/white</item>
+        <item name="colorOnError">@color/night_corner_2</item>
+    </style>
+
+    <!-- Base application theme. -->
+    <!--<style name="Base.Theme.Main2App" parent="Theme.Material3.DayNight.NoActionBar">-->
+        <!-- Customize your dark theme here. -->
+        <!--<item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="color">@color/white</item>
+        <item name="background">@color/basic_night</item>
+        <item name="tickColor">@color/basic_night</item>
+        <item name="trackColor">@color/basic_night</item>
+        <item name="colorOnBackground">@color/dark</item>
+        <item name="colorError">@color/white</item>
+        <item name="colorOnError">@color/dark</item>
+    </style>-->
+
+</resources>

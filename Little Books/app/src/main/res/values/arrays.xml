@@ -1,0 +1,13 @@
+<resources>
+    <!-- LightMode Preference -->
+    <string-array name="reply_entries">
+        <item>@string/basic_theme</item>
+        <!--<item>@string/sec_theme</item>-->
+    </string-array>
+
+    <string-array name="reply_values">
+        <item>BASIC</item>
+        <!--<item>Sec</item>-->
+    </string-array>
+
+</resources>
