@@ -7,12 +7,12 @@ plugins {
 
 android {
     namespace = "com.flatcode.littlebooks"
-    compileSdk = 34
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.flatcode.littlebooks"
         minSdk = 24
-        targetSdk = 34
+        targetSdk = 36
         versionCode = 7
         versionName = "1.32"
 
@@ -63,11 +63,11 @@ dependencies {
     implementation("androidx.cardview:cardview:1.0.0")
     //Firebase
     implementation(platform("com.google.firebase:firebase-bom:32.8.1")) //Firebase BOM
-    implementation("com.google.firebase:firebase-auth-ktx")
-    implementation("com.google.firebase:firebase-database-ktx")
-    implementation("com.google.firebase:firebase-storage-ktx")
-    implementation("com.google.firebase:firebase-analytics-ktx")
-    //implementation("com.google.firebase:firebase-crashlytics-ktx")
+    implementation("com.google.firebase:firebase-auth")
+    implementation("com.google.firebase:firebase-database")
+    implementation("com.google.firebase:firebase-storage")
+    implementation("com.google.firebase:firebase-analytics")
+    //implementation("com.google.firebase:firebase-crashlytics")
     //Image
     implementation("de.hdodenhof:circleimageview:3.1.0")                //Circle Image
     implementation("com.github.bumptech.glide:glide:4.15.1")            //Glide Image
