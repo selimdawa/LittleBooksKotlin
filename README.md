@@ -1,8 +1,9 @@
 <h1 align="center">Little Books - Kotlin</h1>
 
 <p align="center">
-  <a href="https://android-arsenal.com/api?level=24"><img alt="API" src="https://img.shields.io/badge/API-24%2B-brightgreen.svg?style=flat"/></a>
-  <a href="https://kotlinlang.org"><img alt="Kotlin" src="https://img.shields.io/badge/Kotlin-1.9.22-blue"/></a>
+ <a><img alt="Min SDK" src="https://img.shields.io/badge/Min SDK-24-020290?logo=android&logoColor=white"/></a>
+ <a><img alt="Target SDK" src="https://img.shields.io/badge/Target SDK-36-0EB265?logo=android&logoColor=0EB265"/></a>
+ <a href="https://kotlinlang.org"><img alt="Kotlin" src="https://img.shields.io/badge/Kotlin-2.3.0-blue?logo=kotlin&logoColor=white"/></a>
 </p>
 
 ## Day Mode
@@ -54,4 +55,6 @@ Splash | Login | Register
 <a href='https://play.google.com/store/apps/details?id=com.flatcode.littlebooks'><img alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png' width="170px"/></a>
 <br />
 
-- [Java Code Version](https://github.com/selimdawa/LittleBooks/)
+- [Kotlin Old Code Version](https://github.com/selimdawa/LittleBooksKotlinOld/)
+
+- [Java Old Code Version](https://github.com/selimdawa/LittleBooks/)
