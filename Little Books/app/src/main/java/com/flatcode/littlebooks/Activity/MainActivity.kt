@@ -12,7 +12,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.PreferenceManager
-import com.etebarian.meowbottomnavigation.MeowBottomNavigation
 import com.flatcode.littlebooks.Fragment.CategoriesFragment
 import com.flatcode.littlebooks.Fragment.FollowersFragment
 import com.flatcode.littlebooks.Fragment.HomeFragment
@@ -28,6 +27,7 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import com.nafis.bottomnavigation.NafisBottomNavigation
 import java.util.Objects
 
 class MainActivity : AppCompatActivity(), OnSharedPreferenceChangeListener {
@@ -35,7 +35,7 @@ class MainActivity : AppCompatActivity(), OnSharedPreferenceChangeListener {
     private var binding: ActivityMainBinding? = null
     var activity: Activity? = null
     var context: Context = also { activity = it }
-    var meowBottomNavigation: MeowBottomNavigation? = null
+    var bottomNavigation: NafisBottomNavigation? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         PreferenceManager.getDefaultSharedPreferences(baseContext)
@@ -60,12 +60,12 @@ class MainActivity : AppCompatActivity(), OnSharedPreferenceChangeListener {
         //    binding!!.toolbar.mode.setBackgroundResource(R.drawable.moon)
         //}
 
-        meowBottomNavigation = binding!!.bottomNavigation
-        meowBottomNavigation!!.add(MeowBottomNavigation.Model(1, R.drawable.ic_settings))
-        meowBottomNavigation!!.add(MeowBottomNavigation.Model(2, R.drawable.ic_home))
-        meowBottomNavigation!!.add(MeowBottomNavigation.Model(3, R.drawable.ic_books))
-        meowBottomNavigation!!.add(MeowBottomNavigation.Model(4, R.drawable.ic_group))
-        meowBottomNavigation!!.setOnShowListener { item: MeowBottomNavigation.Model ->
+        bottomNavigation = binding!!.bottomNavigation
+        bottomNavigation!!.add(NafisBottomNavigation.Model(1, R.drawable.ic_settings))
+        bottomNavigation!!.add(NafisBottomNavigation.Model(2, R.drawable.ic_home))
+        bottomNavigation!!.add(NafisBottomNavigation.Model(3, R.drawable.ic_books))
+        bottomNavigation!!.add(NafisBottomNavigation.Model(4, R.drawable.ic_group))
+        bottomNavigation!!.setOnShowListener { item: NafisBottomNavigation.Model ->
             var fragment: Fragment? = null
             when (item.id) {
                 1 -> {
@@ -91,9 +91,9 @@ class MainActivity : AppCompatActivity(), OnSharedPreferenceChangeListener {
             loadFragment(fragment)
         }
 
-        //meowBottomNavigation.setCount(3, numberBooks);
-        meowBottomNavigation!!.show(2, true)
-        meowBottomNavigation!!.setOnClickMenuListener { item: MeowBottomNavigation.Model ->
+        //bottomNavigation.setCount(3, numberBooks);
+        bottomNavigation!!.show(2, true)
+        bottomNavigation!!.setOnClickMenuListener { item: NafisBottomNavigation.Model ->
             when (item.id) {
                 1 -> Toast.makeText(
                     applicationContext, R.string.settings, Toast.LENGTH_SHORT
@@ -110,7 +110,7 @@ class MainActivity : AppCompatActivity(), OnSharedPreferenceChangeListener {
                     .show()
             }
         }
-        meowBottomNavigation!!.setOnReselectListener { item: MeowBottomNavigation.Model ->
+        bottomNavigation!!.setOnReselectListener { item: NafisBottomNavigation.Model ->
             when (item.id) {
                 1 -> Toast.makeText(
                     applicationContext, R.string.settings, Toast.LENGTH_SHORT

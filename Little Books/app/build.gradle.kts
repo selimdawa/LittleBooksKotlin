@@ -13,8 +13,8 @@ android {
         applicationId = "com.flatcode.littlebooks"
         minSdk = 24
         targetSdk = 36
-        versionCode = 7
-        versionName = "1.32"
+        versionCode = 8
+        versionName = "1.35"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -38,11 +38,13 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
-    kotlinOptions {
-        jvmTarget = "1.8"
+    kotlin {
+        compilerOptions {
+            jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
+        }
     }
     buildFeatures {
         dataBinding = true
@@ -75,11 +77,10 @@ dependencies {
     kapt("com.github.bumptech.glide:compiler:5.0.5")                   //Glide Compiler
     implementation("com.balysv:material-ripple:1.0.2")                  //Ripple Effect
     api("com.theartofdev.edmodo:android-image-cropper:2.8.0")           //Image Crop
-    //noinspection GradleDependency
     implementation("com.github.smarteist:autoimageslider:1.3.2-appcompat")//Slider Show
     implementation("jp.wasabeef:glide-transformations:4.3.0")           //Image Blur
     //Bottom Navigation
-    implementation("com.etebarian:meow-bottom-navigation-java:1.2.0")   //Meow Bottom Navigation
+    implementation ("com.github.Foysalofficial:NafisBottomNav:5.0")     //Nafis Bottom Navigation
 
     //Ads
     implementation("com.google.android.gms:play-services-ads:24.9.0")   //ADs Google AdMob

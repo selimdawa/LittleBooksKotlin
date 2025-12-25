@@ -12,7 +12,6 @@ object DATA {
     var FOLLOW = "Follow"
     var FOLLOWERS = "followers"
     var FOLLOWING = "following"
-    var FOLLOWING = "following"
     var COMMENTS = "Comments"
     var LOVES = "Loves"
     var VERSION = "version"
