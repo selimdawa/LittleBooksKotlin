@@ -106,7 +106,7 @@
                             android:paddingEnd="10sp"
                             android:rotation="180"
                             android:src="@drawable/ic_back_white"
-                            ads:tint="?colorError" />
+                            app:tint="?colorError" />
 
                     </RelativeLayout>
 
@@ -182,7 +182,7 @@
                             android:paddingEnd="10sp"
                             android:rotation="180"
                             android:src="@drawable/ic_back_white"
-                            ads:tint="?colorError" />
+                            app:tint="?colorError" />
 
                     </RelativeLayout>
 
@@ -232,7 +232,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10sp"
-                    ads:cardCornerRadius="10sp">
+                    app:cardCornerRadius="10sp">
 
                     <com.google.android.gms.ads.AdView
                         android:id="@+id/adView"
@@ -275,7 +275,7 @@
                             android:paddingEnd="10sp"
                             android:rotation="180"
                             android:src="@drawable/ic_back_white"
-                            ads:tint="?colorError" />
+                            app:tint="?colorError" />
 
                     </RelativeLayout>
 
@@ -351,7 +351,7 @@
                             android:paddingEnd="10sp"
                             android:rotation="180"
                             android:src="@drawable/ic_back_white"
-                            ads:tint="?colorError" />
+                            app:tint="?colorError" />
 
                     </RelativeLayout>
 
@@ -401,7 +401,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10sp"
-                    ads:cardCornerRadius="10sp">
+                    app:cardCornerRadius="10sp">
 
                     <com.google.android.gms.ads.AdView
                         android:id="@+id/adView2"
@@ -444,7 +444,7 @@
                             android:paddingEnd="10sp"
                             android:rotation="180"
                             android:src="@drawable/ic_back_white"
-                            ads:tint="?colorError" />
+                            app:tint="?colorError" />
 
                     </RelativeLayout>
 
