@@ -52,13 +52,6 @@ class MainActivity : AppCompatActivity(), OnSharedPreferenceChangeListener {
             .replace(R.id.settings, SettingFragment())
             .commit()
         // Color Mode -------------------------------- End
-        //val sharedPreferences = PreferenceManager
-        //    .getDefaultSharedPreferences(baseContext)
-        //if (sharedPreferences.getString(DATA.COLOR_OPTION, "BASIC") == "BASIC") {
-        //    binding!!.toolbar.mode.setBackgroundResource(R.drawable.sun)
-        //} else if (sharedPreferences.getString(DATA.COLOR_OPTION, "NIGHT_ONE") == "NIGHT_ONE") {
-        //    binding!!.toolbar.mode.setBackgroundResource(R.drawable.moon)
-        //}
 
         bottomNavigation = binding!!.bottomNavigation
         bottomNavigation!!.add(NafisBottomNavigation.Model(1, R.drawable.ic_settings))
