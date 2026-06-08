@@ -21,7 +21,7 @@ constraintlayout = "2.2.1"
 materialRipple = "1.0.2"
 preferenceKtx = "1.2.1"
 googleServices = "4.4.4"
-ksp = "2.3.7"
+ksp = "2.3.8"
 
 [libraries]
 android-image-cropper = { module = "com.theartofdev.edmodo:android-image-cropper", version.ref = "androidImageCropper" }
