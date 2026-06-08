@@ -6,8 +6,8 @@ androidPdfViewer = "2.8.2"
 autoimageslider = "1.3.2-appcompat"
 cardview = "1.0.0"
 circleimageview = "3.1.0"
-compiler = "5.0.7"
-firebaseBom = "34.13.0"
+glideKsp = "5.0.7"
+firebaseBom = "34.14.1"
 glide = "5.0.7"
 glideTransformations = "4.3.0"
 kotlin = "2.3.21"
@@ -22,9 +22,10 @@ activity = "1.13.0"
 constraintlayout = "2.2.1"
 materialRipple = "1.0.2"
 nafisbottomnav = "5.0"
-playServicesAds = "25.2.0"
+playServicesAds = "25.3.0"
 preferenceKtx = "1.2.1"
 googleServices = "4.4.4"
+ksp = "2.3.7"
 
 [libraries]
 android-image-cropper = { module = "com.theartofdev.edmodo:android-image-cropper", version.ref = "androidImageCropper" }
@@ -34,7 +35,7 @@ androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = 
 androidx-legacy-support-v4 = { module = "androidx.legacy:legacy-support-v4", version.ref = "legacySupportV4" }
 androidx-preference-ktx = { module = "androidx.preference:preference-ktx", version.ref = "preferenceKtx" }
 autoimageslider = { module = "com.github.smarteist:autoimageslider", version.ref = "autoimageslider" }
-compiler = { module = "com.github.bumptech.glide:compiler", version.ref = "compiler" }
+glide-ksp = { module = "com.github.bumptech.glide:ksp", version.ref = "glideKsp" }
 circleimageview = { module = "de.hdodenhof:circleimageview", version.ref = "circleimageview" }
 firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
 firebase-auth = { module = "com.google.firebase:firebase-auth" }
@@ -59,3 +60,4 @@ play-services-ads = { module = "com.google.android.gms:play-services-ads", versi
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 google-services = { id = "com.google.gms.google-services", version.ref = "googleServices" }
+google-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }

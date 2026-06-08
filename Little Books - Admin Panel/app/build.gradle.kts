@@ -2,7 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.google.services)
-    id("kotlin-kapt")
+    alias(libs.plugins.google.ksp)
 }
 
 android {
@@ -17,8 +17,8 @@ android {
         applicationId = "com.flatcode.littlebooksadmin"
         minSdk = 24
         targetSdk = 36
-        versionCode = 4
-        versionName = "1.25"
+        versionCode = 5
+        versionName = "1.30"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -68,8 +68,7 @@ dependencies {
     // Image
     implementation(libs.circleimageview)                //Circle Image
     implementation(libs.glide)                          //Glide Image
-    // noinspection KaptUsageInsteadOfKsp
-    kapt(libs.compiler)                                 //Glide Compiler
+    ksp(libs.glide.ksp)                                 //Glide Compiler
     implementation(libs.material.ripple)                //Ripple Effect
     api(libs.android.image.cropper)                     //Image Crop
     //implementation(libs.glide.transformations)          //Image Blur
