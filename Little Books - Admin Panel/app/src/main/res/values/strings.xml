@@ -15,8 +15,8 @@
     <string name="the_description">The Description</string>
     <string name="Comments">Comments</string>
     //Theme
-    <string name="one_theme">Day Mode</string>
-    <string name="night_theme">Night Mode</string>
+    <string name="basic_theme">Basic Theme</string>
+    <string name="sec_theme">Sec Theme</string>
     //Needed
     <string name="all">All</string>
     <string name="do_you_want_to_logout">Do you want to logout?</string>

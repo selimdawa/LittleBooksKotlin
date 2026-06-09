@@ -1,0 +1,25 @@
+<resources>
+    <!-- Base application theme. -->
+    <style name="Base.Theme.MainApp" parent="Theme.Material3.DayNight.NoActionBar">
+        <!--  <item name="android:windowFullscreen">true</item>  -->
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="color">@color/white</item>
+        <item name="background">@drawable/gradient</item>
+        <item name="tickColor">@color/night_corner_2</item>
+        <item name="trackColor">@color/night_corner</item>
+        <item name="colorOnBackground">@color/white</item>
+        <item name="colorError">@color/dark</item>
+        <item name="colorOnError">@color/night_corner_2</item>
+    </style>
+
+    <style name="Theme.MainApp" parent="Base.Theme.MainApp" />
+
+    <style name="CustomDialog" parent="android:Theme.Dialog">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+    </style>
+
+</resources>
