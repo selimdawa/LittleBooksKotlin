@@ -58,6 +58,7 @@ class MainActivity : AppCompatActivity(), OnSharedPreferenceChangeListener {
         bottomNavigation!!.add(NafisBottomNavigation.Model(2, R.drawable.ic_home))
         bottomNavigation!!.add(NafisBottomNavigation.Model(3, R.drawable.ic_books))
         bottomNavigation!!.add(NafisBottomNavigation.Model(4, R.drawable.ic_group))
+
         bottomNavigation!!.setOnShowListener { item: NafisBottomNavigation.Model ->
             var fragment: Fragment? = null
             when (item.id) {

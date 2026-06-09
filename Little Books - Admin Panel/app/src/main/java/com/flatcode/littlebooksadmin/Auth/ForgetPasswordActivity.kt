@@ -25,9 +25,6 @@ class ForgetPasswordActivity : AppCompatActivity() {
         val view = binding!!.root
         setContentView(view)
 
-        VOID.logo(baseContext, binding!!.logo)
-        VOID.intro(baseContext, binding!!.background, binding!!.backWhite, binding!!.backBlack)
-
         auth = FirebaseAuth.getInstance()
         dialog = ProgressDialog(this)
         dialog!!.setTitle("Please wait...")

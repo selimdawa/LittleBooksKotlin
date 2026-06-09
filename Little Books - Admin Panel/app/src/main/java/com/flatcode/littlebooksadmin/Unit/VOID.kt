@@ -132,7 +132,6 @@ object VOID {
         })
     }
 
-
     fun incrementItemCount(database: String?, id: String?, childDB: String?) {
         val ref = FirebaseDatabase.getInstance().getReference(database!!)
         ref.child(id!!).addListenerForSingleValueEvent(object : ValueEventListener {
@@ -452,30 +451,6 @@ object VOID {
             dialog.dismiss()
             Toast.makeText(context, "Failed to update db duo to " + e.message, Toast.LENGTH_SHORT)
                 .show()
-        }
-    }
-
-    fun intro(context: Context?, background: ImageView, backWhite: ImageView, backDark: ImageView) {
-        val sharedPreferences = PreferenceManager
-            .getDefaultSharedPreferences(context!!)
-        if (sharedPreferences.getString("color_option", "ONE") == "ONE") {
-            background.setImageResource(R.drawable.background_day)
-            backWhite.visibility = View.VISIBLE
-            backDark.visibility = View.GONE
-        } else if (sharedPreferences.getString("color_option", "NIGHT_ONE") == "NIGHT_ONE") {
-            background.setImageResource(R.drawable.background_night)
-            backWhite.visibility = View.GONE
-            backDark.visibility = View.VISIBLE
-        }
-    }
-
-    fun logo(context: Context?, background: ImageView) {
-        val sharedPreferences = PreferenceManager
-            .getDefaultSharedPreferences(context!!)
-        if (sharedPreferences.getString("color_option", "ONE") == "ONE") {
-            background.setImageResource(R.drawable.logo)
-        } else if (sharedPreferences.getString("color_option", "NIGHT_ONE") == "NIGHT_ONE") {
-            background.setImageResource(R.drawable.logo_night)
         }
     }
 

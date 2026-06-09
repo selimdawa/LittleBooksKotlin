@@ -81,7 +81,7 @@ dependencies {
     implementation(libs.firebase.storage)
     implementation(libs.firebase.analytics)
     //implementation(libs.firebase.crashlytics)
-    // Image
+    //Image
     implementation(libs.circleimageview)                //Circle Image
     implementation(libs.glide)                          //Glide Image
     ksp(libs.glide.ksp)                                 //Glide Compiler
@@ -91,7 +91,7 @@ dependencies {
     implementation(libs.glide.transformations)          //Image Blur
     //Bottom Navigation
     implementation(libs.nafisbottomnav)                 //Nafis Bottom Navigation
-    //Ads
+    //AD's
     implementation(libs.play.services.ads)   //ADs Google AdMob
     //PDF
     implementation(libs.android.pdf.viewer)      //PDF View

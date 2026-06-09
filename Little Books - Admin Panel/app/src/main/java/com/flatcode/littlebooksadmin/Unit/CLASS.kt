@@ -1,17 +1,7 @@
 package com.flatcode.littlebooksadmin.Unit
 
 import com.flatcode.littlebooksadmin.Activity.*
-import com.flatcode.littlebooksadmin.Auth.ForgetPasswordActivity
-import com.flatcode.littlebooksadmin.Auth.LoginActivity
-import com.flatcode.littlebooksadmin.Activity.FollowingActivity
-import com.flatcode.littlebooksadmin.Activity.MyBooksActivity
-import com.flatcode.littlebooksadmin.Activity.PrivacyPolicyEditActivity
-import com.flatcode.littlebooksadmin.Activity.SliderShowActivity
-import com.flatcode.littlebooksadmin.Activity.AdsInfoActivity
-import com.flatcode.littlebooksadmin.Activity.AllBooksActivity
-import com.flatcode.littlebooksadmin.Activity.BookAddActivity
-import com.flatcode.littlebooksadmin.Activity.EditorsChoiceAddActivity
-import com.flatcode.littlebooksadmin.Activity.SplashActivity
+import com.flatcode.littlebooksadmin.Auth.*
 
 object CLASS {
     var MAIN: Class<*> = MainActivity::class.java

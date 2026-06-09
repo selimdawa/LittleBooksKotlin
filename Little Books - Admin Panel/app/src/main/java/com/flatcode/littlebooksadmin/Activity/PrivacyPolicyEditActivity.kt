@@ -31,7 +31,6 @@ class PrivacyPolicyEditActivity : AppCompatActivity() {
         binding!!.toolbar.back.setOnClickListener { onBackPressed() }
         binding!!.go.setOnClickListener { validateData() }
 
-        VOID.logo(context, binding!!.logo)
         privacyPolicy()
     }
 

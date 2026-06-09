@@ -47,14 +47,6 @@ class MainActivity : AppCompatActivity(), OnSharedPreferenceChangeListener {
             .commit()
         // Color Mode -------------------------------- End
 
-        val sharedPreferences = PreferenceManager
-            .getDefaultSharedPreferences(baseContext)
-        if (sharedPreferences.getString(DATA.COLOR_OPTION, "ONE") == "ONE") {
-            binding!!.toolbar.mode.setBackgroundResource(R.drawable.sun)
-        } else if (sharedPreferences.getString(DATA.COLOR_OPTION, "NIGHT_ONE") == "NIGHT_ONE") {
-            binding!!.toolbar.mode.setBackgroundResource(R.drawable.moon)
-        }
-
         userInfo()
         binding!!.toolbar.image.setOnClickListener {
             VOID.IntentExtra(context, CLASS.PROFILE, DATA.PROFILE_ID, DATA.FirebaseUserUid)

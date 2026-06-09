@@ -30,7 +30,6 @@ class PrivacyPolicyActivity : AppCompatActivity() {
         binding!!.toolbar.back.setOnClickListener { onBackPressed() }
 
         binding!!.edit.setOnClickListener { VOID.Intent1(context, CLASS.PRIVACY_POLICY_EDIT) }
-        VOID.logo(context, binding!!.logo)
     }
 
     private fun privacyPolicy() {

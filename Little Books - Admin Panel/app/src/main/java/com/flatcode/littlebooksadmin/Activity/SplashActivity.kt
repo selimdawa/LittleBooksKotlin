@@ -16,7 +16,7 @@ class SplashActivity : AppCompatActivity() {
     var context: Context = this@SplashActivity
     var auth: FirebaseAuth? = null
     var time_per_second = 2
-    var time_final: Int = time_per_millis * time_per_second
+    var time_final = time_per_millis * time_per_second
 
     override fun onCreate(savedInstanceState: Bundle?) {
         THEME.setThemeOfApp(context)
@@ -24,9 +24,6 @@ class SplashActivity : AppCompatActivity() {
         binding = ActivitySplashBinding.inflate(layoutInflater)
         val view = binding!!.root
         setContentView(view)
-
-        VOID.logo(baseContext, binding!!.logo)
-        VOID.intro(baseContext, binding!!.background, binding!!.backWhite, binding!!.backBlack)
 
         auth = FirebaseAuth.getInstance()
         Handler().postDelayed({ checkUser() }, time_final.toLong())
