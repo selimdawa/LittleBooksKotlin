@@ -1,15 +1,12 @@
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.google.services)
     alias(libs.plugins.google.ksp)
 }
 
 android {
     namespace = "com.flatcode.littlebooksadmin"
-    compileSdk {
-        version = release(37)
-    }
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "com.flatcode.littlebooksadmin"
@@ -54,8 +51,6 @@ dependencies {
     //Layout
     implementation(libs.androidx.constraintlayout)
     implementation(libs.material)
-    implementation(libs.androidx.legacy.support.v4)
-    implementation(libs.androidx.cardview)
     //Firebase
     implementation(platform(libs.firebase.bom)) //Firebase BOM
     implementation(libs.firebase.auth)
@@ -70,8 +65,7 @@ dependencies {
     implementation(libs.material.ripple)                //Ripple Effect
     api(libs.android.image.cropper)                     //Image Crop
     //implementation(libs.glide.transformations)          //Image Blur
-
-    //PDF
-    //noinspection GradleDependency
-    implementation(libs.android.pdf.viewer)      //PDF View
+    //Other's
+    implementation(libs.android.pdf.viewer)             //PDF View
+    ksp(libs.kotlin.metadata.jvm)                       //Kotlin
 }

@@ -6,10 +6,6 @@ import java.util.*
 
 class MyApplication : Application() {
 
-    override fun onCreate() {
-        super.onCreate()
-    }
-
     companion object {
         fun formatTimestamp(timestamp: Long): String {
             val calendar = Calendar.getInstance(Locale.ENGLISH)
