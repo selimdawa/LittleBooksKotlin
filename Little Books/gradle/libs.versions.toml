@@ -9,7 +9,6 @@ glideKsp = "5.0.7"
 firebaseBom = "34.15.0"
 glide = "5.0.7"
 glideTransformations = "4.3.0"
-kotlinMetadataJvm = "2.4.0"
 coreKtx = "1.19.0"
 junit = "4.13.2"
 junitVersion = "1.3.0"
@@ -23,7 +22,6 @@ nafisbottomnav = "5.0"
 playServicesAds = "25.4.0"
 preferenceKtx = "1.2.1"
 googleServices = "4.5.0"
-ksp = "2.3.8"
 
 [libraries]
 android-image-cropper = { module = "com.theartofdev.edmodo:android-image-cropper", version.ref = "androidImageCropper" }
@@ -51,9 +49,7 @@ androidx-constraintlayout = { group = "androidx.constraintlayout", name = "const
 material-ripple = { module = "com.balysv:material-ripple", version.ref = "materialRipple" }
 nafisbottomnav = { module = "com.github.Foysalofficial:NafisBottomNav", version.ref = "nafisbottomnav" }
 play-services-ads = { module = "com.google.android.gms:play-services-ads", version.ref = "playServicesAds" }
-kotlin-metadata-jvm = { module = "org.jetbrains.kotlin:kotlin-metadata-jvm", version.ref = "kotlinMetadataJvm" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 google-services = { id = "com.google.gms.google-services", version.ref = "googleServices" }
-google-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
