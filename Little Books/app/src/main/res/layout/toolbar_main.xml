@@ -13,7 +13,7 @@
         <androidx.appcompat.widget.Toolbar
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="?background"
+            android:background="?mc_bg"
             android:visibility="visible">
 
             <LinearLayout
@@ -23,29 +23,9 @@
                 android:layout_marginRight="10dp"
                 android:gravity="left">
 
-                <androidx.cardview.widget.CardView
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:elevation="0dp"
-                    app:cardCornerRadius="15dp"
-                    app:cardElevation="0dp">
-
-                    <LinearLayout
-                        android:id="@+id/mode"
-                        android:background="@drawable/button8"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:orientation="vertical">
-
-                        <FrameLayout
-                            android:id="@+id/settings"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:padding="-15dp" />
-
-                    </LinearLayout>
-
-                </androidx.cardview.widget.CardView>
+                <io.selimdawa.multicolors.MultiColorButton
+                    android:layout_width="@dimen/spacing_30"
+                    android:layout_height="@dimen/spacing_30" />
 
             </LinearLayout>
 

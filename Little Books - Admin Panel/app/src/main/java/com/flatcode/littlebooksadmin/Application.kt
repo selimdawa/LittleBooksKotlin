@@ -1,14 +1,13 @@
 package com.flatcode.littlebooksadmin
 
 import android.app.Application
-import android.text.format.DateFormat
-import java.util.Calendar
-import java.util.Locale
+import io.selimdawa.multicolors.MultiColorManager
 
-class MyApplication : Application() {
+class Application : Application() {
 
     override fun onCreate() {
         super.onCreate()
+        MultiColorManager.init(this)
     }
 
     companion object {

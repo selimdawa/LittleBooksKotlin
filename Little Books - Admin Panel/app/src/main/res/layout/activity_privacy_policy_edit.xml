@@ -39,7 +39,7 @@
                     android:gravity="center"
                     android:padding="16dp"
                     android:text="@string/app_name"
-                    android:textColor="?trackColor"
+                    android:textColor="?mc_track"
                     android:textSize="32sp"
                     android:textStyle="bold"
                     android:visibility="gone" />
@@ -69,7 +69,7 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:background="?background"
+                        android:background="?mc_bg"
                         android:orientation="vertical">
 
                         <androidx.core.widget.NestedScrollView

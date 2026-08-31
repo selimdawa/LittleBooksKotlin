@@ -6,7 +6,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="?background"
+        android:background="?mc_bg"
         android:orientation="vertical"
         tools:context=".Activity.BookAddActivity">
 
@@ -96,7 +96,7 @@
                                     android:padding="5sp"
                                     android:src="@drawable/ic_adds"
                                     app:layout_constraintDimensionRatio="1:1"
-                                    app:tint="?tickColor" />
+                                    app:tint="?mc_tick" />
 
                             </FrameLayout>
 

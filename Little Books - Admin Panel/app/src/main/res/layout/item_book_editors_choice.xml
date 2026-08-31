@@ -76,7 +76,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_gravity="center"
-                        android:background="?background"
+                        android:background="?mc_bg"
                         android:gravity="center"
                         android:orientation="vertical">
 
@@ -102,7 +102,7 @@
                         android:id="@+id/item"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:background="?background">
+                        android:background="?mc_bg">
 
                         <ImageView
                             android:id="@+id/image"

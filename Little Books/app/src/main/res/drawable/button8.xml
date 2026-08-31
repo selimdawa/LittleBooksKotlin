@@ -5,7 +5,7 @@
         android:width="2sp"
         android:color="?color" />
 
-    <solid android:color="?trackColor" />
+    <solid android:color="?mc_track" />
 
     <corners android:radius="30sp" />
 

@@ -20,7 +20,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="?background"
+                android:background="?mc_bg"
                 android:orientation="vertical">
 
                 <FrameLayout
@@ -54,7 +54,7 @@
                             android:layout_width="25dp"
                             android:layout_height="25dp"
                             android:layout_gravity="left"
-                            android:background="?tickColor"
+                            android:background="?mc_tick"
                             android:padding="2dp"
                             android:src="@drawable/ic_star_unselected"
                             app:tint="@color/white" />
@@ -71,7 +71,7 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="?background"
+                    android:background="?mc_bg"
                     android:orientation="vertical">
 
                     <LinearLayout

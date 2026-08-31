@@ -15,7 +15,7 @@
             android:id="@+id/item"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="?background"
+            android:background="?mc_bg"
             android:orientation="horizontal">
 
             <LinearLayout

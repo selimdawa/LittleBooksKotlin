@@ -21,7 +21,6 @@ import com.flatcode.littlebooks.MyApplication
 import com.flatcode.littlebooks.R
 import com.flatcode.littlebooks.Unit.CLASS
 import com.flatcode.littlebooks.Unit.DATA
-import com.flatcode.littlebooks.Unit.THEME
 import com.flatcode.littlebooks.Unit.VOID
 import com.flatcode.littlebooks.databinding.ActivityBookDetailsBinding
 import com.flatcode.littlebooks.databinding.DialogCommentAddBinding
@@ -42,7 +41,6 @@ class BookDetailsActivity : AppCompatActivity() {
     private var adapter: CommentAdapter? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        THEME.setThemeOfApp(context)
         super.onCreate(savedInstanceState)
         binding = ActivityBookDetailsBinding.inflate(layoutInflater)
         val view = binding!!.root

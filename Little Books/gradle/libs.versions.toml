@@ -20,6 +20,7 @@ nafisbottomnav = "5.0"
 playServicesAds = "25.4.0"
 preferenceKtx = "1.2.1"
 googleServices = "4.5.0"
+multicolors = "1.0.8-beta3"
 
 [libraries]
 android-image-cropper = { module = "com.theartofdev.edmodo:android-image-cropper", version.ref = "androidImageCropper" }
@@ -42,6 +43,7 @@ androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-co
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 androidx-activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
+multicolors = { module = "com.github.selimdawa:MultiColors", version.ref = "multicolors" }
 material-ripple = { module = "com.balysv:material-ripple", version.ref = "materialRipple" }
 nafisbottomnav = { module = "com.github.Foysalofficial:NafisBottomNav", version.ref = "nafisbottomnav" }
 play-services-ads = { module = "com.google.android.gms:play-services-ads", version.ref = "playServicesAds" }

@@ -2,13 +2,9 @@ package com.flatcode.littlebooksadmin.Activity
 
 import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
-import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-import androidx.preference.PreferenceFragmentCompat
-import androidx.preference.PreferenceManager
 import com.flatcode.littlebooksadmin.Adapter.MainAdapter
 import com.flatcode.littlebooksadmin.Model.Main
 import com.flatcode.littlebooksadmin.Modelimport.Book
@@ -16,7 +12,6 @@ import com.flatcode.littlebooksadmin.Modelimport.User
 import com.flatcode.littlebooksadmin.R
 import com.flatcode.littlebooksadmin.Unit.CLASS
 import com.flatcode.littlebooksadmin.Unit.DATA
-import com.flatcode.littlebooksadmin.Unit.THEME
 import com.flatcode.littlebooksadmin.Unit.VOID
 import com.flatcode.littlebooksadmin.databinding.ActivityMainBinding
 import com.google.firebase.database.DataSnapshot
@@ -24,7 +19,7 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 
-class MainActivity : AppCompatActivity(), OnSharedPreferenceChangeListener {
+class MainActivity : AppCompatActivity() {
 
     private var binding: ActivityMainBinding? = null
     var list: MutableList<Main>? = null
@@ -32,20 +27,10 @@ class MainActivity : AppCompatActivity(), OnSharedPreferenceChangeListener {
     var context: Context = this@MainActivity
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        PreferenceManager.getDefaultSharedPreferences(baseContext)
-            .registerOnSharedPreferenceChangeListener(this)
-        THEME.setThemeOfApp(context)
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         val view = binding!!.root
         setContentView(view)
-
-        // Color Mode ----------------------------- Start
-        supportFragmentManager
-            .beginTransaction()
-            .replace(R.id.settings, SettingsFragment())
-            .commit()
-        // Color Mode -------------------------------- End
 
         userInfo()
         binding!!.toolbar.image.setOnClickListener {
@@ -236,19 +221,6 @@ class MainActivity : AppCompatActivity(), OnSharedPreferenceChangeListener {
         binding!!.recyclerView.visibility = View.VISIBLE
     }
 
-    // Color Mode ----------------------------- Start
-    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
-        if (key == "color_option") {
-            recreate()
-        }
-    }
-
-    class SettingsFragment : PreferenceFragmentCompat() {
-        override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
-            setPreferencesFromResource(R.xml.root_preferences, rootKey)
-        }
-    }
-
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == SETTINGS_CODE) {
@@ -256,7 +228,6 @@ class MainActivity : AppCompatActivity(), OnSharedPreferenceChangeListener {
         }
     }
 
-    // Color Mode -------------------------------- End
     override fun onResume() {
         userInfo()
         nrItems()

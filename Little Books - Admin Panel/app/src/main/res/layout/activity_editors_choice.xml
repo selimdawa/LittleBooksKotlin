@@ -40,7 +40,7 @@
                         android:layout_gravity="center"
                         android:gravity="center"
                         android:text="@string/none_display"
-                        android:textColor="?tickColor"
+                        android:textColor="?mc_tick"
                         android:textSize="32sp" />
 
                 </LinearLayout>

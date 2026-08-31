@@ -31,7 +31,7 @@
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:background="?tickColor">
+                        android:background="?mc_tick">
 
                         <com.smarteist.autoimageslider.SliderView
                             android:id="@+id/imageSlider"
@@ -47,7 +47,7 @@
                             app:sliderIndicatorOrientation="horizontal"
                             app:sliderIndicatorPadding="3dp"
                             app:sliderIndicatorRadius="1.5dp"
-                            app:sliderIndicatorSelectedColor="?tickColor"
+                            app:sliderIndicatorSelectedColor="?mc_tick"
                             app:sliderIndicatorUnselectedColor="#FFF"
                             app:sliderScrollTimeInSec="3"
                             app:sliderStartAutoCycle="true"

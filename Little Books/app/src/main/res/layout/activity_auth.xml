@@ -105,7 +105,7 @@
                         android:gravity="center"
                         android:padding="15sp"
                         android:text="@string/register"
-                        android:textColor="?tickColor"
+                        android:textColor="?mc_tick"
                         android:textSize="18sp"
                         android:textStyle="bold" />
 

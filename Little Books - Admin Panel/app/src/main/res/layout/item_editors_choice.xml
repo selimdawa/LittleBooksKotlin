@@ -14,7 +14,7 @@
             android:id="@+id/item"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="?background">
+            android:background="?mc_bg">
 
             <LinearLayout
                 android:layout_width="100sp"
@@ -65,7 +65,7 @@
                         android:gravity="end"
                         android:padding="5sp"
                         android:src="@drawable/ic_add"
-                        app:tint="?tickColor" />
+                        app:tint="?mc_tick" />
 
                 </LinearLayout>
 

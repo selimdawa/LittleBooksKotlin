@@ -44,6 +44,7 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
     //Layout
     implementation(libs.material)
+    implementation(libs.multicolors)
     // Image
     implementation(libs.circleimageview)                //Circle Image
     implementation(libs.glide)                          //Glide Image
@@ -59,4 +60,5 @@ dependencies {
     //Other's
     implementation(libs.material.ripple)                //Ripple Effect
     implementation(libs.android.pdf.viewer)             //PDF View
+    implementation(libs.multi.colors)
 }

@@ -16,7 +16,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:background="?background"
+            android:background="?mc_bg"
             android:padding="10sp"
             android:gravity="center"
             android:orientation="vertical">

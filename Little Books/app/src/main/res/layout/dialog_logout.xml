@@ -4,7 +4,7 @@
     android:layout_width="300dp"
     android:layout_height="wrap_content"
     android:padding="20sp"
-    app:cardBackgroundColor="?tickColor"
+    app:cardBackgroundColor="?mc_tick"
     app:cardCornerRadius="30dp"
     app:cardElevation="3dp"
     app:cardUseCompatPadding="true">
@@ -25,7 +25,7 @@
                 android:focusableInTouchMode="true"
                 android:gravity="center"
                 android:orientation="vertical"
-                android:background="?background">
+                android:background="?mc_bg">
 
                 <TextView
                     android:id="@+id/title"

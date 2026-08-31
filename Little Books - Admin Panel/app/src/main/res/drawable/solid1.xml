@@ -4,5 +4,5 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="rectangle">
 
-    <solid android:color="?tickColor" />
+    <solid android:color="?mc_tick" />
 </shape>
