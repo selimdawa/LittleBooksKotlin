@@ -19,7 +19,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.preference.PreferenceManager
-import com.bumptech.glide.Glide
+import coil.load
 import com.flatcode.littlebooksadmin.Modelimport.Book
 import com.flatcode.littlebooksadmin.Modelimport.Category
 import com.flatcode.littlebooksadmin.R
@@ -231,7 +231,29 @@ object VOID {
                     Image.setImageResource(R.drawable.basic_book)
                 }
             } else {
-                Glide.with(context!!).load(Url).placeholder(R.color.image_profile).into(Image)
+                Image.load(Url) {
+                    placeholder(R.color.image_profile)
+                    crossfade(true)
+                }
+            }
+        } catch (e: Exception) {
+            Image.setImageResource(R.drawable.basic_book)
+        }
+    }
+
+    fun GlideBlur(isUser: Boolean, context: Context?, Url: String, Image: ImageView, level: Int) {
+        try {
+            if (Url == DATA.BASIC) {
+                if (isUser) {
+                    Image.setImageResource(R.drawable.basic_user)
+                } else {
+                    Image.setImageResource(R.drawable.basic_book)
+                }
+            } else {
+                Image.load(Url) {
+                    placeholder(R.color.image_profile)
+                    transformations(SimpleBlurTransformation(level.toFloat()))
+                }
             }
         } catch (e: Exception) {
             Image.setImageResource(R.drawable.basic_book)

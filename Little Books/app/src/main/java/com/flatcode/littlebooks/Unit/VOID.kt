@@ -40,7 +40,6 @@ import com.google.firebase.storage.StorageMetadata
 import com.google.firebase.storage.StorageReference
 import com.theartofdev.edmodo.cropper.CropImage
 import com.theartofdev.edmodo.cropper.CropImageView
-import jp.wasabeef.glide.transformations.BlurTransformation
 import java.io.File
 import java.io.FileOutputStream
 import java.text.MessageFormat
@@ -257,7 +256,10 @@ object VOID {
                     Image.setImageResource(R.drawable.basic_book)
                 }
             } else {
-                Glide.with(context!!).load(Url).placeholder(R.color.image_profile).into(Image)
+                Image.load(Url) {
+                    placeholder(R.color.image_profile)
+                    crossfade(true)
+                }
             }
         } catch (e: Exception) {
             Image.setImageResource(R.drawable.basic_book)
@@ -273,8 +275,10 @@ object VOID {
                     Image.setImageResource(R.drawable.basic_book)
                 }
             } else {
-                Glide.with(context!!).load(Url).placeholder(R.color.image_profile)
-                    .apply(RequestOptions.bitmapTransform(BlurTransformation(level))).into(Image)
+                Image.load(Url) {
+                    placeholder(R.color.image_profile)
+                    transformations(SimpleBlurTransformation(level.toFloat()))
+                }
             }
         } catch (e: Exception) {
             Image.setImageResource(R.drawable.basic_book)
