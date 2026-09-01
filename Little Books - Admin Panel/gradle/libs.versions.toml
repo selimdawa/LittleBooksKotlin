@@ -12,7 +12,7 @@ appcompat = "1.8.0"
 material = "1.14.0"
 activity = "1.13.0"
 materialRipple = "1.0.2"
-preferenceKtx = "1.2.1"
+datastore = "1.2.1"
 googleServices = "4.5.0"
 multicolors = "1.0.8-beta3"
 
@@ -20,7 +20,7 @@ multicolors = "1.0.8-beta3"
 android-image-cropper = { module = "com.theartofdev.edmodo:android-image-cropper", version.ref = "androidImageCropper" }
 android-pdf-viewer = { module = "io.github.oothp:android-pdf-viewer", version.ref = "androidPdfViewer" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
-androidx-preference-ktx = { module = "androidx.preference:preference-ktx", version.ref = "preferenceKtx" }
+androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
 firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
 firebase-auth = { module = "com.google.firebase:firebase-auth" }
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }

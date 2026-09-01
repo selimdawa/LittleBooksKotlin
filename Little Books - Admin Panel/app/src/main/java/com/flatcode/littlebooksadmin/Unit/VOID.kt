@@ -18,7 +18,6 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
-import androidx.preference.PreferenceManager
 import coil.load
 import com.flatcode.littlebooksadmin.Modelimport.Book
 import com.flatcode.littlebooksadmin.Modelimport.Category

@@ -12,7 +12,6 @@ import com.flatcode.littlebooksadmin.Adapter.EditorsChoiceBookAdapter
 import com.flatcode.littlebooksadmin.Modelimport.Book
 import com.flatcode.littlebooksadmin.R
 import com.flatcode.littlebooksadmin.Unit.DATA
-import com.flatcode.littlebooksadmin.Unit.THEME
 import com.flatcode.littlebooksadmin.databinding.ActivityEditorsChoiceAddBinding
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -34,7 +33,6 @@ class EditorsChoiceAddActivity : AppCompatActivity() {
     var oldBookId: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        THEME.setThemeOfApp(context)
         super.onCreate(savedInstanceState)
         binding = ActivityEditorsChoiceAddBinding.inflate(layoutInflater)
         val view = binding!!.root

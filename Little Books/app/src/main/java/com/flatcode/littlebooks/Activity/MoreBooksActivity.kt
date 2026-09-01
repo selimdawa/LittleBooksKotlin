@@ -10,7 +10,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.flatcode.littlebooks.Adapter.LinearBookAdapter
 import com.flatcode.littlebooks.Model.Book
 import com.flatcode.littlebooks.Unit.DATA
-import com.flatcode.littlebooks.Unit.THEME
 import com.flatcode.littlebooks.Unit.VOID
 import com.flatcode.littlebooks.databinding.ActivityPageLinearBinding
 import com.google.firebase.database.DataSnapshot
@@ -32,7 +31,6 @@ class MoreBooksActivity : AppCompatActivity() {
     var recyclerView: RecyclerView? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        THEME.setThemeOfApp(context)
         super.onCreate(savedInstanceState)
         binding = ActivityPageLinearBinding.inflate(layoutInflater)
         val view = binding!!.root

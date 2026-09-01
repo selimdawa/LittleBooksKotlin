@@ -9,7 +9,6 @@ import com.flatcode.littlebooksadmin.Adapter.ADsInfoAdapter
 import com.flatcode.littlebooksadmin.Modelimport.ADs
 import com.flatcode.littlebooksadmin.R
 import com.flatcode.littlebooksadmin.Unit.DATA
-import com.flatcode.littlebooksadmin.Unit.THEME
 import com.flatcode.littlebooksadmin.Unit.VOID
 import com.flatcode.littlebooksadmin.databinding.ActivityAdsInfoBinding
 import com.google.firebase.database.DataSnapshot
@@ -27,7 +26,6 @@ class AdsInfoActivity : AppCompatActivity() {
     private var profileId: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        THEME.setThemeOfApp(context)
         super.onCreate(savedInstanceState)
         binding = ActivityAdsInfoBinding.inflate(layoutInflater)
         val view = binding!!.root

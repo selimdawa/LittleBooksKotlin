@@ -6,7 +6,6 @@ import androidx.appcompat.app.AppCompatActivity
 import com.flatcode.littlebooksadmin.Adapter.EditorsChoiceAdapter
 import com.flatcode.littlebooksadmin.Modelimport.EditorsChoice
 import com.flatcode.littlebooksadmin.R
-import com.flatcode.littlebooksadmin.Unit.THEME
 import com.flatcode.littlebooksadmin.databinding.ActivityEditorsChoiceBinding
 
 class EditorsChoiceActivity : AppCompatActivity() {
@@ -18,7 +17,6 @@ class EditorsChoiceActivity : AppCompatActivity() {
     var editorsChoice = EditorsChoice()
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        THEME.setThemeOfApp(context)
         super.onCreate(savedInstanceState)
         binding = ActivityEditorsChoiceBinding.inflate(layoutInflater)
         val view = binding!!.root

@@ -9,7 +9,6 @@ import androidx.appcompat.app.AppCompatActivity
 import com.flatcode.littlebooksadmin.Adapter.StaggeredBookAdapter
 import com.flatcode.littlebooksadmin.Modelimport.Book
 import com.flatcode.littlebooksadmin.Unit.DATA
-import com.flatcode.littlebooksadmin.Unit.THEME
 import com.flatcode.littlebooksadmin.databinding.ActivityPageStaggeredSwitchBinding
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -29,7 +28,6 @@ class BooksCategoryActivity : AppCompatActivity() {
     var type: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        THEME.setThemeOfApp(context)
         super.onCreate(savedInstanceState)
         binding = ActivityPageStaggeredSwitchBinding.inflate(layoutInflater)
         val view = binding!!.root

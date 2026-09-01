@@ -16,7 +16,6 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.flatcode.littlebooksadmin.R
 import com.flatcode.littlebooksadmin.Unit.DATA
-import com.flatcode.littlebooksadmin.Unit.THEME
 import com.flatcode.littlebooksadmin.Unit.VOID
 import com.flatcode.littlebooksadmin.databinding.ActivityBookAddBinding
 import com.google.firebase.database.DataSnapshot
@@ -38,7 +37,6 @@ class BookAddActivity : AppCompatActivity() {
     private var dialog: ProgressDialog? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        THEME.setThemeOfApp(context)
         super.onCreate(savedInstanceState)
         binding = ActivityBookAddBinding.inflate(layoutInflater)
         val view = binding!!.root

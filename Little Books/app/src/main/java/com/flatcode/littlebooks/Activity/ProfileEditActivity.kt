@@ -12,7 +12,6 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.flatcode.littlebooks.R
 import com.flatcode.littlebooks.Unit.DATA
-import com.flatcode.littlebooks.Unit.THEME
 import com.flatcode.littlebooks.Unit.VOID
 import com.flatcode.littlebooks.databinding.ActivityProfileEditBinding
 import com.google.firebase.database.DataSnapshot
@@ -33,7 +32,6 @@ class ProfileEditActivity : AppCompatActivity() {
     private var dialog: ProgressDialog? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        THEME.setThemeOfApp(context)
         super.onCreate(savedInstanceState)
         binding = ActivityProfileEditBinding.inflate(layoutInflater)
         val view = binding!!.root

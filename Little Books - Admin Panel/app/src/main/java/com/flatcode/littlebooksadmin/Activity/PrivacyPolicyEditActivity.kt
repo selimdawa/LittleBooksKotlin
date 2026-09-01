@@ -7,7 +7,6 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.flatcode.littlebooksadmin.R
 import com.flatcode.littlebooksadmin.Unit.DATA
-import com.flatcode.littlebooksadmin.Unit.THEME
 import com.flatcode.littlebooksadmin.Unit.VOID
 import com.flatcode.littlebooksadmin.databinding.ActivityPrivacyPolicyEditBinding
 import com.google.firebase.database.DataSnapshot
@@ -21,7 +20,6 @@ class PrivacyPolicyEditActivity : AppCompatActivity() {
     var context: Context = this@PrivacyPolicyEditActivity
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        THEME.setThemeOfApp(context)
         super.onCreate(savedInstanceState)
         binding = ActivityPrivacyPolicyEditBinding.inflate(layoutInflater)
         val view = binding!!.root

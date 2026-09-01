@@ -14,7 +14,6 @@ import androidx.activity.result.contract.ActivityResultContracts.StartActivityFo
 import androidx.appcompat.app.AppCompatActivity
 import com.flatcode.littlebooksadmin.R
 import com.flatcode.littlebooksadmin.Unit.DATA
-import com.flatcode.littlebooksadmin.Unit.THEME
 import com.flatcode.littlebooksadmin.Unit.VOID
 import com.flatcode.littlebooksadmin.databinding.ActivityBookEditBinding
 import com.google.firebase.database.DataSnapshot
@@ -35,7 +34,6 @@ class BookEditActivity : AppCompatActivity() {
     private var categoryId: ArrayList<String>? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        THEME.setThemeOfApp(context)
         super.onCreate(savedInstanceState)
         binding = ActivityBookEditBinding.inflate(layoutInflater)
         val view = binding!!.root

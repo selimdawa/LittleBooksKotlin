@@ -10,7 +10,6 @@ import com.flatcode.littlebooksadmin.Modelimport.Book
 import com.flatcode.littlebooksadmin.R
 import com.flatcode.littlebooksadmin.Unit.CLASS
 import com.flatcode.littlebooksadmin.Unit.DATA
-import com.flatcode.littlebooksadmin.Unit.THEME
 import com.flatcode.littlebooksadmin.Unit.VOID
 import com.flatcode.littlebooksadmin.databinding.ActivityProfileBinding
 import com.google.firebase.database.DataSnapshot
@@ -26,7 +25,6 @@ class ProfileActivity : AppCompatActivity() {
     var profileId: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        THEME.setThemeOfApp(context)
         super.onCreate(savedInstanceState)
         binding = ActivityProfileBinding.inflate(layoutInflater)
         val view = binding!!.root

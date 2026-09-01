@@ -10,7 +10,6 @@ import com.flatcode.littlebooks.Adapter.StaggeredBookAdapter
 import com.flatcode.littlebooks.Model.Book
 import com.flatcode.littlebooks.R
 import com.flatcode.littlebooks.Unit.DATA
-import com.flatcode.littlebooks.Unit.THEME
 import com.flatcode.littlebooks.Unit.VOID
 import com.flatcode.littlebooks.databinding.ActivityPageStaggeredSwitchBinding
 import com.google.firebase.database.*
@@ -26,7 +25,6 @@ class FavoritesActivity : AppCompatActivity() {
     var type: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        THEME.setThemeOfApp(context)
         super.onCreate(savedInstanceState)
         binding = ActivityPageStaggeredSwitchBinding.inflate(layoutInflater)
         val view = binding!!.root

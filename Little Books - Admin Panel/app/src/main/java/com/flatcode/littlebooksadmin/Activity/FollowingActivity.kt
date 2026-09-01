@@ -10,7 +10,6 @@ import com.flatcode.littlebooksadmin.Adapter.PublisherAdapter
 import com.flatcode.littlebooksadmin.Modelimport.User
 import com.flatcode.littlebooksadmin.R
 import com.flatcode.littlebooksadmin.Unit.DATA
-import com.flatcode.littlebooksadmin.Unit.THEME
 import com.flatcode.littlebooksadmin.databinding.ActivityPageStaggeredBinding
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -28,7 +27,6 @@ class FollowingActivity : AppCompatActivity() {
     var adapter: PublisherAdapter? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        THEME.setThemeOfApp(context)
         super.onCreate(savedInstanceState)
         binding = ActivityPageStaggeredBinding.inflate(layoutInflater)
         val view = binding!!.root
