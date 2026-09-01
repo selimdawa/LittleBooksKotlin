@@ -2,7 +2,6 @@
 agp = "9.3.2"
 androidImageCropper = "2.8.0"
 androidPdfViewer = "3.2.0-beta06"
-circleimageview = "3.1.0"
 coil = "2.7.0"
 firebaseBom = "34.18.0"
 coreKtx = "1.19.0"
@@ -22,7 +21,6 @@ android-image-cropper = { module = "com.theartofdev.edmodo:android-image-cropper
 android-pdf-viewer = { module = "io.github.oothp:android-pdf-viewer", version.ref = "androidPdfViewer" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-preference-ktx = { module = "androidx.preference:preference-ktx", version.ref = "preferenceKtx" }
-circleimageview = { module = "de.hdodenhof:circleimageview", version.ref = "circleimageview" }
 firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
 firebase-auth = { module = "com.google.firebase:firebase-auth" }
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }

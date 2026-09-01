@@ -79,11 +79,12 @@
                         android:orientation="horizontal"
                         android:padding="15sp">
 
-                        <de.hdodenhof.circleimageview.CircleImageView
+                        <com.google.android.material.imageview.ShapeableImageView
                             android:id="@+id/publisherImage"
                             android:layout_width="40dp"
                             android:layout_height="40dp"
-                            android:src="@color/image_profile" />
+                            android:src="@color/image_profile"
+                            app:shapeAppearanceOverlay="@style/ShapeAppearance.App.Circle" />
 
                         <View
                             android:layout_width="15sp"

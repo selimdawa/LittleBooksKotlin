@@ -27,14 +27,15 @@
                 android:gravity="center"
                 android:orientation="vertical">
 
-                <de.hdodenhof.circleimageview.CircleImageView
+                <com.google.android.material.imageview.ShapeableImageView
                     android:id="@+id/imageView"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_margin="50sp"
                     android:background="@drawable/round"
                     android:scaleType="centerCrop"
-                    android:src="@drawable/logo" />
+                    android:src="@drawable/logo"
+                    app:shapeAppearanceOverlay="@style/ShapeAppearance.App.Circle" />
 
             </LinearLayout>
 

@@ -46,7 +46,6 @@ dependencies {
     implementation(libs.material)
     implementation(libs.multicolors)
     // Image
-    implementation(libs.circleimageview)                //Circle Image
     implementation(libs.coil)                           //Coil Image
     api(libs.android.image.cropper)                     //Image Crop
     //implementation(libs.glide.transformations)          //Image Blur

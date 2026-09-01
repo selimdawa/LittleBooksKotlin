@@ -28,16 +28,16 @@
                 android:orientation="horizontal"
                 android:padding="10sp">
 
-                <de.hdodenhof.circleimageview.CircleImageView
+                <com.google.android.material.imageview.ShapeableImageView
                     android:id="@+id/profileImage"
                     android:layout_width="150dp"
                     android:layout_height="150dp"
                     android:layout_marginHorizontal="10sp"
                     android:src="@color/image_profile"
-                    app:civ_border_color="@color/black"
-                    app:civ_border_overlay="true"
-                    app:civ_border_width="5sp"
-                    app:civ_circle_background_color="@color/black" />
+                    app:strokeColor="@color/black"
+                    app:strokeWidth="5sp"
+                    android:background="@color/black"
+                    app:shapeAppearanceOverlay="@style/ShapeAppearance.App.Circle" />
 
                 <TextView
                     android:id="@+id/username"

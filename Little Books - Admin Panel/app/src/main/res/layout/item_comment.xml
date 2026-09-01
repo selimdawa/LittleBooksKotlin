@@ -21,13 +21,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-                <de.hdodenhof.circleimageview.CircleImageView
+                <com.google.android.material.imageview.ShapeableImageView
                     android:id="@+id/profile"
                     android:layout_width="40sp"
                     android:layout_height="40sp"
                     android:layout_margin="10sp"
                     android:scaleType="centerCrop"
-                    android:src="@color/image_profile" />
+                    android:src="@color/image_profile"
+                    app:shapeAppearanceOverlay="@style/ShapeAppearance.App.Circle" />
 
                 <RelativeLayout
                     android:layout_width="match_parent"

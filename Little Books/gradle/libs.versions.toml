@@ -4,7 +4,6 @@ androidImageCropper = "2.8.0"
 androidPdfViewer = "3.2.0-beta06"
 #noinspection GradleDependency
 autoimageslider = "1.4.0"
-circleimageview = "3.1.0"
 coil = "2.7.0"
 firebaseBom = "34.18.0"
 coreKtx = "1.19.0"
@@ -27,7 +26,6 @@ android-pdf-viewer = { module = "io.github.oothp:android-pdf-viewer", version.re
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-preference-ktx = { module = "androidx.preference:preference-ktx", version.ref = "preferenceKtx" }
 autoimageslider = { module = "com.github.smarteist:autoimageslider", version.ref = "autoimageslider" }
-circleimageview = { module = "de.hdodenhof:circleimageview", version.ref = "circleimageview" }
 firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
 firebase-auth = { module = "com.google.firebase:firebase-auth" }
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
