@@ -1,5 +1,5 @@
 [versions]
-agp = "9.3.2"
+agp = "9.4.0"
 androidImageCropper = "2.8.0"
 androidPdfViewer = "3.2.0-beta06"
 coil = "2.7.0"
