@@ -46,7 +46,8 @@ dependencies {
     implementation(libs.material)
     implementation(libs.multicolors)
     // Image
-    implementation(libs.coil)                           //Coil Image
+    implementation(libs.coil)
+    implementation(libs.coil.network.okhttp)            //Coil Image
     api(libs.android.image.cropper)                     //Image Crop
     //implementation(libs.glide.transformations)          //Image Blur
     //Firebase
@@ -59,5 +60,4 @@ dependencies {
     //Other's
     implementation(libs.material.ripple)                //Ripple Effect
     implementation(libs.android.pdf.viewer)             //PDF View
-    implementation(libs.multi.colors)
 }

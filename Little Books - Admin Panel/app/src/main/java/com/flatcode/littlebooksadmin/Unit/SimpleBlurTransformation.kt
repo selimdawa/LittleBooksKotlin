@@ -3,10 +3,10 @@ package com.flatcode.littlebooksadmin.Unit
 import android.graphics.Bitmap
 import androidx.core.graphics.createBitmap
 import androidx.core.graphics.scale
-import coil.size.Size
-import coil.transform.Transformation
+import coil3.size.Size
+import coil3.transform.Transformation
 
-class SimpleBlurTransformation(private val radius: Float) : Transformation {
+class SimpleBlurTransformation(private val radius: Float) : Transformation() {
     override val cacheKey: String = "${SimpleBlurTransformation::class.java.name}-$radius"
 
     override suspend fun transform(input: Bitmap, size: Size): Bitmap {
