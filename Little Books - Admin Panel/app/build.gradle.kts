@@ -1,6 +1,8 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.google.services)
+    alias(libs.plugins.hilt)
+    alias(libs.plugins.ksp)
 }
 
 android {
@@ -42,14 +44,16 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+    
     //Layout
     implementation(libs.material)
     implementation(libs.multicolors)
+    
     // Image
     implementation(libs.coil)
     implementation(libs.coil.network.okhttp)            //Coil Image
     api(libs.android.image.cropper)                     //Image Crop
-    //implementation(libs.glide.transformations)          //Image Blur
+    
     //Firebase
     implementation(platform(libs.firebase.bom)) //Firebase BOM
     implementation(libs.firebase.auth)
@@ -60,4 +64,25 @@ dependencies {
     //Other's
     implementation(libs.material.ripple)                //Ripple Effect
     implementation(libs.android.pdf.viewer)             //PDF View
+    
+    // MVVM, Coroutines & Lifecycle
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
+    implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.kotlinx.coroutines.android)
+
+    // Hilt
+    implementation(libs.hilt.android)
+    ksp(libs.hilt.compiler)
+
+    // Room
+    implementation(libs.room.runtime)
+    implementation(libs.room.ktx)
+    ksp(libs.room.compiler)
+
+    // Navigation
+    implementation(libs.navigation.fragment.ktx)
+    implementation(libs.navigation.ui.ktx)
+
+    // Timber
+    implementation(libs.timber)
 }

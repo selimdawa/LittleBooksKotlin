@@ -1,6 +1,8 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.google.services)
+    alias(libs.plugins.hilt)
+    alias(libs.plugins.ksp)
 }
 
 android {
@@ -79,4 +81,26 @@ dependencies {
     implementation(libs.nafisbottomnav)                 //Bottom Navigation
     implementation(libs.play.services.ads)              //ADs Google AdMob
     implementation(libs.android.pdf.viewer)             //PDF View
+
+    // MVVM & Coroutines
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
+    implementation(libs.androidx.lifecycle.livedata.ktx)
+    implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.kotlinx.coroutines.android)
+
+    // Hilt
+    implementation(libs.hilt.android)
+    "ksp"(libs.hilt.compiler)
+
+    // Timber
+    implementation(libs.timber)
+
+    // Navigation
+    implementation(libs.androidx.navigation.fragment.ktx)
+    implementation(libs.androidx.navigation.ui.ktx)
+
+    // Room
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.ktx)
+    "ksp"(libs.androidx.room.compiler)
 }
