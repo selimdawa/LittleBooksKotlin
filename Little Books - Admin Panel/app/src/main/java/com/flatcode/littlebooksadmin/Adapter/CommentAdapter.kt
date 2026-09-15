@@ -13,7 +13,7 @@ import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.flatcode.littlebooksadmin.Model.Comment
 import com.flatcode.littlebooksadmin.Modelimport.User
-import com.flatcode.littlebooksadmin.MyApplication
+import com.flatcode.littlebooksadmin.Application
 import com.flatcode.littlebooksadmin.Unit.DATA
 import com.flatcode.littlebooksadmin.Unit.VOID
 import com.flatcode.littlebooksadmin.databinding.ItemCommentBinding
@@ -38,7 +38,7 @@ class CommentAdapter(private val context: Context, var list: ArrayList<Comment?>
         val publisher = DATA.EMPTY + item.publisher
         val timestamp = DATA.EMPTY + item.timestamp
 
-        val date: String = MyApplication.formatTimestamp(timestamp.toLong())
+        val date: String = Application.formatTimestamp(timestamp.toLong())
         holder.date.text = date
         holder.comment.text = comment
 

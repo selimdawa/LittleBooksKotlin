@@ -1,7 +1,14 @@
 package com.flatcode.littlebooksadmin.data.model
 
+import android.os.Parcelable
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+import kotlinx.parcelize.Parcelize
+
+@Parcelize
+@Entity(tableName = "users")
 data class User(
-    var id: String? = null,
+    @PrimaryKey var id: String = "",
     var username: String? = null,
     var profileImage: String? = null,
     var email: String? = null,
@@ -10,4 +17,4 @@ data class User(
     var booksCount: Int = 0,
     var adLoad: Int = 0,
     var adClick: Int = 0
-)
+) : Parcelable

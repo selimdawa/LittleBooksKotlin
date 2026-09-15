@@ -1,15 +1,15 @@
 package com.flatcode.littlebooks.Model
 
-class ADs {
-    var name: String? = null
-    var adsLoadedCount = 0
-    var adsClickedCount = 0
+import android.os.Parcelable
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+import kotlinx.parcelize.Parcelize
 
-    constructor()
-
-    constructor(name: String?, adsLoadedCount: Int, adsClickedCount: Int) {
-        this.name = name
-        this.adsLoadedCount = adsLoadedCount
-        this.adsClickedCount = adsClickedCount
-    }
-}
+@Parcelize
+@Entity(tableName = "ads")
+data class ADs(
+    @PrimaryKey
+    var name: String = "",
+    var adsLoadedCount: Int = 0,
+    var adsClickedCount: Int = 0
+) : Parcelable

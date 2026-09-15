@@ -3,6 +3,8 @@ plugins {
     alias(libs.plugins.google.services)
     alias(libs.plugins.hilt)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.navigation.safeargs)
+    alias(libs.plugins.kotlinParcelize)
 }
 
 android {
@@ -44,9 +46,6 @@ dependencies {
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.datastore.preferences)   //DataStore
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
     //Layout
     implementation(libs.material)
     implementation(libs.multicolors)
@@ -54,39 +53,41 @@ dependencies {
     implementation(libs.coil)                           //Coil Image
     api(libs.android.image.cropper)                     //Image Crop
     implementation(libs.autoimageslider)                //Slider Show
-    // Firebase
+    //Firebase
     implementation(platform(libs.firebase.bom)) //Firebase BOM
     implementation(libs.firebase.auth)
     implementation(libs.firebase.database)
     implementation(libs.firebase.storage)
     implementation(libs.firebase.analytics)
-    //implementation(libs.firebase.crashlytics)
-    //Other's
+    implementation(libs.firebase.crashlytics)
+    //MVVM
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
+    //Coroutines
+    implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.kotlinx.coroutines.android)
+    implementation(libs.kotlinx.coroutines.play.services)
+    //Hilt
+    implementation(libs.hilt.android)
+    ksp(libs.hilt.compiler)
+    //Navigation
+    implementation(libs.androidx.navigation.fragment.ktx)
+    implementation(libs.androidx.navigation.ui.ktx)
+    //Room
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.ktx)
+    ksp(libs.androidx.room.compiler)
+    //Other
     implementation(libs.material.ripple)                //Ripple Effect
     implementation(libs.nafisbottomnav)                 //Bottom Navigation
     implementation(libs.play.services.ads)              //ADs Google AdMob
     implementation(libs.android.pdf.viewer)             //PDF View
-
-    // MVVM & Coroutines
-    implementation(libs.androidx.lifecycle.viewmodel.ktx)
-    implementation(libs.androidx.lifecycle.livedata.ktx)
-    implementation(libs.kotlinx.coroutines.core)
-    implementation(libs.kotlinx.coroutines.android)
-    implementation(libs.kotlinx.coroutines.play.services)
-
-    // Hilt
-    implementation(libs.hilt.android)
-    ksp(libs.hilt.compiler)
-
-    // Timber
     implementation(libs.timber)
+    //Test
+    testImplementation(libs.junit)
+    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.androidx.espresso.core)
+}
 
-    // Navigation
-    implementation(libs.androidx.navigation.fragment.ktx)
-    implementation(libs.androidx.navigation.ui.ktx)
-
-    // Room
-    implementation(libs.androidx.room.runtime)
-    implementation(libs.androidx.room.ktx)
-    ksp(libs.androidx.room.compiler)
+ksp {
+    arg("room.schemaLocation", "$projectDir/schemas")
 }

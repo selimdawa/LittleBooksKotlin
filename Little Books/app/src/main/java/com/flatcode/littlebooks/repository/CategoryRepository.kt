@@ -2,15 +2,18 @@ package com.flatcode.littlebooks.repository
 
 import com.flatcode.littlebooks.Model.Category
 import com.flatcode.littlebooks.Unit.DATA
+import com.flatcode.littlebooks.data.local.dao.CategoryDao
 import com.flatcode.littlebooks.utils.Resource
 import com.google.firebase.database.FirebaseDatabase
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class CategoryRepository @Inject constructor(
-    private val db: FirebaseDatabase
+    private val db: FirebaseDatabase,
+    private val categoryDao: CategoryDao
 ) {
     suspend fun getCategories(): Resource<List<Category>> {
         return try {
@@ -19,9 +22,12 @@ class CategoryRepository @Inject constructor(
             for (data in snapshot.children) {
                 data.getValue(Category::class.java)?.let { list.add(it) }
             }
+            categoryDao.insertCategories(list)
             Resource.Success(list)
         } catch (e: Exception) {
-            Resource.Error(e.message ?: "An unknown error occurred")
+            val localList = categoryDao.getAllCategories().first()
+            if (localList.isNotEmpty()) Resource.Success(localList)
+            else Resource.Error(e.message ?: "An unknown error occurred")
         }
     }
 }

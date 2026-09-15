@@ -12,7 +12,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.flatcode.littlebooksadmin.Filter.ADsUserFilter
 import com.flatcode.littlebooksadmin.Modelimport.User
-import com.flatcode.littlebooksadmin.MyApplication
+import com.flatcode.littlebooksadmin.Application
 import com.flatcode.littlebooksadmin.Unit.CLASS
 import com.flatcode.littlebooksadmin.Unit.DATA
 import com.flatcode.littlebooksadmin.Unit.VOID
@@ -41,7 +41,7 @@ class ADsUserAdapter(private val context: Context, var list: ArrayList<User?>, i
         val timestamp = DATA.EMPTY + item.timestamp
         val adLoaded = DATA.EMPTY + item.adLoad
         val adClicked = DATA.EMPTY + item.adClick
-        val formattedDate: String = MyApplication.formatTimestamp(timestamp.toLong())
+        val formattedDate: String = Application.formatTimestamp(timestamp.toLong())
 
         VOID.Glide(true, context, profileImage, holder.profileImage)
 

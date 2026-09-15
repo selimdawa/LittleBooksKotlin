@@ -5,23 +5,31 @@ import android.net.Uri
 import com.flatcode.littlebooks.Model.User
 import com.flatcode.littlebooks.Unit.DATA
 import com.flatcode.littlebooks.Unit.VOID
+import com.flatcode.littlebooks.data.local.dao.UserDao
 import com.flatcode.littlebooks.utils.Resource
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class UserRepository @Inject constructor(
-    private val db: FirebaseDatabase
+    private val db: FirebaseDatabase,
+    private val userDao: UserDao
 ) {
     suspend fun getUserInfo(userId: String): Resource<User> {
         return try {
+            val localUser = userDao.getUserById(userId).first()
+            if (localUser != null) return Resource.Success(localUser)
+
             val snapshot = db.getReference(DATA.USERS).child(userId).get().await()
             val user = snapshot.getValue(User::class.java)
-            if (user != null) Resource.Success(user)
-            else Resource.Error("User not found")
+            if (user != null) {
+                userDao.insertUser(user)
+                Resource.Success(user)
+            } else Resource.Error("User not found")
         } catch (e: Exception) {
             Resource.Error(e.message ?: "An unknown error occurred")
         }
@@ -30,6 +38,8 @@ class UserRepository @Inject constructor(
     suspend fun updateUserInfo(userId: String, hashMap: Map<String, Any>): Resource<Unit> {
         return try {
             db.getReference(DATA.USERS).child(userId).updateChildren(hashMap).await()
+            val snapshot = db.getReference(DATA.USERS).child(userId).get().await()
+            snapshot.getValue(User::class.java)?.let { userDao.insertUser(it) }
             Resource.Success(Unit)
         } catch (e: Exception) {
             Resource.Error(e.message ?: "An unknown error occurred")
@@ -89,7 +99,10 @@ class UserRepository @Inject constructor(
             for (data in followSnapshot.children) {
                 val followUserId = data.key ?: continue
                 val userSnapshot = db.getReference(DATA.USERS).child(followUserId).get().await()
-                userSnapshot.getValue(User::class.java)?.let { userList.add(it) }
+                userSnapshot.getValue(User::class.java)?.let { 
+                    userList.add(it)
+                    userDao.insertUser(it)
+                }
             }
             Resource.Success(userList)
         } catch (e: Exception) {
@@ -121,6 +134,7 @@ class UserRepository @Inject constructor(
                 val user = data.getValue(User::class.java)
                 if (user != null && user.id != currentUserId && user.booksCount >= 1) {
                     list.add(user)
+                    userDao.insertUser(user)
                 }
             }
             Resource.Success(list)

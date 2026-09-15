@@ -1,37 +1,27 @@
 package com.flatcode.littlebooks.Model
 
-class Book {
-    var publisher: String? = null
-    var id: String? = null
-    var title: String? = null
-    var description: String? = null
-    var categoryId: String? = null
-    var url: String? = null
-    var image: String? = null
-    var timestamp: Long = 0
-    var viewsCount = 0
-    var downloadsCount = 0
-    var lovesCount = 0
-    var editorsChoice = 0
+import android.os.Parcelable
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+import kotlinx.parcelize.Parcelize
 
-    constructor()
-
-    constructor(
-        publisher: String?, id: String?, title: String?, description: String?, categoryId: String?,
-        url: String?, image: String?, timestamp: Long, viewsCount: Int,
-        downloadsCount: Int, lovesCount: Int, editorsChoice: Int
-    ) {
-        this.publisher = publisher
-        this.id = id
-        this.title = title
-        this.description = description
-        this.categoryId = categoryId
-        this.url = url
-        this.image = image
-        this.timestamp = timestamp
-        this.viewsCount = viewsCount
-        this.downloadsCount = downloadsCount
-        this.lovesCount = lovesCount
-        this.editorsChoice = editorsChoice
-    }
+@Parcelize
+@Entity(tableName = "books")
+data class Book(
+    @PrimaryKey
+    var id: String = "",
+    var publisher: String? = null,
+    var title: String? = null,
+    var description: String? = null,
+    var categoryId: String? = null,
+    var url: String? = null,
+    var image: String? = null,
+    var timestamp: Long = 0,
+    var viewsCount: Int = 0,
+    var downloadsCount: Int = 0,
+    var lovesCount: Int = 0,
+    var editorsChoice: Int = 0
+) : Parcelable {
+    // No-arg constructor for Firebase/Room if needed, 
+    // though data class with defaults handles it.
 }

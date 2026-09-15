@@ -2,6 +2,8 @@ package com.flatcode.littlebooksadmin.data.repository
 
 import android.net.Uri
 import com.flatcode.littlebooksadmin.Unit.DATA
+import com.flatcode.littlebooksadmin.data.local.BookDao
+import com.flatcode.littlebooksadmin.data.local.CommentDao
 import com.flatcode.littlebooksadmin.data.model.Book
 import com.flatcode.littlebooksadmin.data.model.Category
 import com.flatcode.littlebooksadmin.data.model.Comment
@@ -14,6 +16,7 @@ import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -21,7 +24,9 @@ import javax.inject.Singleton
 @Singleton
 class BookRepository @Inject constructor(
     private val db: FirebaseDatabase,
-    private val storage: FirebaseStorage
+    private val storage: FirebaseStorage,
+    private val bookDao: BookDao,
+    private val commentDao: CommentDao
 ) {
 
     fun getCategories(): Flow<Resource<List<Category>>> = callbackFlow {
@@ -57,6 +62,9 @@ class BookRepository @Inject constructor(
                             books.add(it)
                         }
                     }
+                }
+                this@callbackFlow.launch {
+                    bookDao.insertBooks(books)
                 }
                 trySend(Resource.Success(books.reversed()))
             }
@@ -134,6 +142,7 @@ class BookRepository @Inject constructor(
             )
             
             ref.child(id).setValue(book).await()
+            bookDao.insertBook(book)
             
             // Increment book count for user
             incrementUserBookCount(DATA.FirebaseUserUid)
@@ -167,9 +176,15 @@ class BookRepository @Inject constructor(
 
     suspend fun getBookById(bookId: String): Resource<Book> {
         return try {
+            val cachedBook = bookDao.getBookById(bookId)
+            if (cachedBook != null) return Resource.Success(cachedBook)
+            
             val snapshot = db.getReference(DATA.BOOKS).child(bookId).get().await()
             val book = snapshot.getValue(Book::class.java)
-            if (book != null) Resource.Success(book) else Resource.Error("Book not found")
+            if (book != null) {
+                bookDao.insertBook(book)
+                Resource.Success(book)
+            } else Resource.Error("Book not found")
         } catch (e: Exception) {
             Resource.Error(e.message ?: "Unknown error")
         }
@@ -193,6 +208,9 @@ class BookRepository @Inject constructor(
                 for (data in snapshot.children) {
                     val comment = data.getValue(Comment::class.java)
                     comment?.let { comments.add(it) }
+                }
+                this@callbackFlow.launch {
+                    commentDao.insertComments(comments)
                 }
                 trySend(Resource.Success(comments))
             }
@@ -243,6 +261,9 @@ class BookRepository @Inject constructor(
                         books.add(book)
                     }
                 }
+                this@callbackFlow.launch {
+                    bookDao.insertBooks(books)
+                }
                 trySend(Resource.Success(books.reversed()))
             }
 
@@ -264,6 +285,9 @@ class BookRepository @Inject constructor(
                     if (book != null && book.editorsChoice != 0) {
                         books.add(book)
                     }
+                }
+                this@callbackFlow.launch {
+                    bookDao.insertBooks(books)
                 }
                 trySend(Resource.Success(books))
             }

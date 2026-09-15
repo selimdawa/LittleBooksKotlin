@@ -2,6 +2,7 @@ package com.flatcode.littlebooksadmin.data.repository
 
 import android.net.Uri
 import com.flatcode.littlebooksadmin.Unit.DATA
+import com.flatcode.littlebooksadmin.data.local.CategoryDao
 import com.flatcode.littlebooksadmin.data.model.Category
 import com.flatcode.littlebooksadmin.data.util.Resource
 import com.google.firebase.database.DataSnapshot
@@ -12,6 +13,7 @@ import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -19,7 +21,8 @@ import javax.inject.Singleton
 @Singleton
 class CategoryRepository @Inject constructor(
     private val db: FirebaseDatabase,
-    private val storage: FirebaseStorage
+    private val storage: FirebaseStorage,
+    private val categoryDao: CategoryDao
 ) {
 
     fun getCategories(orderBy: String = DATA.CATEGORY): Flow<Resource<List<Category>>> = callbackFlow {
@@ -31,6 +34,9 @@ class CategoryRepository @Inject constructor(
                 for (data in snapshot.children) {
                     val category = data.getValue(Category::class.java)
                     category?.let { categories.add(it) }
+                }
+                this@callbackFlow.launch {
+                    categoryDao.insertCategories(categories)
                 }
                 trySend(Resource.Success(categories.reversed()))
             }
@@ -64,6 +70,7 @@ class CategoryRepository @Inject constructor(
             )
             
             ref.child(id).setValue(category).await()
+            categoryDao.insertCategory(category)
             Resource.Success(Unit)
         } catch (e: Exception) {
             Resource.Error(e.message ?: "Unknown error")

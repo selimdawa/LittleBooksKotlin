@@ -1,19 +1,22 @@
 package com.flatcode.littlebooks.Model
 
-class Setting {
-    var id: String? = null
-    var name: String? = null
-    var image = 0
-    var number = 0
-    var c: Class<*>? = null
+import android.os.Parcelable
+import androidx.room.Entity
+import androidx.room.Ignore
+import androidx.room.PrimaryKey
+import kotlinx.parcelize.Parcelize
+import kotlinx.parcelize.RawValue
 
-    constructor()
-
-    constructor(id: String?, name: String?, image: Int, number: Int, c: Class<*>?) {
-        this.id = id
-        this.name = name
-        this.image = image
-        this.number = number
-        this.c = c
-    }
+@Parcelize
+@Entity(tableName = "settings")
+data class Setting(
+    @PrimaryKey
+    var id: String = "",
+    var name: String? = null,
+    var image: Int = 0,
+    var number: Int = 0,
+    var c: @RawValue Class<*>? = null
+) : Parcelable {
+    // Secondary constructor for compatibility if needed
+    constructor() : this("", null, 0, 0, null)
 }
