@@ -5,27 +5,32 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.flatcode.littlebooks.Adapter.PublisherAdapter
 import com.flatcode.littlebooks.Model.User
 import com.flatcode.littlebooks.R
 import com.flatcode.littlebooks.Unit.DATA
 import com.flatcode.littlebooks.Unit.VOID
 import com.flatcode.littlebooks.databinding.ActivityPageStaggeredBinding
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.Query
-import com.google.firebase.database.ValueEventListener
+import com.flatcode.littlebooks.utils.Resource
+import com.flatcode.littlebooks.viewmodel.FollowViewModel
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import java.text.MessageFormat
 
+@AndroidEntryPoint
 class FollowersActivity : AppCompatActivity() {
 
     private var binding: ActivityPageStaggeredBinding? = null
     private val context: Context = this@FollowersActivity
-    var check: MutableList<String?>? = null
-    var list: ArrayList<User?>? = null
-    var adapter: PublisherAdapter? = null
+    private var list = ArrayList<User?>()
+    private var adapter: PublisherAdapter? = null
+
+    private val viewModel: FollowViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,61 +61,44 @@ class FollowersActivity : AppCompatActivity() {
             override fun afterTextChanged(s: Editable) {}
         })
 
-        //binding.recyclerView.setHasFixedSize(true);
-        list = ArrayList()
-        adapter = PublisherAdapter(context, list!!)
+        adapter = PublisherAdapter(context, list)
         binding!!.recyclerView.adapter = adapter
+
+        observeViewModel()
     }
 
-    private val data: Unit
-        get() {
-            check = ArrayList()
-            val reference = FirebaseDatabase.getInstance().getReference(DATA.FOLLOW)
-                .child(DATA.FirebaseUserUid).child(DATA.FOLLOWERS)
-            reference.addListenerForSingleValueEvent(object : ValueEventListener {
-                override fun onDataChange(dataSnapshot: DataSnapshot) {
-                    (check as ArrayList<String?>).clear()
-                    for (snapshot in dataSnapshot.children) {
-                        (check as ArrayList<String?>).add(snapshot.key)
-                    }
-                    users
-                }
-
-                override fun onCancelled(databaseError: DatabaseError) {}
-            })
-        }
-    private val users: Unit
-        get() {
-            val reference: Query = FirebaseDatabase.getInstance().getReference(DATA.USERS)
-            reference.addListenerForSingleValueEvent(object : ValueEventListener {
-                override fun onDataChange(dataSnapshot: DataSnapshot) {
-                    list!!.clear()
-                    var i = 0
-                    for (snapshot in dataSnapshot.children) {
-                        val user = snapshot.getValue(User::class.java)
-                        for (id in check!!) {
-                            assert(user != null)
-                            if (user!!.username != null) if (user.id == id) {
-                                list!!.add(user)
-                                i++
+    private fun observeViewModel() {
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.usersList.collect { resource ->
+                    when (resource) {
+                        is Resource.Success -> {
+                            binding!!.progress.visibility = View.GONE
+                            list.clear()
+                            resource.data?.let { list.addAll(it) }
+                            binding!!.toolbar.number.text = MessageFormat.format("( {0} )", list.size)
+                            if (list.isNotEmpty()) {
+                                binding!!.recyclerView.visibility = View.VISIBLE
+                                binding!!.emptyText.visibility = View.GONE
+                            } else {
+                                binding!!.recyclerView.visibility = View.GONE
+                                binding!!.emptyText.visibility = View.VISIBLE
                             }
+                            adapter!!.notifyDataSetChanged()
+                        }
+                        is Resource.Error -> {
+                            binding!!.progress.visibility = View.GONE
+                            binding!!.recyclerView.visibility = View.GONE
+                            binding!!.emptyText.visibility = View.VISIBLE
+                        }
+                        is Resource.Loading -> {
+                            binding!!.progress.visibility = View.VISIBLE
                         }
                     }
-                    binding!!.toolbar.number.text = MessageFormat.format("( {0} )", i)
-                    binding!!.progress.visibility = View.GONE
-                    if (list!!.isNotEmpty()) {
-                        binding!!.recyclerView.visibility = View.VISIBLE
-                        binding!!.emptyText.visibility = View.GONE
-                    } else {
-                        binding!!.recyclerView.visibility = View.GONE
-                        binding!!.emptyText.visibility = View.VISIBLE
-                    }
-                    adapter!!.notifyDataSetChanged()
                 }
-
-                override fun onCancelled(databaseError: DatabaseError) {}
-            })
+            }
         }
+    }
 
     override fun onBackPressed() {
         if (DATA.searchStatus) {
@@ -122,12 +110,7 @@ class FollowersActivity : AppCompatActivity() {
     }
 
     override fun onResume() {
-        data
         super.onResume()
-    }
-
-    override fun onRestart() {
-        data
-        super.onRestart()
+        viewModel.loadFollowList(DATA.FirebaseUserUid, DATA.FOLLOWERS)
     }
 }

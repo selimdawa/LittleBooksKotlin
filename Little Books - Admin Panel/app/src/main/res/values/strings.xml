@@ -38,6 +38,8 @@
     <string name="ok">Ok</string>
     <string name="choose_book">Choose Book</string>
     <string name="add_new_book">Add New Book</string>
+    <string name="add_new_category">Add New Category</string>
+    <string name="add_category">Add Category</string>
     <string name="edit_book">Edit Book</string>
     <string name="edit_profile">Edit Profile</string>
     <string name="edit_category">Edit Category</string>

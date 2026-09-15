@@ -19,35 +19,20 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
-    //signingConfigs {
-    //    create("release") {
-    //        storeFile = file("D:\\MyProjects\\Kotlin\\Little Books\\Little Books\\LittleBooks.jks")
-    //        storePassword = "00000000"
-    //        keyAlias = "LittleBooks"
-    //        keyPassword = "00000000"
-    //    }
-    //}
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
             )
+            signingConfig = signingConfigs.getByName("debug")
         }
     }
-    //buildTypes {
-    //    getByName("release") {
-    //        signingConfig = signingConfigs.getByName("release")
-    //        isMinifyEnabled = true
-    //        isShrinkResources = true
-    //        proguardFiles(
-    //            getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
-    //        )
-    //    }
-    //}
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
     }
     buildFeatures {
         dataBinding = true
@@ -87,10 +72,11 @@ dependencies {
     implementation(libs.androidx.lifecycle.livedata.ktx)
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.coroutines.android)
+    implementation(libs.kotlinx.coroutines.play.services)
 
     // Hilt
     implementation(libs.hilt.android)
-    "ksp"(libs.hilt.compiler)
+    ksp(libs.hilt.compiler)
 
     // Timber
     implementation(libs.timber)
@@ -102,5 +88,5 @@ dependencies {
     // Room
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
-    "ksp"(libs.androidx.room.compiler)
+    ksp(libs.androidx.room.compiler)
 }

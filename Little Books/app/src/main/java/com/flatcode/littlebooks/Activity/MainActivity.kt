@@ -2,12 +2,15 @@ package com.flatcode.littlebooks.Activity
 
 import android.app.Activity
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.flatcode.littlebooks.Fragment.CategoriesFragment
 import com.flatcode.littlebooks.Fragment.FollowersFragment
 import com.flatcode.littlebooks.Fragment.HomeFragment
@@ -17,20 +20,22 @@ import com.flatcode.littlebooks.Unit.CLASS
 import com.flatcode.littlebooks.Unit.DATA
 import com.flatcode.littlebooks.Unit.VOID
 import com.flatcode.littlebooks.databinding.ActivityMainBinding
+import com.flatcode.littlebooks.utils.Resource
+import com.flatcode.littlebooks.viewmodel.MainViewModel
 import com.google.android.gms.ads.MobileAds
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
 import com.nafis.bottomnavigation.NafisBottomNavigation
-import java.util.Objects
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
     private var binding: ActivityMainBinding? = null
     var activity: Activity? = null
     var context: Context = also { activity = it }
     var bottomNavigation: NafisBottomNavigation? = null
+
+    private val viewModel: MainViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -111,6 +116,28 @@ class MainActivity : AppCompatActivity() {
             VOID.IntentExtra(context, CLASS.PROFILE, DATA.PROFILE_ID, DATA.FirebaseUserUid)
         }
         loadUserInfo()
+        observeViewModel()
+    }
+
+    private fun observeViewModel() {
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.user.collect { resource ->
+                    when (resource) {
+                        is Resource.Success -> {
+                            val user = resource.data
+                            VOID.Glide_(true, context, user?.profileImage, binding!!.toolbar.image)
+                        }
+                        is Resource.Error -> {
+                            // Handle error
+                        }
+                        is Resource.Loading -> {
+                            // Handle loading
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private fun loadFragment(fragment: Fragment?) {
@@ -119,22 +146,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun loadUserInfo() {
-        val reference = FirebaseDatabase.getInstance().getReference(DATA.USERS)
-        reference.child(Objects.requireNonNull(DATA.FirebaseUserUid))
-            .addListenerForSingleValueEvent(object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    val profileImage = DATA.EMPTY + snapshot.child(DATA.PROFILE_IMAGE).value
-                    VOID.Glide_(true, context, profileImage, binding!!.toolbar.image)
-                }
-
-                override fun onCancelled(error: DatabaseError) {}
-            })
+        DATA.FirebaseUserUid?.let { viewModel.getUserInfo(it) }
     }
 
     override fun onBackPressed() {
         super.onBackPressed()
         VOID.closeApp(context, activity)
     }
-
-
 }

@@ -3,71 +3,83 @@ package com.flatcode.littlebooksadmin.Auth
 import android.app.ProgressDialog
 import android.content.Context
 import android.os.Bundle
-import android.text.TextUtils
 import android.util.Patterns
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.flatcode.littlebooksadmin.Unit.CLASS
 import com.flatcode.littlebooksadmin.Unit.DATA
 import com.flatcode.littlebooksadmin.Unit.VOID
+import com.flatcode.littlebooksadmin.data.util.Resource
 import com.flatcode.littlebooksadmin.databinding.ActivityLoginBinding
-import com.google.firebase.auth.FirebaseAuth
+import com.flatcode.littlebooksadmin.ui.viewmodel.AuthViewModel
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class LoginActivity : AppCompatActivity() {
 
     private var binding: ActivityLoginBinding? = null
-    var context: Context = this@LoginActivity
-    private var auth: FirebaseAuth? = null
+    private val context: Context = this@LoginActivity
     private var dialog: ProgressDialog? = null
+    
+    private val viewModel: AuthViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityLoginBinding.inflate(layoutInflater)
-        val view = binding!!.root
-        setContentView(view)
+        setContentView(binding!!.root)
 
-        auth = FirebaseAuth.getInstance()
+        initUI()
+        observeViewModel()
+    }
+
+    private fun initUI() {
         dialog = ProgressDialog(this)
         dialog!!.setTitle("Please wait...")
         dialog!!.setCanceledOnTouchOutside(false)
 
         binding!!.forget.setOnClickListener { VOID.Intent1(context, CLASS.FORGET_PASSWORD) }
-        binding!!.loginBtn.setOnClickListener { validateDate() }
+        binding!!.loginBtn.setOnClickListener { validateData() }
     }
 
-    private var email = ""
-    private var password = ""
-    private fun validateDate() {
-
-        //get data
-        email = binding!!.emailEt.text.toString().trim { it <= ' ' }
-        password = binding!!.passwordEt.text.toString().trim { it <= ' ' }
-
-        //validate data
-        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            Toast.makeText(context, "Invalid email pattern...!", Toast.LENGTH_SHORT).show()
-        } else if (TextUtils.isEmpty(password)) {
-            Toast.makeText(context, "Enter password...!", Toast.LENGTH_SHORT).show()
-        } else {
-            loginUser()
+    private fun observeViewModel() {
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.loginState.collect { resource ->
+                    when (resource) {
+                        is Resource.Loading -> {
+                            dialog!!.setMessage("Logging In...")
+                            dialog!!.show()
+                        }
+                        is Resource.Success -> {
+                            dialog!!.dismiss()
+                            VOID.IntentClear(context, CLASS.MAIN)
+                        }
+                        is Resource.Error -> {
+                            dialog!!.dismiss()
+                            Toast.makeText(context, resource.message, Toast.LENGTH_SHORT).show()
+                        }
+                        null -> {}
+                    }
+                }
+            }
         }
     }
 
-    private fun loginUser() {
-        dialog!!.setMessage("Logging In...")
-        dialog!!.show()
-        try {
-            auth!!.signInWithEmailAndPassword(email, password).addOnCanceledListener {
-                dialog!!.dismiss()
-                Toast.makeText(context, "Error!", Toast.LENGTH_SHORT).show()
-            }.addOnSuccessListener { VOID.IntentClear(context, CLASS.MAIN) }
-                .addOnFailureListener { e: Exception ->
-                    dialog!!.dismiss()
-                    Toast.makeText(context, DATA.EMPTY + e.message, Toast.LENGTH_SHORT).show()
-                }.addOnCompleteListener { dialog!!.show() }
-        } catch (e: Exception) {
-            dialog!!.dismiss()
-            Toast.makeText(context, DATA.EMPTY + e.message, Toast.LENGTH_SHORT).show()
+    private fun validateData() {
+        val email = binding!!.emailEt.text.toString().trim()
+        val password = binding!!.passwordEt.text.toString().trim()
+
+        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            Toast.makeText(context, "Invalid email pattern...!", Toast.LENGTH_SHORT).show()
+        } else if (password.isEmpty()) {
+            Toast.makeText(context, "Enter password...!", Toast.LENGTH_SHORT).show()
+        } else {
+            viewModel.login(email, password)
         }
     }
 }

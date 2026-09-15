@@ -5,18 +5,27 @@ import android.content.Context
 import android.os.Bundle
 import android.util.Patterns
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.flatcode.littlebooks.Unit.CLASS
 import com.flatcode.littlebooks.Unit.VOID
 import com.flatcode.littlebooks.databinding.ActivityForgetPasswordBinding
-import com.google.firebase.auth.FirebaseAuth
+import com.flatcode.littlebooks.utils.Resource
+import com.flatcode.littlebooks.viewmodel.AuthViewModel
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class ForgetPasswordActivity : AppCompatActivity() {
 
     private var binding: ActivityForgetPasswordBinding? = null
     private val context: Context = this@ForgetPasswordActivity
-    private var auth: FirebaseAuth? = null
     private var dialog: ProgressDialog? = null
+
+    private val viewModel: AuthViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,7 +33,6 @@ class ForgetPasswordActivity : AppCompatActivity() {
         val view = binding!!.root
         setContentView(view)
 
-        auth = FirebaseAuth.getInstance()
         dialog = ProgressDialog(this)
         dialog!!.setTitle("Please wait...")
         dialog!!.setCanceledOnTouchOutside(false)
@@ -38,6 +46,34 @@ class ForgetPasswordActivity : AppCompatActivity() {
             finish()
         }
         binding!!.go.setOnClickListener { validateDate() }
+
+        observeViewModel()
+    }
+
+    private fun observeViewModel() {
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.forgetPasswordStatus.collect { resource ->
+                    when (resource) {
+                        is Resource.Success -> {
+                            dialog!!.dismiss()
+                            Toast.makeText(
+                                context, "Instructions to reset password sent", Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                        is Resource.Error -> {
+                            dialog!!.dismiss()
+                            Toast.makeText(context, resource.message, Toast.LENGTH_SHORT).show()
+                        }
+                        is Resource.Loading -> {
+                            dialog!!.setMessage("Sending password recovery instructions...")
+                            dialog!!.show()
+                        }
+                        null -> {}
+                    }
+                }
+            }
+        }
     }
 
     private var email = ""
@@ -48,22 +84,7 @@ class ForgetPasswordActivity : AppCompatActivity() {
         } else if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             Toast.makeText(context, "Invalid email format...!", Toast.LENGTH_SHORT).show()
         } else {
-            recoverPassword()
-        }
-    }
-
-    private fun recoverPassword() {
-        dialog!!.setMessage("Sending password recovery to instructions to $email")
-        dialog!!.show()
-        auth!!.sendPasswordResetEmail(email).addOnCompleteListener {
-            dialog!!.dismiss()
-            Toast.makeText(
-                context, "Instructions to reset password sent to $email", Toast.LENGTH_SHORT
-            ).show()
-        }.addOnFailureListener { e: Exception ->
-            dialog!!.dismiss()
-            Toast.makeText(context, "Failed to send to due to " + e.message, Toast.LENGTH_SHORT)
-                .show()
+            viewModel.forgetPassword(email)
         }
     }
 }

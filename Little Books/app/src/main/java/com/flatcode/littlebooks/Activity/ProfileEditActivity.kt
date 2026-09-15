@@ -9,20 +9,22 @@ import android.net.Uri
 import android.os.Bundle
 import android.text.TextUtils
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.flatcode.littlebooks.R
 import com.flatcode.littlebooks.Unit.DATA
 import com.flatcode.littlebooks.Unit.VOID
 import com.flatcode.littlebooks.databinding.ActivityProfileEditBinding
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
-import com.google.firebase.storage.FirebaseStorage
-import com.google.firebase.storage.UploadTask
+import com.flatcode.littlebooks.utils.Resource
+import com.flatcode.littlebooks.viewmodel.ProfileViewModel
+import dagger.hilt.android.AndroidEntryPoint
 import com.theartofdev.edmodo.cropper.CropImage
-import java.util.Objects
+import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class ProfileEditActivity : AppCompatActivity() {
 
     private var binding: ActivityProfileEditBinding? = null
@@ -30,6 +32,8 @@ class ProfileEditActivity : AppCompatActivity() {
     var context: Context = also { activity = it }
     private var imageUri: Uri? = null
     private var dialog: ProgressDialog? = null
+
+    private val viewModel: ProfileViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,11 +45,53 @@ class ProfileEditActivity : AppCompatActivity() {
         dialog!!.setTitle("Please wait...")
         dialog!!.setCanceledOnTouchOutside(false)
 
-        loadUserInfo()
         binding!!.toolbar.nameSpace.setText(R.string.edit_profile)
         binding!!.toolbar.back.setOnClickListener { onBackPressed() }
         binding!!.image.setOnClickListener { VOID.CropImageSquare(activity) }
         binding!!.go.setOnClickListener { validateData() }
+
+        observeViewModel()
+        loadUserInfo()
+    }
+
+    private fun loadUserInfo() {
+        DATA.FirebaseUserUid?.let {
+            viewModel.loadProfileData(it, it, DATA.FOLLOWERS, DATA.FOLLOWING)
+        }
+    }
+
+    private fun observeViewModel() {
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                launch {
+                    viewModel.user.collect { resource ->
+                        if (resource is Resource.Success) {
+                            val user = resource.data
+                            VOID.Glide_(true, context, user?.profileImage, binding!!.image)
+                            binding!!.nameEt.setText(user?.username)
+                        }
+                    }
+                }
+                launch {
+                    viewModel.uploadStatus.collect { resource ->
+                        when (resource) {
+                            is Resource.Success -> {
+                                updateProfile(resource.data)
+                            }
+                            is Resource.Error -> {
+                                dialog!!.dismiss()
+                                Toast.makeText(context, resource.message, Toast.LENGTH_SHORT).show()
+                            }
+                            is Resource.Loading -> {
+                                dialog!!.setMessage("Uploading Image...")
+                                dialog!!.show()
+                            }
+                            null -> {}
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private var username = DATA.EMPTY
@@ -55,69 +101,27 @@ class ProfileEditActivity : AppCompatActivity() {
             Toast.makeText(context, "Enter name...", Toast.LENGTH_SHORT).show()
         } else {
             if (imageUri == null) {
-                updateProfile(DATA.EMPTY)
+                updateProfile(null)
             } else {
-                uploadImage()
+                viewModel.uploadProfileImage(DATA.FirebaseUserUid, imageUri!!, context)
             }
         }
-    }
-
-    private fun uploadImage() {
-        dialog!!.setMessage("Uploading Image...")
-        dialog!!.show()
-        val filePathAndName = "Images/Profile/" + DATA.FirebaseUserUid
-        val reference = FirebaseStorage.getInstance()
-            .getReference(filePathAndName + DATA.DOT + VOID.getFileExtension(imageUri, context))
-        reference.putFile(imageUri!!)
-            .addOnSuccessListener { taskSnapshot: UploadTask.TaskSnapshot ->
-                val uriTask = taskSnapshot.storage.downloadUrl
-                while (!uriTask.isSuccessful);
-                val uploadedImageUrl = DATA.EMPTY + uriTask.result
-                updateProfile(uploadedImageUrl)
-            }.addOnFailureListener { e: Exception ->
-                dialog!!.dismiss()
-                Toast.makeText(
-                    context,
-                    "Failed to upload image due to " + e.message,
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
     }
 
     private fun updateProfile(imageUrl: String?) {
         dialog!!.setMessage("Updating user profile...")
         dialog!!.show()
-        val hashMap = HashMap<String?, Any>()
+        val hashMap = HashMap<String, Any>()
         hashMap[DATA.USER_NAME] = DATA.EMPTY + username
-        if (imageUri != null) {
+        if (imageUrl != null) {
             hashMap[DATA.PROFILE_IMAGE] = DATA.EMPTY + imageUrl
         }
-        val reference = FirebaseDatabase.getInstance().getReference(DATA.USERS)
-        reference.child(Objects.requireNonNull(DATA.FirebaseUserUid)).updateChildren(hashMap)
-            .addOnSuccessListener {
-                dialog!!.dismiss()
-                Toast.makeText(context, "Profile updated...", Toast.LENGTH_SHORT).show()
-            }.addOnFailureListener { e: Exception ->
-                dialog!!.dismiss()
-                Toast.makeText(
-                    context, "Failed to update db duo to " + e.message, Toast.LENGTH_SHORT
-                ).show()
-            }
-    }
-
-    private fun loadUserInfo() {
-        val reference = FirebaseDatabase.getInstance().getReference(DATA.USERS)
-        reference.child(Objects.requireNonNull(DATA.FirebaseUserUid))
-            .addValueEventListener(object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    val username = DATA.EMPTY + snapshot.child(DATA.USER_NAME).value
-                    val profileImage = DATA.EMPTY + snapshot.child(DATA.PROFILE_IMAGE).value
-                    VOID.Glide_(true, context, profileImage, binding!!.image)
-                    binding!!.nameEt.setText(username)
-                }
-
-                override fun onCancelled(error: DatabaseError) {}
-            })
+        
+        lifecycleScope.launch {
+            viewModel.updateUserInfo(DATA.FirebaseUserUid, hashMap)
+            dialog!!.dismiss()
+            Toast.makeText(context, "Profile updated...", Toast.LENGTH_SHORT).show()
+        }
     }
 
     public override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

@@ -3,42 +3,44 @@ package com.flatcode.littlebooksadmin.Activity
 import android.content.Context
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.flatcode.littlebooksadmin.Unit.CLASS
 import com.flatcode.littlebooksadmin.Unit.VOID
 import com.flatcode.littlebooksadmin.databinding.ActivitySplashBinding
-import com.google.firebase.auth.FirebaseAuth
+import com.flatcode.littlebooksadmin.ui.viewmodel.AuthViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class SplashActivity : AppCompatActivity() {
 
     private var binding: ActivitySplashBinding? = null
-    var context: Context = this@SplashActivity
-    var auth: FirebaseAuth? = null
-    var time_per_second = 2
-    var time_final = time_per_millis * time_per_second
+    private val context: Context = this@SplashActivity
+    
+    private val viewModel: AuthViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivitySplashBinding.inflate(layoutInflater)
-        val view = binding!!.root
-        setContentView(view)
+        setContentView(binding!!.root)
 
-        auth = FirebaseAuth.getInstance()
-        Handler().postDelayed({ checkUser() }, time_final.toLong())
+        Handler(Looper.getMainLooper()).postDelayed({ 
+            checkUser() 
+        }, (TIME_PER_MILLIS * TIME_PER_SECOND).toLong())
     }
 
     private fun checkUser() {
-        //get current user, if logged in
-        val firebaseUser = auth!!.currentUser
-        if (firebaseUser == null) {
-            VOID.Intent1(context, CLASS.LOGIN)
+        if (viewModel.isUserLoggedIn()) {
+            VOID.IntentClear(context, CLASS.MAIN)
         } else {
-            VOID.Intent1(context, CLASS.MAIN)
+            VOID.IntentClear(context, CLASS.LOGIN)
         }
         finish()
     }
 
     companion object {
-        const val time_per_millis = 1000
+        private const val TIME_PER_MILLIS = 1000
+        private const val TIME_PER_SECOND = 2
     }
 }

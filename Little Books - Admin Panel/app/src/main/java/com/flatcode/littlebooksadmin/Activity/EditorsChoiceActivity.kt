@@ -2,55 +2,78 @@ package com.flatcode.littlebooksadmin.Activity
 
 import android.content.Context
 import android.os.Bundle
+import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.flatcode.littlebooksadmin.Adapter.EditorsChoiceAdapter
+import com.flatcode.littlebooksadmin.Modelimport.Book
 import com.flatcode.littlebooksadmin.Modelimport.EditorsChoice
 import com.flatcode.littlebooksadmin.R
+import com.flatcode.littlebooksadmin.data.util.Resource
 import com.flatcode.littlebooksadmin.databinding.ActivityEditorsChoiceBinding
+import com.flatcode.littlebooksadmin.ui.viewmodel.BooksViewModel
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class EditorsChoiceActivity : AppCompatActivity() {
 
     private var binding: ActivityEditorsChoiceBinding? = null
-    var context: Context = this@EditorsChoiceActivity
-    var list: ArrayList<EditorsChoice>? = null
-    var adapter: EditorsChoiceAdapter? = null
-    var editorsChoice = EditorsChoice()
+    private val context: Context = this@EditorsChoiceActivity
+    private var list: ArrayList<EditorsChoice> = arrayListOf()
+    private var adapter: EditorsChoiceAdapter? = null
+    private val editorsChoice = EditorsChoice()
+    
+    private val viewModel: BooksViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityEditorsChoiceBinding.inflate(layoutInflater)
-        val view = binding!!.root
-        setContentView(view)
+        setContentView(binding!!.root)
 
+        initUI()
+        observeViewModel()
+    }
+
+    private fun initUI() {
         binding!!.toolbar.nameSpace.setText(R.string.editors_choice)
         binding!!.toolbar.back.setOnClickListener { onBackPressed() }
 
-        //binding.recyclerView.setHasFixedSize(true);
-        list = ArrayList()
-        adapter = EditorsChoiceAdapter(context, list!!)
+        adapter = EditorsChoiceAdapter(context, list)
         binding!!.recyclerView.adapter = adapter
     }
 
-    fun IdeaPosts() {
-        list!!.clear()
+    private fun observeViewModel() {
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.books.collect { resource ->
+                    when (resource) {
+                        is Resource.Loading -> { }
+                        is Resource.Success -> {
+                            updateList()
+                        }
+                        is Resource.Error -> {
+                            Toast.makeText(context, resource.message, Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun updateList() {
+        list.clear()
         for (i in 0..49) {
-            list!!.add(editorsChoice)
+            list.add(editorsChoice)
         }
         adapter!!.notifyDataSetChanged()
     }
 
-    override fun onBackPressed() {
-        super.onBackPressed()
-        finish()
-    }
-
     override fun onResume() {
-        IdeaPosts()
         super.onResume()
-    }
-
-    override fun onRestart() {
-        IdeaPosts()
-        super.onRestart()
+        viewModel.loadEditorsChoiceBooks()
     }
 }

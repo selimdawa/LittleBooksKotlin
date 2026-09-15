@@ -5,29 +5,34 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.flatcode.littlebooks.Adapter.StaggeredBookAdapter
 import com.flatcode.littlebooks.Model.Book
 import com.flatcode.littlebooks.Unit.DATA
 import com.flatcode.littlebooks.Unit.VOID
 import com.flatcode.littlebooks.databinding.ActivityPageStaggeredSwitchBinding
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.Query
-import com.google.firebase.database.ValueEventListener
+import com.flatcode.littlebooks.utils.Resource
+import com.flatcode.littlebooks.viewmodel.BookViewModel
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import java.text.MessageFormat
-import java.util.Collections
 
+@AndroidEntryPoint
 class BooksCategoryActivity : AppCompatActivity() {
 
     private var binding: ActivityPageStaggeredSwitchBinding? = null
     private val context: Context = this@BooksCategoryActivity
-    var list: ArrayList<Book?>? = null
-    var adapter: StaggeredBookAdapter? = null
-    var categoryId: String? = null
-    var categoryName: String? = null
-    var type: String? = null
+    private var list = ArrayList<Book?>()
+    private var adapter: StaggeredBookAdapter? = null
+    private var categoryId: String? = null
+    private var categoryName: String? = null
+    private var type: String = DATA.TIMESTAMP
+
+    private val viewModel: BookViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,7 +43,6 @@ class BooksCategoryActivity : AppCompatActivity() {
         val intent = intent
         categoryId = intent.getStringExtra(DATA.CATEGORY_ID)
         categoryName = intent.getStringExtra(DATA.CATEGORY_NAME)
-        type = DATA.TIMESTAMP
 
         binding!!.toolbar.nameSpace.text = categoryName
         binding!!.toolbar.back.setOnClickListener { onBackPressed() }
@@ -64,63 +68,69 @@ class BooksCategoryActivity : AppCompatActivity() {
             override fun afterTextChanged(s: Editable) {}
         })
 
-        //binding.recyclerView.setHasFixedSize(true);
-        list = ArrayList()
-        adapter = StaggeredBookAdapter(context, list!!)
+        adapter = StaggeredBookAdapter(context, list)
         binding!!.recyclerView.adapter = adapter
 
         binding!!.switchBar.all.setOnClickListener {
             type = DATA.TIMESTAMP
-            getData(type)
+            loadBooks()
         }
         binding!!.switchBar.name.setOnClickListener {
             type = DATA.TITLE
-            getData(type)
+            loadBooks()
         }
         binding!!.switchBar.mostViews.setOnClickListener {
             type = DATA.VIEWS_COUNT
-            getData(type)
+            loadBooks()
         }
         binding!!.switchBar.mostLoves.setOnClickListener {
             type = DATA.LOVES_COUNT
-            getData(type)
+            loadBooks()
         }
         binding!!.switchBar.mostDownloads.setOnClickListener {
             type = DATA.DOWNLOADS_COUNT
-            getData(type)
+            loadBooks()
         }
+
+        observeViewModel()
     }
 
-    private fun getData(orderBy: String?) {
-        val ref: Query = FirebaseDatabase.getInstance().getReference(DATA.BOOKS)
-        ref.orderByChild(orderBy!!).addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                list!!.clear()
-                var i = 0
-                for (snapshot in dataSnapshot.children) {
-                    val pdf = snapshot.getValue(
-                        Book::class.java
-                    )!!
-                    if (pdf.categoryId == categoryId) {
-                        list!!.add(pdf)
-                        i++
+    private fun loadBooks() {
+        categoryId?.let { viewModel.loadBooksByCategory(it, type) }
+    }
+
+    private fun observeViewModel() {
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.booksByCategory.collect { resource ->
+                    when (resource) {
+                        is Resource.Success -> {
+                            binding!!.progress.visibility = View.GONE
+                            list.clear()
+                            resource.data?.let { list.addAll(it) }
+                            binding!!.toolbar.number.text = MessageFormat.format("( {0} )", list.size)
+                            if (list.isNotEmpty()) {
+                                binding!!.recyclerView.visibility = View.VISIBLE
+                                binding!!.emptyText.visibility = View.GONE
+                                list.reverse()
+                            } else {
+                                binding!!.recyclerView.visibility = View.GONE
+                                binding!!.emptyText.visibility = View.VISIBLE
+                            }
+                            adapter!!.notifyDataSetChanged()
+                        }
+                        is Resource.Error -> {
+                            binding!!.progress.visibility = View.GONE
+                            binding!!.recyclerView.visibility = View.GONE
+                            binding!!.emptyText.visibility = View.VISIBLE
+                        }
+                        is Resource.Loading -> {
+                            binding!!.progress.visibility = View.VISIBLE
+                        }
                     }
                 }
-                binding!!.toolbar.number.text = MessageFormat.format("( {0} )", i)
-                binding!!.progress.visibility = View.GONE
-                if (list!!.isNotEmpty()) {
-                    binding!!.recyclerView.visibility = View.VISIBLE
-                    binding!!.emptyText.visibility = View.GONE
-                    list!!.reverse()
-                } else {
-                    binding!!.recyclerView.visibility = View.GONE
-                    binding!!.emptyText.visibility = View.VISIBLE
-                }
-                adapter!!.notifyDataSetChanged()
             }
-
-            override fun onCancelled(databaseError: DatabaseError) {}
-        })
+        }
     }
 
     override fun onBackPressed() {
@@ -133,12 +143,7 @@ class BooksCategoryActivity : AppCompatActivity() {
     }
 
     override fun onResume() {
-        getData(type)
         super.onResume()
-    }
-
-    override fun onRestart() {
-        getData(type)
-        super.onRestart()
+        loadBooks()
     }
 }

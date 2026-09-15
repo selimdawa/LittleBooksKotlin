@@ -9,99 +9,91 @@ import android.net.Uri
 import android.os.Bundle
 import android.text.TextUtils
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.flatcode.littlebooksadmin.R
 import com.flatcode.littlebooksadmin.Unit.DATA
 import com.flatcode.littlebooksadmin.Unit.VOID
+import com.flatcode.littlebooksadmin.data.util.Resource
 import com.flatcode.littlebooksadmin.databinding.ActivityCategoryAddBinding
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.storage.FirebaseStorage
-import com.google.firebase.storage.UploadTask
+import com.flatcode.littlebooksadmin.ui.viewmodel.CategoryAddViewModel
 import com.theartofdev.edmodo.cropper.CropImage
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class CategoryAddActivity : AppCompatActivity() {
 
     private var binding: ActivityCategoryAddBinding? = null
-    var activity: Activity? = null
-    var context: Context = also { activity = it }
+    private var activity: Activity? = null
+    private var context: Context = also { activity = it }
     private var imageUri: Uri? = null
     private var dialog: ProgressDialog? = null
+    
+    private val viewModel: CategoryAddViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityCategoryAddBinding.inflate(layoutInflater)
-        val view = binding!!.root
-        setContentView(view)
+        setContentView(binding!!.root)
 
+        initUI()
+        observeViewModel()
+    }
+
+    private fun initUI() {
         dialog = ProgressDialog(context)
         dialog!!.setTitle("Please wait...")
         dialog!!.setCanceledOnTouchOutside(false)
 
-        binding!!.toolbar.nameSpace.setText(R.string.add_new_book)
+        binding!!.toolbar.nameSpace.setText(R.string.add_new_category)
         binding!!.toolbar.back.setOnClickListener { onBackPressed() }
 
         binding!!.image.setOnClickListener { VOID.cropImageSquare(activity) }
         binding!!.toolbar.ok.setOnClickListener { validateData() }
     }
 
-    private var title = DATA.EMPTY
-    private fun validateData() {
-        //get data
-        title = binding!!.categoryEt.text.toString().trim { it <= ' ' }
+    private fun observeViewModel() {
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.addState.collect { resource ->
+                    when (resource) {
+                        is Resource.Loading -> {
+                            dialog!!.setMessage("Uploading Category...")
+                            dialog!!.show()
+                        }
+                        is Resource.Success -> {
+                            dialog!!.dismiss()
+                            Toast.makeText(context, "Successfully uploaded...", Toast.LENGTH_SHORT).show()
+                            finish()
+                        }
+                        is Resource.Error -> {
+                            dialog!!.dismiss()
+                            Toast.makeText(context, resource.message, Toast.LENGTH_SHORT).show()
+                        }
+                        null -> {}
+                    }
+                }
+            }
+        }
+    }
 
-        //validate data
+    private fun validateData() {
+        val title = binding!!.categoryEt.text.toString().trim()
+
         if (TextUtils.isEmpty(title)) {
             Toast.makeText(context, "Enter Title...", Toast.LENGTH_SHORT).show()
         } else if (imageUri == null) {
             Toast.makeText(context, "Pick Image...", Toast.LENGTH_SHORT).show()
         } else {
-            uploadBookToStorage()
-        }
-    }
-
-    private fun uploadBookToStorage() {
-        dialog!!.setMessage("Uploading Category...")
-        dialog!!.show()
-        val ref = FirebaseDatabase.getInstance().getReference(DATA.CATEGORIES)
-        val id = ref.push().key
-        val filePathAndName = "Images/Category/$id"
-        val reference = FirebaseStorage.getInstance()
-            .getReference(filePathAndName + DATA.DOT + VOID.getFileExtension(imageUri, context))
-        reference.putFile(imageUri!!)
-            .addOnSuccessListener { taskSnapshot: UploadTask.TaskSnapshot ->
-                val uriTask = taskSnapshot.storage.downloadUrl
-                while (!uriTask.isSuccessful);
-                val uploadedImageUrl = DATA.EMPTY + uriTask.result
-                uploadBookInfoDB(uploadedImageUrl, id, ref)
-            }.addOnFailureListener { e: Exception ->
-                dialog!!.dismiss()
-                Toast.makeText(
-                    context, "Category upload failed due to " + e.message, Toast.LENGTH_SHORT
-                ).show()
-            }
-    }
-
-    private fun uploadBookInfoDB(uploadedImageUrl: String, id: String?, ref: DatabaseReference) {
-        dialog!!.setMessage("Uploading category info...")
-        dialog!!.show()
-
-        //setup data to upload
-        val hashMap = HashMap<String?, Any?>()
-        hashMap[DATA.PUBLISHER] = DATA.EMPTY + DATA.FirebaseUserUid
-        hashMap[DATA.TIMESTAMP] = System.currentTimeMillis()
-        hashMap[DATA.ID] = id
-        hashMap[DATA.CATEGORY] = DATA.EMPTY + title
-        hashMap[DATA.IMAGE] = uploadedImageUrl
-        assert(id != null)
-        ref.child(id!!).setValue(hashMap).addOnSuccessListener {
-            dialog!!.dismiss()
-            Toast.makeText(context, "Successfully uploaded...", Toast.LENGTH_SHORT).show()
-        }.addOnFailureListener { e: Exception ->
-            dialog!!.dismiss()
-            Toast.makeText(
-                context, "Failure to upload to db due to :" + e.message, Toast.LENGTH_SHORT
-            ).show()
+            viewModel.addCategory(
+                title,
+                imageUri,
+                VOID.getFileExtension(imageUri, context)
+            )
         }
     }
 

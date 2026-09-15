@@ -3,7 +3,6 @@ package com.flatcode.littlebooksadmin.Activity
 import android.app.AlertDialog
 import android.app.ProgressDialog
 import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -11,41 +10,50 @@ import android.text.TextUtils
 import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.flatcode.littlebooksadmin.R
 import com.flatcode.littlebooksadmin.Unit.DATA
 import com.flatcode.littlebooksadmin.Unit.VOID
+import com.flatcode.littlebooksadmin.data.model.Category
+import com.flatcode.littlebooksadmin.data.util.Resource
 import com.flatcode.littlebooksadmin.databinding.ActivityBookEditBinding
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
-import com.google.firebase.storage.FirebaseStorage
-import com.google.firebase.storage.UploadTask
+import com.flatcode.littlebooksadmin.ui.viewmodel.BookEditViewModel
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class BookEditActivity : AppCompatActivity() {
 
     private var binding: ActivityBookEditBinding? = null
-    var context: Context = this@BookEditActivity
+    private val context: Context = this@BookEditActivity
     private var bookId: String? = null
     private var imageUri: Uri? = null
     private var dialog: ProgressDialog? = null
-    private var categoryTitle: ArrayList<String>? = null
-    private var categoryId: ArrayList<String>? = null
+    private var categoriesList: List<Category> = emptyList()
+    
+    private val viewModel: BookEditViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityBookEditBinding.inflate(layoutInflater)
-        val view = binding!!.root
-        setContentView(view)
+        setContentView(binding!!.root)
 
         bookId = intent.getStringExtra(DATA.BOOK_ID)
 
+        initUI()
+        observeViewModel()
+        
+        bookId?.let { viewModel.loadBook(it) }
+    }
+
+    private fun initUI() {
         dialog = ProgressDialog(context)
         dialog!!.setTitle("Please wait...")
         dialog!!.setCanceledOnTouchOutside(false)
-        loadCategories()
-        loadBooksInfo()
 
         binding!!.toolbar.nameSpace.setText(R.string.edit_book)
         binding!!.toolbar.back.setOnClickListener { onBackPressed() }
@@ -55,13 +63,81 @@ class BookEditActivity : AppCompatActivity() {
         binding!!.toolbar.ok.setOnClickListener { validateData() }
     }
 
+    private fun observeViewModel() {
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                launch {
+                    viewModel.book.collect { resource ->
+                        when (resource) {
+                            is Resource.Loading -> { }
+                            is Resource.Success -> {
+                                resource.data?.let { book ->
+                                    binding!!.titleEt.setText(book.title)
+                                    binding!!.descriptionEt.setText(book.description)
+                                    selectedId = book.categoryId ?: DATA.EMPTY
+                                    VOID.Glide(false, context, book.image ?: DATA.BASIC, binding!!.image)
+                                    
+                                    // Set category name
+                                    categoriesList.find { it.id == selectedId }?.let {
+                                        binding!!.category.text = it.category
+                                    }
+                                }
+                            }
+                            is Resource.Error -> {
+                                Toast.makeText(context, resource.message, Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    }
+                }
+                launch {
+                    viewModel.categories.collect { resource ->
+                        when (resource) {
+                            is Resource.Loading -> { }
+                            is Resource.Success -> {
+                                categoriesList = resource.data ?: emptyList()
+                                // Re-set category name if book was already loaded
+                                categoriesList.find { it.id == selectedId }?.let {
+                                    binding!!.category.text = it.category
+                                }
+                            }
+                            is Resource.Error -> { }
+                        }
+                    }
+                }
+                launch {
+                    viewModel.updateState.collect { resource ->
+                        when (resource) {
+                            is Resource.Loading -> {
+                                dialog!!.setMessage("Updating book info...")
+                                dialog!!.show()
+                            }
+                            is Resource.Success -> {
+                                if (imageUri == null) {
+                                    dialog!!.dismiss()
+                                    Toast.makeText(context, "Book info updated...", Toast.LENGTH_SHORT).show()
+                                    finish()
+                                } else {
+                                    // Handle image upload if needed, or if it's already triggered by ViewModel
+                                }
+                            }
+                            is Resource.Error -> {
+                                dialog!!.dismiss()
+                                Toast.makeText(context, resource.message, Toast.LENGTH_SHORT).show()
+                            }
+                            null -> {}
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     private var selectedId = DATA.EMPTY
-    private var selectedTitle = DATA.EMPTY
-    private var title = DATA.EMPTY
-    private var description = DATA.EMPTY
+
     private fun validateData() {
-        title = binding!!.titleEt.text.toString().trim { it <= ' ' }
-        description = binding!!.descriptionEt.text.toString().trim { it <= ' ' }
+        val title = binding!!.titleEt.text.toString().trim()
+        val description = binding!!.descriptionEt.text.toString().trim()
+        
         if (TextUtils.isEmpty(title)) {
             Toast.makeText(context, "Enter Title...", Toast.LENGTH_SHORT).show()
         } else if (TextUtils.isEmpty(description)) {
@@ -69,129 +145,27 @@ class BookEditActivity : AppCompatActivity() {
         } else if (TextUtils.isEmpty(selectedId)) {
             Toast.makeText(context, "Pick Category", Toast.LENGTH_SHORT).show()
         } else {
-            updateBook()
+            bookId?.let {
+                viewModel.updateBook(
+                    it, title, description, selectedId,
+                    imageUri,
+                    if (imageUri != null) VOID.getFileExtension(imageUri, context) else null
+                )
+            }
         }
-    }
-
-    private fun updateBook() {
-        dialog!!.setMessage("Uploading book info...")
-        dialog!!.show()
-        val hashMap = HashMap<String?, Any>()
-        hashMap[DATA.TITLE] = DATA.EMPTY + title
-        hashMap[DATA.DESCRIPTION] = DATA.EMPTY + description
-        hashMap[DATA.CATEGORY_ID] = DATA.EMPTY + selectedId
-        val ref = FirebaseDatabase.getInstance().getReference(DATA.BOOKS)
-        ref.child(bookId!!).updateChildren(hashMap).addOnSuccessListener {
-            dialog!!.dismiss()
-            Toast.makeText(context, "Book info updated...", Toast.LENGTH_SHORT).show()
-        }.addOnCompleteListener { if (imageUri != null) uploadImage(bookId) }
-            .addOnFailureListener { e: Exception ->
-                dialog!!.dismiss()
-                Toast.makeText(context, DATA.EMPTY + e.message, Toast.LENGTH_SHORT).show()
-            }
-    }
-
-    private fun loadBooksInfo() {
-        val refBooks = FirebaseDatabase.getInstance().getReference(DATA.BOOKS)
-        refBooks.child(bookId!!).addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                //get book info
-                selectedId = DATA.EMPTY + snapshot.child(DATA.CATEGORY_ID).value
-                val description = DATA.EMPTY + snapshot.child(DATA.DESCRIPTION).value
-                val title = DATA.EMPTY + snapshot.child(DATA.TITLE).value
-                val image = DATA.EMPTY + snapshot.child(DATA.IMAGE).value
-
-                VOID.Glide(false, context, image, binding!!.image)
-                binding!!.titleEt.setText(title)
-                binding!!.descriptionEt.setText(description)
-
-                val refBookCategory = FirebaseDatabase.getInstance().getReference(DATA.CATEGORIES)
-                refBookCategory.child(selectedId)
-                    .addListenerForSingleValueEvent(object : ValueEventListener {
-                        override fun onDataChange(snapshot: DataSnapshot) {
-                            //get category
-                            val category = DATA.EMPTY + snapshot.child(DATA.CATEGORY).value
-                            binding!!.category.text = category
-                        }
-
-                        override fun onCancelled(error: DatabaseError) {}
-                    })
-            }
-
-            override fun onCancelled(error: DatabaseError) {}
-        })
     }
 
     private fun categoryDialog() {
-        val categoriesArray = arrayOfNulls<String>(categoryTitle!!.size)
-        for (i in categoryTitle!!.indices) {
-            categoriesArray[i] = categoryTitle!![i]
-        }
+        if (categoriesList.isEmpty()) return
+        
+        val categoriesArray = categoriesList.map { it.category }.toTypedArray()
+        
         val builder = AlertDialog.Builder(context)
         builder.setTitle("Choose Category")
-            .setItems(categoriesArray) { dialog: DialogInterface?, which: Int ->
-                selectedId = categoryId!![which]
-                selectedTitle = categoryTitle!![which]
-                binding!!.category.text = selectedTitle
+            .setItems(categoriesArray) { _, which ->
+                selectedId = categoriesList[which].id ?: DATA.EMPTY
+                binding!!.category.text = categoriesList[which].category
             }.show()
-    }
-
-    private fun loadCategories() {
-        categoryId = ArrayList()
-        categoryTitle = ArrayList()
-        val ref = FirebaseDatabase.getInstance().getReference(DATA.CATEGORIES)
-        ref.addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                categoryId!!.clear()
-                categoryTitle!!.clear()
-                for (data in snapshot.children) {
-                    val id = DATA.EMPTY + data.child(DATA.ID).value
-                    val category = DATA.EMPTY + data.child(DATA.CATEGORY).value
-                    categoryId!!.add(id)
-                    categoryTitle!!.add(category)
-                }
-            }
-
-            override fun onCancelled(error: DatabaseError) {}
-        })
-    }
-
-    private fun updateImageBook(imageUrl: String, bookId: String?) {
-        dialog!!.setMessage("Updating image book...")
-        dialog!!.show()
-        val hashMap = HashMap<String?, Any>()
-        if (imageUri != null) {
-            hashMap[DATA.IMAGE] = DATA.EMPTY + imageUrl
-        }
-        val reference = FirebaseDatabase.getInstance().getReference(DATA.BOOKS)
-        reference.child(bookId!!).updateChildren(hashMap).addOnSuccessListener {
-            dialog!!.dismiss()
-            Toast.makeText(context, "Image updated...", Toast.LENGTH_SHORT).show()
-        }.addOnFailureListener { e: Exception ->
-            dialog!!.dismiss()
-            Toast.makeText(context, "Failed to update db duo to " + e.message, Toast.LENGTH_SHORT)
-                .show()
-        }
-    }
-
-    private fun uploadImage(BookId: String?) {
-        dialog!!.setMessage("Updating Image Book")
-        dialog!!.show()
-        val filePathAndName = "Images/Books/$bookId"
-        val reference = FirebaseStorage.getInstance()
-            .getReference(filePathAndName + DATA.DOT + VOID.getFileExtension(imageUri, context))
-        reference.putFile(imageUri!!)
-            .addOnSuccessListener { taskSnapshot: UploadTask.TaskSnapshot ->
-                val uriTask = taskSnapshot.storage.downloadUrl
-                while (!uriTask.isSuccessful);
-                val uploadedImageUrl = DATA.EMPTY + uriTask.result
-                updateImageBook(uploadedImageUrl, BookId)
-            }.addOnFailureListener { e: Exception ->
-                dialog!!.dismiss()
-                Toast.makeText(
-                    context, "Failed to upload image due to " + e.message, Toast.LENGTH_SHORT
-                ).show()
-            }
     }
 
     private val galleryActivityResultLauncher =

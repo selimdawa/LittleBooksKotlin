@@ -5,61 +5,66 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.flatcode.littlebooks.Adapter.CategoryMainAdapter
 import com.flatcode.littlebooks.Model.Category
-import com.flatcode.littlebooks.Unit.DATA
 import com.flatcode.littlebooks.databinding.FragmentCategoriesBinding
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.Query
-import com.google.firebase.database.ValueEventListener
+import com.flatcode.littlebooks.utils.Resource
+import com.flatcode.littlebooks.viewmodel.CategoryViewModel
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class CategoriesFragment : Fragment() {
 
     private var binding: FragmentCategoriesBinding? = null
-    private var list: ArrayList<Category?>? = null
+    private val viewModel: CategoryViewModel by viewModels()
+    
+    private var list = ArrayList<Category?>()
     private var adapter: CategoryMainAdapter? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        binding = FragmentCategoriesBinding.inflate(LayoutInflater.from(context), container, false)
+        binding = FragmentCategoriesBinding.inflate(inflater, container, false)
 
-        //binding.recyclerCategory.setHasFixedSize(true);
-        list = ArrayList()
-        adapter = CategoryMainAdapter(context, list!!)
+        adapter = CategoryMainAdapter(context, list)
         binding!!.recyclerView.adapter = adapter
+
+        observeViewModel()
+
         return binding!!.root
     }
 
-    private fun loadItems() {
-        val ref: Query = FirebaseDatabase.getInstance().getReference(DATA.CATEGORIES)
-        ref.addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                list!!.clear()
-                for (snapshot in dataSnapshot.children) {
-                    val item = snapshot.getValue(Category::class.java)!!
-                    list!!.add(item)
+    private fun observeViewModel() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.categories.collect { resource ->
+                    when (resource) {
+                        is Resource.Success -> {
+                            binding!!.bar.visibility = View.GONE
+                            list.clear()
+                            resource.data?.let { list.addAll(it) }
+                            adapter?.notifyDataSetChanged()
+                        }
+                        is Resource.Error -> {
+                            binding!!.bar.visibility = View.GONE
+                            // Handle error
+                        }
+                        is Resource.Loading -> {
+                            binding!!.bar.visibility = View.VISIBLE
+                        }
+                    }
                 }
-                binding!!.bar.visibility = View.GONE
-                if (list!!.isNotEmpty()) {
-                    binding!!.recyclerView.visibility = View.VISIBLE
-                    binding!!.emptyText.visibility = View.GONE
-                } else {
-                    binding!!.recyclerView.visibility = View.GONE
-                    binding!!.emptyText.visibility = View.VISIBLE
-                }
-                adapter!!.notifyDataSetChanged()
             }
-
-            override fun onCancelled(databaseError: DatabaseError) {}
-        })
+        }
     }
 
-    override fun onResume() {
-        loadItems()
-        super.onResume()
+    override fun onDestroyView() {
+        super.onDestroyView()
+        binding = null
     }
 }

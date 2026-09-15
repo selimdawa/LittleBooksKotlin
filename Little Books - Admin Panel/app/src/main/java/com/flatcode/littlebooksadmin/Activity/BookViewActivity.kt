@@ -4,46 +4,66 @@ import android.content.Context
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.flatcode.littlebooksadmin.Unit.DATA
+import com.flatcode.littlebooksadmin.data.util.Resource
 import com.flatcode.littlebooksadmin.databinding.ActivityBookViewBinding
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
+import com.flatcode.littlebooksadmin.ui.viewmodel.BookEditViewModel
 import com.google.firebase.storage.FirebaseStorage
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import java.text.MessageFormat
 
+@AndroidEntryPoint
 class BookViewActivity : AppCompatActivity() {
 
     private var binding: ActivityBookViewBinding? = null
-    var context: Context = this@BookViewActivity
-    var bookId: String? = null
+    private val context: Context = this@BookViewActivity
+    private var bookId: String? = null
+    
+    private val viewModel: BookEditViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityBookViewBinding.inflate(layoutInflater)
-        val view = binding!!.root
-        setContentView(view)
+        setContentView(binding!!.root)
 
-        val intent = intent
         bookId = intent.getStringExtra(DATA.BOOK_ID)
 
-        loadBookDetails()
+        initUI()
+        observeViewModel()
+        
+        bookId?.let { viewModel.loadBook(it) }
+    }
+
+    private fun initUI() {
         binding!!.toolbar.numberPage.visibility = View.VISIBLE
         binding!!.toolbar.back.setOnClickListener { onBackPressed() }
     }
 
-    private fun loadBookDetails() {
-        val ref = FirebaseDatabase.getInstance().getReference(DATA.BOOKS)
-        ref.child(bookId!!).addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                val pdfUrl = DATA.EMPTY + snapshot.child(DATA.URL).value
-                loadBookFromUrl(pdfUrl)
+    private fun observeViewModel() {
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.book.collect { resource ->
+                    when (resource) {
+                        is Resource.Loading -> {
+                            binding!!.progressBar.visibility = View.VISIBLE
+                        }
+                        is Resource.Success -> {
+                            resource.data?.url?.let { loadBookFromUrl(it) }
+                        }
+                        is Resource.Error -> {
+                            binding!!.progressBar.visibility = View.GONE
+                            Toast.makeText(context, resource.message, Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                }
             }
-
-            override fun onCancelled(error: DatabaseError) {}
-        })
+        }
     }
 
     private fun loadBookFromUrl(pdfUrl: String) {
@@ -64,7 +84,9 @@ class BookViewActivity : AppCompatActivity() {
                         Toast.LENGTH_SHORT
                     ).show()
                 }.load()
-            binding!!.progressBar.visibility = View.GONE
-        }.addOnFailureListener { binding!!.progressBar.visibility = View.GONE }
+        }.addOnFailureListener { 
+            binding!!.progressBar.visibility = View.GONE 
+            Toast.makeText(context, "Failed to load PDF", Toast.LENGTH_SHORT).show()
+        }
     }
 }

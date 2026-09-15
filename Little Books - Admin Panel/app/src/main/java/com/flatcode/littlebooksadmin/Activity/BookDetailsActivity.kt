@@ -10,54 +10,62 @@ import android.view.LayoutInflater
 import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
+import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.flatcode.littlebooksadmin.Adapter.CommentAdapter
+import com.flatcode.littlebooksadmin.Application
 import com.flatcode.littlebooksadmin.Model.Comment
-import com.flatcode.littlebooksadmin.Modelimport.Book
-import com.flatcode.littlebooksadmin.Modelimport.User
-import com.flatcode.littlebooksadmin.MyApplication
 import com.flatcode.littlebooksadmin.R
 import com.flatcode.littlebooksadmin.Unit.CLASS
 import com.flatcode.littlebooksadmin.Unit.DATA
 import com.flatcode.littlebooksadmin.Unit.VOID
+import com.flatcode.littlebooksadmin.data.util.Resource
 import com.flatcode.littlebooksadmin.databinding.ActivityBookDetailsBinding
 import com.flatcode.littlebooksadmin.databinding.DialogCommentAddBinding
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
+import com.flatcode.littlebooksadmin.ui.viewmodel.BookDetailsViewModel
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class BookDetailsActivity : AppCompatActivity() {
 
     private var binding: ActivityBookDetailsBinding? = null
-    var context: Context = this@BookDetailsActivity
-    var bookId: String? = null
-    var bookTitle: String? = null
-    var bookUrl: String? = null
+    private val context: Context = this@BookDetailsActivity
+    private var bookId: String? = null
+    private var bookTitle: String? = null
+    private var bookUrl: String? = null
     private var dialog: ProgressDialog? = null
-    private var list: ArrayList<Comment?>? = null
+    private var list: ArrayList<Comment?> = arrayListOf()
     private var adapter: CommentAdapter? = null
+    
+    private val viewModel: BookDetailsViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityBookDetailsBinding.inflate(layoutInflater)
-        val view = binding!!.root
-        setContentView(view)
+        setContentView(binding!!.root)
 
-        val intent = intent
         bookId = intent.getStringExtra(DATA.BOOK_ID)
 
+        initUI()
+        observeViewModel()
+        
+        bookId?.let { viewModel.loadBookDetails(it) }
+    }
+
+    private fun initUI() {
         binding!!.toolbar.nameSpace.setText(R.string.details_books)
         binding!!.download.visibility = View.GONE
         dialog = ProgressDialog(context)
         dialog!!.setTitle("Please wait...")
         dialog!!.setCanceledOnTouchOutside(false)
 
-        //binding.recyclerView.setHasFixedSize(true);
-        list = ArrayList()
-        adapter = CommentAdapter(context, list!!)
+        adapter = CommentAdapter(context, list)
         binding!!.recyclerView.adapter = adapter
 
         binding!!.love.setOnClickListener { VOID.checkLove(binding!!.love, bookId) }
@@ -88,38 +96,105 @@ class BookDetailsActivity : AppCompatActivity() {
                 addCommentDialog()
             }
         }
-    }
-
-    private fun init() {
-        loadBookDetails()
-        loadComments()
-        VOID.incrementItemCount(DATA.BOOKS, bookId, DATA.VIEWS_COUNT)
+        
         VOID.isLoves(binding!!.love, bookId)
         VOID.nrLoves(binding!!.loves, bookId)
         VOID.isFavorite(binding!!.favorite, bookId, DATA.FirebaseUserUid)
     }
 
-    private fun loadComments() {
-        val ref = FirebaseDatabase.getInstance().getReference(DATA.BOOKS)
-        ref.child(bookId!!).child(DATA.COMMENTS).addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                list!!.clear()
-                for (data in dataSnapshot.children) {
-                    val item = data.getValue(Comment::class.java)!!
-                    if (item.bookId == bookId) {
-                        list!!.add(item)
+    private fun observeViewModel() {
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                launch {
+                    viewModel.book.collect { resource ->
+                        when (resource) {
+                            is Resource.Loading -> { }
+                            is Resource.Success -> {
+                                resource.data?.let { book ->
+                                    bookTitle = book.title
+                                    bookUrl = book.url
+                                    binding!!.download.visibility = View.VISIBLE
+                                    
+                                    val date: String = Application.formatTimestamp(book.timestamp)
+                                    VOID.loadCategory(book.categoryId, binding!!.category)
+                                    VOID.loadPdfInfo(book.url, binding!!.size)
+                                    
+                                    VOID.Glide(false, context, book.image ?: DATA.BASIC, binding!!.image)
+                                    VOID.Glide(false, context, book.image ?: DATA.BASIC, binding!!.cover)
+                                    binding!!.title.text = book.title
+                                    binding!!.description.text = book.description
+                                    binding!!.views.text = book.viewsCount.toString()
+                                    binding!!.downloads.text = book.downloadsCount.toString()
+                                    binding!!.date.text = date
+                                }
+                            }
+                            is Resource.Error -> {
+                                Toast.makeText(context, resource.message, Toast.LENGTH_SHORT).show()
+                            }
+                        }
                     }
                 }
-                adapter!!.notifyDataSetChanged()
-                if (list!!.isEmpty()) binding!!.textComment.visibility =
-                    View.GONE else binding!!.textComment.visibility = View.VISIBLE
+                launch {
+                    viewModel.publisher.collect { resource ->
+                        when (resource) {
+                            is Resource.Loading -> { }
+                            is Resource.Success -> {
+                                resource.data?.let { user ->
+                                    binding!!.publisherName.text = user.username
+                                    VOID.Glide(true, context, user.profileImage ?: DATA.BASIC, binding!!.publisherImage)
+                                    binding!!.userInfo.setOnClickListener {
+                                        VOID.IntentExtra(context, CLASS.PROFILE, DATA.PROFILE_ID, user.id)
+                                    }
+                                }
+                            }
+                            is Resource.Error -> { }
+                        }
+                    }
+                }
+                launch {
+                    viewModel.comments.collect { resource ->
+                        when (resource) {
+                            is Resource.Loading -> { }
+                            is Resource.Success -> {
+                                updateComments(resource.data ?: emptyList())
+                            }
+                            is Resource.Error -> { }
+                        }
+                    }
+                }
+                launch {
+                    viewModel.addCommentState.collect { resource ->
+                        when (resource) {
+                            is Resource.Loading -> {
+                                dialog!!.setMessage("Adding comment...")
+                                dialog!!.show()
+                            }
+                            is Resource.Success -> {
+                                dialog!!.dismiss()
+                                Toast.makeText(context, "Comment Added...", Toast.LENGTH_SHORT).show()
+                            }
+                            is Resource.Error -> {
+                                dialog!!.dismiss()
+                                Toast.makeText(context, resource.message, Toast.LENGTH_SHORT).show()
+                            }
+                            null -> { }
+                        }
+                    }
+                }
             }
-
-            override fun onCancelled(error: DatabaseError) {}
-        })
+        }
     }
 
-    private var comment = DATA.EMPTY
+    private fun updateComments(comments: List<com.flatcode.littlebooksadmin.data.model.Comment>) {
+        list.clear()
+        comments.forEach {
+            val legacyComment = Comment(it.id, it.bookId, it.timestamp, it.comment, it.publisher)
+            list.add(legacyComment)
+        }
+        adapter?.notifyDataSetChanged()
+        binding!!.textComment.visibility = if (list.isEmpty()) View.GONE else View.VISIBLE
+    }
+
     private fun addCommentDialog() {
         val commentAddBinding = DialogCommentAddBinding.inflate(LayoutInflater.from(this))
         val builder = AlertDialog.Builder(this, R.style.CustomDialog)
@@ -128,39 +203,14 @@ class BookDetailsActivity : AppCompatActivity() {
         alertDialog.show()
         commentAddBinding.back.setOnClickListener { alertDialog.dismiss() }
         commentAddBinding.submit.setOnClickListener {
-            comment = commentAddBinding.comment.text.toString().trim { it <= ' ' }
+            val comment = commentAddBinding.comment.text.toString().trim()
             if (TextUtils.isEmpty(comment)) {
                 Toast.makeText(context, "Enter your comment...", Toast.LENGTH_SHORT).show()
             } else {
                 alertDialog.dismiss()
-                addComment()
+                bookId?.let { viewModel.addComment(it, comment) }
             }
         }
-    }
-
-    private fun addComment() {
-        dialog!!.setMessage("Adding comment...")
-        dialog!!.show()
-        val ref = FirebaseDatabase.getInstance().getReference(DATA.BOOKS)
-        val id = ref.push().key
-        //setup data to add in db for comment
-        val hashMap = HashMap<String?, Any?>()
-        hashMap[DATA.ID] = id
-        hashMap[DATA.BOOK_ID] = DATA.EMPTY + bookId
-        hashMap[DATA.TIMESTAMP] = System.currentTimeMillis()
-        hashMap[DATA.COMMENT] = DATA.EMPTY + comment
-        hashMap[DATA.PUBLISHER] = DATA.EMPTY + DATA.FirebaseUserUid
-        assert(id != null)
-        ref.child(bookId!!).child(DATA.COMMENTS).child(id!!).setValue(hashMap)
-            .addOnSuccessListener {
-                Toast.makeText(context, "Comment Added...", Toast.LENGTH_SHORT).show()
-                dialog!!.dismiss()
-            }.addOnFailureListener { e: Exception ->
-                dialog!!.dismiss()
-                Toast.makeText(
-                    context, "Failed to add comment duo to  " + e.message, Toast.LENGTH_SHORT
-                ).show()
-            }
     }
 
     private val resultPermissionLauncher =
@@ -174,74 +224,4 @@ class BookDetailsActivity : AppCompatActivity() {
                 Toast.makeText(context, "Permission was denied...", Toast.LENGTH_SHORT).show()
             }
         }
-
-    private fun loadBookDetails() {
-        val ref = FirebaseDatabase.getInstance().getReference(DATA.BOOKS)
-        ref.child(bookId!!).addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                //get data
-                val item = snapshot.getValue(Book::class.java)!!
-
-                bookTitle = DATA.EMPTY + item.title
-                val description = DATA.EMPTY + item.description
-                val categoryId = DATA.EMPTY + item.categoryId
-                val viewsCount = DATA.EMPTY + item.viewsCount
-                val downloadsCount = DATA.EMPTY + item.downloadsCount
-                bookUrl = DATA.EMPTY + item.url
-                val timestamp = DATA.EMPTY + item.timestamp
-                val image = DATA.EMPTY + item.image
-                val publisher = DATA.EMPTY + item.publisher
-                binding!!.download.visibility = View.VISIBLE
-
-                //format date
-                val date: String = MyApplication.formatTimestamp(timestamp.toLong())
-                VOID.loadCategory(DATA.EMPTY + categoryId, binding!!.category)
-                VOID.loadPdfInfo(DATA.EMPTY + bookUrl, binding!!.size)
-                //set data
-                VOID.Glide(false, context, image, binding!!.image)
-                VOID.Glide(false, context, image, binding!!.cover)
-                binding!!.title.text = bookTitle
-                binding!!.description.text = description
-                binding!!.views.text = viewsCount
-                binding!!.downloads.text = downloadsCount
-                binding!!.date.text = date
-                userInfo(publisher)
-            }
-
-            override fun onCancelled(error: DatabaseError) {}
-        })
-    }
-
-    private fun userInfo(userId: String) {
-        val ref = FirebaseDatabase.getInstance().getReference(DATA.USERS)
-        ref.addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                //get data
-                if (snapshot.child(userId).exists()) {
-                    val item = snapshot.child(userId).getValue(User::class.java)!!
-                    val userId = DATA.EMPTY + item.id
-                    val imageProfile = DATA.EMPTY + item.profileImage
-                    val username = DATA.EMPTY + item.username
-                    binding!!.publisherName.text = username
-                    VOID.Glide(true, context, imageProfile, binding!!.publisherImage)
-
-                    binding!!.userInfo.setOnClickListener {
-                        VOID.IntentExtra(context, CLASS.PROFILE, DATA.PROFILE_ID, userId)
-                    }
-                }
-            }
-
-            override fun onCancelled(error: DatabaseError) {}
-        })
-    }
-
-    override fun onResume() {
-        init()
-        super.onResume()
-    }
-
-    override fun onRestart() {
-        init()
-        super.onRestart()
-    }
 }

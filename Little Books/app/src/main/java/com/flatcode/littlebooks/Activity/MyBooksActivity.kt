@@ -5,27 +5,33 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.flatcode.littlebooks.Adapter.LinearBookAdapter
 import com.flatcode.littlebooks.Model.Book
 import com.flatcode.littlebooks.R
 import com.flatcode.littlebooks.Unit.DATA
 import com.flatcode.littlebooks.Unit.VOID
 import com.flatcode.littlebooks.databinding.ActivityPageLinearSwitchBinding
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.Query
-import com.google.firebase.database.ValueEventListener
+import com.flatcode.littlebooks.utils.Resource
+import com.flatcode.littlebooks.viewmodel.BookViewModel
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import java.text.MessageFormat
 
+@AndroidEntryPoint
 class MyBooksActivity : AppCompatActivity() {
 
     private var binding: ActivityPageLinearSwitchBinding? = null
     private val context: Context = this@MyBooksActivity
-    var list: ArrayList<Book?>? = null
-    var adapter: LinearBookAdapter? = null
-    var type: String? = null
+    private var list = ArrayList<Book?>()
+    private var adapter: LinearBookAdapter? = null
+    private var type: String = DATA.TIMESTAMP
+
+    private val viewModel: BookViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,7 +42,6 @@ class MyBooksActivity : AppCompatActivity() {
         binding!!.toolbar.nameSpace.setText(R.string.my_books)
         binding!!.toolbar.close.setOnClickListener { onBackPressed() }
         binding!!.toolbar.back.setOnClickListener { onBackPressed() }
-        type = DATA.TIMESTAMP
         VOID.BannerAd(context, binding!!.adView, DATA.BANNER_SMART_MY_BOOKS)
 
         binding!!.toolbar.search.setOnClickListener {
@@ -57,60 +62,64 @@ class MyBooksActivity : AppCompatActivity() {
             override fun afterTextChanged(s: Editable) {}
         })
 
-        //binding.recyclerView.setHasFixedSize(true);
-        list = ArrayList()
-        adapter = LinearBookAdapter(context, list!!, true)
+        adapter = LinearBookAdapter(context, list, true)
         binding!!.recyclerView.adapter = adapter
 
         binding!!.switchBar.all.setOnClickListener {
             type = DATA.TIMESTAMP
-            getData(type)
+            viewModel.loadBooksByPublisher(DATA.FirebaseUserUid, type)
         }
         binding!!.switchBar.name.setOnClickListener {
             type = DATA.TITLE
-            getData(type)
+            viewModel.loadBooksByPublisher(DATA.FirebaseUserUid, type)
         }
         binding!!.switchBar.mostViews.setOnClickListener {
             type = DATA.VIEWS_COUNT
-            getData(type)
+            viewModel.loadBooksByPublisher(DATA.FirebaseUserUid, type)
         }
         binding!!.switchBar.mostLoves.setOnClickListener {
             type = DATA.LOVES_COUNT
-            getData(type)
+            viewModel.loadBooksByPublisher(DATA.FirebaseUserUid, type)
         }
         binding!!.switchBar.mostDownloads.setOnClickListener {
             type = DATA.DOWNLOADS_COUNT
-            getData(type)
+            viewModel.loadBooksByPublisher(DATA.FirebaseUserUid, type)
         }
+
+        observeViewModel()
     }
 
-    private fun getData(orderBy: String?) {
-        val ref: Query = FirebaseDatabase.getInstance().getReference(DATA.BOOKS)
-        ref.orderByChild(orderBy!!).addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                list!!.clear()
-                var i = 0
-                for (data in dataSnapshot.children) {
-                    val item = data.getValue(Book::class.java)!!
-                    if (item.publisher == DATA.FirebaseUserUid) {
-                        list!!.add(item)
-                        i++
+    private fun observeViewModel() {
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.booksByPublisher.collect { resource ->
+                    when (resource) {
+                        is Resource.Success -> {
+                            binding!!.progress.visibility = View.GONE
+                            list.clear()
+                            resource.data?.let { list.addAll(it) }
+                            binding!!.toolbar.number.text = MessageFormat.format("( {0} )", list.size)
+                            adapter!!.notifyDataSetChanged()
+                            if (list.isNotEmpty()) {
+                                binding!!.recyclerView.visibility = View.VISIBLE
+                                binding!!.emptyText.visibility = View.GONE
+                            } else {
+                                binding!!.recyclerView.visibility = View.GONE
+                                binding!!.emptyText.visibility = View.VISIBLE
+                            }
+                        }
+                        is Resource.Error -> {
+                            binding!!.progress.visibility = View.GONE
+                            binding!!.recyclerView.visibility = View.GONE
+                            binding!!.emptyText.visibility = View.VISIBLE
+                        }
+                        is Resource.Loading -> {
+                            binding!!.progress.visibility = View.VISIBLE
+                        }
                     }
                 }
-                binding!!.toolbar.number.text = MessageFormat.format("( {0} )", i)
-                adapter!!.notifyDataSetChanged()
-                binding!!.progress.visibility = View.GONE
-                if (list!!.isNotEmpty()) {
-                    binding!!.recyclerView.visibility = View.VISIBLE
-                    binding!!.emptyText.visibility = View.GONE
-                } else {
-                    binding!!.recyclerView.visibility = View.GONE
-                    binding!!.emptyText.visibility = View.VISIBLE
-                }
             }
-
-            override fun onCancelled(databaseError: DatabaseError) {}
-        })
+        }
     }
 
     override fun onBackPressed() {
@@ -123,12 +132,7 @@ class MyBooksActivity : AppCompatActivity() {
     }
 
     override fun onResume() {
-        getData(type)
         super.onResume()
-    }
-
-    override fun onRestart() {
-        getData(type)
-        super.onRestart()
+        viewModel.loadBooksByPublisher(DATA.FirebaseUserUid, type)
     }
 }

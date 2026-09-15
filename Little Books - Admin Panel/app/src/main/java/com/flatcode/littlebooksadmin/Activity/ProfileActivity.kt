@@ -3,36 +3,46 @@ package com.flatcode.littlebooksadmin.Activity
 import android.content.Context
 import android.os.Bundle
 import android.view.View
-import android.widget.ImageView
-import android.widget.TextView
+import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import com.flatcode.littlebooksadmin.Modelimport.Book
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.flatcode.littlebooksadmin.R
 import com.flatcode.littlebooksadmin.Unit.CLASS
 import com.flatcode.littlebooksadmin.Unit.DATA
 import com.flatcode.littlebooksadmin.Unit.VOID
+import com.flatcode.littlebooksadmin.data.util.Resource
 import com.flatcode.littlebooksadmin.databinding.ActivityProfileBinding
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
+import com.flatcode.littlebooksadmin.ui.viewmodel.ProfileViewModel
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import java.text.MessageFormat
 
+@AndroidEntryPoint
 class ProfileActivity : AppCompatActivity() {
 
     private var binding: ActivityProfileBinding? = null
-    var context: Context = this@ProfileActivity
-    var profileId: String? = null
+    private val context: Context = this@ProfileActivity
+    private var profileId: String? = null
+    
+    private val viewModel: ProfileViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityProfileBinding.inflate(layoutInflater)
-        val view = binding!!.root
-        setContentView(view)
+        setContentView(binding!!.root)
 
-        val intent = intent
         profileId = intent.getStringExtra(DATA.PROFILE_ID)
 
+        initUI()
+        observeViewModel()
+        
+        profileId?.let { viewModel.loadProfile(it) }
+    }
+
+    private fun initUI() {
         binding!!.back.setOnClickListener { onBackPressed() }
 
         if (profileId == DATA.FirebaseUserUid) {
@@ -47,116 +57,60 @@ class ProfileActivity : AppCompatActivity() {
             }
         }
 
-        isFollowing(binding!!.follow, profileId)
         binding!!.follow.setOnClickListener {
-            if (binding!!.follow.tag == "add") {
-                FirebaseDatabase.getInstance().reference.child(DATA.FOLLOW)
-                    .child(DATA.FirebaseUserUid)
-                    .child(DATA.FOLLOWING).child(profileId!!).setValue(true)
-                FirebaseDatabase.getInstance().reference.child(DATA.FOLLOW).child(profileId!!)
-                    .child(DATA.FOLLOWERS).child(DATA.FirebaseUserUid).setValue(true)
-            } else {
-                FirebaseDatabase.getInstance().reference.child(DATA.FOLLOW)
-                    .child(DATA.FirebaseUserUid)
-                    .child(DATA.FOLLOWING).child(profileId!!).removeValue()
-                FirebaseDatabase.getInstance().reference.child(DATA.FOLLOW).child(profileId!!)
-                    .child(DATA.FOLLOWERS).child(DATA.FirebaseUserUid).removeValue()
-            }
+            profileId?.let { viewModel.toggleFollow(it) }
         }
     }
 
-    private fun init() {
-        loadUserInfo()
-        nrBooks
-        nrItemFollow(DATA.FOLLOWERS, binding!!.numberFollowers)
-        nrItemFollow(DATA.FOLLOWING, binding!!.numberFollowing)
-        nrItemFavorites()
-    }
-
-    private fun loadUserInfo() {
-        val reference = FirebaseDatabase.getInstance().getReference(DATA.USERS)
-        reference.child(profileId!!).addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                //String email = DATA.EMPTY + snapshot.child(DATA.EMAIL).getValue();
-                val username = DATA.EMPTY + snapshot.child(DATA.USER_NAME).value
-                val profileImage = DATA.EMPTY + snapshot.child(DATA.PROFILE_IMAGE).value
-                //String timestamp = DATA.EMPTY + snapshot.child(DATA.TIMESTAMP).getValue();
-                //String id = DATA.EMPTY + snapshot.child(DATA.ID).getValue();
-                //String version = DATA.EMPTY + snapshot.child(DATA.VERSION).getValue();
-                binding!!.username.text = username
-                VOID.Glide(true, context, profileImage, binding!!.profile)
-            }
-
-            override fun onCancelled(error: DatabaseError) {}
-        })
-    }
-
-    private val nrBooks: Unit
-        get() {
-            val reference = FirebaseDatabase.getInstance().getReference(DATA.BOOKS)
-            reference.addListenerForSingleValueEvent(object : ValueEventListener {
-                override fun onDataChange(dataSnapshot: DataSnapshot) {
-                    var i = 0
-                    for (data in dataSnapshot.children) {
-                        val item = data.getValue(Book::class.java)!!
-                        if (item.publisher == profileId) i++
+    private fun observeViewModel() {
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                launch {
+                    viewModel.user.collect { resource ->
+                        when (resource) {
+                            is Resource.Loading -> { }
+                            is Resource.Success -> {
+                                resource.data?.let { user ->
+                                    binding!!.username.text = user.username
+                                    VOID.Glide(true, context, user.profileImage ?: DATA.BASIC, binding!!.profile)
+                                }
+                            }
+                            is Resource.Error -> {
+                                Toast.makeText(context, resource.message, Toast.LENGTH_SHORT).show()
+                            }
+                        }
                     }
-                    binding!!.numberBooks.text = MessageFormat.format("{0}{1}", DATA.EMPTY, i)
                 }
-
-                override fun onCancelled(databaseError: DatabaseError) {}
-            })
+                launch {
+                    viewModel.stats.collect { resource ->
+                        when (resource) {
+                            is Resource.Loading -> { }
+                            is Resource.Success -> {
+                                resource.data?.let { stats ->
+                                    binding!!.numberBooks.text = stats.booksCount.toString()
+                                    binding!!.numberFollowers.text = stats.followersCount.toString()
+                                    binding!!.numberFollowing.text = stats.followingCount.toString()
+                                    binding!!.numberFavorites.text = stats.favoritesCount.toString()
+                                }
+                            }
+                            is Resource.Error -> {
+                                Toast.makeText(context, resource.message, Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    }
+                }
+                launch {
+                    viewModel.isFollowing.collect { isFollowing ->
+                        if (isFollowing) {
+                            binding!!.follow.setImageResource(R.drawable.ic_heart_selected)
+                            binding!!.follow.tag = "added"
+                        } else {
+                            binding!!.follow.setImageResource(R.drawable.ic_heart_unselected)
+                            binding!!.follow.tag = "add"
+                        }
+                    }
+                }
+            }
         }
-
-    private fun nrItemFollow(type: String?, number: TextView) {
-        val reference = FirebaseDatabase.getInstance().reference
-            .child(DATA.FOLLOW).child(profileId!!).child(type!!)
-        reference.addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                number.text = MessageFormat.format("{0}", dataSnapshot.childrenCount)
-            }
-
-            override fun onCancelled(databaseError: DatabaseError) {}
-        })
-    }
-
-    private fun nrItemFavorites() {
-        val ref = FirebaseDatabase.getInstance().reference.child(DATA.FAVORITES).child(profileId!!)
-        ref.addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                binding!!.numberFavorites.text =
-                    MessageFormat.format("{0}", dataSnapshot.childrenCount)
-            }
-
-            override fun onCancelled(databaseError: DatabaseError) {}
-        })
-    }
-
-    private fun isFollowing(add: ImageView, userId: String?) {
-        val reference = FirebaseDatabase.getInstance().reference
-            .child(DATA.FOLLOW).child(DATA.FirebaseUserUid).child(DATA.FOLLOWING)
-        reference.addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                if (dataSnapshot.child(userId!!).exists()) {
-                    add.setImageResource(R.drawable.ic_heart_selected)
-                    add.tag = "added"
-                } else {
-                    add.setImageResource(R.drawable.ic_heart_unselected)
-                    add.tag = "add"
-                }
-            }
-
-            override fun onCancelled(databaseError: DatabaseError) {}
-        })
-    }
-
-    override fun onResume() {
-        init()
-        super.onResume()
-    }
-
-    override fun onRestart() {
-        init()
-        super.onRestart()
     }
 }

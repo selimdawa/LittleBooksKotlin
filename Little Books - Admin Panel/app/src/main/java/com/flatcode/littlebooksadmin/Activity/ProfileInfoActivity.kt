@@ -5,115 +5,137 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
+import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.flatcode.littlebooksadmin.Adapter.StaggeredBookAdapter
 import com.flatcode.littlebooksadmin.Modelimport.Book
 import com.flatcode.littlebooksadmin.R
 import com.flatcode.littlebooksadmin.Unit.DATA
+import com.flatcode.littlebooksadmin.data.util.Resource
 import com.flatcode.littlebooksadmin.databinding.ActivityPageStaggeredSwitchBinding
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.Query
-import com.google.firebase.database.ValueEventListener
+import com.flatcode.littlebooksadmin.ui.viewmodel.BooksViewModel
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import java.text.MessageFormat
 
+@AndroidEntryPoint
 class ProfileInfoActivity : AppCompatActivity() {
 
     private var binding: ActivityPageStaggeredSwitchBinding? = null
     private val context: Context = this@ProfileInfoActivity
-    var list: ArrayList<Book?>? = null
-    var adapter: StaggeredBookAdapter? = null
-    private var type: String? = null
+    private var list: ArrayList<Book?> = arrayListOf()
+    private var adapter: StaggeredBookAdapter? = null
+    private var type: String = DATA.TIMESTAMP
     private var profileId: String? = null
+    
+    private val viewModel: BooksViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityPageStaggeredSwitchBinding.inflate(layoutInflater)
-        val view = binding!!.root
-        setContentView(view)
+        setContentView(binding!!.root)
 
-        val intent = intent
         profileId = intent.getStringExtra(DATA.PROFILE_ID)
 
+        initUI()
+        observeViewModel()
+        
+        profileId?.let { viewModel.loadBooks(type, it) }
+    }
+
+    private fun initUI() {
         binding!!.toolbar.nameSpace.setText(R.string.publishers_books)
         binding!!.toolbar.close.setOnClickListener { onBackPressed() }
         binding!!.toolbar.back.setOnClickListener { onBackPressed() }
-        type = DATA.TIMESTAMP
 
         binding!!.toolbar.search.setOnClickListener {
             binding!!.toolbar.toolbar.visibility = View.GONE
             binding!!.toolbar.toolbarSearch.visibility = View.VISIBLE
             DATA.searchStatus = true
         }
+        
         binding!!.toolbar.textSearch.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
                 try {
                     adapter!!.filter.filter(s)
-                } catch (e: Exception) {
-                    //None
-                }
+                } catch (e: Exception) { }
             }
-
             override fun afterTextChanged(s: Editable) {}
         })
 
-        //binding.recyclerView.setHasFixedSize(true);
-        list = ArrayList()
-        adapter = StaggeredBookAdapter(context, list!!)
+        adapter = StaggeredBookAdapter(context, list)
         binding!!.recyclerView.adapter = adapter
 
         binding!!.switchBar.all.setOnClickListener {
             type = DATA.TIMESTAMP
-            getData(type)
+            profileId?.let { viewModel.loadBooks(type, it) }
         }
         binding!!.switchBar.name.setOnClickListener {
             type = DATA.TITLE
-            getData(type)
+            profileId?.let { viewModel.loadBooks(type, it) }
         }
         binding!!.switchBar.mostViews.setOnClickListener {
             type = DATA.VIEWS_COUNT
-            getData(type)
+            profileId?.let { viewModel.loadBooks(type, it) }
         }
         binding!!.switchBar.mostLoves.setOnClickListener {
             type = DATA.LOVES_COUNT
-            getData(type)
+            profileId?.let { viewModel.loadBooks(type, it) }
         }
         binding!!.switchBar.mostDownloads.setOnClickListener {
             type = DATA.DOWNLOADS_COUNT
-            getData(type)
+            profileId?.let { viewModel.loadBooks(type, it) }
         }
     }
 
-    private fun getData(orderBy: String?) {
-        val ref: Query = FirebaseDatabase.getInstance().getReference(DATA.BOOKS)
-        ref.orderByChild(orderBy!!).addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                list!!.clear()
-                var i = 0
-                for (data in dataSnapshot.children) {
-                    val item = data.getValue(Book::class.java)!!
-                    if (item.publisher == profileId) {
-                        list!!.add(item)
-                        i++
+    private fun observeViewModel() {
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.books.collect { resource ->
+                    when (resource) {
+                        is Resource.Loading -> {
+                            binding!!.progress.visibility = View.VISIBLE
+                        }
+                        is Resource.Success -> {
+                            binding!!.progress.visibility = View.GONE
+                            updateList(resource.data ?: emptyList())
+                        }
+                        is Resource.Error -> {
+                            binding!!.progress.visibility = View.GONE
+                            Toast.makeText(context, resource.message, Toast.LENGTH_SHORT).show()
+                        }
                     }
                 }
-                binding!!.toolbar.number.text = MessageFormat.format("( {0} )", i)
-                adapter!!.notifyDataSetChanged()
-                binding!!.progress.visibility = View.GONE
-                if (list!!.isNotEmpty()) {
-                    binding!!.recyclerView.visibility = View.VISIBLE
-                    binding!!.emptyText.visibility = View.GONE
-                    list!!.reverse()
-                } else {
-                    binding!!.recyclerView.visibility = View.GONE
-                    binding!!.emptyText.visibility = View.VISIBLE
-                }
             }
+        }
+    }
 
-            override fun onCancelled(databaseError: DatabaseError) {}
-        })
+    private fun updateList(books: List<com.flatcode.littlebooksadmin.data.model.Book>) {
+        list.clear()
+        books.forEach {
+            val legacyBook = Book(
+                it.publisher, it.id, it.title, it.description, it.categoryId,
+                it.url, it.image, it.timestamp, it.viewsCount, it.downloadsCount,
+                it.lovesCount, it.editorsChoice
+            )
+            list.add(legacyBook)
+        }
+        
+        binding!!.toolbar.number.text = MessageFormat.format("( {0} )", list.size)
+        adapter!!.notifyDataSetChanged()
+        
+        if (list.isNotEmpty()) {
+            binding!!.recyclerView.visibility = View.VISIBLE
+            binding!!.emptyText.visibility = View.GONE
+        } else {
+            binding!!.recyclerView.visibility = View.GONE
+            binding!!.emptyText.visibility = View.VISIBLE
+        }
     }
 
     override fun onBackPressed() {
@@ -123,15 +145,5 @@ class ProfileInfoActivity : AppCompatActivity() {
             DATA.searchStatus = false
             binding!!.toolbar.textSearch.setText(DATA.EMPTY)
         } else super.onBackPressed()
-    }
-
-    override fun onResume() {
-        getData(type)
-        super.onResume()
-    }
-
-    override fun onRestart() {
-        getData(type)
-        super.onRestart()
     }
 }
