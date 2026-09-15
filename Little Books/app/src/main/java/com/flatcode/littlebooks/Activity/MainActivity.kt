@@ -11,6 +11,10 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.NavController
+import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.navOptions
 import com.flatcode.littlebooks.Fragment.CategoriesFragment
 import com.flatcode.littlebooks.Fragment.FollowersFragment
 import com.flatcode.littlebooks.Fragment.HomeFragment
@@ -33,6 +37,7 @@ class MainActivity : AppCompatActivity() {
     var activity: Activity? = null
     var context: Context = also { activity = it }
     var bottomNavigation: NafisBottomNavigation? = null
+    private lateinit var navController: NavController
 
     private val viewModel: MainViewModel by viewModels()
 
@@ -42,6 +47,9 @@ class MainActivity : AppCompatActivity() {
         val view = binding!!.root
         setContentView(view)
 
+        val navHostFragment = supportFragmentManager.findFragmentById(R.id.fragmentContainer) as NavHostFragment
+        navController = navHostFragment.navController
+
         bottomNavigation = binding!!.bottomNavigation
         bottomNavigation!!.add(NafisBottomNavigation.Model(1, R.drawable.ic_settings))
         bottomNavigation!!.add(NafisBottomNavigation.Model(2, R.drawable.ic_home))
@@ -49,29 +57,36 @@ class MainActivity : AppCompatActivity() {
         bottomNavigation!!.add(NafisBottomNavigation.Model(4, R.drawable.ic_group))
 
         bottomNavigation!!.setOnShowListener { item: NafisBottomNavigation.Model ->
-            var fragment: Fragment? = null
-            when (item.id) {
+            val destinationId = when (item.id) {
                 1 -> {
                     binding!!.toolbar.card.visibility = View.GONE
-                    fragment = SettingsFragment()
+                    R.id.settingsFragment
                 }
 
                 2 -> {
                     binding!!.toolbar.card.visibility = View.VISIBLE
-                    fragment = HomeFragment()
+                    R.id.homeFragment
                 }
 
                 3 -> {
                     binding!!.toolbar.card.visibility = View.GONE
-                    fragment = FollowersFragment()
+                    R.id.followersFragment
                 }
 
                 4 -> {
                     binding!!.toolbar.card.visibility = View.GONE
-                    fragment = CategoriesFragment()
+                    R.id.categoriesFragment
                 }
+
+                else -> R.id.homeFragment
             }
-            loadFragment(fragment)
+            navController.navigate(destinationId, navOptions {
+                popUpTo(navController.graph.findStartDestination().id) {
+                    saveState = true
+                }
+                launchSingleTop = true
+                restoreState = true
+            })
         }
 
         bottomNavigation!!.show(2, true)
@@ -137,11 +152,6 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
-    }
-
-    private fun loadFragment(fragment: Fragment?) {
-        supportFragmentManager.beginTransaction().replace(R.id.fragmentContainer, fragment!!)
-            .commit()
     }
 
     private fun loadUserInfo() {

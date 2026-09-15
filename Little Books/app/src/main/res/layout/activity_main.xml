@@ -14,11 +14,14 @@
             layout="@layout/toolbar_main"
             android:visibility="visible" />
 
-        <FrameLayout
+        <androidx.fragment.app.FragmentContainerView
             android:id="@+id/fragmentContainer"
+            android:name="androidx.navigation.fragment.NavHostFragment"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1" />
+            android:layout_weight="1"
+            app:defaultNavHost="true"
+            app:navGraph="@navigation/nav_graph" />
 
         <com.nafis.bottomnavigation.NafisBottomNavigation
             android:id="@+id/bottomNavigation"
