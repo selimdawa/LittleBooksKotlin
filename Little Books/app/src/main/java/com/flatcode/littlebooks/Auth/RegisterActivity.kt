@@ -11,7 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import com.flatcode.littlebooks.Unit.CLASS
+import com.flatcode.littlebooks.Activity.MainActivity
 import com.flatcode.littlebooks.Unit.DATA
 import com.flatcode.littlebooks.Unit.VOID
 import com.flatcode.littlebooks.databinding.ActivityRegisterBinding
@@ -40,10 +40,10 @@ class RegisterActivity : AppCompatActivity() {
         dialog!!.setCanceledOnTouchOutside(false)
 
         binding!!.login.setOnClickListener {
-            VOID.Intent1(context, CLASS.LOGIN)
+            VOID.Intent1(context, LoginActivity::class.java)
             finish()
         }
-        binding!!.forget.setOnClickListener { VOID.Intent1(context, CLASS.FORGET_PASSWORD) }
+        binding!!.forget.setOnClickListener { VOID.Intent1(context, ForgetPasswordActivity::class.java) }
         binding!!.go.setOnClickListener { validateData() }
 
         observeViewModel()
@@ -57,7 +57,7 @@ class RegisterActivity : AppCompatActivity() {
                         is Resource.Success -> {
                             dialog!!.dismiss()
                             Toast.makeText(context, "Account created...", Toast.LENGTH_SHORT).show()
-                            VOID.IntentClear(context, CLASS.MAIN)
+                            VOID.IntentClear(context, MainActivity::class.java)
                             finish()
                         }
                         is Resource.Error -> {

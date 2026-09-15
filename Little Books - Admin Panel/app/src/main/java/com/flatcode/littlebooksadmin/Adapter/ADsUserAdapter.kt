@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.flatcode.littlebooksadmin.Filter.ADsUserFilter
 import com.flatcode.littlebooksadmin.Modelimport.User
 import com.flatcode.littlebooksadmin.Application
-import com.flatcode.littlebooksadmin.Unit.CLASS
+import com.flatcode.littlebooksadmin.Activity.AdsInfoActivity
 import com.flatcode.littlebooksadmin.Unit.DATA
 import com.flatcode.littlebooksadmin.Unit.VOID
 import com.flatcode.littlebooksadmin.databinding.ItemAdsUserBinding
@@ -62,7 +62,7 @@ class ADsUserAdapter(private val context: Context, var list: ArrayList<User?>, i
         //ADsNumber(userId, DATA.AD_LOADED, DATA.AD_LOAD, holder.numberADsLoad);
         //ADsNumber(userId, DATA.AD_CLICKED, DATA.AD_CLICK, holder.numberADsClick);
         holder.item.setOnClickListener {
-            VOID.IntentExtra(context, CLASS.ADS_INFO, DATA.PROFILE_ID, userId)
+            VOID.IntentExtra(context, AdsInfoActivity::class.java, DATA.PROFILE_ID, userId)
         }
     }
 

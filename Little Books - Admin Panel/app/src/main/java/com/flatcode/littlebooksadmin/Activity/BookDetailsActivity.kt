@@ -21,7 +21,6 @@ import com.flatcode.littlebooksadmin.Adapter.CommentAdapter
 import com.flatcode.littlebooksadmin.Application
 import com.flatcode.littlebooksadmin.Model.Comment
 import com.flatcode.littlebooksadmin.R
-import com.flatcode.littlebooksadmin.Unit.CLASS
 import com.flatcode.littlebooksadmin.Unit.DATA
 import com.flatcode.littlebooksadmin.Unit.VOID
 import com.flatcode.littlebooksadmin.data.util.Resource
@@ -74,7 +73,7 @@ class BookDetailsActivity : AppCompatActivity() {
         }
         binding!!.toolbar.back.setOnClickListener { onBackPressed() }
         binding!!.read.setOnClickListener {
-            VOID.IntentExtra(context, CLASS.BOOK_VIEW, DATA.BOOK_ID, bookId)
+            VOID.IntentExtra(context, BookViewActivity::class.java, DATA.BOOK_ID, bookId)
         }
         binding!!.download.setOnClickListener {
             if (ContextCompat.checkSelfPermission(
@@ -143,7 +142,7 @@ class BookDetailsActivity : AppCompatActivity() {
                                     binding!!.publisherName.text = user.username
                                     VOID.Glide(true, context, user.profileImage ?: DATA.BASIC, binding!!.publisherImage)
                                     binding!!.userInfo.setOnClickListener {
-                                        VOID.IntentExtra(context, CLASS.PROFILE, DATA.PROFILE_ID, user.id)
+                                        VOID.IntentExtra(context, ProfileActivity::class.java, DATA.PROFILE_ID, user.id)
                                     }
                                 }
                             }

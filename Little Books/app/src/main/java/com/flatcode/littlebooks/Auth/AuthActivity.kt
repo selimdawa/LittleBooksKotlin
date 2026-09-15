@@ -4,7 +4,6 @@ import android.content.Context
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-import com.flatcode.littlebooks.Unit.CLASS
 import com.flatcode.littlebooks.Unit.VOID
 import com.flatcode.littlebooks.databinding.ActivityAuthBinding
 
@@ -19,7 +18,7 @@ class AuthActivity : AppCompatActivity() {
         val view = binding!!.root
         setContentView(view)
 
-        binding!!.loginBtn.setOnClickListener { VOID.Intent1(context, CLASS.LOGIN) }
-        binding!!.skipBtn.setOnClickListener { VOID.Intent1(context, CLASS.REGISTER) }
+        binding!!.loginBtn.setOnClickListener { VOID.Intent1(context, LoginActivity::class.java) }
+        binding!!.skipBtn.setOnClickListener { VOID.Intent1(context, RegisterActivity::class.java) }
     }
 }

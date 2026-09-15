@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.flatcode.littlebooksadmin.Filterimport.TopPublisherFilter
 import com.flatcode.littlebooksadmin.Modelimport.User
 import com.flatcode.littlebooksadmin.R
-import com.flatcode.littlebooksadmin.Unit.CLASS
+import com.flatcode.littlebooksadmin.Activity.ProfileActivity
 import com.flatcode.littlebooksadmin.Unit.DATA
 import com.flatcode.littlebooksadmin.Unit.VOID
 import com.flatcode.littlebooksadmin.databinding.ItemTopPublisherBinding
@@ -80,7 +80,7 @@ class TopPublisherAdapter(
         }*/
 
         holder.item.setOnClickListener {
-            VOID.IntentExtra(context, CLASS.PROFILE, DATA.PROFILE_ID, userId)
+            VOID.IntentExtra(context, ProfileActivity::class.java, DATA.PROFILE_ID, userId)
         }
     }
 

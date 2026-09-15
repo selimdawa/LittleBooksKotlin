@@ -10,10 +10,8 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.flatcode.littlebooks.Activity.ProfileActivity
 import com.flatcode.littlebooks.Filter.PublisherFilter
-import com.flatcode.littlebooks.Model.User
-import com.flatcode.littlebooks.R
-import com.flatcode.littlebooks.Unit.CLASS
 import com.flatcode.littlebooks.Unit.DATA
 import com.flatcode.littlebooks.Unit.VOID
 import com.flatcode.littlebooks.databinding.ItemPublisherBinding
@@ -77,7 +75,7 @@ class PublisherAdapter(private val context: Context, var list: ArrayList<User?>)
         }
 
         holder.item.setOnClickListener {
-            VOID.IntentExtra(context, CLASS.PROFILE, DATA.PROFILE_ID, item.id)
+            VOID.IntentExtra(context, ProfileActivity::class.java, DATA.PROFILE_ID, item.id)
         }
     }
 

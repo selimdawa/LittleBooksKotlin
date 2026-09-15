@@ -15,7 +15,6 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.flatcode.littlebooks.Adapter.CommentAdapter
 import com.flatcode.littlebooks.Model.Comment
 import com.flatcode.littlebooks.R
-import com.flatcode.littlebooks.Unit.CLASS
 import com.flatcode.littlebooks.Unit.DATA
 import com.flatcode.littlebooks.Unit.VOID
 import com.flatcode.littlebooks.databinding.ActivityBookDetailsBinding
@@ -56,7 +55,7 @@ class BookDetailsActivity : AppCompatActivity() {
             viewModel.toggleFavorite(DATA.FirebaseUserUid, bookId!!, !isFavorite)
         }
         binding!!.read.setOnClickListener {
-            VOID.IntentExtra(context, CLASS.BOOK_VIEW, DATA.BOOK_ID, bookId)
+            VOID.IntentExtra(context, BookViewActivity::class.java, DATA.BOOK_ID, bookId)
         }
         binding!!.addComment.setOnClickListener { addCommentDialog() }
 

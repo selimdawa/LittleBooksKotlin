@@ -8,8 +8,8 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
+import com.flatcode.littlebooks.Activity.BooksCategoryActivity
 import com.flatcode.littlebooks.Model.Category
-import com.flatcode.littlebooks.Unit.CLASS
 import com.flatcode.littlebooks.Unit.DATA
 import com.flatcode.littlebooks.Unit.VOID
 import com.flatcode.littlebooks.databinding.ItemCategoryMainBinding
@@ -42,7 +42,7 @@ class CategoryMainAdapter(private val context: Context?, var list: ArrayList<Cat
 
         holder.card.setOnClickListener {
             VOID.IntentExtra2(
-                context, CLASS.CATEGORY_BOOKS, DATA.CATEGORY_ID, id, DATA.CATEGORY_NAME, name
+                context, BooksCategoryActivity::class.java, DATA.CATEGORY_ID, id, DATA.CATEGORY_NAME, name
             )
         }
     }

@@ -13,7 +13,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.flatcode.littlebooksadmin.Filterimport.StaggeredFilter
 import com.flatcode.littlebooksadmin.Modelimport.Book
-import com.flatcode.littlebooksadmin.Unit.CLASS
+import com.flatcode.littlebooksadmin.Activity.BookDetailsActivity
 import com.flatcode.littlebooksadmin.Unit.DATA
 import com.flatcode.littlebooksadmin.Unit.VOID
 import com.flatcode.littlebooksadmin.databinding.ItemBookStaggeredBinding
@@ -64,7 +64,7 @@ class StaggeredBookAdapter(private val context: Context, var list: ArrayList<Boo
         holder.more.setOnClickListener { VOID.moreOptionDialog(context, item) }
 
         holder.item.setOnClickListener {
-            VOID.IntentExtra(context, CLASS.BOOK_DETAIL, DATA.BOOK_ID, bookId)
+            VOID.IntentExtra(context, BookDetailsActivity::class.java, DATA.BOOK_ID, bookId)
         }
     }
 

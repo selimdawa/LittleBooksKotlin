@@ -24,6 +24,8 @@ import coil3.request.placeholder
 import coil3.request.transformations
 import com.flatcode.littlebooksadmin.Modelimport.Book
 import com.flatcode.littlebooksadmin.Modelimport.Category
+import com.flatcode.littlebooksadmin.Activity.BookEditActivity
+import com.flatcode.littlebooksadmin.Activity.CategoryEditActivity
 import com.flatcode.littlebooksadmin.R
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -318,7 +320,7 @@ object VOID {
                 //handle dialog option click
                 if (which == 0) {
                     //Edit clicked ,Open new activity to edit the book info
-                    IntentExtra(context, CLASS.BOOK_EDIT, DATA.BOOK_ID, bookId)
+                    IntentExtra(context, BookEditActivity::class.java, DATA.BOOK_ID, bookId)
                 } else if (which == 1) {
                     //Delete Clicked
                     dialogOptionDelete(
@@ -345,7 +347,7 @@ object VOID {
                 //handle dialog option click
                 if (which == 0) {
                     //Edit clicked ,Open new activity to edit the book info
-                    IntentExtra(context, CLASS.CATEGORY_EDIT, DATA.CATEGORY_ID, id)
+                    IntentExtra(context, CategoryEditActivity::class.java, DATA.CATEGORY_ID, id)
                 } else if (which == 1) {
                     //Delete Clicked
                     dialogOptionDelete(

@@ -10,9 +10,9 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.flatcode.littlebooks.Activity.BookDetailsActivity
 import com.flatcode.littlebooks.Filter.MoreBooksFilter
 import com.flatcode.littlebooks.Model.Book
-import com.flatcode.littlebooks.Unit.CLASS
 import com.flatcode.littlebooks.Unit.DATA
 import com.flatcode.littlebooks.Unit.VOID
 import com.flatcode.littlebooks.databinding.ItemBookLinearBinding
@@ -82,7 +82,7 @@ class LinearBookAdapter(
         holder.loves.setOnClickListener { VOID.checkLove(holder.loves, bookId) }
         holder.more.setOnClickListener { VOID.moreOptionDialog(context, item) }
         holder.item.setOnClickListener {
-            VOID.IntentExtra(context, CLASS.BOOK_DETAIL, DATA.BOOK_ID, item.id)
+            VOID.IntentExtra(context, BookDetailsActivity::class.java, DATA.BOOK_ID, item.id)
         }
     }
 

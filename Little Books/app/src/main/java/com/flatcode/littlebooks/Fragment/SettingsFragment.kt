@@ -9,10 +9,10 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import com.flatcode.littlebooks.Activity.*
 import com.flatcode.littlebooks.Adapter.SettingAdapter
 import com.flatcode.littlebooks.Model.Setting
 import com.flatcode.littlebooks.R
-import com.flatcode.littlebooks.Unit.CLASS
 import com.flatcode.littlebooks.Unit.DATA
 import com.flatcode.littlebooks.Unit.VOID
 import com.flatcode.littlebooks.databinding.FragmentSettingsBinding
@@ -39,7 +39,7 @@ class SettingsFragment : Fragment() {
         binding!!.recyclerView.adapter = adapter
 
         binding!!.toolbar.item.setOnClickListener {
-            VOID.IntentExtra(context, CLASS.PROFILE, DATA.PROFILE_ID, DATA.FirebaseUserUid)
+            VOID.IntentExtra(context, ProfileActivity::class.java, DATA.PROFILE_ID, DATA.FirebaseUserUid)
         }
 
         observeViewModel()
@@ -91,18 +91,18 @@ class SettingsFragment : Fragment() {
         explorePublishers: Int, myBooks: Int, followers: Int, following: Int, favorites: Int
     ) {
         list.clear()
-        list.add(Setting("1", "Edit Profile", R.drawable.ic_edit_white, 0, CLASS.PROFILE_EDIT))
-        list.add(Setting("2", "Explore Publishers", R.drawable.ic_search_person, explorePublishers, CLASS.EXPLORE_PUBLISHERS))
-        list.add(Setting("3", "Followers", R.drawable.ic_followers, followers, CLASS.FOLLOWERS))
-        list.add(Setting("4", "Following", R.drawable.ic_following, following, CLASS.FOLLOWING))
-        list.add(Setting("5", "My books", R.drawable.ic_books, myBooks, CLASS.MY_BOOKS))
-        list.add(Setting("6", "Add book", R.drawable.ic_book_white, 0, CLASS.BOOK_ADD))
-        list.add(Setting("7", "Favorites", R.drawable.ic_star_selected, favorites, CLASS.FAVORITES))
+        list.add(Setting("1", "Edit Profile", R.drawable.ic_edit_white, 0, ProfileEditActivity::class.java))
+        list.add(Setting("2", "Explore Publishers", R.drawable.ic_search_person, explorePublishers, ExplorePublishersActivity::class.java))
+        list.add(Setting("3", "Followers", R.drawable.ic_followers, followers, FollowersActivity::class.java))
+        list.add(Setting("4", "Following", R.drawable.ic_following, following, FollowingActivity::class.java))
+        list.add(Setting("5", "My books", R.drawable.ic_books, myBooks, MyBooksActivity::class.java))
+        list.add(Setting("6", "Add book", R.drawable.ic_book_white, 0, BookAddActivity::class.java))
+        list.add(Setting("7", "Favorites", R.drawable.ic_star_selected, favorites, FavoritesActivity::class.java))
         list.add(Setting("8", "About App", R.drawable.ic_info, 0, null))
         list.add(Setting("9", "Logout", R.drawable.ic_logout_white, 0, null))
         list.add(Setting("10", "Share App", R.drawable.ic_share, 0, null))
         list.add(Setting("11", "Rate APP", R.drawable.ic_heart_selected, 0, null))
-        list.add(Setting("12", "Privacy Policy", R.drawable.ic_privacy_policy, 0, CLASS.PRIVACY_POLICY))
+        list.add(Setting("12", "Privacy Policy", R.drawable.ic_privacy_policy, 0, PrivacyPolicyActivity::class.java))
         adapter!!.notifyDataSetChanged()
     }
 

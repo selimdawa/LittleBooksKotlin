@@ -10,7 +10,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import com.flatcode.littlebooks.Unit.CLASS
 import com.flatcode.littlebooks.Unit.VOID
 import com.flatcode.littlebooks.databinding.ActivityForgetPasswordBinding
 import com.flatcode.littlebooks.utils.Resource
@@ -38,11 +37,11 @@ class ForgetPasswordActivity : AppCompatActivity() {
         dialog!!.setCanceledOnTouchOutside(false)
 
         binding!!.noAccount.setOnClickListener {
-            VOID.Intent1(context, CLASS.REGISTER)
+            VOID.Intent1(context, RegisterActivity::class.java)
             finish()
         }
         binding!!.login.setOnClickListener {
-            VOID.Intent1(context, CLASS.LOGIN)
+            VOID.Intent1(context, LoginActivity::class.java)
             finish()
         }
         binding!!.go.setOnClickListener { validateDate() }

@@ -10,7 +10,6 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.flatcode.littlebooksadmin.R
-import com.flatcode.littlebooksadmin.Unit.CLASS
 import com.flatcode.littlebooksadmin.Unit.DATA
 import com.flatcode.littlebooksadmin.Unit.VOID
 import com.flatcode.littlebooksadmin.data.util.Resource
@@ -48,12 +47,12 @@ class ProfileActivity : AppCompatActivity() {
         if (profileId == DATA.FirebaseUserUid) {
             binding!!.follow.visibility = View.GONE
             binding!!.editOrInfo.setImageResource(R.drawable.ic_edit_white)
-            binding!!.editOrInfo.setOnClickListener { VOID.Intent1(context, CLASS.PROFILE_EDIT) }
+            binding!!.editOrInfo.setOnClickListener { VOID.Intent1(context, ProfileEditActivity::class.java) }
         } else {
             binding!!.follow.visibility = View.VISIBLE
             binding!!.editOrInfo.setImageResource(R.drawable.ic_books)
             binding!!.editOrInfo.setOnClickListener {
-                VOID.IntentExtra(context, CLASS.PROFILE_INFO, DATA.PROFILE_ID, profileId)
+                VOID.IntentExtra(context, ProfileInfoActivity::class.java, DATA.PROFILE_ID, profileId)
             }
         }
 

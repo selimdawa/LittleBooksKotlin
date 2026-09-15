@@ -11,7 +11,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.flatcode.littlebooksadmin.Adapter.MainAdapter
 import com.flatcode.littlebooksadmin.R
-import com.flatcode.littlebooksadmin.Unit.CLASS
 import com.flatcode.littlebooksadmin.Unit.DATA
 import com.flatcode.littlebooksadmin.Unit.VOID
 import com.flatcode.littlebooksadmin.data.model.Main
@@ -43,7 +42,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun initUI() {
         binding!!.toolbar.image.setOnClickListener {
-            VOID.IntentExtra(context, CLASS.PROFILE, DATA.PROFILE_ID, DATA.FirebaseUserUid)
+            VOID.IntentExtra(context, ProfileActivity::class.java, DATA.PROFILE_ID, DATA.FirebaseUserUid)
         }
 
         adapter = MainAdapter(context, list)
@@ -93,20 +92,20 @@ class MainActivity : AppCompatActivity() {
 
     private fun updateDashboard(stats: MainRepository.DashboardStats) {
         list.clear()
-        list.add(Main(R.drawable.ic_person, "Users", stats.users, CLASS.USERS))
-        list.add(Main(R.drawable.ic_add, "Add Book", 0, CLASS.BOOK_ADD))
-        list.add(Main(R.drawable.ic_book_white, "My Books", stats.myBooks, CLASS.MY_BOOKS))
-        list.add(Main(R.drawable.ic_books, "All Books", stats.allBooks, CLASS.ALL_BOOKS))
-        list.add(Main(R.drawable.ic_rank, "Top Publisher", stats.publishers, CLASS.TOP_PUBLISHERS))
-        list.add(Main(R.drawable.ic_users, "Editors Choice", stats.editorsChoice, CLASS.EDITORS_CHOICE))
-        list.add(Main(R.drawable.ic_add_category, "Add Category", 0, CLASS.CATEGORY_ADD))
-        list.add(Main(R.drawable.ic_category_gray, "Categories", stats.categories, CLASS.CATEGORIES))
-        list.add(Main(R.drawable.ic_slider, "Slider Show", stats.sliderShow, CLASS.SLIDER_SHOW))
-        list.add(Main(R.drawable.ic_followers, "Followers", stats.followers, CLASS.FOLLOWERS))
-        list.add(Main(R.drawable.ic_following, "Following", stats.following, CLASS.FOLLOWING))
-        list.add(Main(R.drawable.ic_star_selected, "Favorites", stats.favorites, CLASS.FAVORITES))
-        list.add(Main(R.drawable.ic_ads, "AD's", stats.ads, CLASS.ADS))
-        list.add(Main(R.drawable.ic_privacy_policy, "Privacy Policy", 0, CLASS.PRIVACY_POLICY))
+        list.add(Main(R.drawable.ic_person, "Users", stats.users, UsersActivity::class.java))
+        list.add(Main(R.drawable.ic_add, "Add Book", 0, BookAddActivity::class.java))
+        list.add(Main(R.drawable.ic_book_white, "My Books", stats.myBooks, MyBooksActivity::class.java))
+        list.add(Main(R.drawable.ic_books, "All Books", stats.allBooks, AllBooksActivity::class.java))
+        list.add(Main(R.drawable.ic_rank, "Top Publisher", stats.publishers, TopPublishersActivity::class.java))
+        list.add(Main(R.drawable.ic_users, "Editors Choice", stats.editorsChoice, EditorsChoiceActivity::class.java))
+        list.add(Main(R.drawable.ic_add_category, "Add Category", 0, CategoryAddActivity::class.java))
+        list.add(Main(R.drawable.ic_category_gray, "Categories", stats.categories, CategoriesActivity::class.java))
+        list.add(Main(R.drawable.ic_slider, "Slider Show", stats.sliderShow, SliderShowActivity::class.java))
+        list.add(Main(R.drawable.ic_followers, "Followers", stats.followers, FollowersActivity::class.java))
+        list.add(Main(R.drawable.ic_following, "Following", stats.following, FollowingActivity::class.java))
+        list.add(Main(R.drawable.ic_star_selected, "Favorites", stats.favorites, FavoritesActivity::class.java))
+        list.add(Main(R.drawable.ic_ads, "AD's", stats.ads, ADsActivity::class.java))
+        list.add(Main(R.drawable.ic_privacy_policy, "Privacy Policy", 0, PrivacyPolicyActivity::class.java))
         
         adapter?.notifyDataSetChanged()
         binding!!.bar.visibility = View.GONE

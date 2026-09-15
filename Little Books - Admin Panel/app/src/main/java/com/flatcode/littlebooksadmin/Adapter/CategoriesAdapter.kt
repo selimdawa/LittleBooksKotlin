@@ -14,7 +14,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.flatcode.littlebooksadmin.Filter.CategoriesFilter
 import com.flatcode.littlebooksadmin.Modelimport.Book
 import com.flatcode.littlebooksadmin.Modelimport.Category
-import com.flatcode.littlebooksadmin.Unit.CLASS
+import com.flatcode.littlebooksadmin.Activity.BooksCategoryActivity
 import com.flatcode.littlebooksadmin.Unit.DATA
 import com.flatcode.littlebooksadmin.Unit.VOID
 import com.flatcode.littlebooksadmin.databinding.ItemCategoriesBinding
@@ -56,7 +56,7 @@ class CategoriesAdapter(private val context: Context, var list: ArrayList<Catego
         holder.more.setOnClickListener { VOID.moreCategories(context, item) }
         holder.item.setOnClickListener {
             VOID.IntentExtra2(
-                context, CLASS.CATEGORY_BOOKS,
+                context, BooksCategoryActivity::class.java,
                 DATA.CATEGORY_ID, categoryId, DATA.CATEGORY_NAME, name
             )
         }

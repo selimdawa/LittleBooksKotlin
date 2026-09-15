@@ -11,7 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import com.flatcode.littlebooks.Unit.CLASS
+import com.flatcode.littlebooks.Activity.MainActivity
 import com.flatcode.littlebooks.Unit.DATA
 import com.flatcode.littlebooks.Unit.VOID
 import com.flatcode.littlebooks.databinding.ActivityLoginBinding
@@ -39,8 +39,8 @@ class LoginActivity : AppCompatActivity() {
         dialog!!.setTitle("Please wait...")
         dialog!!.setCanceledOnTouchOutside(false)
 
-        binding!!.forget.setOnClickListener { VOID.Intent1(context, CLASS.FORGET_PASSWORD) }
-        binding!!.noAccount.setOnClickListener { VOID.Intent1(context, CLASS.REGISTER) }
+        binding!!.forget.setOnClickListener { VOID.Intent1(context, ForgetPasswordActivity::class.java) }
+        binding!!.noAccount.setOnClickListener { VOID.Intent1(context, RegisterActivity::class.java) }
         binding!!.go.setOnClickListener { validateDate() }
 
         observeViewModel()
@@ -53,7 +53,7 @@ class LoginActivity : AppCompatActivity() {
                     when (resource) {
                         is Resource.Success -> {
                             dialog!!.dismiss()
-                            VOID.IntentClear(context, CLASS.MAIN)
+                            VOID.IntentClear(context, MainActivity::class.java)
                             finish()
                         }
                         is Resource.Error -> {

@@ -12,7 +12,8 @@ import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.flatcode.littlebooksadmin.Modelimport.Book
 import com.flatcode.littlebooksadmin.Modelimport.EditorsChoice
-import com.flatcode.littlebooksadmin.Unit.CLASS
+import com.flatcode.littlebooksadmin.Activity.BookDetailsActivity
+import com.flatcode.littlebooksadmin.Activity.EditorsChoiceAddActivity
 import com.flatcode.littlebooksadmin.Unit.DATA
 import com.flatcode.littlebooksadmin.Unit.VOID
 import com.flatcode.littlebooksadmin.databinding.ItemBookEditorsChoiceBinding
@@ -45,7 +46,7 @@ class EditorsChoiceAdapter(private val context: Context, var list: List<EditorsC
         holder.numberEditorsChoice.text = MessageFormat.format("{0}{1}", DATA.EMPTY, id)
         holder.add.setOnClickListener {
             VOID.IntentExtra2(
-                context, CLASS.EDITORS_CHOICE_ADD,
+                context, EditorsChoiceAddActivity::class.java,
                 DATA.EDITORS_CHOICE_ID, editorsChoiceId, DATA.OLD_BOOK_ID, null
             )
         }
@@ -112,7 +113,7 @@ class EditorsChoiceAdapter(private val context: Context, var list: List<EditorsC
                         remove.visibility = View.VISIBLE
                         change.visibility = View.VISIBLE
                         detailsCard.setOnClickListener {
-                            VOID.IntentExtra(context, CLASS.BOOK_DETAIL, DATA.BOOK_ID, id)
+                            VOID.IntentExtra(context, BookDetailsActivity::class.java, DATA.BOOK_ID, id)
                         }
                         remove.setOnClickListener {
                             VOID.dialogOptionDelete(
@@ -122,7 +123,7 @@ class EditorsChoiceAdapter(private val context: Context, var list: List<EditorsC
                         }
                         change.setOnClickListener {
                             VOID.IntentExtra2(
-                                context, CLASS.EDITORS_CHOICE_ADD,
+                                context, EditorsChoiceAddActivity::class.java,
                                 DATA.EDITORS_CHOICE_ID, position, DATA.OLD_BOOK_ID, id
                             )
                         }

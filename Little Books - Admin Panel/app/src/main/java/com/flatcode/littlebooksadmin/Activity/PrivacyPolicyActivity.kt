@@ -4,7 +4,6 @@ import android.content.Context
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.flatcode.littlebooksadmin.R
-import com.flatcode.littlebooksadmin.Unit.CLASS
 import com.flatcode.littlebooksadmin.Unit.DATA
 import com.flatcode.littlebooksadmin.Unit.VOID
 import com.flatcode.littlebooksadmin.databinding.ActivityPrivacyPolicyBinding
@@ -27,7 +26,7 @@ class PrivacyPolicyActivity : AppCompatActivity() {
         binding!!.toolbar.nameSpace.setText(R.string.privacy_policy)
         binding!!.toolbar.back.setOnClickListener { onBackPressed() }
 
-        binding!!.edit.setOnClickListener { VOID.Intent1(context, CLASS.PRIVACY_POLICY_EDIT) }
+        binding!!.edit.setOnClickListener { VOID.Intent1(context, PrivacyPolicyEditActivity::class.java) }
     }
 
     private fun privacyPolicy() {

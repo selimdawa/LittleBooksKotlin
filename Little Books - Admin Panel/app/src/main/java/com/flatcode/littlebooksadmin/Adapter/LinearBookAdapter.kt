@@ -12,7 +12,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.flatcode.littlebooksadmin.Filterimport.MoreBooksFilter
 import com.flatcode.littlebooksadmin.Modelimport.Book
-import com.flatcode.littlebooksadmin.Unit.CLASS
+import com.flatcode.littlebooksadmin.Activity.BookDetailsActivity
 import com.flatcode.littlebooksadmin.Unit.DATA
 import com.flatcode.littlebooksadmin.Unit.VOID
 import com.flatcode.littlebooksadmin.databinding.ItemBookLinearBinding
@@ -82,7 +82,7 @@ class LinearBookAdapter(private val context: Context, var list: ArrayList<Book?>
             VOID.moreOptionDialog(context, item)
         }
         holder.item.setOnClickListener {
-            VOID.IntentExtra(context, CLASS.BOOK_DETAIL, DATA.BOOK_ID, item.id)
+            VOID.IntentExtra(context, BookDetailsActivity::class.java, DATA.BOOK_ID, item.id)
         }
     }
 

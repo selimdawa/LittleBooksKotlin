@@ -1,5 +1,7 @@
 package com.flatcode.littlebooks.Unit
 
+import com.flatcode.littlebooks.Activity.BookEditActivity
+import com.flatcode.littlebooks.Auth.AuthActivity
 import android.app.Activity
 import android.app.Dialog
 import android.app.ProgressDialog
@@ -313,7 +315,7 @@ object VOID {
         lp.height = WindowManager.LayoutParams.WRAP_CONTENT
         dialog.findViewById<View>(R.id.yes).setOnClickListener {
             FirebaseAuth.getInstance().signOut()
-            IntentClear(context, CLASS.AUTH)
+            IntentClear(context, AuthActivity::class.java)
         }
         dialog.findViewById<View>(R.id.no).setOnClickListener { dialog.cancel() }
         dialog.show()
@@ -439,7 +441,7 @@ object VOID {
             //handle dialog option click
             if (which == 0) {
                 //Edit clicked ,Open new activity to edit the book info
-                IntentExtra(context, CLASS.BOOK_EDIT, DATA.BOOK_ID, bookId)
+                IntentExtra(context, BookEditActivity::class.java, DATA.BOOK_ID, bookId)
             } else if (which == 1) {
                 //Delete Clicked
                 dialogOptionDelete(

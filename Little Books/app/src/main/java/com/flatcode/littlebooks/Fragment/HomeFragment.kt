@@ -10,12 +10,12 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.RecyclerView
+import com.flatcode.littlebooks.Activity.MoreBooksActivity
 import com.flatcode.littlebooks.Adapter.CategoryAdapter
 import com.flatcode.littlebooks.Adapter.ImageSliderAdapter
 import com.flatcode.littlebooks.Adapter.MainBookAdapter
 import com.flatcode.littlebooks.Model.Book
 import com.flatcode.littlebooks.Model.Category
-import com.flatcode.littlebooks.Unit.CLASS
 import com.flatcode.littlebooks.Unit.DATA
 import com.flatcode.littlebooks.Unit.VOID
 import com.flatcode.littlebooks.databinding.FragmentHomeBinding
@@ -73,35 +73,35 @@ class HomeFragment : Fragment() {
 
         binding!!.showMore.setOnClickListener {
             VOID.IntentExtra3(
-                context, CLASS.MORE_BOOKS, DATA.SHOW_MORE_TYPE, DATA.EDITORS_CHOICE,
+                context, MoreBooksActivity::class.java, DATA.SHOW_MORE_TYPE, DATA.EDITORS_CHOICE,
                 DATA.SHOW_MORE_NAME, binding!!.name.text.toString(),
                 DATA.SHOW_MORE_BOOLEAN, DATA.EMPTY + B_one
             )
         }
         binding!!.showMore2.setOnClickListener {
             VOID.IntentExtra3(
-                context, CLASS.MORE_BOOKS, DATA.SHOW_MORE_TYPE,
+                context, MoreBooksActivity::class.java, DATA.SHOW_MORE_TYPE,
                 DATA.VIEWS_COUNT, DATA.SHOW_MORE_NAME, binding!!.mostViews.text.toString(),
                 DATA.SHOW_MORE_BOOLEAN, DATA.EMPTY + B_two
             )
         }
         binding!!.showMore3.setOnClickListener {
             VOID.IntentExtra3(
-                context, CLASS.MORE_BOOKS, DATA.SHOW_MORE_TYPE,
+                context, MoreBooksActivity::class.java, DATA.SHOW_MORE_TYPE,
                 DATA.LOVES_COUNT, DATA.SHOW_MORE_NAME, binding!!.name3.text.toString(),
                 DATA.SHOW_MORE_BOOLEAN, DATA.EMPTY + B_three
             )
         }
         binding!!.showMore4.setOnClickListener {
             VOID.IntentExtra3(
-                context, CLASS.MORE_BOOKS, DATA.SHOW_MORE_TYPE,
+                context, MoreBooksActivity::class.java, DATA.SHOW_MORE_TYPE,
                 DATA.DOWNLOADS_COUNT, DATA.SHOW_MORE_NAME, binding!!.name4.text.toString(),
                 DATA.SHOW_MORE_BOOLEAN, DATA.EMPTY + B_four
             )
         }
         binding!!.showMore5.setOnClickListener {
             VOID.IntentExtra3(
-                context, CLASS.MORE_BOOKS, DATA.SHOW_MORE_TYPE,
+                context, MoreBooksActivity::class.java, DATA.SHOW_MORE_TYPE,
                 DATA.TIMESTAMP, DATA.SHOW_MORE_NAME, binding!!.name5.text.toString(),
                 DATA.SHOW_MORE_BOOLEAN, DATA.EMPTY + B_five
             )

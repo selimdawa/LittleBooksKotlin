@@ -16,7 +16,6 @@ import com.flatcode.littlebooks.Fragment.FollowersFragment
 import com.flatcode.littlebooks.Fragment.HomeFragment
 import com.flatcode.littlebooks.Fragment.SettingsFragment
 import com.flatcode.littlebooks.R
-import com.flatcode.littlebooks.Unit.CLASS
 import com.flatcode.littlebooks.Unit.DATA
 import com.flatcode.littlebooks.Unit.VOID
 import com.flatcode.littlebooks.databinding.ActivityMainBinding
@@ -113,7 +112,7 @@ class MainActivity : AppCompatActivity() {
 
         MobileAds.initialize(applicationContext) { }
         binding!!.toolbar.image.setOnClickListener {
-            VOID.IntentExtra(context, CLASS.PROFILE, DATA.PROFILE_ID, DATA.FirebaseUserUid)
+            VOID.IntentExtra(context, ProfileActivity::class.java, DATA.PROFILE_ID, DATA.FirebaseUserUid)
         }
         loadUserInfo()
         observeViewModel()

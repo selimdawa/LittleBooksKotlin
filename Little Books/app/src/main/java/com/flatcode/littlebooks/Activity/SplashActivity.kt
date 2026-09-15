@@ -6,7 +6,7 @@ import android.os.Handler
 import android.os.Looper
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import com.flatcode.littlebooks.Unit.CLASS
+import com.flatcode.littlebooks.Auth.AuthActivity
 import com.flatcode.littlebooks.Unit.VOID
 import com.flatcode.littlebooks.databinding.ActivitySplashBinding
 import com.flatcode.littlebooks.viewmodel.AuthViewModel
@@ -33,9 +33,9 @@ class SplashActivity : AppCompatActivity() {
 
     private fun checkUser() {
         if (viewModel.getCurrentUser() == null) {
-            VOID.Intent1(context, CLASS.AUTH)
+            VOID.Intent1(context, AuthActivity::class.java)
         } else {
-            VOID.Intent1(context, CLASS.MAIN)
+            VOID.Intent1(context, MainActivity::class.java)
         }
         finish()
     }
