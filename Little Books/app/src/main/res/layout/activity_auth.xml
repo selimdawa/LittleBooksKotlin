@@ -44,14 +44,14 @@
                 <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:padding="20sp">
+                    android:padding="20dp">
 
                     <ImageView
                         android:id="@+id/logo"
-                        android:layout_width="150sp"
-                        android:layout_height="150sp"
+                        android:layout_width="150dp"
+                        android:layout_height="150dp"
                         android:layout_centerHorizontal="true"
-                        android:layout_marginTop="40sp"
+                        android:layout_marginTop="40dp"
                         android:contentDescription="@null"
                         android:src="@drawable/logo" />
 
@@ -59,7 +59,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_below="@+id/logo"
-                        android:layout_marginVertical="20sp"
+                        android:layout_marginVertical="20dp"
                         android:gravity="center"
                         android:orientation="horizontal">
 
@@ -91,10 +91,10 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_above="@+id/skipBtn"
-                        android:layout_marginBottom="10sp"
+                        android:layout_marginBottom="10dp"
                         android:background="@drawable/button6"
                         android:gravity="center"
-                        android:padding="15sp"
+                        android:padding="15dp"
                         android:text="@string/login"
                         android:textColor="@color/white"
                         android:textSize="18sp"
@@ -107,7 +107,7 @@
                         android:layout_alignParentBottom="true"
                         android:background="@drawable/button"
                         android:gravity="center"
-                        android:padding="15sp"
+                        android:padding="15dp"
                         android:text="@string/register"
                         android:textColor="?mc_tick"
                         android:textSize="18sp"

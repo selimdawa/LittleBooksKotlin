@@ -5,7 +5,7 @@
         android:id="@+id/scrollSwitchUser"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="5sp"
+        android:layout_marginHorizontal="5dp"
         android:orientation="horizontal"
         android:scrollbarSize="0dp"
         android:scrollbarThumbHorizontal="@color/white">
@@ -22,9 +22,9 @@
                 android:id="@+id/all"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="5sp"
-                android:elevation="6sp"
-                app:cardCornerRadius="10sp">
+                android:layout_marginEnd="5dp"
+                android:elevation="6dp"
+                app:cardCornerRadius="10dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -34,8 +34,8 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:paddingHorizontal="20sp"
-                        android:paddingVertical="10sp"
+                        android:paddingHorizontal="20dp"
+                        android:paddingVertical="10dp"
                         android:text="@string/all"
                         android:textColor="@color/white"
                         android:textSize="18sp"
@@ -49,9 +49,9 @@
                 android:id="@+id/name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="5sp"
-                android:elevation="6sp"
-                app:cardCornerRadius="10sp">
+                android:layout_marginHorizontal="5dp"
+                android:elevation="6dp"
+                app:cardCornerRadius="10dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -61,8 +61,8 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:paddingHorizontal="20sp"
-                        android:paddingVertical="10sp"
+                        android:paddingHorizontal="20dp"
+                        android:paddingVertical="10dp"
                         android:text="@string/name"
                         android:textColor="@color/white"
                         android:textSize="18sp"
@@ -76,9 +76,9 @@
                 android:id="@+id/mostViews"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="5sp"
-                android:elevation="6sp"
-                app:cardCornerRadius="10sp">
+                android:layout_marginHorizontal="5dp"
+                android:elevation="6dp"
+                app:cardCornerRadius="10dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -88,8 +88,8 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:paddingHorizontal="20sp"
-                        android:paddingVertical="10sp"
+                        android:paddingHorizontal="20dp"
+                        android:paddingVertical="10dp"
                         android:text="@string/most_views"
                         android:textColor="@color/white"
                         android:textSize="18sp"
@@ -103,9 +103,9 @@
                 android:id="@+id/mostLoves"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="5sp"
-                android:elevation="6sp"
-                app:cardCornerRadius="10sp">
+                android:layout_marginHorizontal="5dp"
+                android:elevation="6dp"
+                app:cardCornerRadius="10dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -115,8 +115,8 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:paddingHorizontal="20sp"
-                        android:paddingVertical="10sp"
+                        android:paddingHorizontal="20dp"
+                        android:paddingVertical="10dp"
                         android:text="@string/most_loves"
                         android:textColor="@color/white"
                         android:textSize="18sp"
@@ -130,9 +130,9 @@
                 android:id="@+id/mostDownloads"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="5sp"
-                android:elevation="6sp"
-                app:cardCornerRadius="10sp">
+                android:layout_marginStart="5dp"
+                android:elevation="6dp"
+                app:cardCornerRadius="10dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -142,8 +142,8 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:paddingHorizontal="20sp"
-                        android:paddingVertical="10sp"
+                        android:paddingHorizontal="20dp"
+                        android:paddingVertical="10dp"
                         android:text="@string/most_downloads"
                         android:textColor="@color/white"
                         android:textSize="18sp"

@@ -20,14 +20,14 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginHorizontal="10sp"
+                android:layout_marginHorizontal="10dp"
                 android:orientation="vertical">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:layout_marginStart="-5sp"
+                    android:layout_marginStart="-5dp"
                     android:gravity="center"
                     android:orientation="vertical">
 
@@ -38,7 +38,7 @@
                         <androidx.cardview.widget.CardView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_margin="10sp"
+                            android:layout_margin="10dp"
                             app:cardCornerRadius="10dp">
 
                             <androidx.constraintlayout.widget.ConstraintLayout
@@ -60,10 +60,10 @@
                         <androidx.cardview.widget.CardView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="20sp"
-                            android:layout_marginTop="20sp"
-                            android:layout_marginEnd="0sp"
-                            android:layout_marginBottom="10sp"
+                            android:layout_marginStart="20dp"
+                            android:layout_marginTop="20dp"
+                            android:layout_marginEnd="0dp"
+                            android:layout_marginBottom="10dp"
                             app:cardCornerRadius="10dp">
 
                             <FrameLayout
@@ -78,7 +78,7 @@
                                         android:id="@+id/image"
                                         android:contentDescription="@null"
                                         android:layout_width="match_parent"
-                                        android:layout_height="0sp"
+                                        android:layout_height="0dp"
                                         android:src="@drawable/basic_book"
                                         app:layout_constraintBottom_toBottomOf="parent"
                                         app:layout_constraintDimensionRatio="1:1"
@@ -89,11 +89,11 @@
                                 <ImageView
                                     android:id="@+id/editImage"
                                     android:contentDescription="@null"
-                                    android:layout_width="40sp"
-                                    android:layout_height="40sp"
-                                    android:layout_gravity="bottom|right"
+                                    android:layout_width="40dp"
+                                    android:layout_height="40dp"
+                                    android:layout_gravity="bottom|end"
                                     android:background="@drawable/button_image_add"
-                                    android:padding="5sp"
+                                    android:padding="5dp"
                                     android:src="@drawable/ic_adds"
                                     app:layout_constraintDimensionRatio="1:1"
                                     app:tint="?mc_tick" />
@@ -110,21 +110,21 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:layout_marginTop="50sp"
+                    android:layout_marginTop="50dp"
                     android:gravity="center"
                     android:orientation="horizontal">
 
                     <ImageView
                         android:contentDescription="@null"
-                        android:layout_width="20sp"
-                        android:layout_height="20sp"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
                         android:src="@drawable/ic_category_gray"
                         app:tint="@color/white" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginHorizontal="5sp"
+                        android:layout_marginHorizontal="5dp"
                         android:text="@string/category"
                         android:textColor="@color/white"
                         android:textSize="14sp"
@@ -136,7 +136,7 @@
                     android:id="@+id/categoryTil"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10sp"
+                    android:layout_marginTop="10dp"
                     app:hintEnabled="false">
 
                     <EditText
@@ -148,7 +148,7 @@
                         android:gravity="center"
                         android:inputType="textPersonName|textCapWords"
                         android:maxLength="200"
-                        android:padding="15sp"
+                        android:padding="15dp"
                         android:textColor="@color/white"
                         android:textColorHint="@color/white"
                         android:textSize="16sp" />

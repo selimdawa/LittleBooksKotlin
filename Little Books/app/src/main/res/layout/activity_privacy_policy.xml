@@ -23,7 +23,7 @@
                 android:layout_gravity="center"
                 android:gravity="center"
                 android:orientation="horizontal"
-                android:padding="10sp">
+                android:padding="10dp">
 
                 <ImageView
                     android:id="@+id/logo"
@@ -50,9 +50,9 @@
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_margin="10sp"
-            android:elevation="6sp"
-            app:cardCornerRadius="15sp"
+            android:layout_margin="10dp"
+            android:elevation="6dp"
+            app:cardCornerRadius="15dp"
             app:strokeWidth="0dp">
 
             <LinearLayout
@@ -76,11 +76,11 @@
                             android:layout_gravity="center"
                             android:gravity="center"
                             android:orientation="horizontal"
-                            android:padding="10sp">
+                            android:padding="10dp">
 
                             <ImageView
-                                android:layout_width="30sp"
-                                android:layout_height="30sp"
+                                android:layout_width="30dp"
+                                android:layout_height="30dp"
                                 android:layout_gravity="center"
                                 android:layout_marginStart="10dp"
                                 android:layout_marginEnd="10dp"
@@ -103,8 +103,8 @@
 
                         <View
                             android:layout_width="match_parent"
-                            android:layout_height="1sp"
-                            android:layout_marginHorizontal="10sp"
+                            android:layout_height="1dp"
+                            android:layout_marginHorizontal="10dp"
                             android:background="@color/white" />
 
                         <TextView
@@ -113,7 +113,7 @@
                             android:layout_height="match_parent"
                             android:layout_gravity="center"
                             android:gravity="center"
-                            android:padding="10sp"
+                            android:padding="10dp"
                             android:textColor="@color/white"
                             android:textSize="18sp"
                             android:textStyle="bold" />

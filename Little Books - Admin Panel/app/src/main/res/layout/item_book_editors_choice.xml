@@ -5,10 +5,10 @@
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="5sp"
-        android:layout_marginBottom="10sp"
-        android:elevation="6sp"
-        app:cardCornerRadius="20sp">
+        android:layout_marginHorizontal="5dp"
+        android:layout_marginBottom="10dp"
+        android:elevation="6dp"
+        app:cardCornerRadius="20dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -25,7 +25,7 @@
 
                 <ImageView
                     android:id="@+id/remove"
-                    android:layout_width="0sp"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_weight="1"
@@ -37,7 +37,7 @@
 
                 <TextView
                     android:id="@+id/numberEditorsChoice"
-                    android:layout_width="0sp"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_weight="1"
@@ -48,7 +48,7 @@
 
                 <ImageView
                     android:id="@+id/change"
-                    android:layout_width="0sp"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_weight="1"
@@ -68,10 +68,10 @@
                 <androidx.cardview.widget.CardView
                     android:id="@+id/addCard"
                     android:layout_width="match_parent"
-                    android:layout_height="140sp"
-                    android:elevation="6sp"
+                    android:layout_height="140dp"
+                    android:elevation="6dp"
                     android:visibility="visible"
-                    app:cardCornerRadius="15sp">
+                    app:cardCornerRadius="15dp">
 
                     <LinearLayout
                         android:id="@+id/item2"
@@ -84,8 +84,8 @@
 
                         <ImageView
                             android:id="@+id/add"
-                            android:layout_width="100sp"
-                            android:layout_height="100sp"
+                            android:layout_width="100dp"
+                            android:layout_height="100dp"
                             android:src="@drawable/ic_add"
                             android:contentDescription="@null" />
 
@@ -96,10 +96,10 @@
                 <androidx.cardview.widget.CardView
                     android:id="@+id/detailsCard"
                     android:layout_width="match_parent"
-                    android:layout_height="140sp"
-                    android:elevation="6sp"
+                    android:layout_height="140dp"
+                    android:elevation="6dp"
                     android:visibility="gone"
-                    app:cardCornerRadius="20sp">
+                    app:cardCornerRadius="20dp">
 
                     <LinearLayout
                         android:id="@+id/item"
@@ -109,7 +109,7 @@
 
                         <ImageView
                             android:id="@+id/image"
-                            android:layout_width="100sp"
+                            android:layout_width="100dp"
                             android:layout_height="match_parent"
                             android:scaleType="centerCrop"
                             android:src="@color/image_profile"
@@ -126,18 +126,18 @@
                                 android:layout_height="wrap_content"
                                 android:gravity="center"
                                 android:orientation="horizontal"
-                                android:padding="5sp">
+                                android:padding="5dp">
 
                                 <TextView
                                     android:id="@+id/title"
-                                    android:layout_width="0sp"
+                                    android:layout_width="0dp"
                                     android:layout_height="match_parent"
                                     android:layout_gravity="center"
-                                    android:layout_marginHorizontal="5sp"
+                                    android:layout_marginHorizontal="5dp"
                                     android:layout_weight="1"
                                     android:gravity="start|center"
                                     android:maxLines="1"
-                                    android:text="Book Title"
+                                    android:text="@string/book_title"
                                     android:textColor="@color/white"
                                     android:textSize="16sp"
                                     android:textStyle="bold" />
@@ -157,7 +157,7 @@
 
                             <LinearLayout
                                 android:layout_width="match_parent"
-                                android:layout_height="80sp"
+                                android:layout_height="80dp"
                                 android:layout_gravity="start"
                                 android:gravity="start"
                                 android:orientation="vertical">
@@ -167,11 +167,10 @@
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:layout_gravity="start"
-                                    android:layout_margin="10sp"
+                                    android:layout_margin="10dp"
                                     android:ellipsize="end"
                                     android:gravity="start"
                                     android:maxLines="3"
-                                    android:text="Book Description\nBook Description\nBook Description"
                                     android:textColor="@color/white"
                                     android:textSize="14sp" />
 
@@ -190,11 +189,11 @@
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:layout_gravity="center"
-                                    android:layout_marginHorizontal="5sp"
+                                    android:layout_marginHorizontal="5dp"
                                     android:layout_weight="1"
                                     android:gravity="center"
                                     android:maxLines="1"
-                                    android:text="Category"
+                                    android:text="@string/category"
                                     android:textColor="@color/white" />
 
                                 <TextView
@@ -205,7 +204,7 @@
                                     android:layout_weight="1"
                                     android:gravity="center"
                                     android:maxLines="1"
-                                    android:text="13Mb"
+                                    android:text="@string/default_size"
                                     android:textColor="@color/white" />
 
                                 <TextView
@@ -213,11 +212,11 @@
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:layout_gravity="center"
-                                    android:layout_marginHorizontal="5sp"
+                                    android:layout_marginHorizontal="5dp"
                                     android:layout_weight="1"
                                     android:gravity="center"
                                     android:maxLines="1"
-                                    android:text="dd/MM/yyyy"
+                                    android:text="@string/default_date"
                                     android:textAlignment="center"
                                     android:textColor="@color/white" />
 
@@ -227,7 +226,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center"
-                                android:layout_marginVertical="5sp"
+                                android:layout_marginVertical="5dp"
                                 android:gravity="center"
                                 android:orientation="horizontal">
 
@@ -239,8 +238,8 @@
                                     android:gravity="center">
 
                                     <ImageView
-                                        android:layout_width="20sp"
-                                        android:layout_height="20sp"
+                                        android:layout_width="20dp"
+                                        android:layout_height="20dp"
                                         android:layout_gravity="center"
                                         android:src="@drawable/ic_view"
                                         android:contentDescription="@null" />
@@ -250,10 +249,10 @@
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:layout_gravity="center"
-                                        android:layout_marginHorizontal="5sp"
+                                        android:layout_marginHorizontal="5dp"
                                         android:gravity="center"
                                         android:maxLines="1"
-                                        android:text="100"
+                                        android:text="@string/one_hundred"
                                         android:textColor="@color/white" />
 
                                 </LinearLayout>
@@ -266,8 +265,8 @@
                                     android:gravity="center">
 
                                     <ImageView
-                                        android:layout_width="20sp"
-                                        android:layout_height="20sp"
+                                        android:layout_width="20dp"
+                                        android:layout_height="20dp"
                                         android:layout_gravity="center"
                                         android:src="@drawable/ic_heart_selected"
                                         android:contentDescription="@null" />
@@ -277,10 +276,10 @@
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:layout_gravity="center"
-                                        android:layout_marginHorizontal="5sp"
+                                        android:layout_marginHorizontal="5dp"
                                         android:gravity="center"
                                         android:maxLines="1"
-                                        android:text="100"
+                                        android:text="@string/one_hundred"
                                         android:textColor="@color/white" />
 
                                 </LinearLayout>
@@ -293,8 +292,8 @@
                                     android:gravity="center">
 
                                     <ImageView
-                                        android:layout_width="20sp"
-                                        android:layout_height="20sp"
+                                        android:layout_width="20dp"
+                                        android:layout_height="20dp"
                                         android:layout_gravity="center"
                                         android:src="@drawable/ic_download_white"
                                         android:contentDescription="@null" />
@@ -304,10 +303,10 @@
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:layout_gravity="center"
-                                        android:layout_marginHorizontal="5sp"
+                                        android:layout_marginHorizontal="5dp"
                                         android:gravity="center"
                                         android:maxLines="1"
-                                        android:text="100"
+                                        android:text="@string/one_hundred"
                                         android:textColor="@color/white" />
 
                                 </LinearLayout>

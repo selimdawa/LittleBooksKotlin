@@ -16,13 +16,13 @@
         <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:scrollbarSize="0sp"
+            android:scrollbarSize="0dp"
             android:scrollbarThumbHorizontal="@color/white">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginHorizontal="5sp"
+                android:layout_marginHorizontal="5dp"
                 android:orientation="vertical">
 
                 <androidx.recyclerview.widget.RecyclerView

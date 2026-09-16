@@ -6,7 +6,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="5sp"
+        android:layout_marginHorizontal="5dp"
         android:layout_marginBottom="10dp"
         android:orientation="vertical">
 
@@ -34,6 +34,7 @@
                         android:layout_height="0dp"
                         android:scaleType="centerCrop"
                         android:src="@color/image_profile"
+                        android:contentDescription="@null"
                         app:layout_constraintDimensionRatio="1:1"
                         tools:ignore="MissingConstraints" />
 
@@ -53,7 +54,7 @@
 
                         <TextView
                             android:id="@+id/name"
-                            android:layout_width="0sp"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:gravity="center"
@@ -68,6 +69,7 @@
                             android:layout_gravity="end"
                             android:background="@android:color/transparent"
                             android:src="@drawable/ic_more"
+                            android:contentDescription="@null"
                             app:tint="@color/white" />
 
                     </LinearLayout>
@@ -80,7 +82,7 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:padding="5sp">
+                        android:padding="5dp">
 
                         <LinearLayout
                             android:layout_width="0dp"
@@ -90,10 +92,11 @@
                             android:gravity="center">
 
                             <ImageView
-                                android:layout_width="20sp"
-                                android:layout_height="20sp"
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
                                 android:layout_gravity="center"
-                                android:src="@drawable/ic_book_white" />
+                                android:src="@drawable/ic_book_white"
+                                android:contentDescription="@null" />
 
                             <TextView
                                 android:id="@+id/numberBooks"
@@ -101,7 +104,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center"
                                 android:gravity="center"
-                                android:paddingHorizontal="10sp"
+                                android:paddingHorizontal="10dp"
                                 android:textColor="@color/white"
                                 android:textSize="14sp"
                                 android:textStyle="normal" />

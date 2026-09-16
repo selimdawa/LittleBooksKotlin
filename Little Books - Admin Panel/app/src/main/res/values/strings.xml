@@ -77,6 +77,11 @@
     <string name="nineteen">19</string>
     <string name="twenty">20</string>
     <string name="edit">Edit</string>
+    <string name="zero">0</string>
+    <string name="profile_image">Profile Image</string>
+    <string name="one_hundred">100</string>
+    <string name="default_date">dd/MM/yyyy</string>
+    <string name="default_size">0Mb</string>
 
     <string name="all_books">All Books</string>
     <string name="users_ads">Users ADs</string>
@@ -88,4 +93,5 @@
     <string name="loves">Loves</string>
     <string name="book_title">Book Title</string>
     <string name="book_category">Book Category</string>
+    <string name="password_hint">********</string>
 </resources>

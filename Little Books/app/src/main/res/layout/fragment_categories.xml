@@ -12,7 +12,7 @@
         <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:scrollbarSize="0sp"
+            android:scrollbarSize="0dp"
             android:scrollbarThumbHorizontal="@color/white">
 
             <LinearLayout
@@ -25,7 +25,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="10sp"
+                    android:padding="10dp"
                     android:visibility="gone"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     app:reverseLayout="true"
@@ -59,7 +59,7 @@
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
                 android:layout_gravity="center"
-                android:layout_marginHorizontal="20sp"
+                android:layout_marginHorizontal="20dp"
                 android:gravity="center"
                 android:text="@string/none_display"
                 android:textColor="?colorError"

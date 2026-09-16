@@ -47,7 +47,7 @@
                     <com.google.android.material.card.MaterialCardView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="5dp"
+                        android:layout_marginStart="5dp"
                         android:layout_marginTop="5dp"
                         app:cardCornerRadius="10dp"
                         app:strokeWidth="0dp">
@@ -56,7 +56,7 @@
                             android:id="@+id/favorites"
                             android:layout_width="25dp"
                             android:layout_height="25dp"
-                            android:layout_gravity="left"
+                            android:layout_gravity="start"
                             android:background="?mc_tick"
                             android:contentDescription="@null"
                             android:padding="2dp"
@@ -84,7 +84,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
-                        android:padding="5sp">
+                        android:padding="5dp">
 
                         <TextView
                             android:id="@+id/name"
@@ -116,10 +116,10 @@
 
                         <LinearLayout
                             android:id="@+id/linearViews"
-                            android:layout_width="0sp"
+                            android:layout_width="0dp"
                             android:layout_height="match_parent"
                             android:layout_gravity="center"
-                            android:layout_margin="5sp"
+                            android:layout_margin="5dp"
                             android:layout_weight="1"
                             android:gravity="center"
                             android:orientation="horizontal"
@@ -127,8 +127,8 @@
 
                             <ImageView
                                 android:id="@+id/view"
-                                android:layout_width="16sp"
-                                android:layout_height="16sp"
+                                android:layout_width="16dp"
+                                android:layout_height="16dp"
                                 android:layout_gravity="start"
                                 android:contentDescription="@null"
                                 android:src="@drawable/ic_view" />
@@ -149,10 +149,10 @@
 
                         <LinearLayout
                             android:id="@+id/linearLoves"
-                            android:layout_width="0sp"
+                            android:layout_width="0dp"
                             android:layout_height="match_parent"
                             android:layout_gravity="center"
-                            android:layout_margin="5sp"
+                            android:layout_margin="5dp"
                             android:layout_weight="1"
                             android:gravity="center"
                             android:orientation="horizontal"
@@ -160,8 +160,8 @@
 
                             <ImageView
                                 android:id="@+id/love"
-                                android:layout_width="16sp"
-                                android:layout_height="16sp"
+                                android:layout_width="16dp"
+                                android:layout_height="16dp"
                                 android:layout_gravity="start"
                                 android:contentDescription="@null"
                                 android:src="@drawable/ic_heart_selected" />
@@ -182,10 +182,10 @@
 
                         <LinearLayout
                             android:id="@+id/linearDownloads"
-                            android:layout_width="0sp"
+                            android:layout_width="0dp"
                             android:layout_height="match_parent"
                             android:layout_gravity="center"
-                            android:layout_margin="5sp"
+                            android:layout_margin="5dp"
                             android:layout_weight="1"
                             android:gravity="center"
                             android:orientation="horizontal"
@@ -193,8 +193,8 @@
 
                             <ImageView
                                 android:id="@+id/download"
-                                android:layout_width="16sp"
-                                android:layout_height="16sp"
+                                android:layout_width="16dp"
+                                android:layout_height="16dp"
                                 android:layout_gravity="start"
                                 android:contentDescription="@null"
                                 android:src="@drawable/ic_download_white" />

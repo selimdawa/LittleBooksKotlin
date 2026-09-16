@@ -4,11 +4,11 @@
 
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
-        android:layout_height="140sp"
-        android:layout_marginHorizontal="5sp"
-        android:layout_marginBottom="10sp"
-        android:elevation="6sp"
-        app:cardCornerRadius="15sp">
+        android:layout_height="140dp"
+        android:layout_marginHorizontal="5dp"
+        android:layout_marginBottom="10dp"
+        android:elevation="6dp"
+        app:cardCornerRadius="15dp">
 
         <LinearLayout
             android:id="@+id/item"
@@ -17,8 +17,8 @@
             android:background="?mc_bg">
 
             <LinearLayout
-                android:layout_width="100sp"
-                android:layout_height="140sp">
+                android:layout_width="100dp"
+                android:layout_height="140dp">
 
                 <ImageView
                     android:id="@+id/image"
@@ -45,26 +45,26 @@
 
                     <TextView
                         android:id="@+id/title"
-                        android:layout_width="0sp"
+                        android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_gravity="center"
-                        android:layout_marginHorizontal="5sp"
+                        android:layout_marginHorizontal="5dp"
                         android:layout_weight="1"
                         android:gravity="start|center"
                         android:maxLines="1"
-                        android:paddingHorizontal="5sp"
+                        android:paddingHorizontal="5dp"
                         android:textColor="@color/white"
                         android:textSize="16sp"
                         android:textStyle="bold" />
 
                     <ImageView
                         android:id="@+id/add"
-                        android:layout_width="30sp"
-                        android:layout_height="30sp"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
                         android:layout_gravity="center"
                         android:background="@drawable/button_add"
                         android:gravity="end"
-                        android:padding="5sp"
+                        android:padding="5dp"
                         android:src="@drawable/ic_add"
                         android:contentDescription="@null"
                         app:tint="?mc_tick" />
@@ -73,7 +73,7 @@
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="80sp"
+                    android:layout_height="80dp"
                     android:layout_gravity="start"
                     android:gravity="start"
                     android:orientation="vertical">
@@ -83,7 +83,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="start"
-                        android:layout_margin="10sp"
+                        android:layout_margin="10dp"
                         android:ellipsize="end"
                         android:gravity="start"
                         android:maxLines="3"
@@ -105,11 +105,11 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:layout_marginHorizontal="5sp"
+                        android:layout_marginHorizontal="5dp"
                         android:layout_weight="1"
                         android:gravity="center"
                         android:maxLines="1"
-                        android:text="Category"
+                        android:text="@string/category"
                         android:textColor="@color/white" />
 
                     <TextView
@@ -120,7 +120,7 @@
                         android:layout_weight="1"
                         android:gravity="center"
                         android:maxLines="1"
-                        android:text="13Mb"
+                        android:text="@string/default_size"
                         android:textColor="@color/white" />
 
                     <TextView
@@ -128,11 +128,11 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:layout_marginHorizontal="5sp"
+                        android:layout_marginHorizontal="5dp"
                         android:layout_weight="1"
                         android:gravity="center"
                         android:maxLines="1"
-                        android:text="dd/MM/yyyy"
+                        android:text="@string/default_date"
                         android:textAlignment="center"
                         android:textColor="@color/white" />
 
@@ -142,7 +142,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:layout_marginVertical="5sp"
+                    android:layout_marginVertical="5dp"
                     android:gravity="center"
                     android:orientation="horizontal">
 
@@ -154,8 +154,8 @@
                         android:gravity="center">
 
                         <ImageView
-                            android:layout_width="20sp"
-                            android:layout_height="20sp"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
                             android:layout_gravity="center"
                             android:src="@drawable/ic_view"
                             android:contentDescription="@null" />
@@ -165,7 +165,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
-                            android:layout_marginHorizontal="5sp"
+                            android:layout_marginHorizontal="5dp"
                             android:gravity="center"
                             android:maxLines="1"
                             android:textColor="@color/white" />
@@ -180,8 +180,8 @@
                         android:gravity="center">
 
                         <ImageView
-                            android:layout_width="20sp"
-                            android:layout_height="20sp"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
                             android:layout_gravity="center"
                             android:src="@drawable/ic_heart_selected"
                             android:contentDescription="@null" />
@@ -191,7 +191,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
-                            android:layout_marginHorizontal="5sp"
+                            android:layout_marginHorizontal="5dp"
                             android:gravity="center"
                             android:maxLines="1"
                             android:textColor="@color/white" />
@@ -206,8 +206,8 @@
                         android:gravity="center">
 
                         <ImageView
-                            android:layout_width="20sp"
-                            android:layout_height="20sp"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
                             android:layout_gravity="center"
                             android:src="@drawable/ic_download_white"
                             android:contentDescription="@null" />
@@ -217,7 +217,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
-                            android:layout_marginHorizontal="5sp"
+                            android:layout_marginHorizontal="5dp"
                             android:gravity="center"
                             android:maxLines="1"
                             android:textColor="@color/white" />

@@ -6,9 +6,9 @@
         android:id="@+id/card"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="10sp"
-        android:elevation="6sp"
-        app:cardCornerRadius="15sp">
+        android:layout_marginBottom="10dp"
+        android:elevation="6dp"
+        app:cardCornerRadius="15dp">
 
         <LinearLayout
             android:id="@+id/item"
@@ -23,25 +23,26 @@
 
                 <com.google.android.material.imageview.ShapeableImageView
                     android:id="@+id/profile"
-                    android:layout_width="40sp"
-                    android:layout_height="40sp"
-                    android:layout_margin="10sp"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_margin="10dp"
                     android:scaleType="centerCrop"
                     android:src="@color/image_profile"
+                    android:contentDescription="@string/profile_image"
                     app:shapeAppearanceOverlay="@style/ShapeAppearance.App.Circle" />
 
                 <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_toEndOf="@+id/profile"
-                    android:padding="5sp">
+                    android:padding="5dp">
 
                     <TextView
                         android:id="@+id/name"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentStart="true"
-                        android:layout_marginTop="5sp"
+                        android:layout_marginTop="5dp"
                         android:layout_toStartOf="@id/date"
                         android:textColor="@color/white"
                         android:textSize="14sp" />
@@ -51,8 +52,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentEnd="true"
-                        android:layout_marginTop="5sp"
-                        android:layout_marginEnd="5sp"
+                        android:layout_marginTop="5dp"
+                        android:layout_marginEnd="5dp"
                         android:textColor="@color/white"
                         android:textSize="12sp" />
 
@@ -61,7 +62,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_below="@+id/name"
-                        android:layout_marginTop="5sp"
+                        android:layout_marginTop="5dp"
                         android:textColor="@color/white"
                         android:textSize="12sp" />
 
