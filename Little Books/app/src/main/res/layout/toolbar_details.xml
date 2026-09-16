@@ -6,7 +6,7 @@
         android:layout_width="match_parent"
         android:layout_height="45dp">
 
-        <androidx.appcompat.widget.Toolbar
+        <com.google.android.material.appbar.MaterialToolbar
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="?mc_bg"
@@ -40,7 +40,7 @@
                 android:textSize="21sp"
                 android:textStyle="bold" />
 
-        </androidx.appcompat.widget.Toolbar>
+        </com.google.android.material.appbar.MaterialToolbar>
 
     </LinearLayout>
 

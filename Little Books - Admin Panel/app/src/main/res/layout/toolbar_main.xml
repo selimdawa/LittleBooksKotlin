@@ -10,7 +10,7 @@
         android:visibility="visible"
         app:cardCornerRadius="6dp">
 
-        <androidx.appcompat.widget.Toolbar
+        <com.google.android.material.appbar.MaterialToolbar
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="?mc_bg"
@@ -49,7 +49,7 @@
                 app:shapeAppearanceOverlay="@style/ShapeAppearance.App.Circle"
                 app:tint="@color/white" />
 
-        </androidx.appcompat.widget.Toolbar>
+        </com.google.android.material.appbar.MaterialToolbar>
 
     </androidx.cardview.widget.CardView>
 
