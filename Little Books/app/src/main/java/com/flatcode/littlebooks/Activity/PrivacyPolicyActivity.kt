@@ -2,7 +2,12 @@ package com.flatcode.littlebooks.Activity
 
 import android.content.Context
 import android.os.Bundle
+import android.view.ViewGroup
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updateLayoutParams
 import com.flatcode.littlebooks.R
 import com.flatcode.littlebooks.Unit.DATA
 import com.flatcode.littlebooks.databinding.ActivityPrivacyPolicyBinding
@@ -17,10 +22,19 @@ class PrivacyPolicyActivity : AppCompatActivity() {
     var context: Context = this@PrivacyPolicyActivity
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         binding = ActivityPrivacyPolicyBinding.inflate(layoutInflater)
         val view = binding!!.root
         setContentView(view)
+
+        ViewCompat.setOnApplyWindowInsetsListener(view) { _, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            binding!!.toolbar.item.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+                topMargin = systemBars.top + 10 // Original margin 10dp
+            }
+            insets
+        }
 
         binding!!.toolbar.nameSpace.setText(R.string.privacy_policy)
         binding!!.toolbar.back.setOnClickListener { onBackPressed() }

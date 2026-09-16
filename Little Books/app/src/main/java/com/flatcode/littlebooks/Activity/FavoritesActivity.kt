@@ -3,8 +3,13 @@ package com.flatcode.littlebooks.Activity
 import android.content.Context
 import android.os.Bundle
 import android.view.View
+import android.view.ViewGroup
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updateLayoutParams
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -29,10 +34,26 @@ class FavoritesActivity : AppCompatActivity() {
     private val viewModel: BookViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         binding = ActivityFavoritesBinding.inflate(layoutInflater)
         val view = binding!!.root
         setContentView(view)
+
+        ViewCompat.setOnApplyWindowInsetsListener(view) { _, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            // Since I can't find activity_favorites.xml, I'll try to guess common IDs
+            // or apply to the root if appropriate. 
+            // Most activities here use a toolbar or similar at the top.
+            // I'll try to apply top margin to the first child if possible, 
+            // but without the XML it's risky.
+            // However, the code uses binding!!.back, binding!!.bar, binding!!.empty, binding!!.recyclerView.
+            // I'll apply top insets to 'back' if it's at the top.
+            binding!!.back.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+                topMargin = systemBars.top
+            }
+            insets
+        }
 
         adapter = StaggeredBookAdapter(context, list)
         binding!!.recyclerView.adapter = adapter

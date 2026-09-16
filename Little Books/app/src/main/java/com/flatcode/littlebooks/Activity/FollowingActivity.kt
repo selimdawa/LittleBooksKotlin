@@ -5,8 +5,13 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
+import android.view.ViewGroup
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updateLayoutParams
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -33,10 +38,19 @@ class FollowingActivity : AppCompatActivity() {
     private val viewModel: FollowViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         binding = ActivityPageStaggeredBinding.inflate(layoutInflater)
         val view = binding!!.root
         setContentView(view)
+
+        ViewCompat.setOnApplyWindowInsetsListener(view) { _, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            binding!!.toolbar.item.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+                topMargin = systemBars.top + 10 // Original margin 10sp
+            }
+            insets
+        }
 
         binding!!.toolbar.nameSpace.setText(R.string.following)
         binding!!.toolbar.close.setOnClickListener { onBackPressed() }
