@@ -23,6 +23,7 @@
                 android:layout_width="25sp"
                 android:layout_height="25sp"
                 android:layout_gravity="left"
+                android:contentDescription="@null"
                 android:src="@drawable/ic_back_white"
                 android:visibility="visible" />
 
@@ -62,6 +63,7 @@
                 android:layout_height="25sp"
                 android:layout_gravity="right"
                 android:layout_marginRight="15sp"
+                android:contentDescription="@null"
                 android:src="@drawable/ic_search"
                 android:visibility="visible" />
 
@@ -79,6 +81,7 @@
                 android:layout_width="25sp"
                 android:layout_height="25sp"
                 android:layout_gravity="center"
+                android:contentDescription="@null"
                 android:src="@drawable/ic_close" />
 
             <EditText

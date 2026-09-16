@@ -37,6 +37,7 @@
                             android:layout_height="25dp"
                             android:layout_gravity="left"
                             android:background="?mc_tick"
+                            android:contentDescription="@null"
                             android:padding="2dp"
                             android:src="@drawable/ic_star_unselected"
                             app:tint="@color/white" />
@@ -47,6 +48,7 @@
                         android:id="@+id/image"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
+                        android:contentDescription="@null"
                         android:scaleType="centerCrop"
                         android:src="@color/image_profile" />
 
@@ -96,6 +98,7 @@
                         android:layout_height="30sp"
                         android:layout_gravity="center"
                         android:background="@drawable/button_add"
+                        android:contentDescription="@null"
                         android:gravity="end"
                         android:padding="5sp"
                         android:src="@drawable/ic_more"
@@ -190,6 +193,7 @@
                             android:layout_width="20sp"
                             android:layout_height="20sp"
                             android:layout_gravity="center"
+                            android:contentDescription="@null"
                             android:src="@drawable/ic_view" />
 
                         <TextView
@@ -216,6 +220,7 @@
                             android:layout_width="20sp"
                             android:layout_height="20sp"
                             android:layout_gravity="center"
+                            android:contentDescription="@null"
                             android:src="@drawable/ic_heart_unselected" />
 
                         <TextView
@@ -241,6 +246,7 @@
                             android:layout_width="20sp"
                             android:layout_height="20sp"
                             android:layout_gravity="center"
+                            android:contentDescription="@null"
                             android:src="@drawable/ic_download_white" />
 
                         <TextView

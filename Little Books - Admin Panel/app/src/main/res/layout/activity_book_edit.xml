@@ -47,6 +47,7 @@
                                 android:layout_height="wrap_content">
 
                                 <ImageView
+                                    android:contentDescription="@null"
                                     android:layout_width="match_parent"
                                     android:layout_height="0dp"
                                     android:src="@color/white"
@@ -76,6 +77,7 @@
 
                                     <ImageView
                                         android:id="@+id/image"
+                                        android:contentDescription="@null"
                                         android:layout_width="match_parent"
                                         android:layout_height="0dp"
                                         android:scaleType="centerCrop"
@@ -88,6 +90,7 @@
 
                                 <ImageView
                                     android:id="@+id/editImage"
+                                    android:contentDescription="@null"
                                     android:layout_width="40sp"
                                     android:layout_height="40sp"
                                     android:layout_gravity="bottom|right"
@@ -113,6 +116,7 @@
                     android:orientation="horizontal">
 
                     <ImageView
+                        android:contentDescription="@null"
                         android:layout_width="20sp"
                         android:layout_height="20sp"
                         android:src="@drawable/ic_pdf"
@@ -158,6 +162,7 @@
                     android:orientation="horizontal">
 
                     <ImageView
+                        android:contentDescription="@null"
                         android:layout_width="20sp"
                         android:layout_height="20sp"
                         android:src="@drawable/ic_pdf"
@@ -203,6 +208,7 @@
                     android:orientation="horizontal">
 
                     <ImageView
+                        android:contentDescription="@null"
                         android:layout_width="20sp"
                         android:layout_height="20sp"
                         android:src="@drawable/ic_category_gray"

@@ -54,6 +54,7 @@
 
                             <ImageView
                                 android:id="@+id/profileImage"
+                                android:contentDescription="@null"
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
                                 android:background="@color/image_profile"
@@ -72,6 +73,7 @@
                         android:orientation="horizontal">
 
                         <ImageView
+                            android:contentDescription="@null"
                             android:layout_width="20sp"
                             android:layout_height="20sp"
                             android:src="@drawable/ic_person"
@@ -111,6 +113,7 @@
 
                     <ImageButton
                         android:id="@+id/go"
+                        android:contentDescription="@null"
                         android:layout_width="60sp"
                         android:layout_height="60sp"
                         android:layout_margin="50sp"

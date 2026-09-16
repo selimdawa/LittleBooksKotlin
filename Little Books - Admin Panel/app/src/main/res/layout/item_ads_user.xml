@@ -30,7 +30,8 @@
                 <ImageView
                     android:layout_width="25dp"
                     android:layout_height="25dp"
-                    android:src="@drawable/ic_rank" />
+                    android:src="@drawable/ic_rank"
+                    android:contentDescription="@null" />
 
                 <TextView
                     android:id="@+id/rank"
@@ -50,7 +51,8 @@
                 <ImageView
                     android:layout_width="25dp"
                     android:layout_height="25dp"
-                    android:src="@drawable/ic_time" />
+                    android:src="@drawable/ic_time"
+                    android:contentDescription="@null" />
 
                 <TextView
                     android:id="@+id/time"
@@ -77,6 +79,7 @@
                     android:layout_height="80sp"
                     android:scaleType="centerCrop"
                     android:src="@color/image_profile"
+                    android:contentDescription="@null"
                     app:strokeColor="@color/white"
                     app:strokeWidth="2sp"
                     android:background="@color/black"
@@ -107,7 +110,8 @@
                 <ImageView
                     android:layout_width="25dp"
                     android:layout_height="25dp"
-                    android:src="@drawable/ic_load" />
+                    android:src="@drawable/ic_load"
+                    android:contentDescription="@null" />
 
                 <TextView
                     android:id="@+id/numberADsLoad"
@@ -127,7 +131,8 @@
                 <ImageView
                     android:layout_width="25dp"
                     android:layout_height="25dp"
-                    android:src="@drawable/ic_finger" />
+                    android:src="@drawable/ic_finger"
+                    android:contentDescription="@null" />
 
                 <TextView
                     android:id="@+id/numberADsClick"

@@ -29,6 +29,7 @@
 
                 <ImageView
                     android:id="@+id/logo"
+                    android:contentDescription="@null"
                     android:layout_width="125dp"
                     android:layout_height="125dp"
                     android:src="@drawable/logo" />
@@ -111,6 +112,7 @@
 
                 <ImageButton
                     android:id="@+id/go"
+                    android:contentDescription="@null"
                     android:layout_width="60sp"
                     android:layout_height="60sp"
                     android:layout_gravity="center"

@@ -33,7 +33,8 @@
                 android:layout_width="30sp"
                 android:layout_height="30sp"
                 android:layout_gravity="left"
-                android:src="@drawable/ic_back_white" />
+                android:src="@drawable/ic_back_white"
+                android:contentDescription="@null" />
 
             <TextView
                 android:id="@+id/nameSpace"

@@ -34,6 +34,7 @@
                         android:layout_height="0dp"
                         android:scaleType="centerCrop"
                         android:src="@color/image_profile"
+                        android:contentDescription="@null"
                         app:layout_constraintDimensionRatio="1:1"
                         tools:ignore="MissingConstraints" />
 
@@ -83,7 +84,8 @@
                                 android:layout_width="20sp"
                                 android:layout_height="20sp"
                                 android:layout_gravity="center"
-                                android:src="@drawable/ic_rank" />
+                                android:src="@drawable/ic_rank"
+                                android:contentDescription="@null" />
 
                             <TextView
                                 android:id="@+id/rank"
@@ -109,7 +111,8 @@
                                 android:layout_width="20sp"
                                 android:layout_height="20sp"
                                 android:layout_gravity="center"
-                                android:src="@drawable/ic_book_white" />
+                                android:src="@drawable/ic_book_white"
+                                android:contentDescription="@null" />
 
                             <TextView
                                 android:id="@+id/numberBooks"

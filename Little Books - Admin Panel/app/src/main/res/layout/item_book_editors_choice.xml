@@ -32,6 +32,7 @@
                     android:gravity="center"
                     android:src="@drawable/ic_remove"
                     android:visibility="gone"
+                    android:contentDescription="@null"
                     app:tint="@color/white" />
 
                 <TextView
@@ -54,6 +55,7 @@
                     android:gravity="center"
                     android:src="@drawable/ic_re"
                     android:visibility="gone"
+                    android:contentDescription="@null"
                     app:tint="@color/white" />
 
             </LinearLayout>
@@ -84,7 +86,8 @@
                             android:id="@+id/add"
                             android:layout_width="100sp"
                             android:layout_height="100sp"
-                            android:src="@drawable/ic_add" />
+                            android:src="@drawable/ic_add"
+                            android:contentDescription="@null" />
 
                     </LinearLayout>
 
@@ -109,7 +112,8 @@
                             android:layout_width="100sp"
                             android:layout_height="match_parent"
                             android:scaleType="centerCrop"
-                            android:src="@color/image_profile" />
+                            android:src="@color/image_profile"
+                            android:contentDescription="@null" />
 
                         <LinearLayout
                             android:layout_width="match_parent"
@@ -146,6 +150,7 @@
                                     android:background="@android:color/transparent"
                                     android:src="@drawable/ic_more"
                                     android:visibility="gone"
+                                    android:contentDescription="@null"
                                     app:tint="@color/white" />
 
                             </LinearLayout>
@@ -237,7 +242,8 @@
                                         android:layout_width="20sp"
                                         android:layout_height="20sp"
                                         android:layout_gravity="center"
-                                        android:src="@drawable/ic_view" />
+                                        android:src="@drawable/ic_view"
+                                        android:contentDescription="@null" />
 
                                     <TextView
                                         android:id="@+id/numberViews"
@@ -263,7 +269,8 @@
                                         android:layout_width="20sp"
                                         android:layout_height="20sp"
                                         android:layout_gravity="center"
-                                        android:src="@drawable/ic_heart_selected" />
+                                        android:src="@drawable/ic_heart_selected"
+                                        android:contentDescription="@null" />
 
                                     <TextView
                                         android:id="@+id/numberLoves"
@@ -289,7 +296,8 @@
                                         android:layout_width="20sp"
                                         android:layout_height="20sp"
                                         android:layout_gravity="center"
-                                        android:src="@drawable/ic_download_white" />
+                                        android:src="@drawable/ic_download_white"
+                                        android:contentDescription="@null" />
 
                                     <TextView
                                         android:id="@+id/numberDownloads"

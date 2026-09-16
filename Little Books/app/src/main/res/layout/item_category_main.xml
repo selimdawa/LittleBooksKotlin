@@ -27,6 +27,7 @@
                     android:id="@+id/imageBlur"
                     android:layout_width="match_parent"
                     android:layout_height="0sp"
+                    android:contentDescription="@null"
                     android:scaleType="centerCrop"
                     android:src="@color/image_profile"
                     app:layout_constraintDimensionRatio="2:1"
@@ -36,12 +37,14 @@
                     android:id="@+id/image"
                     android:layout_width="match_parent"
                     android:layout_height="0sp"
+                    android:contentDescription="@null"
                     app:layout_constraintDimensionRatio="2:1"
                     tools:ignore="MissingConstraints" />
 
                 <ImageView
                     android:layout_width="match_parent"
                     android:layout_height="0sp"
+                    android:contentDescription="@null"
                     android:scaleType="centerCrop"
                     android:src="@color/overlay_dark_20"
                     app:layout_constraintDimensionRatio="2:1"

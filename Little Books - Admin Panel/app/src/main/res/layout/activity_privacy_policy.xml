@@ -29,6 +29,7 @@
 
                 <ImageView
                     android:id="@+id/logo"
+                    android:contentDescription="@null"
                     android:layout_width="125dp"
                     android:layout_height="125dp"
                     android:src="@drawable/logo" />
@@ -85,6 +86,7 @@
                                 android:padding="10sp">
 
                                 <ImageView
+                                    android:contentDescription="@null"
                                     android:layout_width="30sp"
                                     android:layout_height="30sp"
                                     android:layout_gravity="center"
@@ -117,6 +119,7 @@
                                 android:padding="10sp">
 
                                 <ImageView
+                                    android:contentDescription="@null"
                                     android:layout_width="30sp"
                                     android:layout_height="30sp"
                                     android:layout_gravity="center"

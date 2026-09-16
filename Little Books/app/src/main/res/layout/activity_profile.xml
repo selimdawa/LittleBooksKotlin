@@ -27,6 +27,7 @@
                     android:src="@color/image_profile"
                     app:strokeColor="@color/white"
                     app:strokeWidth="5sp"
+                    android:contentDescription="@null"
                     android:background="@color/white"
                     app:shapeAppearanceOverlay="@style/ShapeAppearance.App.Circle" />
 
@@ -68,6 +69,7 @@
                     android:layout_marginHorizontal="10sp"
                     android:background="@drawable/round"
                     android:backgroundTint="@color/white"
+                    android:contentDescription="@null"
                     android:src="@drawable/ic_book_white"
                     app:tint="@color/black" />
 
@@ -98,6 +100,7 @@
                     android:layout_marginHorizontal="10sp"
                     android:background="@drawable/round"
                     android:backgroundTint="@color/white"
+                    android:contentDescription="@null"
                     android:src="@drawable/ic_followers"
                     app:tint="@color/black" />
 
@@ -128,6 +131,7 @@
                     android:layout_marginHorizontal="10sp"
                     android:background="@drawable/round"
                     android:backgroundTint="@color/white"
+                    android:contentDescription="@null"
                     android:src="@drawable/ic_following"
                     app:tint="@color/black" />
 
@@ -158,6 +162,7 @@
                     android:layout_marginHorizontal="10sp"
                     android:background="@drawable/round"
                     android:backgroundTint="@color/white"
+                    android:contentDescription="@null"
                     android:src="@drawable/ic_star_selected"
                     app:tint="@color/black" />
 
@@ -194,6 +199,7 @@
                     android:layout_height="50sp"
                     android:background="@drawable/round"
                     android:backgroundTint="@color/white"
+                    android:contentDescription="@null"
                     android:src="@drawable/ic_books"
                     app:tint="@color/black" />
 
@@ -205,6 +211,7 @@
                     android:layout_toEndOf="@+id/editOrInfo"
                     android:background="@drawable/round"
                     android:backgroundTint="@color/white"
+                    android:contentDescription="@null"
                     android:src="@drawable/ic_heart_unselected"
                     android:visibility="gone"
                     app:tint="@color/black" />

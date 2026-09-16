@@ -37,6 +37,7 @@
                             android:id="@+id/image"
                             android:layout_width="match_parent"
                             android:layout_height="0dp"
+                            android:contentDescription="@null"
                             android:scaleType="centerCrop"
                             android:src="@color/image_profile"
                             app:layout_constraintDimensionRatio="1:1.4"
@@ -58,6 +59,7 @@
                             android:layout_height="25dp"
                             android:layout_gravity="left"
                             android:background="?mc_tick"
+                            android:contentDescription="@null"
                             android:padding="2dp"
                             android:src="@drawable/ic_star_unselected"
                             app:tint="@color/white" />
@@ -67,6 +69,7 @@
                     <ImageView
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
+                        android:contentDescription="@null"
                         android:src="@drawable/button7" />
 
                 </FrameLayout>
@@ -116,6 +119,7 @@
                                 android:layout_width="20sp"
                                 android:layout_height="20sp"
                                 android:layout_gravity="center"
+                                android:contentDescription="@null"
                                 android:src="@drawable/ic_heart_unselected" />
 
                             <TextView
@@ -143,6 +147,7 @@
                                 android:layout_width="20sp"
                                 android:layout_height="20sp"
                                 android:layout_gravity="center"
+                                android:contentDescription="@null"
                                 android:src="@drawable/ic_download_white" />
 
                             <TextView

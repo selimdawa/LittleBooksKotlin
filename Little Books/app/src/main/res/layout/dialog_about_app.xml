@@ -34,6 +34,7 @@
                     android:layout_height="match_parent"
                     android:layout_margin="50sp"
                     android:background="@drawable/round"
+                    android:contentDescription="@null"
                     android:scaleType="centerCrop"
                     android:src="@drawable/logo"
                     app:shapeAppearanceOverlay="@style/ShapeAppearance.App.Circle" />
@@ -114,6 +115,7 @@
                         android:layout_width="30dp"
                         android:layout_height="30dp"
                         android:layout_gravity="center"
+                        android:contentDescription="@null"
                         android:src="@drawable/ic_web"
                         app:tint="@color/black" />
 
@@ -170,6 +172,7 @@
                         android:layout_width="30dp"
                         android:layout_height="30dp"
                         android:layout_gravity="center"
+                        android:contentDescription="@null"
                         android:src="@drawable/facebook_icon"
                         app:tint="@color/black" />
 

@@ -57,6 +57,7 @@
                                     <ImageView
                                         android:layout_width="match_parent"
                                         android:layout_height="0dp"
+                                        android:contentDescription="@null"
                                         android:src="@color/white"
                                         app:layout_constraintDimensionRatio="1:1"
                                         tools:ignore="MissingConstraints" />
@@ -87,6 +88,7 @@
                                             android:id="@+id/image"
                                             android:layout_width="match_parent"
                                             android:layout_height="0dp"
+                                            android:contentDescription="@null"
                                             android:scaleType="centerCrop"
                                             android:src="@drawable/basic_user"
                                             app:layout_constraintBottom_toBottomOf="parent"
@@ -101,6 +103,7 @@
                                         android:layout_height="40sp"
                                         android:layout_gravity="bottom|right"
                                         android:background="@drawable/button_image_add"
+                                        android:contentDescription="@null"
                                         android:padding="5sp"
                                         android:src="@drawable/ic_adds"
                                         app:layout_constraintDimensionRatio="1:1"
@@ -125,6 +128,7 @@
                         <ImageView
                             android:layout_width="20sp"
                             android:layout_height="20sp"
+                            android:contentDescription="@null"
                             android:src="@drawable/ic_person_white"
                             app:tint="@color/white" />
 
@@ -167,6 +171,7 @@
                         android:layout_margin="50sp"
                         android:background="@drawable/button2"
                         android:backgroundTint="@color/white"
+                        android:contentDescription="@null"
                         android:rotation="180"
                         android:src="@drawable/ic_back_white"
                         app:tint="@color/dark" />

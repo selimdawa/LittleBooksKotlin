@@ -37,6 +37,7 @@
                             android:background="?mc_tick"
                             android:padding="2dp"
                             android:src="@drawable/ic_star_unselected"
+                            android:contentDescription="@null"
                             app:tint="@color/white" />
 
                     </androidx.cardview.widget.CardView>
@@ -46,7 +47,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:scaleType="centerCrop"
-                        android:src="@color/image_profile" />
+                        android:src="@color/image_profile"
+                        android:contentDescription="@null" />
 
                 </FrameLayout>
 
@@ -99,6 +101,7 @@
                         android:padding="5sp"
                         android:src="@drawable/ic_more"
                         android:visibility="gone"
+                        android:contentDescription="@null"
                         app:tint="?mc_tick" />
 
                 </LinearLayout>
@@ -189,7 +192,8 @@
                             android:layout_width="20sp"
                             android:layout_height="20sp"
                             android:layout_gravity="center"
-                            android:src="@drawable/ic_view" />
+                            android:src="@drawable/ic_view"
+                            android:contentDescription="@null" />
 
                         <TextView
                             android:id="@+id/numberViews"
@@ -215,7 +219,8 @@
                             android:layout_width="20sp"
                             android:layout_height="20sp"
                             android:layout_gravity="center"
-                            android:src="@drawable/ic_heart_unselected" />
+                            android:src="@drawable/ic_heart_unselected"
+                            android:contentDescription="@null" />
 
                         <TextView
                             android:id="@+id/numberLoves"
@@ -240,7 +245,8 @@
                             android:layout_width="20sp"
                             android:layout_height="20sp"
                             android:layout_gravity="center"
-                            android:src="@drawable/ic_download_white" />
+                            android:src="@drawable/ic_download_white"
+                            android:contentDescription="@null" />
 
                         <TextView
                             android:id="@+id/numberDownloads"

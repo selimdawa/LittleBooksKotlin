@@ -29,6 +29,7 @@
                     android:id="@+id/logo"
                     android:layout_width="125dp"
                     android:layout_height="125dp"
+                    android:contentDescription="@null"
                     android:src="@drawable/logo" />
 
                 <TextView
@@ -83,6 +84,7 @@
                                 android:layout_gravity="center"
                                 android:layout_marginStart="10dp"
                                 android:layout_marginEnd="10dp"
+                                android:contentDescription="@null"
                                 android:src="@drawable/ic_privacy_policy"
                                 app:tint="@color/white" />
 

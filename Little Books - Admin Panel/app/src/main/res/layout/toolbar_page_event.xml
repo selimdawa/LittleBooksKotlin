@@ -24,6 +24,7 @@
                 android:layout_height="25sp"
                 android:layout_gravity="left"
                 android:src="@drawable/ic_back_white"
+                android:contentDescription="@null"
                 android:visibility="visible" />
 
             <LinearLayout
@@ -63,6 +64,7 @@
                 android:layout_gravity="right"
                 android:layout_marginRight="15sp"
                 android:src="@drawable/ic_search"
+                android:contentDescription="@null"
                 android:visibility="visible" />
 
         </com.google.android.material.appbar.MaterialToolbar>
@@ -79,7 +81,8 @@
                 android:layout_width="25sp"
                 android:layout_height="25sp"
                 android:layout_gravity="center"
-                android:src="@drawable/ic_close" />
+                android:src="@drawable/ic_close"
+                android:contentDescription="@null" />
 
             <EditText
                 android:id="@+id/textSearch"

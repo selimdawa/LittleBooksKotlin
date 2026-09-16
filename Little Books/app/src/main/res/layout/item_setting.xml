@@ -41,6 +41,7 @@
                         android:layout_width="20sp"
                         android:layout_height="20sp"
                         android:layout_gravity="center"
+                        android:contentDescription="@null"
                         android:scaleType="centerCrop"
                         app:tint="@color/dark" />
 

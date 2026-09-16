@@ -33,6 +33,7 @@
                 android:layout_width="30sp"
                 android:layout_height="30sp"
                 android:layout_gravity="left"
+                android:contentDescription="@null"
                 android:src="@drawable/ic_back_white" />
 
             <TextView

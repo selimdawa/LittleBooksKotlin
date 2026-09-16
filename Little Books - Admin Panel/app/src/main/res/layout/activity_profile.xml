@@ -27,6 +27,7 @@
                     android:layout_height="240dp"
                     android:scaleType="centerCrop"
                     android:src="@color/image_profile"
+                    android:contentDescription="@null"
                     app:strokeColor="@color/white"
                     app:strokeWidth="5sp"
                     android:background="@color/white"
@@ -65,6 +66,7 @@
                 android:orientation="horizontal">
 
                 <ImageButton
+                    android:contentDescription="@null"
                     android:layout_width="30sp"
                     android:layout_height="30sp"
                     android:layout_marginHorizontal="10sp"
@@ -95,6 +97,7 @@
                 android:orientation="horizontal">
 
                 <ImageButton
+                    android:contentDescription="@null"
                     android:layout_width="30sp"
                     android:layout_height="30sp"
                     android:layout_marginHorizontal="10sp"
@@ -125,6 +128,7 @@
                 android:orientation="horizontal">
 
                 <ImageButton
+                    android:contentDescription="@null"
                     android:layout_width="30sp"
                     android:layout_height="30sp"
                     android:layout_marginHorizontal="10sp"
@@ -155,6 +159,7 @@
                 android:orientation="horizontal">
 
                 <ImageButton
+                    android:contentDescription="@null"
                     android:layout_width="30sp"
                     android:layout_height="30sp"
                     android:layout_marginHorizontal="10sp"
@@ -192,6 +197,7 @@
 
                 <ImageButton
                     android:id="@+id/editOrInfo"
+                    android:contentDescription="@null"
                     android:layout_width="50sp"
                     android:layout_height="50sp"
                     android:background="@drawable/round"
@@ -201,6 +207,7 @@
 
                 <ImageButton
                     android:id="@+id/follow"
+                    android:contentDescription="@null"
                     android:layout_width="50sp"
                     android:layout_height="50sp"
                     android:layout_marginHorizontal="10sp"

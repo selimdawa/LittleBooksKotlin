@@ -34,6 +34,7 @@
 
                     <ImageView
                         android:id="@+id/cover"
+                        android:contentDescription="@null"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:scaleType="centerCrop"
@@ -62,6 +63,7 @@
 
                         <ImageView
                             android:id="@+id/image"
+                            android:contentDescription="@null"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:scaleType="centerCrop"
@@ -84,6 +86,7 @@
                             android:layout_width="40dp"
                             android:layout_height="40dp"
                             android:src="@color/image_profile"
+                            android:contentDescription="@null"
                             app:shapeAppearanceOverlay="@style/ShapeAppearance.App.Circle" />
 
                         <View
@@ -319,6 +322,7 @@
 
                             <ImageView
                                 android:id="@+id/read"
+                                android:contentDescription="@null"
                                 android:layout_width="25dp"
                                 android:layout_height="25dp"
                                 android:layout_gravity="center"
@@ -336,6 +340,7 @@
 
                             <ImageView
                                 android:id="@+id/download"
+                                android:contentDescription="@null"
                                 android:layout_width="25dp"
                                 android:layout_height="25dp"
                                 android:layout_gravity="center"
@@ -354,6 +359,7 @@
 
                             <ImageView
                                 android:id="@+id/love"
+                                android:contentDescription="@null"
                                 android:layout_width="25dp"
                                 android:layout_height="25dp"
                                 android:layout_gravity="center"
@@ -373,6 +379,7 @@
 
                             <ImageView
                                 android:id="@+id/favorite"
+                                android:contentDescription="@null"
                                 android:layout_width="25dp"
                                 android:layout_height="25dp"
                                 android:layout_gravity="center"
@@ -392,6 +399,7 @@
 
                             <ImageView
                                 android:id="@+id/addComment"
+                                android:contentDescription="@null"
                                 android:layout_width="25dp"
                                 android:layout_height="25dp"
                                 android:layout_gravity="center"

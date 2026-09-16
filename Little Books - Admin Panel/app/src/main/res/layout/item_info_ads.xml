@@ -65,7 +65,8 @@
                         android:layout_width="30sp"
                         android:layout_height="30sp"
                         android:layout_marginHorizontal="5sp"
-                        android:src="@drawable/ic_load" />
+                        android:src="@drawable/ic_load"
+                        android:contentDescription="@null" />
 
                     <TextView
                         android:id="@+id/numberADsLoad"
@@ -96,7 +97,8 @@
                         android:layout_width="30sp"
                         android:layout_height="30sp"
                         android:layout_marginHorizontal="5sp"
-                        android:src="@drawable/ic_finger" />
+                        android:src="@drawable/ic_finger"
+                        android:contentDescription="@null" />
 
                     <TextView
                         android:id="@+id/numberADsClick"
