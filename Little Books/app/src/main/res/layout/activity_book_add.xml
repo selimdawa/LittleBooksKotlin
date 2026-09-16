@@ -36,11 +36,12 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">
 
-                        <androidx.cardview.widget.CardView
+                        <com.google.android.material.card.MaterialCardView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_margin="10sp"
-                            app:cardCornerRadius="10dp">
+                            app:cardCornerRadius="10dp"
+                            app:strokeWidth="0dp">
 
                             <androidx.constraintlayout.widget.ConstraintLayout
                                 android:layout_width="match_parent"
@@ -55,16 +56,17 @@
 
                             </androidx.constraintlayout.widget.ConstraintLayout>
 
-                        </androidx.cardview.widget.CardView>
+                        </com.google.android.material.card.MaterialCardView>
 
-                        <androidx.cardview.widget.CardView
+                        <com.google.android.material.card.MaterialCardView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="20sp"
                             android:layout_marginTop="20sp"
                             android:layout_marginEnd="0sp"
                             android:layout_marginBottom="10sp"
-                            app:cardCornerRadius="10dp">
+                            app:cardCornerRadius="10dp"
+                            app:strokeWidth="0dp">
 
                             <FrameLayout
                                 android:layout_width="match_parent"
@@ -99,7 +101,7 @@
 
                             </FrameLayout>
 
-                        </androidx.cardview.widget.CardView>
+                        </com.google.android.material.card.MaterialCardView>
 
                     </FrameLayout>
 
@@ -119,13 +121,14 @@
                         android:layout_width="50sp"
                         android:layout_height="50sp">
 
-                        <androidx.cardview.widget.CardView
+                        <com.google.android.material.card.MaterialCardView
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:layout_gravity="center"
                             android:elevation="0sp"
                             app:cardCornerRadius="30dp"
-                            app:cardElevation="0sp">
+                            app:cardElevation="0sp"
+                            app:strokeWidth="0dp">
 
                             <ImageView
                                 android:id="@+id/book"
@@ -137,7 +140,7 @@
                                 android:src="@drawable/ic_book_white"
                                 app:tint="@color/black" />
 
-                        </androidx.cardview.widget.CardView>
+                        </com.google.android.material.card.MaterialCardView>
 
                     </FrameLayout>
 

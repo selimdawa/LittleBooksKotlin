@@ -52,13 +52,14 @@
                     android:layout_marginTop="-100dp"
                     android:orientation="vertical">
 
-                    <androidx.cardview.widget.CardView
+                    <com.google.android.material.card.MaterialCardView
                         android:layout_width="110dp"
                         android:layout_height="150dp"
                         android:layout_gravity="end"
                         android:layout_marginLeft="15sp"
                         android:layout_marginRight="15sp"
-                        app:cardCornerRadius="10sp">
+                        app:cardCornerRadius="10sp"
+                        app:strokeWidth="0dp">
 
                         <ImageView
                             android:id="@+id/image"
@@ -67,7 +68,7 @@
                             android:scaleType="centerCrop"
                             android:src="@color/image_profile" />
 
-                    </androidx.cardview.widget.CardView>
+                    </com.google.android.material.card.MaterialCardView>
 
 
                     <LinearLayout

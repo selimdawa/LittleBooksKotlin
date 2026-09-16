@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.cardview.widget.CardView
+import com.google.android.material.card.MaterialCardView
 import androidx.recyclerview.widget.RecyclerView
 import com.flatcode.littlebooks.Activity.BooksCategoryActivity
 import com.flatcode.littlebooks.Model.Category
@@ -55,7 +55,7 @@ class CategoryMainAdapter(private val context: Context?, var list: ArrayList<Cat
         var image: ImageView
         var imageBlur: ImageView
         var name: TextView
-        var card: CardView
+        var card: MaterialCardView
 
         init {
             image = binding!!.image

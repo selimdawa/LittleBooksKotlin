@@ -11,12 +11,13 @@
         android:layout_marginBottom="10sp"
         android:orientation="vertical">
 
-        <androidx.cardview.widget.CardView
+        <com.google.android.material.card.MaterialCardView
             android:id="@+id/card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:elevation="6dp"
-            app:cardCornerRadius="6dp">
+            app:cardCornerRadius="6dp"
+            app:strokeWidth="0dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -43,12 +44,13 @@
 
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
-                    <androidx.cardview.widget.CardView
+                    <com.google.android.material.card.MaterialCardView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="5dp"
                         android:layout_marginTop="5dp"
-                        app:cardCornerRadius="10dp">
+                        app:cardCornerRadius="10dp"
+                        app:strokeWidth="0dp">
 
                         <ImageView
                             android:id="@+id/favorites"
@@ -60,7 +62,7 @@
                             android:src="@drawable/ic_star_unselected"
                             app:tint="@color/white" />
 
-                    </androidx.cardview.widget.CardView>
+                    </com.google.android.material.card.MaterialCardView>
 
                     <ImageView
                         android:layout_width="match_parent"
@@ -162,7 +164,7 @@
 
             </LinearLayout>
 
-        </androidx.cardview.widget.CardView>
+        </com.google.android.material.card.MaterialCardView>
 
     </LinearLayout>
 
