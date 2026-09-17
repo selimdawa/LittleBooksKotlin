@@ -63,4 +63,10 @@
     //Test AD's
     <string name="admob_id">ca-app-pub-3940256099942544~3347511713</string>
     <string name="banner_home">ca-app-pub-3940256099942544/6300978111</string>
+    <string name="password_dots">********</string>
+    <string name="zero">0</string>
+    <string name="website">Website</string>
+    <string name="facebook">Facebook</string>
+    <string name="default_size">13Mb</string>
+    <string name="default_date_format">dd/MM/yyyy</string>
 </resources>

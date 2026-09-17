@@ -17,4 +17,5 @@
     <color name="night_corner">#ef7462</color>
     <color name="night_corner_2">#ed3559</color>
     <color name="overlay_dark_20">#33000000</color>
+    <color name="shadow_color">#1f212121</color>
 </resources>

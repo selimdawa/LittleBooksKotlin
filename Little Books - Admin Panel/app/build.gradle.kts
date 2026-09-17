@@ -60,8 +60,9 @@ dependencies {
     implementation(libs.firebase.storage)
     implementation(libs.firebase.analytics)
     implementation(libs.firebase.crashlytics)
-    //MVVM, Coroutines & Lifecycle
+    //MVVM - Lifecycle
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
+    //Coroutines
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.kotlinx.coroutines.play.services)
     //Hilt

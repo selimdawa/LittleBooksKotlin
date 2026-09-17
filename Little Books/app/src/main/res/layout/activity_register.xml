@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="all"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -210,7 +212,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="50dp"
                             android:background="@drawable/button"
-                            android:hint="********"
+                            android:hint="@string/password_dots"
                             android:inputType="textPassword"
                             android:maxLength="20"
                             android:paddingHorizontal="20dp"
@@ -234,7 +236,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="50dp"
                             android:background="@drawable/button"
-                            android:hint="********"
+                            android:hint="@string/password_dots"
                             android:inputType="textPassword"
                             android:maxLength="20"
                             android:paddingHorizontal="20dp"

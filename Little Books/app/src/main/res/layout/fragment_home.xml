@@ -3,6 +3,7 @@
     xmlns:ads="http://schemas.android.com/apk/res-auto"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="all"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="?colorOnBackground"
@@ -47,7 +48,7 @@
                         app:sliderIndicatorPadding="3dp"
                         app:sliderIndicatorRadius="1.5dp"
                         app:sliderIndicatorSelectedColor="?mc_tick"
-                        app:sliderIndicatorUnselectedColor="#FFF"
+                        app:sliderIndicatorUnselectedColor="@color/white"
                         app:sliderScrollTimeInSec="3"
                         app:sliderStartAutoCycle="true"
                         tools:ignore="MissingConstraints" />
