@@ -1,44 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?colorOnBackground"
+    android:orientation="vertical">
 
-    <LinearLayout
-        android:id="@+id/container"
+    <include
+        android:id="@+id/toolbar"
+        layout="@layout/toolbar_main"
+        android:visibility="visible" />
+
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/fragmentContainer"
+        android:name="androidx.navigation.fragment.NavHostFragment"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="?colorOnBackground"
-        android:orientation="vertical">
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        app:defaultNavHost="true"
+        app:navGraph="@navigation/nav_graph" />
 
-        <include
-            android:id="@+id/toolbar"
-            layout="@layout/toolbar_main"
-            android:visibility="visible" />
+    <com.nafis.bottomnavigation.NafisBottomNavigation
+        android:id="@+id/bottomNavigation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:mbn_circleColor="?mc_tick"
+        app:mbn_backgroundBottomColor="?mc_tick"
+        app:mbn_countBackgroundColor="?colorOnBackground"
+        app:mbn_countTextColor="?colorError"
+        app:mbn_defaultIconColor="?colorOnBackground"
+        app:mbn_rippleColor="?colorOnBackground"
+        app:mbn_selectedIconColor="@color/white"
+        app:mbn_shadowColor="#1f212121" />
 
-        <androidx.fragment.app.FragmentContainerView
-            android:id="@+id/fragmentContainer"
-            android:name="androidx.navigation.fragment.NavHostFragment"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            app:defaultNavHost="true"
-            app:navGraph="@navigation/nav_graph" />
+</LinearLayout>
 
-        <com.nafis.bottomnavigation.NafisBottomNavigation
-            android:id="@+id/bottomNavigation"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:mbn_circleColor="?mc_tick"
-            app:mbn_backgroundBottomColor="?mc_tick"
-            app:mbn_countBackgroundColor="?colorOnBackground"
-            app:mbn_countTextColor="?colorError"
-            app:mbn_defaultIconColor="?colorOnBackground"
-            app:mbn_rippleColor="?colorOnBackground"
-            app:mbn_selectedIconColor="@color/white"
-            app:mbn_shadowColor="#1f212121" />
-
-    </LinearLayout>
-
-    <!-- app:mbn_countBackgroundColor="@color/basic2"
-     app:mbn_countTextColor="@color/white" -->
-
-</layout>
+<!-- app:mbn_countBackgroundColor="@color/basic2"
+ app:mbn_countTextColor="@color/white" -->

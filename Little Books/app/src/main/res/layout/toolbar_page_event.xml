@@ -1,106 +1,102 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/item"
+    android:layout_width="match_parent"
+    android:layout_height="45sp"
+    android:layout_margin="10sp"
+    android:visibility="visible"
+    app:cardCornerRadius="6sp"
+    app:strokeWidth="0dp">
 
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/item"
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="45sp"
-        android:layout_margin="10sp"
-        android:visibility="visible"
-        app:cardCornerRadius="6sp"
-        app:strokeWidth="0dp">
+        android:layout_height="match_parent"
+        android:background="?mc_bg"
+        android:visibility="visible">
 
-        <com.google.android.material.appbar.MaterialToolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
+        <ImageView
+            android:id="@+id/back"
+            android:layout_width="25sp"
+            android:layout_height="25sp"
+            android:layout_gravity="left"
+            android:contentDescription="@null"
+            android:src="@drawable/ic_back_white"
+            android:visibility="visible" />
+
+        <LinearLayout
+            android:id="@+id/linearNameSpace"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:background="?mc_bg"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:orientation="horizontal"
             android:visibility="visible">
 
-            <ImageView
-                android:id="@+id/back"
-                android:layout_width="25sp"
-                android:layout_height="25sp"
-                android:layout_gravity="left"
-                android:contentDescription="@null"
-                android:src="@drawable/ic_back_white"
-                android:visibility="visible" />
-
-            <LinearLayout
-                android:id="@+id/linearNameSpace"
+            <TextView
+                android:id="@+id/nameSpace"
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:gravity="center"
-                android:orientation="horizontal"
-                android:visibility="visible">
+                android:textColor="@color/white"
+                android:textSize="18sp"
+                android:textStyle="bold" />
 
-                <TextView
-                    android:id="@+id/nameSpace"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:textColor="@color/white"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
+            <TextView
+                android:id="@+id/number"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginHorizontal="5sp"
+                android:textColor="@color/white"
+                android:textSize="18sp"
+                android:textStyle="bold" />
 
-                <TextView
-                    android:id="@+id/number"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginHorizontal="5sp"
-                    android:textColor="@color/white"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
+        </LinearLayout>
 
-            </LinearLayout>
+        <ImageView
+            android:id="@+id/search"
+            android:layout_width="25sp"
+            android:layout_height="25sp"
+            android:layout_gravity="right"
+            android:layout_marginRight="15sp"
+            android:contentDescription="@null"
+            android:src="@drawable/ic_search"
+            android:visibility="visible" />
 
-            <ImageView
-                android:id="@+id/search"
-                android:layout_width="25sp"
-                android:layout_height="25sp"
-                android:layout_gravity="right"
-                android:layout_marginRight="15sp"
-                android:contentDescription="@null"
-                android:src="@drawable/ic_search"
-                android:visibility="visible" />
+    </com.google.android.material.appbar.MaterialToolbar>
 
-        </com.google.android.material.appbar.MaterialToolbar>
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbarSearch"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="?mc_bg"
+        android:visibility="gone">
 
-        <com.google.android.material.appbar.MaterialToolbar
-            android:id="@+id/toolbarSearch"
+        <ImageView
+            android:id="@+id/close"
+            android:layout_width="25sp"
+            android:layout_height="25sp"
+            android:layout_gravity="center"
+            android:contentDescription="@null"
+            android:src="@drawable/ic_close" />
+
+        <EditText
+            android:id="@+id/textSearch"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="?mc_bg"
-            android:visibility="gone">
+            android:layout_gravity="center"
+            android:layout_marginEnd="40sp"
+            android:background="@android:color/transparent"
+            android:gravity="center"
+            android:hint="@string/search"
+            android:maxLines="1"
+            android:singleLine="true"
+            android:textColor="@color/white"
+            android:textColorHint="@color/white"
+            android:textSize="18sp" />
 
-            <ImageView
-                android:id="@+id/close"
-                android:layout_width="25sp"
-                android:layout_height="25sp"
-                android:layout_gravity="center"
-                android:contentDescription="@null"
-                android:src="@drawable/ic_close" />
+    </com.google.android.material.appbar.MaterialToolbar>
 
-            <EditText
-                android:id="@+id/textSearch"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_gravity="center"
-                android:layout_marginEnd="40sp"
-                android:background="@android:color/transparent"
-                android:gravity="center"
-                android:hint="@string/search"
-                android:maxLines="1"
-                android:singleLine="true"
-                android:textColor="@color/white"
-                android:textColorHint="@color/white"
-                android:textSize="18sp" />
-
-        </com.google.android.material.appbar.MaterialToolbar>
-
-    </com.google.android.material.card.MaterialCardView>
-
-</layout>
+</com.google.android.material.card.MaterialCardView>

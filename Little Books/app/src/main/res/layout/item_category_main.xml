@@ -1,71 +1,67 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/card"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="10sp"
+    android:elevation="0sp"
+    android:src="@color/white"
+    app:cardCornerRadius="15dp"
+    app:cardElevation="0sp"
+    app:strokeWidth="0dp">
 
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/card"
+    <FrameLayout
+        android:id="@+id/layout_image_profile"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="10sp"
-        android:elevation="0sp"
-        android:src="@color/white"
-        app:cardCornerRadius="15dp"
-        app:cardElevation="0sp"
-        app:strokeWidth="0dp">
+        android:layout_height="wrap_content">
 
-        <FrameLayout
-            android:id="@+id/layout_image_profile"
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <androidx.constraintlayout.widget.ConstraintLayout
+            <ImageView
+                android:id="@+id/imageBlur"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="0sp"
+                android:contentDescription="@null"
+                android:scaleType="centerCrop"
+                android:src="@color/image_profile"
+                app:layout_constraintDimensionRatio="2:1"
+                tools:ignore="MissingConstraints" />
 
-                <ImageView
-                    android:id="@+id/imageBlur"
-                    android:layout_width="match_parent"
-                    android:layout_height="0sp"
-                    android:contentDescription="@null"
-                    android:scaleType="centerCrop"
-                    android:src="@color/image_profile"
-                    app:layout_constraintDimensionRatio="2:1"
-                    tools:ignore="MissingConstraints" />
+            <ImageView
+                android:id="@+id/image"
+                android:layout_width="match_parent"
+                android:layout_height="0sp"
+                android:contentDescription="@null"
+                app:layout_constraintDimensionRatio="2:1"
+                tools:ignore="MissingConstraints" />
 
-                <ImageView
-                    android:id="@+id/image"
-                    android:layout_width="match_parent"
-                    android:layout_height="0sp"
-                    android:contentDescription="@null"
-                    app:layout_constraintDimensionRatio="2:1"
-                    tools:ignore="MissingConstraints" />
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="0sp"
+                android:contentDescription="@null"
+                android:scaleType="centerCrop"
+                android:src="@color/overlay_dark_20"
+                app:layout_constraintDimensionRatio="2:1"
+                tools:ignore="MissingConstraints" />
 
-                <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="0sp"
-                    android:contentDescription="@null"
-                    android:scaleType="centerCrop"
-                    android:src="@color/overlay_dark_20"
-                    app:layout_constraintDimensionRatio="2:1"
-                    tools:ignore="MissingConstraints" />
+            <TextView
+                android:id="@+id/name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_margin="20sp"
+                android:gravity="center"
+                android:textColor="@color/white"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent" />
 
-                <TextView
-                    android:id="@+id/name"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_margin="20sp"
-                    android:gravity="center"
-                    android:textColor="@color/white"
-                    android:textSize="18sp"
-                    android:textStyle="bold"
-                    app:layout_constraintBottom_toBottomOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-            </androidx.constraintlayout.widget.ConstraintLayout>
+    </FrameLayout>
 
-        </FrameLayout>
-
-    </com.google.android.material.card.MaterialCardView>
-
-</layout>
+</com.google.android.material.card.MaterialCardView>
