@@ -34,7 +34,7 @@ import kotlinx.coroutines.launch
 @AndroidEntryPoint
 class BookAddActivity : AppCompatActivity() {
 
-    private var binding: ActivityBookAddBinding? = null
+    private lateinit var binding: ActivityBookAddBinding
     var context: Context = this@BookAddActivity
     private var uri: Uri? = null
     private var imageUri: Uri? = null
@@ -47,9 +47,9 @@ class BookAddActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         binding = ActivityBookAddBinding.inflate(layoutInflater)
-        setContentView(binding!!.root)
+        setContentView(binding.root)
 
-        ViewCompat.setOnApplyWindowInsetsListener(binding!!.root) { v, insets ->
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
@@ -64,13 +64,13 @@ class BookAddActivity : AppCompatActivity() {
         dialog!!.setTitle("Please wait...")
         dialog!!.setCanceledOnTouchOutside(false)
 
-        binding!!.toolbar.nameSpace.setText(R.string.add_new_book)
-        binding!!.toolbar.back.setOnClickListener { onBackPressed() }
+        binding.toolbar.nameSpace.setText(R.string.add_new_book)
+        binding.toolbar.back.setOnClickListener { onBackPressed() }
 
-        binding!!.image.setOnClickListener { pickImageGallery() }
-        binding!!.chooseBook.setOnClickListener { bookPickIntent() }
-        binding!!.category.setOnClickListener { categoryPickDialog() }
-        binding!!.toolbar.ok.setOnClickListener { validateData() }
+        binding.image.setOnClickListener { pickImageGallery() }
+        binding.chooseBook.setOnClickListener { bookPickIntent() }
+        binding.category.setOnClickListener { categoryPickDialog() }
+        binding.toolbar.ok.setOnClickListener { validateData() }
     }
 
     private fun observeViewModel() {
@@ -133,8 +133,8 @@ class BookAddActivity : AppCompatActivity() {
     }
 
     private fun validateData() {
-        val title = binding!!.titleEt.text.toString().trim()
-        val description = binding!!.descriptionEt.text.toString().trim()
+        val title = binding.titleEt.text.toString().trim()
+        val description = binding.descriptionEt.text.toString().trim()
 
         if (TextUtils.isEmpty(title)) {
             Toast.makeText(context, "Enter Title...", Toast.LENGTH_SHORT).show()
@@ -173,7 +173,7 @@ class BookAddActivity : AppCompatActivity() {
             .setItems(categories) { _, which ->
                 selectedTitle = categoriesList[which].category
                 selectedId = categoriesList[which].id
-                binding!!.category.text = selectedTitle
+                binding.category.text = selectedTitle
             }.show()
     }
 
@@ -189,7 +189,7 @@ class BookAddActivity : AppCompatActivity() {
             if (result.resultCode == RESULT_OK) {
                 val data = result.data!!
                 imageUri = data.data
-                binding!!.image.setImageURI(imageUri)
+                binding.image.setImageURI(imageUri)
             }
         }
 
@@ -199,12 +199,12 @@ class BookAddActivity : AppCompatActivity() {
             if (requestCode == BOOK_PICK_CODE) {
                 assert(data != null)
                 uri = data!!.data
-                binding!!.book.setBackgroundResource(R.color.green)
-                binding!!.choose.setText(R.string.ok)
+                binding.book.setBackgroundResource(R.color.green)
+                binding.choose.setText(R.string.ok)
             }
         } else {
-            binding!!.book.setBackgroundResource(R.color.red)
-            binding!!.choose.setText(R.string.choose_book)
+            binding.book.setBackgroundResource(R.color.red)
+            binding.choose.setText(R.string.choose_book)
             Toast.makeText(context, "Cancelled picking book", Toast.LENGTH_SHORT).show()
         }
     }

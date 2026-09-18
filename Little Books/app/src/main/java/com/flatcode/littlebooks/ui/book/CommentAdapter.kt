@@ -4,16 +4,13 @@ import android.app.AlertDialog
 import android.content.Context
 import android.content.DialogInterface
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
+import androidx.viewbinding.ViewBinding
 import com.flatcode.littlebooks.model.Comment
 import com.flatcode.littlebooks.model.User
-import com.flatcode.littlebooks.MyApplication
+import com.flatcode.littlebooks.Application
 import com.flatcode.littlebooks.utils.DATA
 import com.flatcode.littlebooks.utils.VOID
 import com.flatcode.littlebooks.databinding.ItemCommentBinding
@@ -26,8 +23,8 @@ class CommentAdapter(private val context: Context, var list: ArrayList<Comment?>
     RecyclerView.Adapter<CommentAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        binding = ItemCommentBinding.inflate(LayoutInflater.from(context), parent, false)
-        return ViewHolder(binding!!.root)
+        val binding = ItemCommentBinding.inflate(LayoutInflater.from(context), parent, false)
+        return ViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -38,11 +35,11 @@ class CommentAdapter(private val context: Context, var list: ArrayList<Comment?>
         val publisher = DATA.EMPTY + item.publisher
         val timestamp = DATA.EMPTY + item.timestamp
 
-        val date: String = MyApplication.formatTimestamp(timestamp.toLong())
-        holder.date.text = date
-        holder.comment.text = comment
+        val date: String = Application.formatTimestamp(timestamp.toLong())
+        holder.binding.date.text = date
+        holder.binding.comment.text = comment
 
-        loadUserDetails(publisher, holder.name)
+        loadUserDetails(publisher, holder)
 
         holder.itemView.setOnClickListener {
             if (publisher == DATA.FirebaseUserUid) deleteComment(id, bookId)
@@ -53,23 +50,9 @@ class CommentAdapter(private val context: Context, var list: ArrayList<Comment?>
         return list.size
     }
 
-    class ViewHolder(itemView: View?) : RecyclerView.ViewHolder(itemView!!) {
-        var profile: ImageView
-        var name: TextView
-        var comment: TextView
-        var date: TextView
-        var item: LinearLayout
+    class ViewHolder(val binding: ItemCommentBinding) : RecyclerView.ViewHolder((binding as ViewBinding).root)
 
-        init {
-            profile = binding!!.profile
-            name = binding!!.name
-            comment = binding!!.comment
-            date = binding!!.date
-            item = binding!!.item
-        }
-    }
-
-    private fun loadUserDetails(publisher: String?, name: TextView) {
+    private fun loadUserDetails(publisher: String?, holder: ViewHolder) {
         val ref = FirebaseDatabase.getInstance().getReference(DATA.USERS)
         ref.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -77,8 +60,8 @@ class CommentAdapter(private val context: Context, var list: ArrayList<Comment?>
                     val item = snapshot.child(publisher).getValue(User::class.java)!!
                     val username = item.username
                     val profileImage = item.profileImage
-                    VOID.Glide_(true, context, profileImage, binding!!.profile)
-                    name.text = username
+                    VOID.Glide_(true, context, profileImage, holder.binding.profile)
+                    holder.binding.name.text = username
                 }
             }
 
@@ -104,11 +87,4 @@ class CommentAdapter(private val context: Context, var list: ArrayList<Comment?>
             .setNegativeButton("CANCEL") { dialog: DialogInterface, which: Int -> dialog.dismiss() }
             .show()
     }
-
-    companion object {
-        private var binding: ItemCommentBinding? = null
-    }
 }
-
-
-

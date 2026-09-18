@@ -24,6 +24,7 @@ import com.flatcode.littlebooks.R
 import com.flatcode.littlebooks.utils.DATA
 import com.flatcode.littlebooks.utils.VOID
 import com.flatcode.littlebooks.databinding.ActivityMainBinding
+import com.flatcode.littlebooks.ui.profile.ProfileActivity
 import com.flatcode.littlebooks.utils.Resource
 import com.flatcode.littlebooks.viewmodel.MainViewModel
 import com.google.android.gms.ads.MobileAds

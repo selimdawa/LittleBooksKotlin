@@ -11,7 +11,14 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import com.flatcode.littlebooksadmin.Activity.*
+import com.flatcode.littlebooksadmin.ui.ads.ADsActivity
+import com.flatcode.littlebooksadmin.ui.ads.SliderShowActivity
+import com.flatcode.littlebooksadmin.ui.book.*
+import com.flatcode.littlebooksadmin.ui.category.CategoriesActivity
+import com.flatcode.littlebooksadmin.ui.category.CategoryAddActivity
+import com.flatcode.littlebooksadmin.ui.profile.ProfileActivity
+import com.flatcode.littlebooksadmin.ui.settings.PrivacyPolicyActivity
+import com.flatcode.littlebooksadmin.ui.user.*
 import com.flatcode.littlebooksadmin.ui.main.MainAdapter
 import com.flatcode.littlebooksadmin.R
 import com.flatcode.littlebooksadmin.utils.DATA

@@ -25,7 +25,7 @@ import java.text.MessageFormat
 @AndroidEntryPoint
 class ProfileActivity : AppCompatActivity() {
 
-    private var binding: ActivityProfileBinding? = null
+    private lateinit var binding: ActivityProfileBinding
     private val context: Context = this@ProfileActivity
     private var profileId: String? = null
     
@@ -35,9 +35,9 @@ class ProfileActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         binding = ActivityProfileBinding.inflate(layoutInflater)
-        setContentView(binding!!.root)
+        setContentView(binding.root)
 
-        ViewCompat.setOnApplyWindowInsetsListener(binding!!.root) { v, insets ->
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
@@ -52,21 +52,21 @@ class ProfileActivity : AppCompatActivity() {
     }
 
     private fun initUI() {
-        binding!!.back.setOnClickListener { onBackPressed() }
+        binding.back.setOnClickListener { onBackPressed() }
 
         if (profileId == DATA.FirebaseUserUid) {
-            binding!!.follow.visibility = View.GONE
-            binding!!.editOrInfo.setImageResource(R.drawable.ic_edit_white)
-            binding!!.editOrInfo.setOnClickListener { VOID.Intent1(context, ProfileEditActivity::class.java) }
+            binding.follow.visibility = View.GONE
+            binding.editOrInfo.setImageResource(R.drawable.ic_edit_white)
+            binding.editOrInfo.setOnClickListener { VOID.Intent1(context, ProfileEditActivity::class.java) }
         } else {
-            binding!!.follow.visibility = View.VISIBLE
-            binding!!.editOrInfo.setImageResource(R.drawable.ic_books)
-            binding!!.editOrInfo.setOnClickListener {
+            binding.follow.visibility = View.VISIBLE
+            binding.editOrInfo.setImageResource(R.drawable.ic_books)
+            binding.editOrInfo.setOnClickListener {
                 VOID.IntentExtra(context, ProfileInfoActivity::class.java, DATA.PROFILE_ID, profileId)
             }
         }
 
-        binding!!.follow.setOnClickListener {
+        binding.follow.setOnClickListener {
             profileId?.let { viewModel.toggleFollow(it) }
         }
     }
@@ -80,8 +80,8 @@ class ProfileActivity : AppCompatActivity() {
                             is Resource.Loading -> { }
                             is Resource.Success -> {
                                 resource.data?.let { user ->
-                                    binding!!.username.text = user.username
-                                    VOID.Glide(true, context, user.profileImage ?: DATA.BASIC, binding!!.profile)
+                                    binding.username.text = user.username
+                                    VOID.Glide(true, context, user.profileImage ?: DATA.BASIC, binding.profile)
                                 }
                             }
                             is Resource.Error -> {
@@ -96,10 +96,10 @@ class ProfileActivity : AppCompatActivity() {
                             is Resource.Loading -> { }
                             is Resource.Success -> {
                                 resource.data?.let { stats ->
-                                    binding!!.numberBooks.text = stats.booksCount.toString()
-                                    binding!!.numberFollowers.text = stats.followersCount.toString()
-                                    binding!!.numberFollowing.text = stats.followingCount.toString()
-                                    binding!!.numberFavorites.text = stats.favoritesCount.toString()
+                                    binding.numberBooks.text = stats.booksCount.toString()
+                                    binding.numberFollowers.text = stats.followersCount.toString()
+                                    binding.numberFollowing.text = stats.followingCount.toString()
+                                    binding.numberFavorites.text = stats.favoritesCount.toString()
                                 }
                             }
                             is Resource.Error -> {
@@ -111,11 +111,11 @@ class ProfileActivity : AppCompatActivity() {
                 launch {
                     viewModel.isFollowing.collect { isFollowing ->
                         if (isFollowing) {
-                            binding!!.follow.setImageResource(R.drawable.ic_heart_selected)
-                            binding!!.follow.tag = "added"
+                            binding.follow.setImageResource(R.drawable.ic_heart_selected)
+                            binding.follow.tag = "added"
                         } else {
-                            binding!!.follow.setImageResource(R.drawable.ic_heart_unselected)
-                            binding!!.follow.tag = "add"
+                            binding.follow.setImageResource(R.drawable.ic_heart_unselected)
+                            binding.follow.tag = "add"
                         }
                     }
                 }

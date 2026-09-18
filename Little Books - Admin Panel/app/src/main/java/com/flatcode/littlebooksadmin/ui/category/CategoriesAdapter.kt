@@ -27,13 +27,12 @@ import java.text.MessageFormat
 class CategoriesAdapter(private val context: Context, var list: ArrayList<Category?>) :
     RecyclerView.Adapter<CategoriesAdapter.ViewHolder>(), Filterable {
 
-    private var binding: ItemCategoriesBinding? = null
     var filterList: ArrayList<Category?>
     private var filter: CategoriesFilter? = null
 
-    override fun onCreateViewHolder(parent: ViewGroup, VT: Int): CategoriesAdapter.ViewHolder {
-        binding = ItemCategoriesBinding.inflate(LayoutInflater.from(context), parent, false)
-        return ViewHolder(binding!!.root)
+    override fun onCreateViewHolder(parent: ViewGroup, VT: Int): ViewHolder {
+        val binding = ItemCategoriesBinding.inflate(LayoutInflater.from(context), parent, false)
+        return ViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: CategoriesAdapter.ViewHolder, position: Int) {
@@ -42,19 +41,19 @@ class CategoriesAdapter(private val context: Context, var list: ArrayList<Catego
         val name = DATA.EMPTY + item.category
         val image = DATA.EMPTY + item.image
 
-        VOID.Glide(false, context, image, holder.image)
+        VOID.Glide(false, context, image, holder.binding.image)
 
         if (item.category == DATA.EMPTY) {
-            holder.name.visibility = View.GONE
+            holder.binding.name.visibility = View.GONE
         } else {
-            holder.name.visibility = View.VISIBLE
-            holder.name.text = name
+            holder.binding.name.visibility = View.VISIBLE
+            holder.binding.name.text = name
         }
 
-        nrBooks(holder.numberBooks, categoryId)
+        nrBooks(holder.binding.numberBooks, categoryId)
 
-        holder.more.setOnClickListener { VOID.moreCategories(context, item) }
-        holder.item.setOnClickListener {
+        holder.binding.more.setOnClickListener { VOID.moreCategories(context, item) }
+        holder.binding.item.setOnClickListener {
             VOID.IntentExtra2(
                 context, BooksCategoryActivity::class.java,
                 DATA.CATEGORY_ID, categoryId, DATA.CATEGORY_NAME, name
@@ -73,23 +72,7 @@ class CategoriesAdapter(private val context: Context, var list: ArrayList<Catego
         return filter!!
     }
 
-    inner class ViewHolder(view: View?) : RecyclerView.ViewHolder(
-        view!!
-    ) {
-        var image: ImageView
-        var more: ImageButton
-        var name: TextView
-        var numberBooks: TextView
-        var item: LinearLayout
-
-        init {
-            image = binding!!.image
-            name = binding!!.name
-            more = binding!!.more
-            numberBooks = binding!!.numberBooks
-            item = binding!!.item
-        }
-    }
+    inner class ViewHolder(val binding: ItemCategoriesBinding) : RecyclerView.ViewHolder(binding.root)
 
     private fun nrBooks(number: TextView, categoryId: String) {
         val reference = FirebaseDatabase.getInstance().reference.child(DATA.BOOKS)

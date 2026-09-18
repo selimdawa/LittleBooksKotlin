@@ -1,6 +1,11 @@
 package com.flatcode.littlebooks.utils
 
-import com.flatcode.littlebooks.ui.main.*`nimport com.flatcode.littlebooks.ui.book.*`nimport com.flatcode.littlebooks.ui.profile.*`nimport com.flatcode.littlebooks.ui.settings.*`nimport com.flatcode.littlebooks.ui.publisher.*`nimport com.flatcode.littlebooks.ui.splash.*
+import com.flatcode.littlebooks.ui.main.*
+import com.flatcode.littlebooks.ui.book.*
+import com.flatcode.littlebooks.ui.profile.*
+import com.flatcode.littlebooks.ui.settings.*
+import com.flatcode.littlebooks.ui.publisher.*
+import com.flatcode.littlebooks.ui.splash.*
 import com.flatcode.littlebooks.ui.auth.*
 
 object CLASS {
@@ -26,5 +31,3 @@ object CLASS {
     var PRIVACY_POLICY: Class<*> = PrivacyPolicyActivity::class.java
     var MORE_BOOKS: Class<*> = MoreBooksActivity::class.java
 }
-
-

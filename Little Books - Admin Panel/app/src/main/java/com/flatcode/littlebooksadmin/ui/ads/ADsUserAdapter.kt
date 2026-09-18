@@ -22,15 +22,14 @@ import java.text.MessageFormat
 class ADsUserAdapter(private val context: Context, var list: ArrayList<User?>, isUser: Boolean) :
     RecyclerView.Adapter<ADsUserAdapter.ViewHolder>(), Filterable {
 
-    private var binding: ItemAdsUserBinding? = null
     var filterList: ArrayList<User?>
     private var filter: ADsUserFilter? = null
     var isUser: Boolean
     var all = 0
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        binding = ItemAdsUserBinding.inflate(LayoutInflater.from(context), parent, false)
-        return ViewHolder(binding!!.root)
+        val binding = ItemAdsUserBinding.inflate(LayoutInflater.from(context), parent, false)
+        return ViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -43,25 +42,23 @@ class ADsUserAdapter(private val context: Context, var list: ArrayList<User?>, i
         val adClicked = DATA.EMPTY + item.adClick
         val formattedDate: String = Application.formatTimestamp(timestamp.toLong())
 
-        VOID.Glide(true, context, profileImage, holder.profileImage)
+        VOID.Glide(true, context, profileImage, holder.binding.profileImage)
 
         if (username == DATA.EMPTY) {
-            holder.username.visibility = View.GONE
+            holder.binding.username.visibility = View.GONE
         } else {
-            holder.username.visibility = View.VISIBLE
-            holder.username.text = username
+            holder.binding.username.visibility = View.VISIBLE
+            holder.binding.username.text = username
         }
 
         val First = holder.position
         val Final = list.size - First
-        holder.time.text = formattedDate
-        holder.rank.text = MessageFormat.format("{0}", Final)
-        holder.numberADsLoad.text = MessageFormat.format("{0}{1}", DATA.EMPTY, adLoaded)
-        holder.numberADsClick.text = MessageFormat.format("{0}{1}", DATA.EMPTY, adClicked)
+        holder.binding.time.text = formattedDate
+        holder.binding.rank.text = MessageFormat.format("{0}", Final)
+        holder.binding.numberADsLoad.text = MessageFormat.format("{0}{1}", DATA.EMPTY, adLoaded)
+        holder.binding.numberADsClick.text = MessageFormat.format("{0}{1}", DATA.EMPTY, adClicked)
 
-        //ADsNumber(userId, DATA.AD_LOADED, DATA.AD_LOAD, holder.numberADsLoad);
-        //ADsNumber(userId, DATA.AD_CLICKED, DATA.AD_CLICK, holder.numberADsClick);
-        holder.item.setOnClickListener {
+        holder.binding.item.setOnClickListener {
             VOID.IntentExtra(context, AdsInfoActivity::class.java, DATA.PROFILE_ID, userId)
         }
     }
@@ -77,27 +74,8 @@ class ADsUserAdapter(private val context: Context, var list: ArrayList<User?>, i
         return filter!!
     }
 
-    inner class ViewHolder(view: View?) : RecyclerView.ViewHolder(
-        view!!
-    ) {
-        var profileImage: ImageView
-        var username: TextView
-        var rank: TextView
-        var numberADsLoad: TextView
-        var numberADsClick: TextView
-        var time: TextView
-        var item: LinearLayout
-
-        init {
-            profileImage = binding!!.profileImage
-            username = binding!!.username
-            rank = binding!!.rank
-            numberADsLoad = binding!!.numberADsLoad
-            numberADsClick = binding!!.numberADsClick
-            time = binding!!.time
-            item = binding!!.item
-        }
-    } /*private void ADsNumber(String userId, String type, String hash, TextView numberADs) {
+    inner class ViewHolder(val binding: ItemAdsUserBinding) : RecyclerView.ViewHolder(binding.root)
+/*private void ADsNumber(String userId, String type, String hash, TextView numberADs) {
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference(DATA.AD_S).child(userId);
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override

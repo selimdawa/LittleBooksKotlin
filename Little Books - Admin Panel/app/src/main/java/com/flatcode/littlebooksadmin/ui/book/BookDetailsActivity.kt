@@ -36,7 +36,7 @@ import kotlinx.coroutines.launch
 @AndroidEntryPoint
 class BookDetailsActivity : AppCompatActivity() {
 
-    private var binding: ActivityBookDetailsBinding? = null
+    private lateinit var binding: ActivityBookDetailsBinding
     private val context: Context = this@BookDetailsActivity
     private var bookId: String? = null
     private var bookTitle: String? = null
@@ -51,9 +51,9 @@ class BookDetailsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         binding = ActivityBookDetailsBinding.inflate(layoutInflater)
-        setContentView(binding!!.root)
+        setContentView(binding.root)
 
-        ViewCompat.setOnApplyWindowInsetsListener(binding!!.root) { v, insets ->
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
@@ -68,24 +68,24 @@ class BookDetailsActivity : AppCompatActivity() {
     }
 
     private fun initUI() {
-        binding!!.toolbar.nameSpace.setText(R.string.details_books)
-        binding!!.download.visibility = View.GONE
+        binding.toolbar.nameSpace.setText(R.string.details_books)
+        binding.download.visibility = View.GONE
         dialog = ProgressDialog(context)
         dialog!!.setTitle("Please wait...")
         dialog!!.setCanceledOnTouchOutside(false)
 
         adapter = CommentAdapter(context, list)
-        binding!!.recyclerView.adapter = adapter
+        binding.recyclerView.adapter = adapter
 
-        binding!!.love.setOnClickListener { VOID.checkLove(binding!!.love, bookId) }
-        binding!!.favorite.setOnClickListener {
-            VOID.checkFavorite(binding!!.favorite, bookId)
+        binding.love.setOnClickListener { VOID.checkLove(binding.love, bookId) }
+        binding.favorite.setOnClickListener {
+            VOID.checkFavorite(binding.favorite, bookId)
         }
-        binding!!.toolbar.back.setOnClickListener { onBackPressed() }
-        binding!!.read.setOnClickListener {
+        binding.toolbar.back.setOnClickListener { onBackPressed() }
+        binding.read.setOnClickListener {
             VOID.IntentExtra(context, BookViewActivity::class.java, DATA.BOOK_ID, bookId)
         }
-        binding!!.download.setOnClickListener {
+        binding.download.setOnClickListener {
             if (ContextCompat.checkSelfPermission(
                     context, Manifest.permission.WRITE_EXTERNAL_STORAGE
                 ) == PackageManager.PERMISSION_GRANTED
@@ -98,7 +98,7 @@ class BookDetailsActivity : AppCompatActivity() {
                 resultPermissionLauncher.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
             }
         }
-        binding!!.addComment.setOnClickListener {
+        binding.addComment.setOnClickListener {
             if (DATA.FIREBASE_USER == null) {
                 Toast.makeText(context, "You're not logged in...", Toast.LENGTH_SHORT).show()
             } else {
@@ -106,9 +106,9 @@ class BookDetailsActivity : AppCompatActivity() {
             }
         }
         
-        VOID.isLoves(binding!!.love, bookId)
-        VOID.nrLoves(binding!!.loves, bookId)
-        VOID.isFavorite(binding!!.favorite, bookId, DATA.FirebaseUserUid)
+        VOID.isLoves(binding.love, bookId)
+        VOID.nrLoves(binding.loves, bookId)
+        VOID.isFavorite(binding.favorite, bookId, DATA.FirebaseUserUid)
     }
 
     private fun observeViewModel() {
@@ -122,19 +122,19 @@ class BookDetailsActivity : AppCompatActivity() {
                                 resource.data?.let { book ->
                                     bookTitle = book.title
                                     bookUrl = book.url
-                                    binding!!.download.visibility = View.VISIBLE
+                                    binding.download.visibility = View.VISIBLE
                                     
                                     val date: String = Application.formatTimestamp(book.timestamp)
-                                    VOID.loadCategory(book.categoryId, binding!!.category)
-                                    VOID.loadPdfInfo(book.url, binding!!.size)
+                                    VOID.loadCategory(book.categoryId, binding.category)
+                                    VOID.loadPdfInfo(book.url, binding.size)
                                     
-                                    VOID.Glide(false, context, book.image ?: DATA.BASIC, binding!!.image)
-                                    VOID.Glide(false, context, book.image ?: DATA.BASIC, binding!!.cover)
-                                    binding!!.title.text = book.title
-                                    binding!!.description.text = book.description
-                                    binding!!.views.text = book.viewsCount.toString()
-                                    binding!!.downloads.text = book.downloadsCount.toString()
-                                    binding!!.date.text = date
+                                    VOID.Glide(false, context, book.image ?: DATA.BASIC, binding.image)
+                                    VOID.Glide(false, context, book.image ?: DATA.BASIC, binding.cover)
+                                    binding.title.text = book.title
+                                    binding.description.text = book.description
+                                    binding.views.text = book.viewsCount.toString()
+                                    binding.downloads.text = book.downloadsCount.toString()
+                                    binding.date.text = date
                                 }
                             }
                             is Resource.Error -> {
@@ -149,9 +149,9 @@ class BookDetailsActivity : AppCompatActivity() {
                             is Resource.Loading -> { }
                             is Resource.Success -> {
                                 resource.data?.let { user ->
-                                    binding!!.publisherName.text = user.username
-                                    VOID.Glide(true, context, user.profileImage ?: DATA.BASIC, binding!!.publisherImage)
-                                    binding!!.userInfo.setOnClickListener {
+                                    binding.publisherName.text = user.username
+                                    VOID.Glide(true, context, user.profileImage ?: DATA.BASIC, binding.publisherImage)
+                                    binding.userInfo.setOnClickListener {
                                         VOID.IntentExtra(context, ProfileActivity::class.java, DATA.PROFILE_ID, user.id)
                                     }
                                 }
@@ -201,7 +201,7 @@ class BookDetailsActivity : AppCompatActivity() {
             list.add(legacyComment)
         }
         adapter?.notifyDataSetChanged()
-        binding!!.textComment.visibility = if (list.isEmpty()) View.GONE else View.VISIBLE
+        binding.textComment.visibility = if (list.isEmpty()) View.GONE else View.VISIBLE
     }
 
     private fun addCommentDialog() {

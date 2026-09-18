@@ -18,11 +18,9 @@ import java.text.MessageFormat
 class MainAdapter(private val context: Context, var list: List<Main>) :
     RecyclerView.Adapter<MainAdapter.ViewHolder>() {
 
-    private var binding: ItemMainBinding? = null
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        binding = ItemMainBinding.inflate(LayoutInflater.from(context), parent, false)
-        return ViewHolder(binding!!.root)
+        val binding = ItemMainBinding.inflate(LayoutInflater.from(context), parent, false)
+        return ViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -34,20 +32,20 @@ class MainAdapter(private val context: Context, var list: List<Main>) :
         val c = model.c
 
         if (image != 0) {
-            holder.image.setImageResource(image)
+            holder.binding.image.setImageResource(image)
         } else {
-            holder.image.setImageResource(R.drawable.ic_load)
+            holder.binding.image.setImageResource(R.drawable.ic_load)
         }
 
         if (number != 0) {
-            holder.number.visibility = View.VISIBLE
-            holder.number.text = MessageFormat.format("{0}{1}", DATA.EMPTY, number)
+            holder.binding.number.visibility = View.VISIBLE
+            holder.binding.number.text = MessageFormat.format("{0}{1}", DATA.EMPTY, number)
         } else {
-            holder.number.visibility = View.GONE
+            holder.binding.number.visibility = View.GONE
 
         }
 
-        holder.name.text = name
+        holder.binding.name.text = name
 
         holder.itemView.setOnClickListener {
             val intent = Intent(context, c)
@@ -59,18 +57,6 @@ class MainAdapter(private val context: Context, var list: List<Main>) :
         return list.size
     }
 
-    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        var name: TextView
-        var number: TextView
-        var image: ImageView
-        var item: LinearLayout
-
-        init {
-            image = binding!!.image
-            name = binding!!.name
-            number = binding!!.number
-            item = binding!!.item
-        }
-    }
+    inner class ViewHolder(val binding: ItemMainBinding) : RecyclerView.ViewHolder(binding.root)
 }
 

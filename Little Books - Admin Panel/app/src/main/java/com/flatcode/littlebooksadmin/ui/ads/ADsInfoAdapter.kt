@@ -18,14 +18,13 @@ import java.text.MessageFormat
 class ADsInfoAdapter(private val context: Context, var list: ArrayList<ADs?>, isUser: Boolean) :
     RecyclerView.Adapter<ADsInfoAdapter.ViewHolder>(), Filterable {
 
-    private var binding: ItemInfoAdsBinding? = null
     var filterList: ArrayList<ADs?>
     private var filter: ADsInfoFilter? = null
     var isUser: Boolean
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        binding = ItemInfoAdsBinding.inflate(LayoutInflater.from(context), parent, false)
-        return ViewHolder(binding!!.root)
+        val binding = ItemInfoAdsBinding.inflate(LayoutInflater.from(context), parent, false)
+        return ViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -35,11 +34,11 @@ class ADsInfoAdapter(private val context: Context, var list: ArrayList<ADs?>, is
         val adsClickedCount = item.adsClickedCount
 
         if (name != null) {
-            holder.name.text = name
+            holder.binding.name.text = name
         }
 
-        holder.numberADsLoad.text = MessageFormat.format("{0}{1}", DATA.EMPTY, adsLoadedCount)
-        holder.numberADsClick.text = MessageFormat.format("{0}{1}", DATA.EMPTY, adsClickedCount)
+        holder.binding.numberADsLoad.text = MessageFormat.format("{0}{1}", DATA.EMPTY, adsLoadedCount)
+        holder.binding.numberADsClick.text = MessageFormat.format("{0}{1}", DATA.EMPTY, adsClickedCount)
     }
 
     override fun getItemCount(): Int {
@@ -53,19 +52,7 @@ class ADsInfoAdapter(private val context: Context, var list: ArrayList<ADs?>, is
         return filter!!
     }
 
-    inner class ViewHolder(view: View?) : RecyclerView.ViewHolder(view!!) {
-        var numberADsClick: TextView
-        var numberADsLoad: TextView
-        var name: TextView
-        var item: LinearLayout
-
-        init {
-            numberADsClick = binding!!.numberADsClick
-            numberADsLoad = binding!!.numberADsLoad
-            name = binding!!.name
-            item = binding!!.item
-        }
-    }
+    inner class ViewHolder(val binding: ItemInfoAdsBinding) : RecyclerView.ViewHolder(binding.root)
 
     init {
         filterList = list

@@ -15,7 +15,7 @@ import com.google.firebase.auth.FirebaseAuth
 
 class ForgetPasswordActivity : AppCompatActivity() {
 
-    private var binding: ActivityForgetPasswordBinding? = null
+    private lateinit var binding: ActivityForgetPasswordBinding
     private val context: Context = this@ForgetPasswordActivity
     private var auth: FirebaseAuth? = null
     private var dialog: ProgressDialog? = null
@@ -24,10 +24,9 @@ class ForgetPasswordActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         binding = ActivityForgetPasswordBinding.inflate(layoutInflater)
-        val view = binding!!.root
-        setContentView(view)
+        setContentView(binding.root)
 
-        ViewCompat.setOnApplyWindowInsetsListener(binding!!.root) { v, insets ->
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
@@ -38,13 +37,13 @@ class ForgetPasswordActivity : AppCompatActivity() {
         dialog!!.setTitle("Please wait...")
         dialog!!.setCanceledOnTouchOutside(false)
 
-        binding!!.go.setOnClickListener { validateDate() }
-        binding!!.login.setOnClickListener { onBackPressed() }
+        binding.go.setOnClickListener { validateDate() }
+        binding.login.setOnClickListener { onBackPressed() }
     }
 
     private var email = ""
     private fun validateDate() {
-        email = binding!!.emailEt.text.toString().trim { it <= ' ' }
+        email = binding.emailEt.text.toString().trim { it <= ' ' }
         if (email.isEmpty()) {
             Toast.makeText(context, "Enter email...!", Toast.LENGTH_SHORT).show()
         } else if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {

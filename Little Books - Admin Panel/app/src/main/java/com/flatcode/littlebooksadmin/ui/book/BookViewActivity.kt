@@ -24,7 +24,7 @@ import java.text.MessageFormat
 @AndroidEntryPoint
 class BookViewActivity : AppCompatActivity() {
 
-    private var binding: ActivityBookViewBinding? = null
+    private lateinit var binding: ActivityBookViewBinding
     private val context: Context = this@BookViewActivity
     private var bookId: String? = null
     
@@ -34,9 +34,9 @@ class BookViewActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         binding = ActivityBookViewBinding.inflate(layoutInflater)
-        setContentView(binding!!.root)
+        setContentView(binding.root)
 
-        ViewCompat.setOnApplyWindowInsetsListener(binding!!.root) { v, insets ->
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
@@ -51,8 +51,8 @@ class BookViewActivity : AppCompatActivity() {
     }
 
     private fun initUI() {
-        binding!!.toolbar.numberPage.visibility = View.VISIBLE
-        binding!!.toolbar.back.setOnClickListener { onBackPressed() }
+        binding.toolbar.numberPage.visibility = View.VISIBLE
+        binding.toolbar.back.setOnClickListener { onBackPressed() }
     }
 
     private fun observeViewModel() {
@@ -61,13 +61,13 @@ class BookViewActivity : AppCompatActivity() {
                 viewModel.book.collect { resource ->
                     when (resource) {
                         is Resource.Loading -> {
-                            binding!!.progressBar.visibility = View.VISIBLE
+                            binding.progressBar.visibility = View.VISIBLE
                         }
                         is Resource.Success -> {
                             resource.data?.url?.let { loadBookFromUrl(it) }
                         }
                         is Resource.Error -> {
-                            binding!!.progressBar.visibility = View.GONE
+                            binding.progressBar.visibility = View.GONE
                             Toast.makeText(context, resource.message, Toast.LENGTH_SHORT).show()
                         }
                     }
@@ -79,11 +79,11 @@ class BookViewActivity : AppCompatActivity() {
     private fun loadBookFromUrl(pdfUrl: String) {
         val reference = FirebaseStorage.getInstance().getReferenceFromUrl(pdfUrl)
         reference.getBytes(DATA.MAX_BYTES_PDF.toLong()).addOnSuccessListener { bytes: ByteArray? ->
-            binding!!.progressBar.visibility = View.GONE
-            binding!!.pdfView.fromBytes(bytes).swipeHorizontal(false)
+            binding.progressBar.visibility = View.GONE
+            binding.pdfView.fromBytes(bytes).swipeHorizontal(false)
                 .onPageChange { page: Int, pageCount: Int ->
                     val correctPage = page + 1
-                    binding!!.toolbar.numberPage.text =
+                    binding.toolbar.numberPage.text =
                         MessageFormat.format("{0}/{1}", correctPage, pageCount)
                 }.onError { t: Throwable ->
                     Toast.makeText(context, DATA.EMPTY + t.message, Toast.LENGTH_SHORT).show()
@@ -95,7 +95,7 @@ class BookViewActivity : AppCompatActivity() {
                     ).show()
                 }.load()
         }.addOnFailureListener { 
-            binding!!.progressBar.visibility = View.GONE 
+            binding.progressBar.visibility = View.GONE 
             Toast.makeText(context, "Failed to load PDF", Toast.LENGTH_SHORT).show()
         }
     }

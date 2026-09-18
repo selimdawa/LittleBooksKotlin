@@ -26,8 +26,8 @@ class CommentAdapter(private val context: Context, var list: ArrayList<Comment?>
     RecyclerView.Adapter<CommentAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        binding = ItemCommentBinding.inflate(LayoutInflater.from(context), parent, false)
-        return ViewHolder(binding!!.root)
+        val binding = ItemCommentBinding.inflate(LayoutInflater.from(context), parent, false)
+        return ViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -39,10 +39,10 @@ class CommentAdapter(private val context: Context, var list: ArrayList<Comment?>
         val timestamp = DATA.EMPTY + item.timestamp
 
         val date: String = Application.formatTimestamp(timestamp.toLong())
-        holder.date.text = date
-        holder.comment.text = comment
+        holder.binding.date.text = date
+        holder.binding.comment.text = comment
 
-        loadUserDetails(publisher, holder.name)
+        loadUserDetails(publisher, holder)
 
         holder.itemView.setOnClickListener {
             if (publisher == DATA.FirebaseUserUid) deleteComment(commentId, bookId)
@@ -72,23 +72,9 @@ class CommentAdapter(private val context: Context, var list: ArrayList<Comment?>
         return list.size
     }
 
-    class ViewHolder(itemView: View?) : RecyclerView.ViewHolder(itemView!!) {
-        var profile: ImageView
-        var name: TextView
-        var comment: TextView
-        var date: TextView
-        var item: LinearLayout
+    class ViewHolder(val binding: ItemCommentBinding) : RecyclerView.ViewHolder(binding.root)
 
-        init {
-            profile = binding!!.profile
-            name = binding!!.name
-            comment = binding!!.comment
-            date = binding!!.date
-            item = binding!!.item
-        }
-    }
-
-    private fun loadUserDetails(publisher: String?, name: TextView) {
+    private fun loadUserDetails(publisher: String?, holder: ViewHolder) {
         val ref = FirebaseDatabase.getInstance().getReference(DATA.USERS)
         ref.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -96,17 +82,13 @@ class CommentAdapter(private val context: Context, var list: ArrayList<Comment?>
                     val item = snapshot.child(publisher).getValue(User::class.java)!!
                     val username = item.username
                     val profileImage = item.profileImage
-                    VOID.Glide(true, context, profileImage!!, binding!!.profile)
-                    name.text = username
+                    VOID.Glide(true, context, profileImage!!, holder.binding.profile)
+                    holder.binding.name.text = username
                 }
             }
 
             override fun onCancelled(error: DatabaseError) {}
         })
-    }
-
-    companion object {
-        private var binding: ItemCommentBinding? = null
     }
 }
 

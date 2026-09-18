@@ -19,32 +19,31 @@ import com.google.firebase.database.ValueEventListener
 
 class PrivacyPolicyEditActivity : AppCompatActivity() {
 
-    private var binding: ActivityPrivacyPolicyEditBinding? = null
+    private lateinit var binding: ActivityPrivacyPolicyEditBinding
     var context: Context = this@PrivacyPolicyEditActivity
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         binding = ActivityPrivacyPolicyEditBinding.inflate(layoutInflater)
-        val view = binding!!.root
-        setContentView(view)
+        setContentView(binding.root)
 
-        ViewCompat.setOnApplyWindowInsetsListener(view) { v, insets ->
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
 
-        binding!!.toolbar.nameSpace.setText(R.string.privacy_policy)
-        binding!!.toolbar.back.setOnClickListener { onBackPressed() }
-        binding!!.go.setOnClickListener { validateData() }
+        binding.toolbar.nameSpace.setText(R.string.privacy_policy)
+        binding.toolbar.back.setOnClickListener { onBackPressed() }
+        binding.go.setOnClickListener { validateData() }
 
         privacyPolicy()
     }
 
     private var description = DATA.EMPTY
     private fun validateData() {
-        description = binding!!.text.text.toString().trim { it <= ' ' }
+        description = binding.text.text.toString().trim { it <= ' ' }
         if (TextUtils.isEmpty(description)) {
             Toast.makeText(context, "Enter Privacy Policy...", Toast.LENGTH_SHORT).show()
         } else {
@@ -69,7 +68,7 @@ class PrivacyPolicyEditActivity : AppCompatActivity() {
         reference.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 val name = dataSnapshot.value.toString()
-                binding!!.text.setText(name)
+                binding.text.setText(name)
             }
 
             override fun onCancelled(databaseError: DatabaseError) {}

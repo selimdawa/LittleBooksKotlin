@@ -23,14 +23,13 @@ class TopPublisherAdapter(
     private val context: Context, var list: ArrayList<User?>, isUser: Boolean
 ) : RecyclerView.Adapter<TopPublisherAdapter.ViewHolder>(), Filterable {
 
-    private var binding: ItemTopPublisherBinding? = null
     var filterList: ArrayList<User?>
     private var filter: TopPublisherFilter? = null
     var isUser: Boolean
 
     override fun onCreateViewHolder(parent: ViewGroup, VT: Int): TopPublisherAdapter.ViewHolder {
-        binding = ItemTopPublisherBinding.inflate(LayoutInflater.from(context), parent, false)
-        return ViewHolder(binding!!.root)
+        val binding = ItemTopPublisherBinding.inflate(LayoutInflater.from(context), parent, false)
+        return ViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: TopPublisherAdapter.ViewHolder, position: Int) {
@@ -42,14 +41,14 @@ class TopPublisherAdapter(
         run {
             var x = 0
             while (x < all && round == position) {
-                holder.item.setBackgroundResource(R.drawable.solid1)
+                holder.binding.item.setBackgroundResource(R.drawable.solid1)
                 x++
             }
         }
 
         var x = 0
         while (x < all && round2 == position) {
-            holder.item.setBackgroundResource(R.drawable.solid2)
+            holder.binding.item.setBackgroundResource(R.drawable.solid2)
             x++
         }
 
@@ -59,27 +58,21 @@ class TopPublisherAdapter(
         val profileImage = DATA.EMPTY + item.profileImage
         val numberBooks = DATA.EMPTY + item.booksCount
 
-        VOID.Glide(false, context, profileImage, holder.profileImage)
+        VOID.Glide(false, context, profileImage, holder.binding.imageProfile)
 
         if (username == DATA.EMPTY) {
-            holder.username.visibility = View.GONE
+            holder.binding.username.visibility = View.GONE
         } else {
-            holder.username.visibility = View.VISIBLE
-            holder.username.text = username
+            holder.binding.username.visibility = View.VISIBLE
+            holder.binding.username.text = username
         }
 
         val First = holder.position
         val Final = list.size - First
-        holder.rank.text = MessageFormat.format("{0}", Final)
-        holder.numberBooks.text = numberBooks
+        holder.binding.rank.text = MessageFormat.format("{0}", Final)
+        holder.binding.numberBooks.text = numberBooks
 
-        /*if (item.getPublisher().equals(DATA.FirebaseUserUid)) {
-            holder.favorites.setVisibility(View.GONE);
-        } else {
-            holder.favorites.setVisibility(View.VISIBLE);
-        }*/
-
-        holder.item.setOnClickListener {
+        holder.binding.item.setOnClickListener {
             VOID.IntentExtra(context, ProfileActivity::class.java, DATA.PROFILE_ID, userId)
         }
     }
@@ -95,23 +88,7 @@ class TopPublisherAdapter(
         return filter!!
     }
 
-    inner class ViewHolder(view: View?) : RecyclerView.ViewHolder(
-        view!!
-    ) {
-        var profileImage: ImageView
-        var username: TextView
-        var numberBooks: TextView
-        var rank: TextView
-        var item: LinearLayout
-
-        init {
-            profileImage = binding!!.imageProfile
-            username = binding!!.username
-            rank = binding!!.rank
-            numberBooks = binding!!.numberBooks
-            item = binding!!.item
-        }
-    }
+    inner class ViewHolder(val binding: ItemTopPublisherBinding) : RecyclerView.ViewHolder(binding.root)
 
     init {
         filterList = list

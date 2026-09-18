@@ -17,26 +17,25 @@ import com.google.firebase.database.ValueEventListener
 
 class PrivacyPolicyActivity : AppCompatActivity() {
 
-    private var binding: ActivityPrivacyPolicyBinding? = null
+    private lateinit var binding: ActivityPrivacyPolicyBinding
     var context: Context = this@PrivacyPolicyActivity
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         binding = ActivityPrivacyPolicyBinding.inflate(layoutInflater)
-        val view = binding!!.root
-        setContentView(view)
+        setContentView(binding.root)
 
-        ViewCompat.setOnApplyWindowInsetsListener(view) { v, insets ->
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
 
-        binding!!.toolbar.nameSpace.setText(R.string.privacy_policy)
-        binding!!.toolbar.back.setOnClickListener { onBackPressed() }
+        binding.toolbar.nameSpace.setText(R.string.privacy_policy)
+        binding.toolbar.back.setOnClickListener { onBackPressed() }
 
-        binding!!.edit.setOnClickListener { VOID.Intent1(context, PrivacyPolicyEditActivity::class.java) }
+        binding.edit.setOnClickListener { VOID.Intent1(context, PrivacyPolicyEditActivity::class.java) }
     }
 
     private fun privacyPolicy() {
@@ -45,7 +44,7 @@ class PrivacyPolicyActivity : AppCompatActivity() {
         reference.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 val name = dataSnapshot.value.toString()
-                binding!!.text.text = name
+                binding.text.text = name
             }
 
             override fun onCancelled(databaseError: DatabaseError) {}

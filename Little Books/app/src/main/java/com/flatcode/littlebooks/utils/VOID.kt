@@ -14,6 +14,7 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Environment
+import android.view.LayoutInflater
 import android.view.View
 import android.view.Window
 import android.view.WindowManager
@@ -22,6 +23,10 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import coil.load
+import com.flatcode.littlebooks.databinding.DialogAboutAppBinding
+import com.flatcode.littlebooks.databinding.DialogCloseAppBinding
+import com.flatcode.littlebooks.databinding.DialogLogoutBinding
 import com.flatcode.littlebooks.model.ADs
 import com.flatcode.littlebooks.model.Book
 import com.flatcode.littlebooks.R
@@ -287,35 +292,37 @@ object VOID {
 
     fun closeApp(context: Context?, a: Activity?) {
         val dialog = Dialog(context!!)
+        val binding = DialogCloseAppBinding.inflate(LayoutInflater.from(context))
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
-        dialog.setContentView(R.layout.dialog_close_app)
+        dialog.setContentView(binding.root)
         dialog.setCancelable(true)
         dialog.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         val lp: WindowManager.LayoutParams = WindowManager.LayoutParams()
         lp.copyFrom(dialog.window!!.attributes)
         lp.width = WindowManager.LayoutParams.WRAP_CONTENT
         lp.height = WindowManager.LayoutParams.WRAP_CONTENT
-        dialog.findViewById<View>(R.id.yes).setOnClickListener { a!!.finish() }
-        dialog.findViewById<View>(R.id.no).setOnClickListener { dialog.cancel() }
+        binding.yes.setOnClickListener { a!!.finish() }
+        binding.no.setOnClickListener { dialog.cancel() }
         dialog.show()
         dialog.window!!.attributes = lp
     }
 
     fun dialogLogout(context: Context?) {
         val dialog = Dialog(context!!)
+        val binding = DialogLogoutBinding.inflate(LayoutInflater.from(context))
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
-        dialog.setContentView(R.layout.dialog_logout)
+        dialog.setContentView(binding.root)
         dialog.setCancelable(true)
         dialog.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         val lp: WindowManager.LayoutParams = WindowManager.LayoutParams()
         lp.copyFrom(dialog.window!!.attributes)
         lp.width = WindowManager.LayoutParams.WRAP_CONTENT
         lp.height = WindowManager.LayoutParams.WRAP_CONTENT
-        dialog.findViewById<View>(R.id.yes).setOnClickListener {
+        binding.yes.setOnClickListener {
             FirebaseAuth.getInstance().signOut()
             IntentClear(context, AuthActivity::class.java)
         }
-        dialog.findViewById<View>(R.id.no).setOnClickListener { dialog.cancel() }
+        binding.no.setOnClickListener { dialog.cancel() }
         dialog.show()
         dialog.window!!.attributes = lp
     }
@@ -348,15 +355,16 @@ object VOID {
 
     fun dialogAboutApp(context: Context?) {
         val dialog = Dialog(context!!)
+        val binding = DialogAboutAppBinding.inflate(LayoutInflater.from(context))
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
-        dialog.setContentView(R.layout.dialog_about_app)
+        dialog.setContentView(binding.root)
         dialog.setCancelable(true)
         dialog.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         val lp: WindowManager.LayoutParams = WindowManager.LayoutParams()
         lp.copyFrom(dialog.window!!.attributes)
         lp.width = WindowManager.LayoutParams.WRAP_CONTENT
         lp.height = WindowManager.LayoutParams.WRAP_CONTENT
-        dialog.findViewById<View>(R.id.website).setOnClickListener(object : View.OnClickListener {
+        binding.website.setOnClickListener(object : View.OnClickListener {
             override fun onClick(v: View) {
                 context.startActivity(websiteIntent)
             }
@@ -364,7 +372,7 @@ object VOID {
             val websiteIntent: Intent
                 get() = Intent(Intent.ACTION_VIEW, Uri.parse(DATA.WEB_SITE))
         })
-        dialog.findViewById<View>(R.id.facebook).setOnClickListener(object : View.OnClickListener {
+        binding.facebook.setOnClickListener(object : View.OnClickListener {
             override fun onClick(v: View) {
                 context.startActivity(openFacebookIntent)
             }
@@ -484,20 +492,20 @@ object VOID {
         context: Context?, publisher: String?, bookId: String?, bookUrl: String?, bookTitle: String,
     ) {
         val dialog = Dialog(context!!)
+        val binding = DialogLogoutBinding.inflate(LayoutInflater.from(context))
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
-        dialog.setContentView(R.layout.dialog_logout)
+        dialog.setContentView(binding.root)
         dialog.setCancelable(true)
         dialog.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         val lp: WindowManager.LayoutParams = WindowManager.LayoutParams()
         lp.copyFrom(dialog.window!!.attributes)
         lp.width = WindowManager.LayoutParams.WRAP_CONTENT
         lp.height = WindowManager.LayoutParams.WRAP_CONTENT
-        val title: TextView = dialog.findViewById(R.id.title)
-        title.setText(R.string.do_you_want_to_delete_the_book)
-        dialog.findViewById<View>(R.id.yes).setOnClickListener {
+        binding.title.setText(R.string.do_you_want_to_delete_the_book)
+        binding.yes.setOnClickListener {
             deleteBook(dialog, context, publisher, bookId, bookUrl, bookTitle)
         }
-        dialog.findViewById<View>(R.id.no).setOnClickListener { dialog.dismiss() }
+        binding.no.setOnClickListener { dialog.dismiss() }
         dialog.show()
         dialog.window!!.attributes = lp
     }

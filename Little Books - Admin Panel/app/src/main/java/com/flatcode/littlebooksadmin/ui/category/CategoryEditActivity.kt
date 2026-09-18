@@ -28,7 +28,7 @@ import com.theartofdev.edmodo.cropper.CropImage
 
 class CategoryEditActivity : AppCompatActivity() {
 
-    private var binding: ActivityCategoryAddBinding? = null
+    private lateinit var binding: ActivityCategoryAddBinding
     var activity: Activity? = null
     var context: Context = also { activity = it }
     var categoryId: String? = null
@@ -39,10 +39,9 @@ class CategoryEditActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         binding = ActivityCategoryAddBinding.inflate(layoutInflater)
-        val view = binding!!.root
-        setContentView(view)
+        setContentView(binding.root)
 
-        ViewCompat.setOnApplyWindowInsetsListener(view) { v, insets ->
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
@@ -55,16 +54,16 @@ class CategoryEditActivity : AppCompatActivity() {
         dialog!!.setCanceledOnTouchOutside(false)
         loadCategoryInfo()
 
-        binding!!.toolbar.nameSpace.setText(R.string.edit_category)
-        binding!!.toolbar.back.setOnClickListener { onBackPressed() }
+        binding.toolbar.nameSpace.setText(R.string.edit_category)
+        binding.toolbar.back.setOnClickListener { onBackPressed() }
 
-        binding!!.image.setOnClickListener { VOID.cropImageSquare(activity) }
-        binding!!.toolbar.ok.setOnClickListener { validateData() }
+        binding.image.setOnClickListener { VOID.cropImageSquare(activity) }
+        binding.toolbar.ok.setOnClickListener { validateData() }
     }
 
     private var name = DATA.EMPTY
     private fun validateData() {
-        name = binding!!.categoryEt.text.toString().trim { it <= ' ' }
+        name = binding.categoryEt.text.toString().trim { it <= ' ' }
         if (TextUtils.isEmpty(name)) {
             Toast.makeText(context, "Enter name...", Toast.LENGTH_SHORT).show()
         } else {
@@ -124,8 +123,8 @@ class CategoryEditActivity : AppCompatActivity() {
                 val item = snapshot.getValue(Category::class.java)!!
                 val name = item.category
                 val image = item.image
-                VOID.Glide(true, context, image!!, binding!!.image)
-                binding!!.categoryEt.setText(name)
+                VOID.Glide(true, context, image!!, binding.image)
+                binding.categoryEt.setText(name)
             }
 
             override fun onCancelled(error: DatabaseError) {}
@@ -147,7 +146,7 @@ class CategoryEditActivity : AppCompatActivity() {
             val result = CropImage.getActivityResult(data)
             if (resultCode == RESULT_OK) {
                 imageUri = result.uri
-                binding!!.image.setImageURI(imageUri)
+                binding.image.setImageURI(imageUri)
             } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
                 val error = result.error
                 Toast.makeText(this, "Error! $error", Toast.LENGTH_SHORT).show()

@@ -26,13 +26,12 @@ import java.text.MessageFormat
 class PublisherAdapter(private val context: Context, var list: ArrayList<User?>) :
     RecyclerView.Adapter<PublisherAdapter.ViewHolder>(), Filterable {
 
-    private var binding: ItemPublisherBinding? = null
     var filterList: ArrayList<User?>
     private var filter: PublisherFilter? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        binding = ItemPublisherBinding.inflate(LayoutInflater.from(context), parent, false)
-        return ViewHolder(binding!!.root)
+        val binding = ItemPublisherBinding.inflate(LayoutInflater.from(context), parent, false)
+        return ViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -40,27 +39,27 @@ class PublisherAdapter(private val context: Context, var list: ArrayList<User?>)
         val id = DATA.EMPTY + item!!.id
         val image = DATA.EMPTY + item.profileImage
 
-        VOID.Glide(true, context, image, holder.image)
+        VOID.Glide(true, context, image, holder.binding.imageProfile)
 
         if (item.username == DATA.EMPTY) {
-            holder.username.visibility = View.GONE
+            holder.binding.username.visibility = View.GONE
         } else {
-            holder.username.visibility = View.VISIBLE
-            holder.username.text = item.username
+            holder.binding.username.visibility = View.VISIBLE
+            holder.binding.username.text = item.username
         }
         if (item.id == DATA.FirebaseUserUid) {
 
-            holder.add.visibility = View.GONE
+            holder.binding.add.visibility = View.GONE
         } else {
-            holder.add.visibility = View.VISIBLE
+            holder.binding.add.visibility = View.VISIBLE
         }
 
-        NrFollowers(holder.numberFollowers, id)
-        NrBooks(holder.numberBooks, id)
-        isFollowing(holder.add, id)
+        NrFollowers(holder.binding.numberFollowers, id)
+        NrBooks(holder.binding.numberBooks, id)
+        isFollowing(holder.binding.add, id)
 
-        holder.add.setOnClickListener {
-            if (holder.add.tag == "add") {
+        holder.binding.add.setOnClickListener {
+            if (holder.binding.add.tag == "add") {
                 FirebaseDatabase.getInstance().reference.child(DATA.FOLLOW)
                     .child(DATA.FirebaseUserUid)
                     .child(DATA.FOLLOWING).child(id).setValue(true)
@@ -75,7 +74,7 @@ class PublisherAdapter(private val context: Context, var list: ArrayList<User?>)
             }
         }
 
-        holder.item.setOnClickListener {
+        holder.binding.item.setOnClickListener {
             VOID.IntentExtra(context, ProfileActivity::class.java, DATA.PROFILE_ID, item.id)
         }
     }
@@ -91,23 +90,7 @@ class PublisherAdapter(private val context: Context, var list: ArrayList<User?>)
         return filter!!
     }
 
-    inner class ViewHolder(view: View?) : RecyclerView.ViewHolder(view!!) {
-        var image: ImageView
-        var add: ImageView
-        var username: TextView
-        var numberBooks: TextView
-        var numberFollowers: TextView
-        var item: LinearLayout
-
-        init {
-            image = binding!!.imageProfile
-            username = binding!!.username
-            add = binding!!.add
-            numberBooks = binding!!.numberBooks
-            numberFollowers = binding!!.numberFollowers
-            item = binding!!.item
-        }
-    }
+    inner class ViewHolder(val binding: ItemPublisherBinding) : RecyclerView.ViewHolder(binding.root)
 
     private fun isFollowing(add: ImageView, userId: String) {
         val reference = FirebaseDatabase.getInstance().reference

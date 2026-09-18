@@ -26,11 +26,9 @@ import java.text.MessageFormat
 class EditorsChoiceAdapter(private val context: Context, var list: List<EditorsChoice>) :
     RecyclerView.Adapter<EditorsChoiceAdapter.ViewHolder>() {
 
-    private var binding: ItemBookEditorsChoiceBinding? = null
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        binding = ItemBookEditorsChoiceBinding.inflate(LayoutInflater.from(context), parent, false)
-        return ViewHolder(binding!!.root)
+        val binding = ItemBookEditorsChoiceBinding.inflate(LayoutInflater.from(context), parent, false)
+        return ViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -38,13 +36,11 @@ class EditorsChoiceAdapter(private val context: Context, var list: List<EditorsC
         val editorsChoiceId = DATA.EMPTY + id
 
         loadBookDetails(
-            id, editorsChoiceId, holder.title, holder.description, holder.numberViews,
-            holder.numberLoves, holder.numberDownloads, holder.image, holder.remove, holder.change,
-            holder.addCard, holder.detailsCard
+            id, editorsChoiceId, holder
         )
 
-        holder.numberEditorsChoice.text = MessageFormat.format("{0}{1}", DATA.EMPTY, id)
-        holder.add.setOnClickListener {
+        holder.binding.numberEditorsChoice.text = MessageFormat.format("{0}{1}", DATA.EMPTY, id)
+        holder.binding.add.setOnClickListener {
             VOID.IntentExtra2(
                 context, EditorsChoiceAddActivity::class.java,
                 DATA.EDITORS_CHOICE_ID, editorsChoiceId, DATA.OLD_BOOK_ID, null
@@ -56,48 +52,10 @@ class EditorsChoiceAdapter(private val context: Context, var list: List<EditorsC
         return list.size
     }
 
-    inner class ViewHolder(view: View?) : RecyclerView.ViewHolder(
-        view!!
-    ) {
-        var image: ImageView
-        var add: ImageView
-        var remove: ImageView
-        var change: ImageView
-        var more: ImageButton
-        var title: TextView
-        var description: TextView
-        var numberViews: TextView
-        var numberLoves: TextView
-        var numberDownloads: TextView
-        var numberEditorsChoice: TextView
-        var item: LinearLayout
-        var item2: LinearLayout
-        var addCard: CardView
-        var detailsCard: CardView
-
-        init {
-            image = binding!!.image
-            title = binding!!.title
-            more = binding!!.more
-            description = binding!!.description
-            numberViews = binding!!.numberViews
-            numberLoves = binding!!.numberLoves
-            numberDownloads = binding!!.numberDownloads
-            item = binding!!.item
-            item2 = binding!!.item2
-            add = binding!!.add
-            numberEditorsChoice = binding!!.numberEditorsChoice
-            addCard = binding!!.addCard
-            detailsCard = binding!!.detailsCard
-            remove = binding!!.remove
-            change = binding!!.change
-        }
-    }
+    inner class ViewHolder(val binding: ItemBookEditorsChoiceBinding) : RecyclerView.ViewHolder(binding.root)
 
     private fun loadBookDetails(
-        i: Int, position: String, title: TextView, description: TextView, viewsCount: TextView,
-        lovesCount: TextView, downloadsCount: TextView, image: ImageView, remove: ImageView,
-        change: ImageView, addCard: CardView, detailsCard: CardView
+        i: Int, position: String, holder: ViewHolder
     ) {
         val ref = FirebaseDatabase.getInstance().getReference(DATA.BOOKS)
         ref.addValueEventListener(object : ValueEventListener {
@@ -107,36 +65,36 @@ class EditorsChoiceAdapter(private val context: Context, var list: List<EditorsC
                     if (item.editorsChoice == i) {
                         val id = DATA.EMPTY + item.id
 
-                        loadBook(id)
-                        addCard.visibility = View.GONE
-                        detailsCard.visibility = View.VISIBLE
-                        remove.visibility = View.VISIBLE
-                        change.visibility = View.VISIBLE
-                        detailsCard.setOnClickListener {
+                        loadBook(id, holder)
+                        holder.binding.addCard.visibility = View.GONE
+                        holder.binding.detailsCard.visibility = View.VISIBLE
+                        holder.binding.remove.visibility = View.VISIBLE
+                        holder.binding.change.visibility = View.VISIBLE
+                        holder.binding.detailsCard.setOnClickListener {
                             VOID.IntentExtra(context, BookDetailsActivity::class.java, DATA.BOOK_ID, id)
                         }
-                        remove.setOnClickListener {
+                        holder.binding.remove.setOnClickListener {
                             VOID.dialogOptionDelete(
                                 context, null, id, null, null,
                                 false, true, null, null
                             )
                         }
-                        change.setOnClickListener {
+                        holder.binding.change.setOnClickListener {
                             VOID.IntentExtra2(
                                 context, EditorsChoiceAddActivity::class.java,
                                 DATA.EDITORS_CHOICE_ID, position, DATA.OLD_BOOK_ID, id
                             )
                         }
                     } else {
-                        addCard.visibility = View.VISIBLE
-                        detailsCard.visibility = View.GONE
-                        remove.visibility = View.GONE
-                        change.visibility = View.GONE
+                        holder.binding.addCard.visibility = View.VISIBLE
+                        holder.binding.detailsCard.visibility = View.GONE
+                        holder.binding.remove.visibility = View.GONE
+                        holder.binding.change.visibility = View.GONE
                     }
                 }
             }
 
-            private fun loadBook(text: String) {
+            private fun loadBook(text: String, holder: ViewHolder) {
                 val ref = FirebaseDatabase.getInstance().getReference(DATA.BOOKS)
                 ref.child(text).addListenerForSingleValueEvent(object : ValueEventListener {
                     override fun onDataChange(dataSnapshot: DataSnapshot) {
@@ -149,16 +107,16 @@ class EditorsChoiceAdapter(private val context: Context, var list: List<EditorsC
                         val DownloadsCount = DATA.EMPTY + item.downloadsCount
                         val BookImage = DATA.EMPTY + item.image
 
-                        title.text = Title
-                        description.text = Description
-                        viewsCount.text = ViewsCount
-                        lovesCount.text = LovesCount
-                        downloadsCount.text = DownloadsCount
-                        VOID.Glide(false, context, BookImage, image)
-                        addCard.visibility = View.GONE
-                        detailsCard.visibility = View.VISIBLE
-                        remove.visibility = View.VISIBLE
-                        change.visibility = View.VISIBLE
+                        holder.binding.title.text = Title
+                        holder.binding.description.text = Description
+                        holder.binding.numberViews.text = ViewsCount
+                        holder.binding.numberLoves.text = LovesCount
+                        holder.binding.numberDownloads.text = DownloadsCount
+                        VOID.Glide(false, context, BookImage, holder.binding.image)
+                        holder.binding.addCard.visibility = View.GONE
+                        holder.binding.detailsCard.visibility = View.VISIBLE
+                        holder.binding.remove.visibility = View.VISIBLE
+                        holder.binding.change.visibility = View.VISIBLE
                     }
 
                     override fun onCancelled(error: DatabaseError) {}

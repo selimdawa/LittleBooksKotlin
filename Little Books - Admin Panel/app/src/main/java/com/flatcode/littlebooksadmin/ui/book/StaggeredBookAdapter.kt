@@ -21,13 +21,12 @@ import com.flatcode.littlebooksadmin.databinding.ItemBookStaggeredBinding
 class StaggeredBookAdapter(private val context: Context, var list: ArrayList<Book?>) :
     RecyclerView.Adapter<StaggeredBookAdapter.ViewHolder>(), Filterable {
 
-    private var binding: ItemBookStaggeredBinding? = null
     var filterList: ArrayList<Book?>
     private var filter: StaggeredFilter? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        binding = ItemBookStaggeredBinding.inflate(LayoutInflater.from(context), parent, false)
-        return ViewHolder(binding!!.root)
+        val binding = ItemBookStaggeredBinding.inflate(LayoutInflater.from(context), parent, false)
+        return ViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -38,30 +37,24 @@ class StaggeredBookAdapter(private val context: Context, var list: ArrayList<Boo
         val nrLoves = DATA.EMPTY + item.lovesCount
         val nrDownloads = DATA.EMPTY + item.downloadsCount
 
-        VOID.Glide(false, context, image, holder.image)
+        VOID.Glide(false, context, image, holder.binding.image)
 
         if (item.title == DATA.EMPTY) {
-            holder.title.visibility = View.GONE
+            holder.binding.title.visibility = View.GONE
         } else {
-            holder.title.visibility = View.VISIBLE
-            holder.title.text = title
+            holder.binding.title.visibility = View.VISIBLE
+            holder.binding.title.text = title
         }
 
-        holder.numberLoves.text = nrLoves
-        holder.numberDownloads.text = nrDownloads
+        holder.binding.numberLoves.text = nrLoves
+        holder.binding.numberDownloads.text = nrDownloads
 
-        /*if (item.getPublisher().equals(DATA.FirebaseUserUid)) {
-            holder.favorites.setVisibility(View.GONE);
-        } else {
-            holder.favorites.setVisibility(View.VISIBLE);
-        }*/
+        VOID.isFavorite(holder.binding.favorites, item.id, DATA.FirebaseUserUid)
+        VOID.isLoves(holder.binding.loves, item.id)
 
-        VOID.isFavorite(holder.favorites, item.id, DATA.FirebaseUserUid)
-        VOID.isLoves(holder.loves, item.id)
-
-        holder.favorites.setOnClickListener { VOID.checkFavorite(holder.favorites, bookId) }
-        holder.loves.setOnClickListener { VOID.checkLove(holder.loves, bookId) }
-        holder.more.setOnClickListener { VOID.moreOptionDialog(context, item) }
+        holder.binding.favorites.setOnClickListener { VOID.checkFavorite(holder.binding.favorites, bookId) }
+        holder.binding.loves.setOnClickListener { VOID.checkLove(holder.binding.loves, bookId) }
+        holder.binding.more.setOnClickListener { VOID.moreOptionDialog(context, item) }
 
         holder.item.setOnClickListener {
             VOID.IntentExtra(context, BookDetailsActivity::class.java, DATA.BOOK_ID, bookId)
@@ -79,26 +72,8 @@ class StaggeredBookAdapter(private val context: Context, var list: ArrayList<Boo
         return filter!!
     }
 
-    inner class ViewHolder(view: View?) : RecyclerView.ViewHolder(view!!) {
-        var image: ImageView
-        var favorites: ImageView
-        var loves: ImageView
-        var more: ImageButton
-        var title: TextView
-        var numberLoves: TextView
-        var numberDownloads: TextView
-        var item: LinearLayout
-
-        init {
-            image = binding!!.image
-            title = binding!!.title
-            more = binding!!.more
-            favorites = binding!!.favorites
-            loves = binding!!.loves
-            numberLoves = binding!!.numberLoves
-            numberDownloads = binding!!.numberDownloads
-            item = binding!!.item
-        }
+    inner class ViewHolder(val binding: ItemBookStaggeredBinding) : RecyclerView.ViewHolder(binding.root) {
+        val item = binding.item
     }
 
     init {

@@ -27,7 +27,7 @@ import kotlinx.coroutines.launch
 @AndroidEntryPoint
 class AdsInfoActivity : AppCompatActivity() {
 
-    private var binding: ActivityAdsInfoBinding? = null
+    private lateinit var binding: ActivityAdsInfoBinding
     private val context: Context = this@AdsInfoActivity
     private var list: ArrayList<ADs?> = arrayListOf()
     private var adapter: ADsInfoAdapter? = null
@@ -39,9 +39,9 @@ class AdsInfoActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         binding = ActivityAdsInfoBinding.inflate(layoutInflater)
-        setContentView(binding!!.root)
+        setContentView(binding.root)
 
-        ViewCompat.setOnApplyWindowInsetsListener(binding!!.root) { v, insets ->
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
@@ -56,11 +56,11 @@ class AdsInfoActivity : AppCompatActivity() {
     }
 
     private fun initUI() {
-        binding!!.toolbar.nameSpace.setText(R.string.info_ads)
-        binding!!.toolbar.back.setOnClickListener { onBackPressed() }
+        binding.toolbar.nameSpace.setText(R.string.info_ads)
+        binding.toolbar.back.setOnClickListener { onBackPressed() }
 
         adapter = ADsInfoAdapter(context, list, true)
-        binding!!.recyclerView.adapter = adapter
+        binding.recyclerView.adapter = adapter
     }
 
     private fun observeViewModel() {
@@ -72,8 +72,8 @@ class AdsInfoActivity : AppCompatActivity() {
                             is Resource.Loading -> { }
                             is Resource.Success -> {
                                 resource.data?.let { user ->
-                                    binding!!.username.text = user.username
-                                    VOID.Glide(true, context, user.profileImage ?: DATA.BASIC, binding!!.profileImage)
+                                    binding.username.text = user.username
+                                    VOID.Glide(true, context, user.profileImage ?: DATA.BASIC, binding.profileImage)
                                 }
                             }
                             is Resource.Error -> {
@@ -86,14 +86,14 @@ class AdsInfoActivity : AppCompatActivity() {
                     viewModel.userAds.collect { resource ->
                         when (resource) {
                             is Resource.Loading -> {
-                                binding!!.progress.visibility = View.VISIBLE
+                                binding.progress.visibility = View.VISIBLE
                             }
                             is Resource.Success -> {
-                                binding!!.progress.visibility = View.GONE
+                                binding.progress.visibility = View.GONE
                                 updateList(resource.data ?: emptyList())
                             }
                             is Resource.Error -> {
-                                binding!!.progress.visibility = View.GONE
+                                binding.progress.visibility = View.GONE
                                 Toast.makeText(context, resource.message, Toast.LENGTH_SHORT).show()
                             }
                         }
@@ -112,11 +112,11 @@ class AdsInfoActivity : AppCompatActivity() {
         adapter!!.notifyDataSetChanged()
         
         if (list.isNotEmpty()) {
-            binding!!.recyclerView.visibility = View.VISIBLE
-            binding!!.emptyText.visibility = View.GONE
+            binding.recyclerView.visibility = View.VISIBLE
+            binding.emptyText.visibility = View.GONE
         } else {
-            binding!!.recyclerView.visibility = View.GONE
-            binding!!.emptyText.visibility = View.VISIBLE
+            binding.recyclerView.visibility = View.GONE
+            binding.emptyText.visibility = View.VISIBLE
         }
     }
 }

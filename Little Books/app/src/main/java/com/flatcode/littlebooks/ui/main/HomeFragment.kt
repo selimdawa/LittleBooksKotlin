@@ -130,7 +130,7 @@ class HomeFragment : Fragment() {
                 launch {
                     viewModel.sliderCount.collect { resource ->
                         if (resource is Resource.Success) {
-                            binding!!.imageSlider.sliderAdapter = ImageSliderAdapter(context, resource.data!!)
+                            binding!!.imageSlider.setSliderAdapter(ImageSliderAdapter(context, resource.data!!))
                         }
                     }
                 }

@@ -7,11 +7,13 @@ import android.view.ViewGroup
 import android.widget.Filter
 import android.widget.Filterable
 import android.widget.ImageView
-import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import androidx.viewbinding.ViewBinding
+import com.flatcode.littlebooks.R
 import com.flatcode.littlebooks.ui.profile.ProfileActivity
 import com.flatcode.littlebooks.filter.PublisherFilter
+import com.flatcode.littlebooks.model.User
 import com.flatcode.littlebooks.utils.DATA
 import com.flatcode.littlebooks.utils.VOID
 import com.flatcode.littlebooks.databinding.ItemPublisherBinding
@@ -24,13 +26,12 @@ import java.text.MessageFormat
 class PublisherAdapter(private val context: Context, var list: ArrayList<User?>) :
     RecyclerView.Adapter<PublisherAdapter.ViewHolder>(), Filterable {
 
-    private var binding: ItemPublisherBinding? = null
     var filterList: ArrayList<User?>
     private var filter: PublisherFilter? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        binding = ItemPublisherBinding.inflate(LayoutInflater.from(context), parent, false)
-        return ViewHolder(binding!!.root)
+        val binding = ItemPublisherBinding.inflate(LayoutInflater.from(context), parent, false)
+        return ViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -39,27 +40,27 @@ class PublisherAdapter(private val context: Context, var list: ArrayList<User?>)
         val username = DATA.EMPTY + item.username
         val profileImage = DATA.EMPTY + item.profileImage
 
-        VOID.Glide_(true, context, profileImage, holder.image)
+        VOID.Glide_(true, context, profileImage, holder.binding.imageProfile)
 
         if (username == DATA.EMPTY) {
-            holder.username.visibility = View.GONE
+            holder.binding.username.visibility = View.GONE
         } else {
-            holder.username.visibility = View.VISIBLE
-            holder.username.text = username
+            holder.binding.username.visibility = View.VISIBLE
+            holder.binding.username.text = username
         }
 
         if (pubId == DATA.FirebaseUserUid) {
-            holder.add.visibility = View.GONE
+            holder.binding.add.visibility = View.GONE
         } else {
-            holder.add.visibility = View.VISIBLE
+            holder.binding.add.visibility = View.VISIBLE
         }
 
-        NrFollowers(holder.numberFollowers, item.id)
-        NrBooks(holder.numberBooks, item.id)
-        isFollowing(holder.add, item.id)
+        NrFollowers(holder.binding.numberFollowers, item.id)
+        NrBooks(holder.binding.numberBooks, item.id)
+        isFollowing(holder.binding.add, item.id)
 
-        holder.add.setOnClickListener {
-            if (holder.add.tag == "add") {
+        holder.binding.add.setOnClickListener {
+            if (holder.binding.add.tag == "add") {
                 FirebaseDatabase.getInstance().reference.child(DATA.FOLLOW)
                     .child(DATA.FirebaseUserUid)
                     .child(DATA.FOLLOWING).child(item.id!!).setValue(true)
@@ -74,7 +75,7 @@ class PublisherAdapter(private val context: Context, var list: ArrayList<User?>)
             }
         }
 
-        holder.item.setOnClickListener {
+        holder.itemView.setOnClickListener {
             VOID.IntentExtra(context, ProfileActivity::class.java, DATA.PROFILE_ID, item.id)
         }
     }
@@ -90,23 +91,7 @@ class PublisherAdapter(private val context: Context, var list: ArrayList<User?>)
         return filter!!
     }
 
-    inner class ViewHolder(view: View?) : RecyclerView.ViewHolder(view!!) {
-        var image: ImageView
-        var add: ImageView
-        var username: TextView
-        var numberBooks: TextView
-        var numberFollowers: TextView
-        var item: LinearLayout
-
-        init {
-            image = binding!!.imageProfile
-            username = binding!!.username
-            add = binding!!.add
-            numberBooks = binding!!.numberBooks
-            numberFollowers = binding!!.numberFollowers
-            item = binding!!.item
-        }
-    }
+    class ViewHolder(val binding: ItemPublisherBinding) : RecyclerView.ViewHolder((binding as ViewBinding).root)
 
     private fun isFollowing(add: ImageView, userId: String?) {
         val reference = FirebaseDatabase.getInstance().reference.child(DATA.FOLLOW)
@@ -154,6 +139,3 @@ class PublisherAdapter(private val context: Context, var list: ArrayList<User?>)
         filterList = list
     }
 }
-
-
-

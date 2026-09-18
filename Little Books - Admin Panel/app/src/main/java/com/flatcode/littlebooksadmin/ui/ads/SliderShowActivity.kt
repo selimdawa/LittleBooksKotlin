@@ -28,7 +28,7 @@ import java.text.MessageFormat
 
 class SliderShowActivity : AppCompatActivity() {
 
-    private var binding: ActivitySliderShowBinding? = null
+    private lateinit var binding: ActivitySliderShowBinding
     private var activity: Activity? = null
     private val context: Context = also { activity = it }
     private var imageUri: Uri? = null
@@ -40,99 +40,98 @@ class SliderShowActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         binding = ActivitySliderShowBinding.inflate(layoutInflater)
-        val view = binding!!.root
-        setContentView(view)
+        setContentView(binding.root)
 
-        ViewCompat.setOnApplyWindowInsetsListener(view) { v, insets ->
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
 
-        binding!!.toolbar.nameSpace.setText(R.string.slider_show)
-        binding!!.toolbar.back.setOnClickListener { onBackPressed() }
+        binding.toolbar.nameSpace.setText(R.string.slider_show)
+        binding.toolbar.back.setOnClickListener { onBackPressed() }
 
         dialog = ProgressDialog(context)
         dialog!!.setTitle("Please wait...")
         dialog!!.setCanceledOnTouchOutside(false)
 
-        binding!!.addOne.setOnClickListener {
+        binding.addOne.setOnClickListener {
             VOID.cropImageSlider(activity)
             IMAGE_NUMBER = 1
         }
-        binding!!.addTwo.setOnClickListener {
+        binding.addTwo.setOnClickListener {
             VOID.cropImageSlider(activity)
             IMAGE_NUMBER = 2
         }
-        binding!!.addThree.setOnClickListener {
+        binding.addThree.setOnClickListener {
             VOID.cropImageSlider(activity)
             IMAGE_NUMBER = 3
         }
-        binding!!.addFour.setOnClickListener {
+        binding.addFour.setOnClickListener {
             VOID.cropImageSlider(activity)
             IMAGE_NUMBER = 4
         }
-        binding!!.addFive.setOnClickListener {
+        binding.addFive.setOnClickListener {
             VOID.cropImageSlider(activity)
             IMAGE_NUMBER = 5
         }
-        binding!!.addSix.setOnClickListener {
+        binding.addSix.setOnClickListener {
             VOID.cropImageSlider(activity)
             IMAGE_NUMBER = 6
         }
-        binding!!.addSeven.setOnClickListener {
+        binding.addSeven.setOnClickListener {
             VOID.cropImageSlider(activity)
             IMAGE_NUMBER = 7
         }
-        binding!!.addEight.setOnClickListener {
+        binding.addEight.setOnClickListener {
             VOID.cropImageSlider(activity)
             IMAGE_NUMBER = 8
         }
-        binding!!.addNine.setOnClickListener {
+        binding.addNine.setOnClickListener {
             VOID.cropImageSlider(activity)
             IMAGE_NUMBER = 9
         }
-        binding!!.addTeen.setOnClickListener {
+        binding.addTeen.setOnClickListener {
             VOID.cropImageSlider(activity)
             IMAGE_NUMBER = 10
         }
-        binding!!.addEleven.setOnClickListener {
+        binding.addEleven.setOnClickListener {
             VOID.cropImageSlider(activity)
             IMAGE_NUMBER = 11
         }
-        binding!!.addTwelfth.setOnClickListener {
+        binding.addTwelfth.setOnClickListener {
             VOID.cropImageSlider(activity)
             IMAGE_NUMBER = 12
         }
-        binding!!.addThirteen.setOnClickListener {
+        binding.addThirteen.setOnClickListener {
             VOID.cropImageSlider(activity)
             IMAGE_NUMBER = 13
         }
-        binding!!.addFourteenth.setOnClickListener {
+        binding.addFourteenth.setOnClickListener {
             VOID.cropImageSlider(activity)
             IMAGE_NUMBER = 14
         }
-        binding!!.addFifteenth.setOnClickListener {
+        binding.addFifteenth.setOnClickListener {
             VOID.cropImageSlider(activity)
             IMAGE_NUMBER = 15
         }
-        binding!!.addSixteen.setOnClickListener {
+        binding.addSixteen.setOnClickListener {
             VOID.cropImageSlider(activity)
             IMAGE_NUMBER = 16
         }
-        binding!!.addSeventeen.setOnClickListener {
+        binding.addSeventeen.setOnClickListener {
             VOID.cropImageSlider(activity)
             IMAGE_NUMBER = 17
         }
-        binding!!.addEighteen.setOnClickListener {
+        binding.addEighteen.setOnClickListener {
             VOID.cropImageSlider(activity)
             IMAGE_NUMBER = 18
         }
-        binding!!.addNineteen.setOnClickListener {
+        binding.addNineteen.setOnClickListener {
             VOID.cropImageSlider(activity)
             IMAGE_NUMBER = 19
         }
-        binding!!.addTwenty.setOnClickListener {
+        binding.addTwenty.setOnClickListener {
             VOID.cropImageSlider(activity)
             IMAGE_NUMBER = 20
         }
@@ -144,109 +143,109 @@ class SliderShowActivity : AppCompatActivity() {
             reference.addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
                     item = dataSnapshot.childrenCount.toInt()
-                    binding!!.toolbar.nameSpace.text =
+                    binding.toolbar.nameSpace.text =
                         MessageFormat.format("Slider Show ( {0} )", item)
                     if (item >= 0) {
-                        binding!!.linearOne.visibility = View.VISIBLE
+                        binding.linearOne.visibility = View.VISIBLE
                     } else {
-                        binding!!.linearOne.visibility = View.GONE
+                        binding.linearOne.visibility = View.GONE
                     }
                     if (item >= 1) {
-                        binding!!.linearTwo.visibility = View.VISIBLE
+                        binding.linearTwo.visibility = View.VISIBLE
                     } else {
-                        binding!!.linearTwo.visibility = View.GONE
+                        binding.linearTwo.visibility = View.GONE
                     }
                     if (item >= 2) {
-                        binding!!.linearThree.visibility = View.VISIBLE
+                        binding.linearThree.visibility = View.VISIBLE
                     } else {
-                        binding!!.linearThree.visibility = View.GONE
+                        binding.linearThree.visibility = View.GONE
                     }
                     if (item >= 3) {
-                        binding!!.linearFour.visibility = View.VISIBLE
+                        binding.linearFour.visibility = View.VISIBLE
                     } else {
-                        binding!!.linearFour.visibility = View.GONE
+                        binding.linearFour.visibility = View.GONE
                     }
                     if (item >= 4) {
-                        binding!!.linearFive.visibility = View.VISIBLE
+                        binding.linearFive.visibility = View.VISIBLE
                     } else {
-                        binding!!.linearFive.visibility = View.GONE
+                        binding.linearFive.visibility = View.GONE
                     }
                     if (item >= 5) {
-                        binding!!.linearSix.visibility = View.VISIBLE
+                        binding.linearSix.visibility = View.VISIBLE
                     } else {
-                        binding!!.linearSix.visibility = View.GONE
+                        binding.linearSix.visibility = View.GONE
                     }
                     if (item >= 6) {
-                        binding!!.linearSeven.visibility = View.VISIBLE
+                        binding.linearSeven.visibility = View.VISIBLE
                     } else {
-                        binding!!.linearSeven.visibility = View.GONE
+                        binding.linearSeven.visibility = View.GONE
                     }
                     if (item >= 7) {
-                        binding!!.linearEight.visibility = View.VISIBLE
+                        binding.linearEight.visibility = View.VISIBLE
                     } else {
-                        binding!!.linearEight.visibility = View.GONE
+                        binding.linearEight.visibility = View.GONE
                     }
                     if (item >= 8) {
-                        binding!!.linearNine.visibility = View.VISIBLE
+                        binding.linearNine.visibility = View.VISIBLE
                     } else {
-                        binding!!.linearNine.visibility = View.GONE
+                        binding.linearNine.visibility = View.GONE
                     }
                     if (item >= 9) {
-                        binding!!.linearTeen.visibility = View.VISIBLE
+                        binding.linearTeen.visibility = View.VISIBLE
                     } else {
-                        binding!!.linearTeen.visibility = View.GONE
+                        binding.linearTeen.visibility = View.GONE
                     }
                     if (item >= 10) {
-                        binding!!.linearEleven.visibility = View.VISIBLE
+                        binding.linearEleven.visibility = View.VISIBLE
                     } else {
-                        binding!!.linearEleven.visibility = View.GONE
+                        binding.linearEleven.visibility = View.GONE
                     }
                     if (item >= 11) {
-                        binding!!.linearTwelfth.visibility = View.VISIBLE
+                        binding.linearTwelfth.visibility = View.VISIBLE
                     } else {
-                        binding!!.linearTwelfth.visibility = View.GONE
+                        binding.linearTwelfth.visibility = View.GONE
                     }
                     if (item >= 12) {
-                        binding!!.linearThirteen.visibility = View.VISIBLE
+                        binding.linearThirteen.visibility = View.VISIBLE
                     } else {
-                        binding!!.linearThirteen.visibility = View.GONE
+                        binding.linearThirteen.visibility = View.GONE
                     }
                     if (item >= 13) {
-                        binding!!.linearFourteenth.visibility = View.VISIBLE
+                        binding.linearFourteenth.visibility = View.VISIBLE
                     } else {
-                        binding!!.linearFourteenth.visibility = View.GONE
+                        binding.linearFourteenth.visibility = View.GONE
                     }
                     if (item >= 14) {
-                        binding!!.linearFifteenth.visibility = View.VISIBLE
+                        binding.linearFifteenth.visibility = View.VISIBLE
                     } else {
-                        binding!!.linearFifteenth.visibility = View.GONE
+                        binding.linearFifteenth.visibility = View.GONE
                     }
                     if (item >= 15) {
-                        binding!!.linearSixteen.visibility = View.VISIBLE
+                        binding.linearSixteen.visibility = View.VISIBLE
                     } else {
-                        binding!!.linearSixteen.visibility = View.GONE
+                        binding.linearSixteen.visibility = View.GONE
                     }
                     if (item >= 16) {
-                        binding!!.linearEighteen.visibility = View.VISIBLE
+                        binding.linearEighteen.visibility = View.VISIBLE
                     } else {
-                        binding!!.linearEighteen.visibility = View.GONE
+                        binding.linearEighteen.visibility = View.GONE
                     }
                     if (item >= 17) {
-                        binding!!.linearEighteen.visibility = View.VISIBLE
+                        binding.linearEighteen.visibility = View.VISIBLE
                     } else {
-                        binding!!.linearEighteen.visibility = View.GONE
+                        binding.linearEighteen.visibility = View.GONE
                     }
                     if (item >= 18) {
-                        binding!!.linearNineteen.visibility = View.VISIBLE
+                        binding.linearNineteen.visibility = View.VISIBLE
                     } else {
-                        binding!!.linearNineteen.visibility = View.GONE
+                        binding.linearNineteen.visibility = View.GONE
                     }
                     if (item >= 19) {
-                        binding!!.linearTwenty.visibility = View.VISIBLE
+                        binding.linearTwenty.visibility = View.VISIBLE
                     } else {
-                        binding!!.linearTwenty.visibility = View.GONE
+                        binding.linearTwenty.visibility = View.GONE
                     }
-                    binding!!.bar.visibility = View.GONE
+                    binding.bar.visibility = View.GONE
                 }
 
                 override fun onCancelled(databaseError: DatabaseError) {}
@@ -278,26 +277,26 @@ class SliderShowActivity : AppCompatActivity() {
                 val nineteen = DATA.EMPTY + dataSnapshot.child("19").value
                 val twenty = DATA.EMPTY + dataSnapshot.child("20").value
 
-                VOID.Glide(false, context, one, binding!!.imageOne)
-                VOID.Glide(false, context, two, binding!!.imageTwo)
-                VOID.Glide(false, context, three, binding!!.imageThree)
-                VOID.Glide(false, context, four, binding!!.imageFour)
-                VOID.Glide(false, context, five, binding!!.imageFive)
-                VOID.Glide(false, context, six, binding!!.imageSix)
-                VOID.Glide(false, context, seven, binding!!.imageSeven)
-                VOID.Glide(false, context, eight, binding!!.imageEight)
-                VOID.Glide(false, context, nine, binding!!.imageNine)
-                VOID.Glide(false, context, teen, binding!!.imageTeen)
-                VOID.Glide(false, context, eleven, binding!!.imageEleven)
-                VOID.Glide(false, context, twelfth, binding!!.imageTwelfth)
-                VOID.Glide(false, context, thirteen, binding!!.imageThirteen)
-                VOID.Glide(false, context, fourteenth, binding!!.imageFourteenth)
-                VOID.Glide(false, context, fifteenth, binding!!.imageFifteenth)
-                VOID.Glide(false, context, sixteen, binding!!.imageSixteen)
-                VOID.Glide(false, context, seventeen, binding!!.imageSeventeen)
-                VOID.Glide(false, context, eighteen, binding!!.imageEighteen)
-                VOID.Glide(false, context, nineteen, binding!!.imageNineteen)
-                VOID.Glide(false, context, twenty, binding!!.imageTwenty)
+                VOID.Glide(false, context, one, binding.imageOne)
+                VOID.Glide(false, context, two, binding.imageTwo)
+                VOID.Glide(false, context, three, binding.imageThree)
+                VOID.Glide(false, context, four, binding.imageFour)
+                VOID.Glide(false, context, five, binding.imageFive)
+                VOID.Glide(false, context, six, binding.imageSix)
+                VOID.Glide(false, context, seven, binding.imageSeven)
+                VOID.Glide(false, context, eight, binding.imageEight)
+                VOID.Glide(false, context, nine, binding.imageNine)
+                VOID.Glide(false, context, teen, binding.imageTeen)
+                VOID.Glide(false, context, eleven, binding.imageEleven)
+                VOID.Glide(false, context, twelfth, binding.imageTwelfth)
+                VOID.Glide(false, context, thirteen, binding.imageThirteen)
+                VOID.Glide(false, context, fourteenth, binding.imageFourteenth)
+                VOID.Glide(false, context, fifteenth, binding.imageFifteenth)
+                VOID.Glide(false, context, sixteen, binding.imageSixteen)
+                VOID.Glide(false, context, seventeen, binding.imageSeventeen)
+                VOID.Glide(false, context, eighteen, binding.imageEighteen)
+                VOID.Glide(false, context, nineteen, binding.imageNineteen)
+                VOID.Glide(false, context, twenty, binding.imageTwenty)
             }
 
             override fun onCancelled(databaseError: DatabaseError) {}

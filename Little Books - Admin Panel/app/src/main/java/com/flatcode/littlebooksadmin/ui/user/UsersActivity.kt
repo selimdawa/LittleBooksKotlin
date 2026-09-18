@@ -28,7 +28,7 @@ import java.text.MessageFormat
 @AndroidEntryPoint
 class UsersActivity : AppCompatActivity() {
 
-    private var binding: ActivityUsersBinding? = null
+    private lateinit var binding: ActivityUsersBinding
     private val context: Context = this@UsersActivity
     private var list: ArrayList<User?> = arrayListOf()
     private var adapter: PublisherAdapter? = null
@@ -40,9 +40,9 @@ class UsersActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         binding = ActivityUsersBinding.inflate(layoutInflater)
-        setContentView(binding!!.root)
+        setContentView(binding.root)
 
-        ViewCompat.setOnApplyWindowInsetsListener(binding!!.root) { v, insets ->
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
@@ -53,17 +53,17 @@ class UsersActivity : AppCompatActivity() {
     }
 
     private fun initUI() {
-        binding!!.toolbar.nameSpace.setText(R.string.users)
-        binding!!.toolbar.close.setOnClickListener { onBackPressed() }
-        binding!!.toolbar.back.setOnClickListener { onBackPressed() }
+        binding.toolbar.nameSpace.setText(R.string.users)
+        binding.toolbar.close.setOnClickListener { onBackPressed() }
+        binding.toolbar.back.setOnClickListener { onBackPressed() }
 
-        binding!!.toolbar.search.setOnClickListener {
-            binding!!.toolbar.toolbar.visibility = View.GONE
-            binding!!.toolbar.toolbarSearch.visibility = View.VISIBLE
+        binding.toolbar.search.setOnClickListener {
+            binding.toolbar.toolbar.visibility = View.GONE
+            binding.toolbar.toolbarSearch.visibility = View.VISIBLE
             DATA.searchStatus = true
         }
         
-        binding!!.toolbar.textSearch.addTextChangedListener(object : TextWatcher {
+        binding.toolbar.textSearch.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
                 try {
@@ -74,17 +74,17 @@ class UsersActivity : AppCompatActivity() {
         })
 
         adapter = PublisherAdapter(context, list)
-        binding!!.recyclerView.adapter = adapter
+        binding.recyclerView.adapter = adapter
 
-        binding!!.all.setOnClickListener {
+        binding.all.setOnClickListener {
             filterType = DATA.ALL
             viewModel.loadUsers(DATA.USER_NAME)
         }
-        binding!!.users.setOnClickListener {
+        binding.users.setOnClickListener {
             filterType = DATA.USER
             viewModel.loadUsers(DATA.USER_NAME)
         }
-        binding!!.publishers.setOnClickListener {
+        binding.publishers.setOnClickListener {
             filterType = DATA.PUBLISHER
             viewModel.loadUsers(DATA.USER_NAME)
         }
@@ -96,15 +96,15 @@ class UsersActivity : AppCompatActivity() {
                 viewModel.users.collect { resource ->
                     when (resource) {
                         is Resource.Loading -> {
-                            binding!!.progress.visibility = View.VISIBLE
+                            binding.progress.visibility = View.VISIBLE
                         }
                         is Resource.Success -> {
-                            binding!!.progress.visibility = View.GONE
+                            binding.progress.visibility = View.GONE
                             val users = resource.data ?: emptyList()
                             updateList(users)
                         }
                         is Resource.Error -> {
-                            binding!!.progress.visibility = View.GONE
+                            binding.progress.visibility = View.GONE
                             Toast.makeText(context, resource.message, Toast.LENGTH_SHORT).show()
                         }
                     }
@@ -128,24 +128,24 @@ class UsersActivity : AppCompatActivity() {
             }
         }
         
-        binding!!.toolbar.number.text = MessageFormat.format("( {0} )", list.size)
+        binding.toolbar.number.text = MessageFormat.format("( {0} )", list.size)
         adapter!!.notifyDataSetChanged()
         
         if (list.isNotEmpty()) {
-            binding!!.recyclerView.visibility = View.VISIBLE
-            binding!!.emptyText.visibility = View.GONE
+            binding.recyclerView.visibility = View.VISIBLE
+            binding.emptyText.visibility = View.GONE
         } else {
-            binding!!.recyclerView.visibility = View.GONE
-            binding!!.emptyText.visibility = View.VISIBLE
+            binding.recyclerView.visibility = View.GONE
+            binding.emptyText.visibility = View.VISIBLE
         }
     }
 
     override fun onBackPressed() {
         if (DATA.searchStatus) {
-            binding!!.toolbar.toolbar.visibility = View.VISIBLE
-            binding!!.toolbar.toolbarSearch.visibility = View.GONE
+            binding.toolbar.toolbar.visibility = View.VISIBLE
+            binding.toolbar.toolbarSearch.visibility = View.GONE
             DATA.searchStatus = false
-            binding!!.toolbar.textSearch.setText(DATA.EMPTY)
+            binding.toolbar.textSearch.setText(DATA.EMPTY)
         } else super.onBackPressed()
     }
 

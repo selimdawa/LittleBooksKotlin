@@ -24,7 +24,7 @@ import kotlinx.coroutines.launch
 @AndroidEntryPoint
 class EditorsChoiceActivity : AppCompatActivity() {
 
-    private var binding: ActivityEditorsChoiceBinding? = null
+    private lateinit var binding: ActivityEditorsChoiceBinding
     private val context: Context = this@EditorsChoiceActivity
     private var list: ArrayList<EditorsChoice> = arrayListOf()
     private var adapter: EditorsChoiceAdapter? = null
@@ -36,9 +36,9 @@ class EditorsChoiceActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         binding = ActivityEditorsChoiceBinding.inflate(layoutInflater)
-        setContentView(binding!!.root)
+        setContentView(binding.root)
 
-        ViewCompat.setOnApplyWindowInsetsListener(binding!!.root) { v, insets ->
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
@@ -49,11 +49,11 @@ class EditorsChoiceActivity : AppCompatActivity() {
     }
 
     private fun initUI() {
-        binding!!.toolbar.nameSpace.setText(R.string.editors_choice)
-        binding!!.toolbar.back.setOnClickListener { onBackPressed() }
+        binding.toolbar.nameSpace.setText(R.string.editors_choice)
+        binding.toolbar.back.setOnClickListener { onBackPressed() }
 
         adapter = EditorsChoiceAdapter(context, list)
-        binding!!.recyclerView.adapter = adapter
+        binding.recyclerView.adapter = adapter
     }
 
     private fun observeViewModel() {

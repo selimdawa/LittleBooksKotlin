@@ -22,15 +22,14 @@ class EditorsChoiceBookAdapter(
     private val context: Context, private val activity: Activity?,
     var oldBookId: String?, var list: ArrayList<Book?>, number: Int
 ) : RecyclerView.Adapter<EditorsChoiceBookAdapter.ViewHolder>(), Filterable {
-    private var binding: ItemEditorsChoiceBinding? = null
 
     var filterList: ArrayList<Book?>
     private var filter: EditorsChoiceBookFilter? = null
     var number: Int
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        binding = ItemEditorsChoiceBinding.inflate(LayoutInflater.from(context), parent, false)
-        return ViewHolder(binding!!.root)
+        val binding = ItemEditorsChoiceBinding.inflate(LayoutInflater.from(context), parent, false)
+        return ViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -43,27 +42,27 @@ class EditorsChoiceBookAdapter(
         val nrLoves = DATA.EMPTY + item.lovesCount
         val nrDownloads = DATA.EMPTY + item.downloadsCount
 
-        VOID.Glide(false, context, image, holder.image)
+        VOID.Glide(false, context, image, holder.binding.image)
 
         if (item.title == DATA.EMPTY) {
-            holder.title.visibility = View.GONE
+            holder.binding.title.visibility = View.GONE
         } else {
-            holder.title.visibility = View.VISIBLE
-            holder.title.text = title
+            holder.binding.title.visibility = View.VISIBLE
+            holder.binding.title.text = title
         }
 
         if (item.description == DATA.EMPTY) {
-            holder.description.visibility = View.GONE
+            holder.binding.description.visibility = View.GONE
         } else {
-            holder.description.visibility = View.VISIBLE
-            holder.description.text = description
+            holder.binding.description.visibility = View.VISIBLE
+            holder.binding.description.text = description
         }
 
-        holder.numberViews.text = nrViews
-        holder.numberLoves.text = nrLoves
-        holder.numberDownloads.text = nrDownloads
+        holder.binding.numberViews.text = nrViews
+        holder.binding.numberLoves.text = nrLoves
+        holder.binding.numberDownloads.text = nrDownloads
 
-        holder.add.setOnClickListener {
+        holder.binding.add.setOnClickListener {
             if (oldBookId != null) {
                 VOID.addToEditorsChoice(context, activity, bookId, number)
                 VOID.addToEditorsChoice(context, activity, oldBookId, 0)
@@ -72,7 +71,7 @@ class EditorsChoiceBookAdapter(
             }
         }
 
-        holder.item.setOnClickListener {
+        holder.binding.item.setOnClickListener {
             VOID.IntentExtra(context, BookDetailsActivity::class.java, DATA.BOOK_ID, item.id)
         }
     }
@@ -88,29 +87,7 @@ class EditorsChoiceBookAdapter(
         return filter!!
     }
 
-    inner class ViewHolder(view: View?) : RecyclerView.ViewHolder(
-        view!!
-    ) {
-        var image: ImageView
-        var add: ImageView
-        var title: TextView
-        var description: TextView
-        var numberViews: TextView
-        var numberLoves: TextView
-        var numberDownloads: TextView
-        var item: LinearLayout
-
-        init {
-            image = binding!!.image
-            title = binding!!.title
-            description = binding!!.description
-            add = binding!!.add
-            numberViews = binding!!.numberViews
-            numberLoves = binding!!.numberLoves
-            numberDownloads = binding!!.numberDownloads
-            item = binding!!.item
-        }
-    }
+    inner class ViewHolder(val binding: ItemEditorsChoiceBinding) : RecyclerView.ViewHolder(binding.root)
 
     init {
         filterList = list

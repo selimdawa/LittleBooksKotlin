@@ -28,7 +28,7 @@ import java.text.MessageFormat
 @AndroidEntryPoint
 class ProfileInfoActivity : AppCompatActivity() {
 
-    private var binding: ActivityPageStaggeredSwitchBinding? = null
+    private lateinit var binding: ActivityPageStaggeredSwitchBinding
     private val context: Context = this@ProfileInfoActivity
     private var list: ArrayList<Book?> = arrayListOf()
     private var adapter: StaggeredBookAdapter? = null
@@ -41,9 +41,9 @@ class ProfileInfoActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         binding = ActivityPageStaggeredSwitchBinding.inflate(layoutInflater)
-        setContentView(binding!!.root)
+        setContentView(binding.root)
 
-        ViewCompat.setOnApplyWindowInsetsListener(binding!!.root) { v, insets ->
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
@@ -58,17 +58,17 @@ class ProfileInfoActivity : AppCompatActivity() {
     }
 
     private fun initUI() {
-        binding!!.toolbar.nameSpace.setText(R.string.publishers_books)
-        binding!!.toolbar.close.setOnClickListener { onBackPressed() }
-        binding!!.toolbar.back.setOnClickListener { onBackPressed() }
+        binding.toolbar.nameSpace.setText(R.string.publishers_books)
+        binding.toolbar.close.setOnClickListener { onBackPressed() }
+        binding.toolbar.back.setOnClickListener { onBackPressed() }
 
-        binding!!.toolbar.search.setOnClickListener {
-            binding!!.toolbar.toolbar.visibility = View.GONE
-            binding!!.toolbar.toolbarSearch.visibility = View.VISIBLE
+        binding.toolbar.search.setOnClickListener {
+            binding.toolbar.toolbar.visibility = View.GONE
+            binding.toolbar.toolbarSearch.visibility = View.VISIBLE
             DATA.searchStatus = true
         }
         
-        binding!!.toolbar.textSearch.addTextChangedListener(object : TextWatcher {
+        binding.toolbar.textSearch.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
                 try {
@@ -79,25 +79,25 @@ class ProfileInfoActivity : AppCompatActivity() {
         })
 
         adapter = StaggeredBookAdapter(context, list)
-        binding!!.recyclerView.adapter = adapter
+        binding.recyclerView.adapter = adapter
 
-        binding!!.switchBar.all.setOnClickListener {
+        binding.switchBar.all.setOnClickListener {
             type = DATA.TIMESTAMP
             profileId?.let { viewModel.loadBooks(type, it) }
         }
-        binding!!.switchBar.name.setOnClickListener {
+        binding.switchBar.name.setOnClickListener {
             type = DATA.TITLE
             profileId?.let { viewModel.loadBooks(type, it) }
         }
-        binding!!.switchBar.mostViews.setOnClickListener {
+        binding.switchBar.mostViews.setOnClickListener {
             type = DATA.VIEWS_COUNT
             profileId?.let { viewModel.loadBooks(type, it) }
         }
-        binding!!.switchBar.mostLoves.setOnClickListener {
+        binding.switchBar.mostLoves.setOnClickListener {
             type = DATA.LOVES_COUNT
             profileId?.let { viewModel.loadBooks(type, it) }
         }
-        binding!!.switchBar.mostDownloads.setOnClickListener {
+        binding.switchBar.mostDownloads.setOnClickListener {
             type = DATA.DOWNLOADS_COUNT
             profileId?.let { viewModel.loadBooks(type, it) }
         }
@@ -109,14 +109,14 @@ class ProfileInfoActivity : AppCompatActivity() {
                 viewModel.books.collect { resource ->
                     when (resource) {
                         is Resource.Loading -> {
-                            binding!!.progress.visibility = View.VISIBLE
+                            binding.progress.visibility = View.VISIBLE
                         }
                         is Resource.Success -> {
-                            binding!!.progress.visibility = View.GONE
+                            binding.progress.visibility = View.GONE
                             updateList(resource.data ?: emptyList())
                         }
                         is Resource.Error -> {
-                            binding!!.progress.visibility = View.GONE
+                            binding.progress.visibility = View.GONE
                             Toast.makeText(context, resource.message, Toast.LENGTH_SHORT).show()
                         }
                     }
@@ -136,24 +136,24 @@ class ProfileInfoActivity : AppCompatActivity() {
             list.add(legacyBook)
         }
         
-        binding!!.toolbar.number.text = MessageFormat.format("( {0} )", list.size)
+        binding.toolbar.number.text = MessageFormat.format("( {0} )", list.size)
         adapter!!.notifyDataSetChanged()
         
         if (list.isNotEmpty()) {
-            binding!!.recyclerView.visibility = View.VISIBLE
-            binding!!.emptyText.visibility = View.GONE
+            binding.recyclerView.visibility = View.VISIBLE
+            binding.emptyText.visibility = View.GONE
         } else {
-            binding!!.recyclerView.visibility = View.GONE
-            binding!!.emptyText.visibility = View.VISIBLE
+            binding.recyclerView.visibility = View.GONE
+            binding.emptyText.visibility = View.VISIBLE
         }
     }
 
     override fun onBackPressed() {
         if (DATA.searchStatus) {
-            binding!!.toolbar.toolbar.visibility = View.VISIBLE
-            binding!!.toolbar.toolbarSearch.visibility = View.GONE
+            binding.toolbar.toolbar.visibility = View.VISIBLE
+            binding.toolbar.toolbarSearch.visibility = View.GONE
             DATA.searchStatus = false
-            binding!!.toolbar.textSearch.setText(DATA.EMPTY)
+            binding.toolbar.textSearch.setText(DATA.EMPTY)
         } else super.onBackPressed()
     }
 }

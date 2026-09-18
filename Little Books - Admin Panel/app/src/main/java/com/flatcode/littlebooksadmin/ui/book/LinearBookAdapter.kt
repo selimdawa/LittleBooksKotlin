@@ -20,14 +20,13 @@ import com.flatcode.littlebooksadmin.databinding.ItemBookLinearBinding
 class LinearBookAdapter(private val context: Context, var list: ArrayList<Book?>, isUser: Boolean) :
     RecyclerView.Adapter<LinearBookAdapter.ViewHolder>(), Filterable {
 
-    private var binding: ItemBookLinearBinding? = null
     var filterList: ArrayList<Book?>
     private var filter: MoreBooksFilter? = null
     var isUser: Boolean
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        binding = ItemBookLinearBinding.inflate(LayoutInflater.from(context), parent, false)
-        return ViewHolder(binding!!.root)
+        val binding = ItemBookLinearBinding.inflate(LayoutInflater.from(context), parent, false)
+        return ViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -41,47 +40,41 @@ class LinearBookAdapter(private val context: Context, var list: ArrayList<Book?>
         val nrDownloads = DATA.EMPTY + item.downloadsCount
 
         if (isUser) {
-            holder.more.visibility = View.VISIBLE
+            holder.binding.more.visibility = View.VISIBLE
         } else {
-            holder.more.visibility = View.GONE
+            holder.binding.more.visibility = View.GONE
         }
 
-        VOID.Glide(false, context, image, holder.image)
+        VOID.Glide(false, context, image, holder.binding.image)
 
         if (item.title == DATA.EMPTY) {
-            holder.title.visibility = View.GONE
+            holder.binding.title.visibility = View.GONE
         } else {
-            holder.title.visibility = View.VISIBLE
-            holder.title.text = title
+            holder.binding.title.visibility = View.VISIBLE
+            holder.binding.title.text = title
         }
 
         if (item.description == DATA.EMPTY) {
-            holder.description.visibility = View.GONE
+            holder.binding.description.visibility = View.GONE
         } else {
-            holder.description.visibility = View.VISIBLE
-            holder.description.text = description
+            holder.binding.description.visibility = View.VISIBLE
+            holder.binding.description.text = description
         }
 
-        holder.numberViews.text = nrViews
-        holder.numberLoves.text = nrLoves
-        holder.numberDownloads.text = nrDownloads
+        holder.binding.numberViews.text = nrViews
+        holder.binding.numberLoves.text = nrLoves
+        holder.binding.numberDownloads.text = nrDownloads
 
-        /*if (item.getPublisher().equals(DATA.FirebaseUserUid)) {
-            holder.favorites.setVisibility(View.GONE);
-        } else {
-            holder.favorites.setVisibility(View.VISIBLE);
-        }*/
-
-        VOID.isFavorite(holder.favorites, item.id, DATA.FirebaseUserUid)
-        VOID.isLoves(holder.loves, item.id)
-        holder.favorites.setOnClickListener {
-            VOID.checkFavorite(holder.favorites, bookId)
+        VOID.isFavorite(holder.binding.favorites, item.id, DATA.FirebaseUserUid)
+        VOID.isLoves(holder.binding.loves, item.id)
+        holder.binding.favorites.setOnClickListener {
+            VOID.checkFavorite(holder.binding.favorites, bookId)
         }
-        holder.loves.setOnClickListener { VOID.checkLove(holder.loves, bookId) }
-        holder.more.setOnClickListener {
+        holder.binding.loves.setOnClickListener { VOID.checkLove(holder.binding.loves, bookId) }
+        holder.binding.more.setOnClickListener {
             VOID.moreOptionDialog(context, item)
         }
-        holder.item.setOnClickListener {
+        holder.binding.item.setOnClickListener {
             VOID.IntentExtra(context, BookDetailsActivity::class.java, DATA.BOOK_ID, item.id)
         }
     }
@@ -97,33 +90,7 @@ class LinearBookAdapter(private val context: Context, var list: ArrayList<Book?>
         return filter!!
     }
 
-    inner class ViewHolder(view: View?) : RecyclerView.ViewHolder(
-        view!!
-    ) {
-        var image: ImageView
-        var favorites: ImageView
-        var loves: ImageView
-        var more: ImageView
-        var title: TextView
-        var description: TextView
-        var numberViews: TextView
-        var numberLoves: TextView
-        var numberDownloads: TextView
-        var item: LinearLayout
-
-        init {
-            image = binding!!.image
-            title = binding!!.title
-            more = binding!!.more
-            description = binding!!.description
-            favorites = binding!!.favorites
-            loves = binding!!.loves
-            numberViews = binding!!.numberViews
-            numberLoves = binding!!.numberLoves
-            numberDownloads = binding!!.numberDownloads
-            item = binding!!.item
-        }
-    }
+    inner class ViewHolder(val binding: ItemBookLinearBinding) : RecyclerView.ViewHolder(binding.root)
 
     init {
         filterList = list

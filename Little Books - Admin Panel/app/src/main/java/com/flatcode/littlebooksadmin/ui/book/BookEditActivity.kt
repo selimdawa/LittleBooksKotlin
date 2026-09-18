@@ -31,7 +31,7 @@ import kotlinx.coroutines.launch
 @AndroidEntryPoint
 class BookEditActivity : AppCompatActivity() {
 
-    private var binding: ActivityBookEditBinding? = null
+    private lateinit var binding: ActivityBookEditBinding
     private val context: Context = this@BookEditActivity
     private var bookId: String? = null
     private var imageUri: Uri? = null
@@ -44,9 +44,9 @@ class BookEditActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         binding = ActivityBookEditBinding.inflate(layoutInflater)
-        setContentView(binding!!.root)
+        setContentView(binding.root)
 
-        ViewCompat.setOnApplyWindowInsetsListener(binding!!.root) { v, insets ->
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
@@ -65,12 +65,12 @@ class BookEditActivity : AppCompatActivity() {
         dialog!!.setTitle("Please wait...")
         dialog!!.setCanceledOnTouchOutside(false)
 
-        binding!!.toolbar.nameSpace.setText(R.string.edit_book)
-        binding!!.toolbar.back.setOnClickListener { onBackPressed() }
+        binding.toolbar.nameSpace.setText(R.string.edit_book)
+        binding.toolbar.back.setOnClickListener { onBackPressed() }
 
-        binding!!.image.setOnClickListener { pickImageGallery() }
-        binding!!.category.setOnClickListener { categoryDialog() }
-        binding!!.toolbar.ok.setOnClickListener { validateData() }
+        binding.image.setOnClickListener { pickImageGallery() }
+        binding.category.setOnClickListener { categoryDialog() }
+        binding.toolbar.ok.setOnClickListener { validateData() }
     }
 
     private fun observeViewModel() {
@@ -82,14 +82,14 @@ class BookEditActivity : AppCompatActivity() {
                             is Resource.Loading -> { }
                             is Resource.Success -> {
                                 resource.data?.let { book ->
-                                    binding!!.titleEt.setText(book.title)
-                                    binding!!.descriptionEt.setText(book.description)
+                                    binding.titleEt.setText(book.title)
+                                    binding.descriptionEt.setText(book.description)
                                     selectedId = book.categoryId ?: DATA.EMPTY
-                                    VOID.Glide(false, context, book.image ?: DATA.BASIC, binding!!.image)
+                                    VOID.Glide(false, context, book.image ?: DATA.BASIC, binding.image)
                                     
                                     // Set category name
                                     categoriesList.find { it.id == selectedId }?.let {
-                                        binding!!.category.text = it.category
+                                        binding.category.text = it.category
                                     }
                                 }
                             }
@@ -107,7 +107,7 @@ class BookEditActivity : AppCompatActivity() {
                                 categoriesList = resource.data ?: emptyList()
                                 // Re-set category name if book was already loaded
                                 categoriesList.find { it.id == selectedId }?.let {
-                                    binding!!.category.text = it.category
+                                    binding.category.text = it.category
                                 }
                             }
                             is Resource.Error -> { }
@@ -145,8 +145,8 @@ class BookEditActivity : AppCompatActivity() {
     private var selectedId = DATA.EMPTY
 
     private fun validateData() {
-        val title = binding!!.titleEt.text.toString().trim()
-        val description = binding!!.descriptionEt.text.toString().trim()
+        val title = binding.titleEt.text.toString().trim()
+        val description = binding.descriptionEt.text.toString().trim()
         
         if (TextUtils.isEmpty(title)) {
             Toast.makeText(context, "Enter Title...", Toast.LENGTH_SHORT).show()
@@ -174,7 +174,7 @@ class BookEditActivity : AppCompatActivity() {
         builder.setTitle("Choose Category")
             .setItems(categoriesArray) { _, which ->
                 selectedId = categoriesList[which].id ?: DATA.EMPTY
-                binding!!.category.text = categoriesList[which].category
+                binding.category.text = categoriesList[which].category
             }.show()
     }
 
@@ -183,7 +183,7 @@ class BookEditActivity : AppCompatActivity() {
             if (result.resultCode == RESULT_OK) {
                 val data = result.data!!
                 imageUri = data.data
-                binding!!.image.setImageURI(imageUri)
+                binding.image.setImageURI(imageUri)
             }
         }
 

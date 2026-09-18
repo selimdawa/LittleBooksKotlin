@@ -30,7 +30,7 @@ import kotlinx.coroutines.launch
 @AndroidEntryPoint
 class CategoryAddActivity : AppCompatActivity() {
 
-    private var binding: ActivityCategoryAddBinding? = null
+    private lateinit var binding: ActivityCategoryAddBinding
     private var activity: Activity? = null
     private var context: Context = also { activity = it }
     private var imageUri: Uri? = null
@@ -42,9 +42,9 @@ class CategoryAddActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         binding = ActivityCategoryAddBinding.inflate(layoutInflater)
-        setContentView(binding!!.root)
+        setContentView(binding.root)
 
-        ViewCompat.setOnApplyWindowInsetsListener(binding!!.root) { v, insets ->
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
@@ -59,11 +59,11 @@ class CategoryAddActivity : AppCompatActivity() {
         dialog!!.setTitle("Please wait...")
         dialog!!.setCanceledOnTouchOutside(false)
 
-        binding!!.toolbar.nameSpace.setText(R.string.add_new_category)
-        binding!!.toolbar.back.setOnClickListener { onBackPressed() }
+        binding.toolbar.nameSpace.setText(R.string.add_new_category)
+        binding.toolbar.back.setOnClickListener { onBackPressed() }
 
-        binding!!.image.setOnClickListener { VOID.cropImageSquare(activity) }
-        binding!!.toolbar.ok.setOnClickListener { validateData() }
+        binding.image.setOnClickListener { VOID.cropImageSquare(activity) }
+        binding.toolbar.ok.setOnClickListener { validateData() }
     }
 
     private fun observeViewModel() {
@@ -92,7 +92,7 @@ class CategoryAddActivity : AppCompatActivity() {
     }
 
     private fun validateData() {
-        val title = binding!!.categoryEt.text.toString().trim()
+        val title = binding.categoryEt.text.toString().trim()
 
         if (TextUtils.isEmpty(title)) {
             Toast.makeText(context, "Enter Title...", Toast.LENGTH_SHORT).show()
@@ -122,7 +122,7 @@ class CategoryAddActivity : AppCompatActivity() {
             val result = CropImage.getActivityResult(data)
             if (resultCode == RESULT_OK) {
                 imageUri = result.uri
-                binding!!.image.setImageURI(imageUri)
+                binding.image.setImageURI(imageUri)
             } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
                 val error = result.error
                 Toast.makeText(this, "Error! $error", Toast.LENGTH_SHORT).show()

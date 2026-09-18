@@ -9,7 +9,12 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import com.flatcode.littlebooks.ui.main.*`nimport com.flatcode.littlebooks.ui.book.*`nimport com.flatcode.littlebooks.ui.profile.*`nimport com.flatcode.littlebooks.ui.settings.*`nimport com.flatcode.littlebooks.ui.publisher.*`nimport com.flatcode.littlebooks.ui.splash.*
+import com.flatcode.littlebooks.ui.main.*
+import com.flatcode.littlebooks.ui.book.*
+import com.flatcode.littlebooks.ui.profile.*
+import com.flatcode.littlebooks.ui.settings.*
+import com.flatcode.littlebooks.ui.publisher.*
+import com.flatcode.littlebooks.ui.splash.*
 import com.flatcode.littlebooks.model.Setting
 import com.flatcode.littlebooks.R
 import com.flatcode.littlebooks.utils.DATA
@@ -117,6 +122,3 @@ class SettingsFragment : Fragment() {
         binding = null
     }
 }
-
-
-

@@ -8,6 +8,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.flatcode.littlebooks.ui.auth.AuthActivity
+import com.flatcode.littlebooks.ui.main.MainActivity
 import com.flatcode.littlebooks.utils.VOID
 import com.flatcode.littlebooks.databinding.ActivitySplashBinding
 import com.flatcode.littlebooks.viewmodel.AuthViewModel
