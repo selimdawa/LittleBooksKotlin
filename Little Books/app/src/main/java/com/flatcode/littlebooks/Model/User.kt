@@ -1,4 +1,4 @@
-package com.flatcode.littlebooks.Model
+package com.flatcode.littlebooks.model
 
 import android.os.Parcelable
 import androidx.room.Entity
@@ -19,3 +19,5 @@ data class User(
     var adLoad: Int = 0,
     var adClick: Int = 0
 ) : Parcelable
+
+

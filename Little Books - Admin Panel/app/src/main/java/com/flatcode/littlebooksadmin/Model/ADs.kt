@@ -1,15 +1,9 @@
-package com.flatcode.littlebooksadmin.Modelimport
+package com.flatcode.littlebooksadmin.model
 
-class ADs {
-    var name: String? = null
-    var adsLoadedCount = 0
-    var adsClickedCount = 0
+import java.io.Serializable
 
-    constructor()
-
-    constructor(name: String?, adsLoadedCount: Int, adsClickedCount: Int) {
-        this.name = name
-        this.adsLoadedCount = adsLoadedCount
-        this.adsClickedCount = adsClickedCount
-    }
-}
+data class ADs(
+    var name: String? = null,
+    var adsLoadedCount: Int = 0,
+    var adsClickedCount: Int = 0
+) : Serializable

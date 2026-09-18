@@ -7,25 +7,25 @@
 
     <fragment
         android:id="@+id/settingsFragment"
-        android:name="com.flatcode.littlebooks.Fragment.SettingsFragment"
+        android:name="com.flatcode.littlebooks.ui.settings.SettingsFragment"
         android:label="SettingsFragment"
         tools:layout="@layout/fragment_settings" />
 
     <fragment
         android:id="@+id/homeFragment"
-        android:name="com.flatcode.littlebooks.Fragment.HomeFragment"
+        android:name="com.flatcode.littlebooks.ui.main.HomeFragment"
         android:label="HomeFragment"
         tools:layout="@layout/fragment_home" />
 
     <fragment
         android:id="@+id/followersFragment"
-        android:name="com.flatcode.littlebooks.Fragment.FollowersFragment"
+        android:name="com.flatcode.littlebooks.ui.profile.FollowersFragment"
         android:label="FollowersFragment"
         tools:layout="@layout/fragment_followers" />
 
     <fragment
         android:id="@+id/categoriesFragment"
-        android:name="com.flatcode.littlebooks.Fragment.CategoriesFragment"
+        android:name="com.flatcode.littlebooks.ui.category.CategoriesFragment"
         android:label="CategoriesFragment"
         tools:layout="@layout/fragment_categories" />
 </navigation>

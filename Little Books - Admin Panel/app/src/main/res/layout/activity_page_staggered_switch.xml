@@ -8,7 +8,7 @@
     android:layout_height="match_parent"
     android:background="?colorOnBackground"
     android:orientation="vertical"
-    tools:context=".Activity.BooksCategoryActivity">
+    tools:context=".ui.category.BooksCategoryActivity">
 
     <include
         android:id="@+id/toolbar"

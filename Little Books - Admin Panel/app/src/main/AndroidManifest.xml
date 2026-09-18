@@ -21,7 +21,7 @@
         tools:replace="android:supportsRtl"
         tools:targetApi="31">
         <activity
-            android:name=".Activity.SplashActivity"
+            android:name=".ui.main.SplashActivity"
             android:exported="true"
             android:windowSoftInputMode="adjustResize"
             android:screenOrientation="portrait">
@@ -32,115 +32,115 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".Activity.ProfileEditActivity"
+            android:name=".ui.profile.ProfileEditActivity"
             android:windowSoftInputMode="adjustResize"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".Activity.ProfileActivity"
+            android:name=".ui.profile.ProfileActivity"
             android:windowSoftInputMode="adjustResize"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".Activity.BookViewActivity"
+            android:name=".ui.book.BookViewActivity"
             android:windowSoftInputMode="adjustResize"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".Activity.BookDetailsActivity"
+            android:name=".ui.book.BookDetailsActivity"
             android:windowSoftInputMode="adjustResize"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".Activity.BookEditActivity"
+            android:name=".ui.book.BookEditActivity"
             android:windowSoftInputMode="adjustResize"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".Activity.BookAddActivity"
+            android:name=".ui.book.BookAddActivity"
             android:windowSoftInputMode="adjustResize"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".Activity.MainActivity"
+            android:name=".ui.main.MainActivity"
             android:windowSoftInputMode="adjustResize"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".Auth.LoginActivity"
+            android:name=".ui.auth.LoginActivity"
             android:windowSoftInputMode="adjustResize"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".Activity.BooksCategoryActivity"
+            android:name=".ui.category.BooksCategoryActivity"
             android:windowSoftInputMode="adjustResize"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".Activity.PrivacyPolicyActivity"
+            android:name=".ui.settings.PrivacyPolicyActivity"
             android:windowSoftInputMode="adjustResize"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".Activity.FavoritesActivity"
+            android:name=".ui.book.FavoritesActivity"
             android:windowSoftInputMode="adjustResize"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".Activity.ProfileInfoActivity"
+            android:name=".ui.profile.ProfileInfoActivity"
             android:windowSoftInputMode="adjustResize"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".Activity.MyBooksActivity"
+            android:name=".ui.book.MyBooksActivity"
             android:windowSoftInputMode="adjustResize"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".Activity.FollowingActivity"
+            android:name=".ui.user.FollowingActivity"
             android:windowSoftInputMode="adjustResize"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".Activity.FollowersActivity"
+            android:name=".ui.user.FollowersActivity"
             android:windowSoftInputMode="adjustResize"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".Activity.SliderShowActivity"
+            android:name=".ui.ads.SliderShowActivity"
             android:windowSoftInputMode="adjustResize"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".Activity.CategoryAddActivity"
+            android:name=".ui.category.CategoryAddActivity"
             android:windowSoftInputMode="adjustResize"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".Activity.AllBooksActivity"
+            android:name=".ui.book.AllBooksActivity"
             android:windowSoftInputMode="adjustResize"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".Activity.ADsActivity"
+            android:name=".ui.ads.ADsActivity"
             android:windowSoftInputMode="adjustResize"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".Activity.EditorsChoiceActivity"
+            android:name=".ui.book.EditorsChoiceActivity"
             android:windowSoftInputMode="adjustResize"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".Activity.CategoriesActivity"
+            android:name=".ui.category.CategoriesActivity"
             android:windowSoftInputMode="adjustResize"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".Activity.TopPublishersActivity"
+            android:name=".ui.user.TopPublishersActivity"
             android:windowSoftInputMode="adjustResize"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".Activity.UsersActivity"
+            android:name=".ui.user.UsersActivity"
             android:windowSoftInputMode="adjustResize"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".Auth.ForgetPasswordActivity"
+            android:name=".ui.auth.ForgetPasswordActivity"
             android:windowSoftInputMode="adjustResize"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".Activity.CategoryEditActivity"
+            android:name=".ui.category.CategoryEditActivity"
             android:windowSoftInputMode="adjustResize"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".Activity.PrivacyPolicyEditActivity"
+            android:name=".ui.settings.PrivacyPolicyEditActivity"
             android:windowSoftInputMode="adjustResize"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".Activity.EditorsChoiceAddActivity"
+            android:name=".ui.book.EditorsChoiceAddActivity"
             android:windowSoftInputMode="adjustResize"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".Activity.AdsInfoActivity"
+            android:name=".ui.ads.AdsInfoActivity"
             android:windowSoftInputMode="adjustResize"
             android:screenOrientation="portrait" />
         <activity

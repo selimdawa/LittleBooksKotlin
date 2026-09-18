@@ -1,8 +1,8 @@
-package com.flatcode.littlebooks.Filter
+package com.flatcode.littlebooks.filter
 
 import android.widget.Filter
-import com.flatcode.littlebooks.Adapter.StaggeredBookAdapter
-import com.flatcode.littlebooks.Model.Book
+import com.flatcode.littlebooks.ui.book.StaggeredBookAdapter
+import com.flatcode.littlebooks.model.Book
 import java.util.*
 
 class StaggerdFilter(var list: ArrayList<Book?>, var adapter: StaggeredBookAdapter) : Filter() {
@@ -31,3 +31,5 @@ class StaggerdFilter(var list: ArrayList<Book?>, var adapter: StaggeredBookAdapt
         adapter.notifyDataSetChanged()
     }
 }
+
+

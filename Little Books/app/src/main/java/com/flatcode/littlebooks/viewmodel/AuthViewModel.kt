@@ -58,3 +58,5 @@ class AuthViewModel @Inject constructor(
 
     fun getCurrentUser() = repository.getCurrentUser()
 }
+
+

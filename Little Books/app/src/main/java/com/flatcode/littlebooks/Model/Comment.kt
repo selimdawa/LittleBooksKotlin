@@ -1,4 +1,4 @@
-package com.flatcode.littlebooks.Model
+package com.flatcode.littlebooks.model
 
 import android.os.Parcelable
 import androidx.room.Entity
@@ -15,3 +15,5 @@ data class Comment(
     var comment: String? = null,
     var publisher: String? = null
 ) : Parcelable
+
+

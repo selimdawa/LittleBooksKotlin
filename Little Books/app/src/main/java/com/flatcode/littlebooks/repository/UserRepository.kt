@@ -2,10 +2,10 @@ package com.flatcode.littlebooks.repository
 
 import android.content.Context
 import android.net.Uri
-import com.flatcode.littlebooks.Model.User
-import com.flatcode.littlebooks.Unit.DATA
-import com.flatcode.littlebooks.Unit.VOID
-import com.flatcode.littlebooks.data.local.dao.UserDao
+import com.flatcode.littlebooks.model.User
+import com.flatcode.littlebooks.utils.DATA
+import com.flatcode.littlebooks.utils.VOID
+import com.flatcode.littlebooks.db.UserDao
 import com.flatcode.littlebooks.utils.Resource
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
@@ -156,3 +156,5 @@ class UserRepository @Inject constructor(
         }
     }
 }
+
+

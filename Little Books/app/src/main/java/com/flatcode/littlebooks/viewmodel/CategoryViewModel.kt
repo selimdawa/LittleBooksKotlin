@@ -2,7 +2,7 @@ package com.flatcode.littlebooks.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.flatcode.littlebooks.Model.Category
+import com.flatcode.littlebooks.model.Category
 import com.flatcode.littlebooks.repository.CategoryRepository
 import com.flatcode.littlebooks.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -30,3 +30,5 @@ class CategoryViewModel @Inject constructor(
         }
     }
 }
+
+

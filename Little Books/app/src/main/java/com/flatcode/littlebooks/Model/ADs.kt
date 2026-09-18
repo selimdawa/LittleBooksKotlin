@@ -1,4 +1,4 @@
-package com.flatcode.littlebooks.Model
+package com.flatcode.littlebooks.model
 
 import android.os.Parcelable
 import androidx.room.Entity
@@ -13,3 +13,5 @@ data class ADs(
     var adsLoadedCount: Int = 0,
     var adsClickedCount: Int = 0
 ) : Parcelable
+
+

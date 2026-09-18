@@ -1,8 +1,8 @@
-package com.flatcode.littlebooks.Filter
+package com.flatcode.littlebooks.filter
 
 import android.widget.Filter
-import com.flatcode.littlebooks.Adapter.PublisherAdapter
-import com.flatcode.littlebooks.Model.User
+import com.flatcode.littlebooks.ui.publisher.PublisherAdapter
+import com.flatcode.littlebooks.model.User
 import java.util.*
 
 class PublisherFilter(var list: ArrayList<User?>, var adapter: PublisherAdapter) : Filter() {
@@ -31,3 +31,5 @@ class PublisherFilter(var list: ArrayList<User?>, var adapter: PublisherAdapter)
         adapter.notifyDataSetChanged()
     }
 }
+
+

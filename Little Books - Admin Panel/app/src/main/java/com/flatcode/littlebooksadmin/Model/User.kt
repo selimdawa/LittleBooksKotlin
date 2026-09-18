@@ -1,30 +1,19 @@
-package com.flatcode.littlebooksadmin.Modelimport
+package com.flatcode.littlebooksadmin.model
 
-class User {
-    var id: String? = null
-    var username: String? = null
-    var profileImage: String? = null
-    var email: String? = null
-    var timestamp: Long = 0
-    var version = 0
-    var booksCount = 0
-    var adLoad = 0
-    var adClick = 0
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+import java.io.Serializable
 
-    constructor()
-
-    constructor(
-        id: String?, username: String?, profileImage: String?, email: String?, timestamp: Long,
-        version: Int, booksCount: Int, adLoad: Int, adClick: Int
-    ) {
-        this.id = id
-        this.username = username
-        this.profileImage = profileImage
-        this.email = email
-        this.timestamp = timestamp
-        this.version = version
-        this.booksCount = booksCount
-        this.adLoad = adLoad
-        this.adClick = adClick
-    }
-}
+@Entity(tableName = "users")
+data class User(
+    @PrimaryKey
+    var id: String = "",
+    var username: String? = null,
+    var profileImage: String? = null,
+    var email: String? = null,
+    var timestamp: Long = 0,
+    var version: Int = 0,
+    var booksCount: Int = 0,
+    var adLoad: Int = 0,
+    var adClick: Int = 0
+) : Serializable

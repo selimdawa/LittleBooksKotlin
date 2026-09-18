@@ -2,9 +2,9 @@ package com.flatcode.littlebooks.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.flatcode.littlebooks.Model.Book
-import com.flatcode.littlebooks.Model.User
-import com.flatcode.littlebooks.Unit.DATA
+import com.flatcode.littlebooks.model.Book
+import com.flatcode.littlebooks.model.User
+import com.flatcode.littlebooks.utils.DATA
 import com.flatcode.littlebooks.repository.BookRepository
 import com.flatcode.littlebooks.repository.UserRepository
 import com.flatcode.littlebooks.utils.Resource
@@ -50,3 +50,5 @@ class FollowViewModel @Inject constructor(
         }
     }
 }
+
+

@@ -4,9 +4,9 @@ import android.content.Context
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.flatcode.littlebooks.Model.Book
-import com.flatcode.littlebooks.Model.Comment
-import com.flatcode.littlebooks.Unit.DATA
+import com.flatcode.littlebooks.model.Book
+import com.flatcode.littlebooks.model.Comment
+import com.flatcode.littlebooks.utils.DATA
 import com.flatcode.littlebooks.repository.BookRepository
 import com.flatcode.littlebooks.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -176,3 +176,5 @@ class BookViewModel @Inject constructor(
         _deleteStatus.value = null
     }
 }
+
+

@@ -1,8 +1,8 @@
 package com.flatcode.littlebooks.repository
 
-import com.flatcode.littlebooks.Model.Category
-import com.flatcode.littlebooks.Unit.DATA
-import com.flatcode.littlebooks.data.local.dao.CategoryDao
+import com.flatcode.littlebooks.model.Category
+import com.flatcode.littlebooks.utils.DATA
+import com.flatcode.littlebooks.db.CategoryDao
 import com.flatcode.littlebooks.utils.Resource
 import com.google.firebase.database.FirebaseDatabase
 import kotlinx.coroutines.flow.first
@@ -31,3 +31,5 @@ class CategoryRepository @Inject constructor(
         }
     }
 }
+
+

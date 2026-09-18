@@ -4,7 +4,7 @@ import android.content.Context
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.flatcode.littlebooks.Model.User
+import com.flatcode.littlebooks.model.User
 import com.flatcode.littlebooks.repository.BookRepository
 import com.flatcode.littlebooks.repository.UserRepository
 import com.flatcode.littlebooks.utils.Resource
@@ -89,3 +89,5 @@ class ProfileViewModel @Inject constructor(
         }
     }
 }
+
+

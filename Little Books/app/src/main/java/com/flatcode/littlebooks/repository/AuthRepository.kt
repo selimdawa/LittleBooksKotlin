@@ -1,6 +1,6 @@
 package com.flatcode.littlebooks.repository
 
-import com.flatcode.littlebooks.Unit.DATA
+import com.flatcode.littlebooks.utils.DATA
 import com.flatcode.littlebooks.utils.Resource
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
@@ -61,3 +61,5 @@ class AuthRepository @Inject constructor(
 
     fun getCurrentUser() = auth.currentUser
 }
+
+

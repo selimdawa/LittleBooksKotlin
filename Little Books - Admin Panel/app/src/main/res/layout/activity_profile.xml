@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="?mc_bg"
-    tools:context=".Activity.ProfileActivity">
+    tools:context=".ui.profile.ProfileActivity">
 
     <androidx.core.widget.NestedScrollView
         android:id="@+id/scroll_progress"

@@ -2,8 +2,8 @@ package com.flatcode.littlebooks.di
 
 import android.content.Context
 import androidx.room.Room
-import com.flatcode.littlebooks.data.local.dao.*
-import com.flatcode.littlebooks.data.local.db.AppDatabase
+import com.flatcode.littlebooks.db.*
+import com.flatcode.littlebooks.db.AppDatabase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
@@ -58,3 +58,5 @@ object AppModule {
     @Provides
     fun provideSettingDao(db: AppDatabase): SettingDao = db.settingDao()
 }
+
+

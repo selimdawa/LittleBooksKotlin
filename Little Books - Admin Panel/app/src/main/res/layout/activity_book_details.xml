@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:background="?colorOnBackground"
     android:orientation="vertical"
-    tools:context=".Activity.BookDetailsActivity">
+    tools:context=".ui.book.BookDetailsActivity">
 
     <include
         android:id="@+id/toolbar"

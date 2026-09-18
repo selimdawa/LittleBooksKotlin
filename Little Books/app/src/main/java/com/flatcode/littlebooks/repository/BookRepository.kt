@@ -2,12 +2,12 @@ package com.flatcode.littlebooks.repository
 
 import android.content.Context
 import android.net.Uri
-import com.flatcode.littlebooks.Model.Book
-import com.flatcode.littlebooks.Model.Comment
-import com.flatcode.littlebooks.Unit.DATA
-import com.flatcode.littlebooks.Unit.VOID
-import com.flatcode.littlebooks.data.local.dao.BookDao
-import com.flatcode.littlebooks.data.local.dao.CommentDao
+import com.flatcode.littlebooks.model.Book
+import com.flatcode.littlebooks.model.Comment
+import com.flatcode.littlebooks.utils.DATA
+import com.flatcode.littlebooks.utils.VOID
+import com.flatcode.littlebooks.db.BookDao
+import com.flatcode.littlebooks.db.CommentDao
 import com.flatcode.littlebooks.utils.Resource
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.Query
@@ -327,3 +327,5 @@ class BookRepository @Inject constructor(
         }
     }
 }
+
+

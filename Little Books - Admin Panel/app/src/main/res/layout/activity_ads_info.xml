@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:background="?colorOnBackground"
     android:orientation="vertical"
-    tools:context=".Activity.AdsInfoActivity">
+    tools:context=".ui.ads.AdsInfoActivity">
 
     <include
         android:id="@+id/toolbar"

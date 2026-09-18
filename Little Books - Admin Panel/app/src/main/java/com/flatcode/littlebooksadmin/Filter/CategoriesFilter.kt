@@ -1,32 +1,34 @@
-package com.flatcode.littlebooksadmin.Filter
+package com.flatcode.littlebooksadmin.filter
 
 import android.widget.Filter
-import com.flatcode.littlebooksadmin.Adapterimport.CategoriesAdapter
-import com.flatcode.littlebooksadmin.Modelimport.Category
-import java.util.*
+import com.flatcode.littlebooksadmin.model.Category
+import com.flatcode.littlebooksadmin.ui.category.CategoriesAdapter
 
-class CategoriesFilter(var list: ArrayList<Category?>, var adapter: CategoriesAdapter) : Filter() {
-    override fun performFiltering(constraint: CharSequence): FilterResults {
-        var constraint: CharSequence? = constraint
+class CategoriesFilter(
+    private var filterList: List<Category?>,
+    private var adapter: CategoriesAdapter
+) : Filter() {
+    override fun performFiltering(constraint: CharSequence?): FilterResults {
+        var constraint = constraint
         val results = FilterResults()
-        if (constraint != null && constraint.length > 0) {
-            constraint = constraint.toString().uppercase(Locale.getDefault())
-            val filter = ArrayList<Category?>()
-            for (i in list.indices) {
-                if (list[i]!!.category!!.uppercase(Locale.getDefault()).contains(constraint)) {
-                    filter.add(list[i])
+        if (constraint != null && constraint.isNotEmpty()) {
+            constraint = constraint.toString().uppercase()
+            val filteredModels = ArrayList<Category?>()
+            for (i in filterList.indices) {
+                if (filterList[i]!!.category!!.uppercase().contains(constraint)) {
+                    filteredModels.add(filterList[i])
                 }
             }
-            results.count = filter.size
-            results.values = filter
+            results.count = filteredModels.size
+            results.values = filteredModels
         } else {
-            results.count = list.size
-            results.values = list
+            results.count = filterList.size
+            results.values = filterList
         }
         return results
     }
 
-    override fun publishResults(constraint: CharSequence, results: FilterResults) {
+    override fun publishResults(constraint: CharSequence?, results: FilterResults) {
         adapter.list = results.values as ArrayList<Category?>
         adapter.notifyDataSetChanged()
     }

@@ -1,0 +1,35 @@
+package com.flatcode.littlebooksadmin.repository
+
+import com.flatcode.littlebooksadmin.utils.Resource
+import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.tasks.await
+import javax.inject.Inject
+import javax.inject.Singleton
+
+@Singleton
+class AuthRepository @Inject constructor(
+    private val auth: FirebaseAuth
+) {
+
+    suspend fun login(email: String, password: String): Resource<Unit> {
+        return try {
+            auth.signInWithEmailAndPassword(email, password).await()
+            Resource.Success(Unit)
+        } catch (e: Exception) {
+            Resource.Error(e.message ?: "Login failed")
+        }
+    }
+
+    suspend fun resetPassword(email: String): Resource<Unit> {
+        return try {
+            auth.sendPasswordResetEmail(email).await()
+            Resource.Success(Unit)
+        } catch (e: Exception) {
+            Resource.Error(e.message ?: "Password reset failed")
+        }
+    }
+
+    fun isUserLoggedIn(): Boolean = auth.currentUser != null
+}
+
+

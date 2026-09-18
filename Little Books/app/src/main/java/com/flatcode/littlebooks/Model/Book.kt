@@ -1,4 +1,4 @@
-package com.flatcode.littlebooks.Model
+package com.flatcode.littlebooks.model
 
 import android.os.Parcelable
 import androidx.room.Entity
@@ -21,7 +21,6 @@ data class Book(
     var downloadsCount: Int = 0,
     var lovesCount: Int = 0,
     var editorsChoice: Int = 0
-) : Parcelable {
-    // No-arg constructor for Firebase/Room if needed, 
-    // though data class with defaults handles it.
-}
+) : Parcelable
+
+

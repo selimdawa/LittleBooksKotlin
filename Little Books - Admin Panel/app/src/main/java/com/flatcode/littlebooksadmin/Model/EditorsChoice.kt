@@ -1,3 +1,5 @@
-package com.flatcode.littlebooksadmin.Modelimport
+package com.flatcode.littlebooksadmin.model
 
-class EditorsChoice
+import java.io.Serializable
+
+class EditorsChoice : Serializable

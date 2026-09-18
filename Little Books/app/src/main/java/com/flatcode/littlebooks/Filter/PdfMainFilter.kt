@@ -1,8 +1,8 @@
-package com.flatcode.littlebooks.Filter
+package com.flatcode.littlebooks.filter
 
 import android.widget.Filter
-import com.flatcode.littlebooks.Adapter.MainBookAdapter
-import com.flatcode.littlebooks.Model.Book
+import com.flatcode.littlebooks.ui.main.MainBookAdapter
+import com.flatcode.littlebooks.model.Book
 import java.util.*
 
 class PDFMainFilter(var list: ArrayList<Book?>, var adapter: MainBookAdapter) : Filter() {
@@ -31,3 +31,5 @@ class PDFMainFilter(var list: ArrayList<Book?>, var adapter: MainBookAdapter) : 
         adapter.notifyDataSetChanged()
     }
 }
+
+

@@ -1,4 +1,4 @@
-package com.flatcode.littlebooks.Model
+package com.flatcode.littlebooks.model
 
 import android.os.Parcelable
 import androidx.room.Entity
@@ -17,6 +17,7 @@ data class Setting(
     var number: Int = 0,
     var c: @RawValue Class<*>? = null
 ) : Parcelable {
-    // Secondary constructor for compatibility if needed
     constructor() : this("", null, 0, 0, null)
 }
+
+
