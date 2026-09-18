@@ -41,9 +41,8 @@ class EditorsChoiceAdapter(private val context: Context, var list: List<EditorsC
 
         holder.binding.numberEditorsChoice.text = MessageFormat.format("{0}{1}", DATA.EMPTY, id)
         holder.binding.add.setOnClickListener {
-            context.intentExtra2(
-                EditorsChoiceAddActivity::class.java,
-                DATA.EDITORS_CHOICE_ID, editorsChoiceId, DATA.OLD_BOOK_ID, null
+            context.openActivity<EditorsChoiceAddActivity>(
+                extras = arrayOf(DATA.EDITORS_CHOICE_ID to editorsChoiceId, DATA.OLD_BOOK_ID to null)
             )
         }
     }
@@ -71,7 +70,7 @@ class EditorsChoiceAdapter(private val context: Context, var list: List<EditorsC
                         holder.binding.remove.visibility = View.VISIBLE
                         holder.binding.change.visibility = View.VISIBLE
                         holder.binding.detailsCard.setOnClickListener {
-                            context.intentExtra(BookDetailsActivity::class.java, DATA.BOOK_ID, id)
+                            context.openActivity<BookDetailsActivity>(extras = arrayOf(DATA.BOOK_ID to id))
                         }
                         holder.binding.remove.setOnClickListener {
                             context.dialogOptionDelete(
@@ -80,9 +79,8 @@ class EditorsChoiceAdapter(private val context: Context, var list: List<EditorsC
                             )
                         }
                         holder.binding.change.setOnClickListener {
-                            context.intentExtra2(
-                                EditorsChoiceAddActivity::class.java,
-                                DATA.EDITORS_CHOICE_ID, position, DATA.OLD_BOOK_ID, id
+                            context.openActivity<EditorsChoiceAddActivity>(
+                                extras = arrayOf(DATA.EDITORS_CHOICE_ID to position, DATA.OLD_BOOK_ID to id)
                             )
                         }
                     } else {

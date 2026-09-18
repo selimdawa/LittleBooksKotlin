@@ -22,6 +22,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.graphics.createBitmap
 import androidx.core.graphics.scale
+import androidx.viewbinding.ViewBinding
 import coil.load
 import coil.size.Size
 import coil.transform.Transformation
@@ -44,54 +45,45 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.storage.FirebaseStorage
-import com.google.firebase.storage.StorageMetadata
-import com.google.firebase.storage.StorageReference
 import com.theartofdev.edmodo.cropper.CropImage
 import com.theartofdev.edmodo.cropper.CropImageView
 import java.io.File
 import java.io.FileOutputStream
+import java.io.Serializable
 import java.text.MessageFormat
 
-// Context Extensions
-fun Context.intentClear(c: Class<*>?) {
-    val intent = Intent(this, c)
-    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
-    this.startActivity(intent)
-}
-
-fun Context.intent1(c: Class<*>?) {
-    val intent = Intent(this, c)
-    this.startActivity(intent)
-}
-
-fun Context.intentExtra(c: Class<*>?, key: String?, value: String?) {
-    val intent = Intent(this, c)
-    intent.putExtra(key, value)
-    this.startActivity(intent)
-}
-
-fun Context.intentExtra2(
-    c: Class<*>?,
-    key: String?,
-    value: String?,
-    key2: String?,
-    value2: String?,
+inline fun <reified T : Activity> Context.openActivity(
+    clear: Boolean = false, vararg extras: Pair<String, Any?>
 ) {
-    val intent = Intent(this, c)
-    intent.putExtra(key, value)
-    intent.putExtra(key2, value2)
-    this.startActivity(intent)
+    val intent = Intent(this, T::class.java).apply {
+        if (clear) addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
+        extras.forEach { (key, value) ->
+            when (value) {
+                is String -> putExtra(key, value)
+                is Int -> putExtra(key, value)
+                is Boolean -> putExtra(key, value)
+                is Serializable -> putExtra(key, value)
+            }
+        }
+    }
+    startActivity(intent)
 }
 
-fun Context.intentExtra3(
-    c: Class<*>?, key: String?, value: String?,
-    key2: String?, value2: String?, key3: String?, value3: String?,
-) {
-    val intent = Intent(this, c)
-    intent.putExtra(key, value)
-    intent.putExtra(key2, value2)
-    intent.putExtra(key3, value3)
-    this.startActivity(intent)
+private fun Context.showCustomDialog(binding: ViewBinding, setup: (Dialog) -> Unit) {
+    Dialog(this).apply {
+        requestWindowFeature(Window.FEATURE_NO_TITLE)
+        setContentView(binding.root)
+        setCancelable(true)
+        window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        val lp = WindowManager.LayoutParams().apply {
+            copyFrom(window?.attributes)
+            width = WindowManager.LayoutParams.WRAP_CONTENT
+            height = WindowManager.LayoutParams.WRAP_CONTENT
+        }
+        setup(this)
+        show()
+        window?.attributes = lp
+    }
 }
 
 fun Context.deleteBook(
@@ -101,92 +93,65 @@ fun Context.deleteBook(
     bookUrl: String?,
     bookTitle: String,
 ) {
-    val dialog = ProgressDialog(this)
-    dialog.setTitle("Please wait")
-    dialog.setMessage("Deleting $bookTitle ...")
-    dialog.show()
-    val storageReference: StorageReference =
-        FirebaseStorage.getInstance().getReferenceFromUrl(bookUrl!!)
-    storageReference.delete().addOnSuccessListener {
-        val reference: DatabaseReference =
-            FirebaseDatabase.getInstance().getReference(DATA.BOOKS)
-        reference.child(bookId!!).removeValue()
+    val dialog = ProgressDialog(this).apply {
+        setTitle("Please wait")
+        setMessage("Deleting $bookTitle ...")
+        show()
+    }
+    FirebaseStorage.getInstance().getReferenceFromUrl(bookUrl!!).delete().addOnSuccessListener {
+        FirebaseDatabase.getInstance().getReference(DATA.BOOKS).child(bookId!!).removeValue()
             .addOnSuccessListener {
                 dialog.dismiss()
-                Toast.makeText(this, "Books Deleted Successfully...", Toast.LENGTH_SHORT)
-                    .show()
+                Toast.makeText(this, "Books Deleted Successfully...", Toast.LENGTH_SHORT).show()
                 dialogDelete.dismiss()
                 incrementItemRemoveCount(DATA.USERS, publisher, DATA.BOOKS_COUNT)
-            }.addOnFailureListener { e: Exception ->
+            }.addOnFailureListener { e ->
                 dialog.dismiss()
-                Toast.makeText(this, "" + e.message, Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, e.message, Toast.LENGTH_SHORT).show()
             }
-    }.addOnFailureListener { e: Exception ->
+    }.addOnFailureListener { e ->
         dialog.dismiss()
-        Toast.makeText(this, "" + e.message, Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, e.message, Toast.LENGTH_SHORT).show()
     }
 }
 
 fun Context.downloadBook(bookId: String, bookTitle: String, bookUrl: String?) {
     val nameWithExtension = "$bookTitle.pdf"
+    val progressDialog = ProgressDialog(this).apply {
+        setTitle("Please wait")
+        setMessage("Downloading $nameWithExtension...")
+        setCanceledOnTouchOutside(false)
+        show()
+    }
 
-    val progressDialog = ProgressDialog(this)
-    progressDialog.setTitle("Please wait")
-    progressDialog.setMessage("Downloading $nameWithExtension...")
-    progressDialog.setCanceledOnTouchOutside(false)
-    progressDialog.show()
-
-    val storageReference: StorageReference =
-        FirebaseStorage.getInstance().getReferenceFromUrl(bookUrl!!)
-    storageReference.getBytes(DATA.MAX_BYTES_PDF.toLong())
-        .addOnSuccessListener { bytes: ByteArray ->
+    FirebaseStorage.getInstance().getReferenceFromUrl(bookUrl!!)
+        .getBytes(DATA.MAX_BYTES_PDF.toLong()).addOnSuccessListener { bytes ->
             saveDownloadedBook(this, progressDialog, bytes, nameWithExtension, bookId)
             incrementItemCount(DATA.BOOKS, bookId, DATA.DOWNLOADS_COUNT)
-        }.addOnFailureListener { e: Exception ->
+        }.addOnFailureListener { e ->
             progressDialog.dismiss()
-            Toast.makeText(
-                this,
-                "Failed to download due to " + e.message,
-                Toast.LENGTH_SHORT
-            ).show()
+            Toast.makeText(this, "Failed to download due to ${e.message}", Toast.LENGTH_SHORT)
+                .show()
         }
 }
 
 fun Context.closeApp(a: Activity?) {
-    val dialog = Dialog(this)
     val binding = DialogCloseAppBinding.inflate(LayoutInflater.from(this))
-    dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
-    dialog.setContentView(binding.root)
-    dialog.setCancelable(true)
-    dialog.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-    val lp: WindowManager.LayoutParams = WindowManager.LayoutParams()
-    lp.copyFrom(dialog.window!!.attributes)
-    lp.width = WindowManager.LayoutParams.WRAP_CONTENT
-    lp.height = WindowManager.LayoutParams.WRAP_CONTENT
-    binding.yes.setOnClickListener { a!!.finish() }
-    binding.no.setOnClickListener { dialog.cancel() }
-    dialog.show()
-    dialog.window!!.attributes = lp
+    showCustomDialog(binding) { dialog ->
+        binding.yes.setOnClickListener { a?.finish() }
+        binding.no.setOnClickListener { dialog.cancel() }
+    }
 }
 
 fun Context.dialogLogout() {
-    val dialog = Dialog(this)
     val binding = DialogLogoutBinding.inflate(LayoutInflater.from(this))
-    dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
-    dialog.setContentView(binding.root)
-    dialog.setCancelable(true)
-    dialog.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-    val lp: WindowManager.LayoutParams = WindowManager.LayoutParams()
-    lp.copyFrom(dialog.window!!.attributes)
-    lp.width = WindowManager.LayoutParams.WRAP_CONTENT
-    lp.height = WindowManager.LayoutParams.WRAP_CONTENT
-    binding.yes.setOnClickListener {
-        FirebaseAuth.getInstance().signOut()
-        this.intentClear(AuthActivity::class.java)
+    showCustomDialog(binding) { dialog ->
+        binding.yes.setOnClickListener {
+            FirebaseAuth.getInstance().signOut()
+            openActivity<AuthActivity>(true)
+        }
+        binding.no.setOnClickListener { dialog.cancel() }
     }
-    binding.no.setOnClickListener { dialog.cancel() }
-    dialog.show()
-    dialog.window!!.attributes = lp
 }
 
 fun Context.shareApp() {
@@ -216,122 +181,74 @@ fun Context.rateApp() {
 }
 
 fun Context.dialogAboutApp() {
-    val dialog = Dialog(this)
     val binding = DialogAboutAppBinding.inflate(LayoutInflater.from(this))
-    dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
-    dialog.setContentView(binding.root)
-    dialog.setCancelable(true)
-    dialog.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-    val lp: WindowManager.LayoutParams = WindowManager.LayoutParams()
-    lp.copyFrom(dialog.window!!.attributes)
-    lp.width = WindowManager.LayoutParams.WRAP_CONTENT
-    lp.height = WindowManager.LayoutParams.WRAP_CONTENT
-    binding.website.setOnClickListener {
-        this.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(DATA.WEB_SITE)))
-    }
-    binding.facebook.setOnClickListener {
-        val openFacebookIntent = try {
-            this.packageManager.getPackageInfo("com.facebook.katana", 0)
-            Intent(Intent.ACTION_VIEW, Uri.parse("fb://profile/" + DATA.FB_ID))
-        } catch (e: Exception) {
-            Intent(Intent.ACTION_VIEW, Uri.parse("https://www.facebook.com/" + DATA.FB_ID))
+    showCustomDialog(binding) {
+        binding.website.setOnClickListener {
+            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(DATA.WEB_SITE)))
         }
-        this.startActivity(openFacebookIntent)
+        binding.facebook.setOnClickListener {
+            val fbUri = try {
+                packageManager.getPackageInfo("com.facebook.katana", 0)
+                Uri.parse("fb://profile/${DATA.FB_ID}")
+            } catch (e: Exception) {
+                Uri.parse("https://www.facebook.com/${DATA.FB_ID}")
+            }
+            startActivity(Intent(Intent.ACTION_VIEW, fbUri))
+        }
     }
-    dialog.show()
-    dialog.window!!.attributes = lp
 }
 
 fun Context.moreOptionDialog(item: Book?) {
-    val bookId = item!!.id
-    val bookUrl = item.url
-    val bookTitle = item.title
-    val publisher = item.publisher
-
+    item ?: return
     val options = arrayOf("Edit", "Delete")
-
-    val builder = AlertDialog.Builder(this)
-    builder.setTitle("Choose Options").setItems(options) { _, which ->
-        if (which == 0) {
-            this.intentExtra(BookEditActivity::class.java, DATA.BOOK_ID, bookId)
-        } else if (which == 1) {
-            this.dialogOptionDelete(
-                DATA.EMPTY + publisher, DATA.EMPTY + bookId,
-                DATA.EMPTY + bookUrl, DATA.EMPTY + bookTitle
-            )
-        }
+    AlertDialog.Builder(this).setTitle("Choose Options").setItems(options) { _, which ->
+        if (which == 0) openActivity<BookEditActivity>(false, DATA.BOOK_ID to item.id)
+        else if (which == 1) dialogOptionDelete(item.publisher, item.id, item.url, item.title!!)
     }.show()
 }
 
 fun Context.dialogOptionDelete(
     publisher: String?, bookId: String?, bookUrl: String?, bookTitle: String,
 ) {
-    val dialog = Dialog(this)
     val binding = DialogLogoutBinding.inflate(LayoutInflater.from(this))
-    dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
-    dialog.setContentView(binding.root)
-    dialog.setCancelable(true)
-    dialog.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-    val lp: WindowManager.LayoutParams = WindowManager.LayoutParams()
-    lp.copyFrom(dialog.window!!.attributes)
-    lp.width = WindowManager.LayoutParams.WRAP_CONTENT
-    lp.height = WindowManager.LayoutParams.WRAP_CONTENT
-    binding.title.setText(R.string.do_you_want_to_delete_the_book)
-    binding.yes.setOnClickListener {
-        this.deleteBook(dialog, publisher, bookId, bookUrl, bookTitle)
-    }
-    binding.no.setOnClickListener { dialog.dismiss() }
-    dialog.show()
-    dialog.window!!.attributes = lp
-}
-
-// Activity Extensions
-fun Activity.cropImageSquare() {
-    CropImage.activity()
-        .setGuidelines(CropImageView.Guidelines.ON)
-        .setMultiTouchEnabled(true)
-        .setMinCropResultSize(DATA.MIN_SQUARE, DATA.MIN_SQUARE)
-        .setAspectRatio(1, 1)
-        .setCropShape(CropImageView.CropShape.OVAL)
-        .start(this)
-}
-
-// ImageView Extensions
-fun ImageView.glide(isUser: Boolean, url: String?) {
-    try {
-        if (url == DATA.BASIC) {
-            if (isUser) {
-                this.setImageResource(R.drawable.basic_user)
-            } else {
-                this.setImageResource(R.drawable.basic_book)
-            }
-        } else {
-            this.load(url) {
-                placeholder(R.color.image_profile)
-                crossfade(true)
-            }
+    showCustomDialog(binding) { dialog ->
+        binding.title.setText(R.string.do_you_want_to_delete_the_book)
+        binding.yes.setOnClickListener {
+            deleteBook(dialog, publisher, bookId, bookUrl, bookTitle)
         }
-    } catch (e: Exception) {
-        this.setImageResource(R.drawable.basic_book)
+        binding.no.setOnClickListener { dialog.dismiss() }
+    }
+}
+
+fun Activity.cropImageSquare() {
+    CropImage.activity().setGuidelines(CropImageView.Guidelines.ON).setMultiTouchEnabled(true)
+        .setMinCropResultSize(DATA.MIN_SQUARE, DATA.MIN_SQUARE).setAspectRatio(1, 1)
+        .setCropShape(CropImageView.CropShape.OVAL).start(this)
+}
+
+fun ImageView.glide(isUser: Boolean, url: String?) {
+    val placeholder = if (isUser) R.drawable.basic_user else R.drawable.basic_book
+    if (url == DATA.BASIC || url == null) {
+        setImageResource(placeholder)
+    } else {
+        load(url) {
+            placeholder(R.color.image_profile)
+            error(placeholder)
+            crossfade(true)
+        }
     }
 }
 
 fun ImageView.glideBlur(isUser: Boolean, url: String, level: Int) {
-    try {
-        if (url == DATA.BASIC) {
-            if (isUser) {
-                this.setImageResource(R.drawable.basic_user)
-            } else {
-                this.setImageResource(R.drawable.basic_book)
-            }
-        } else {
-            this.load(url) {
-                placeholder(R.color.image_profile)
-                transformations(SimpleBlurTransformation(level.toFloat()))
-            }
+    val placeholder = if (isUser) R.drawable.basic_user else R.drawable.basic_book
+    if (url == DATA.BASIC) {
+        setImageResource(placeholder)
+    } else {
+        load(url) {
+            placeholder(R.color.image_profile)
+            error(placeholder)
+            transformations(SimpleBlurTransformation(level.toFloat()))
         }
-    } catch (e: Exception) {
-        this.setImageResource(R.drawable.basic_book)
     }
 }
 
@@ -355,12 +272,10 @@ fun ImageView.isFavorite(id: String?, userId: String?) {
 
 fun ImageView.checkFavorite(bookId: String?) {
     if (this.tag == "add") {
-        FirebaseDatabase.getInstance().getReference(DATA.FAVORITES)
-            .child(DATA.FirebaseUserUid)
+        FirebaseDatabase.getInstance().getReference(DATA.FAVORITES).child(DATA.FirebaseUserUid)
             .child(bookId!!).setValue(true)
     } else {
-        FirebaseDatabase.getInstance()
-            .getReference(DATA.FAVORITES).child(DATA.FirebaseUserUid)
+        FirebaseDatabase.getInstance().getReference(DATA.FAVORITES).child(DATA.FirebaseUserUid)
             .child(bookId!!).removeValue()
     }
 }
@@ -395,29 +310,28 @@ fun ImageView.isLoves(bookId: String?) {
     })
 }
 
-// TextView Extensions
 fun TextView.loadPdfInfo(pdfUrl: String?) {
-    val ref: StorageReference = FirebaseStorage.getInstance().getReferenceFromUrl(pdfUrl!!)
-    ref.metadata.addOnSuccessListener { storageMetadata: StorageMetadata ->
-        val bytes: Double = storageMetadata.sizeBytes.toDouble()
+    pdfUrl ?: return
+    FirebaseStorage.getInstance().getReferenceFromUrl(pdfUrl).metadata.addOnSuccessListener {
+        val bytes = it.sizeBytes.toDouble()
         val kb = bytes / 1024
         val mb = kb / 1024
-        if (mb > 1) this.text = String.format("%.2f", mb) + " MB"
-        else if (kb > 1) this.text = String.format("%.2f", mb) + " MB"
-        else this.text = String.format("%.2f", bytes) + " bytes"
+        text = if (mb > 1) "%.2f MB".format(mb)
+        else if (kb > 1) "%.2f KB".format(kb)
+        else "$bytes bytes"
     }
 }
 
 fun TextView.loadCategory(categoryId: String?) {
-    val ref: DatabaseReference = FirebaseDatabase.getInstance().getReference(DATA.CATEGORIES)
-    ref.child(categoryId!!).addListenerForSingleValueEvent(object : ValueEventListener {
-        override fun onDataChange(snapshot: DataSnapshot) {
-            val categoryName = DATA.EMPTY + snapshot.child(DATA.CATEGORY).value
-            this@loadCategory.text = categoryName
-        }
+    categoryId ?: return
+    FirebaseDatabase.getInstance().getReference(DATA.CATEGORIES).child(categoryId)
+        .addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                text = snapshot.child(DATA.CATEGORY).value.toString()
+            }
 
-        override fun onCancelled(error: DatabaseError) {}
-    })
+            override fun onCancelled(error: DatabaseError) {}
+        })
 }
 
 fun TextView.nrLoves(bookId: String?) {
@@ -432,7 +346,6 @@ fun TextView.nrLoves(bookId: String?) {
     })
 }
 
-// AdView Extensions
 fun AdView.bannerAd(context: Context, bannerName: String?) {
     MobileAds.initialize(context) { }
     val adRequest = AdRequest.Builder().build()
@@ -480,42 +393,19 @@ fun Context.bannerAdTwo(
     }
 }
 
-// Other Top-level Utilities
-fun incrementItemCount(database: String?, id: String?, childDB: String?) {
-    val ref = FirebaseDatabase.getInstance().getReference(database!!)
-    ref.child(id!!).addListenerForSingleValueEvent(object : ValueEventListener {
+fun incrementItemCount(database: String?, id: String?, childDB: String?) =
+    updateItemCount(database, id, childDB, 1)
+
+fun incrementItemRemoveCount(database: String?, id: String?, childDB: String?) =
+    updateItemCount(database, id, childDB, -1)
+
+private fun updateItemCount(database: String?, id: String?, childDB: String?, increment: Int) {
+    if (database == null || id == null || childDB == null) return
+    val ref = FirebaseDatabase.getInstance().getReference(database).child(id)
+    ref.addListenerForSingleValueEvent(object : ValueEventListener {
         override fun onDataChange(snapshot: DataSnapshot) {
-            var itemsCount = DATA.EMPTY + snapshot.child(childDB!!).value
-            if (itemsCount == DATA.EMPTY || itemsCount == DATA.NULL)
-                itemsCount = DATA.EMPTY + DATA.ZERO
-
-            val newItemsCount = itemsCount.toInt() + 1
-            val hashMap = HashMap<String?, Any>()
-            hashMap[childDB] = newItemsCount
-            val reference = FirebaseDatabase.getInstance().getReference(database)
-            reference.child(id).updateChildren(hashMap)
-        }
-
-        override fun onCancelled(error: DatabaseError) {}
-    })
-}
-
-fun incrementItemRemoveCount(database: String?, id: String?, childDB: String?) {
-    val ref = FirebaseDatabase.getInstance().getReference(database!!)
-    ref.child(id!!).addListenerForSingleValueEvent(object : ValueEventListener {
-        override fun onDataChange(snapshot: DataSnapshot) {
-            var lovesCount = DATA.EMPTY + snapshot.child(childDB!!).value
-            if (lovesCount == DATA.EMPTY || lovesCount == DATA.NULL)
-                lovesCount = DATA.EMPTY + DATA.ZERO
-
-            val i = lovesCount.toInt()
-            if (i > 0) {
-                val removeLovesCount = lovesCount.toInt() - 1
-                val hashMap = HashMap<String?, Any>()
-                hashMap[childDB] = removeLovesCount
-                val reference = FirebaseDatabase.getInstance().getReference(database)
-                reference.child(id).updateChildren(hashMap)
-            }
+            val count = snapshot.child(childDB).value.toString().toIntOrNull() ?: 0
+            ref.updateChildren(mapOf(childDB to (count + increment).coerceAtLeast(0)))
         }
 
         override fun onCancelled(error: DatabaseError) {}
@@ -542,29 +432,19 @@ private fun saveDownloadedBook(
         incrementItemCount(DATA.BOOKS, bookId, DATA.DOWNLOADS_COUNT)
     } catch (e: Exception) {
         Toast.makeText(
-            context,
-            "Failed saving to Download Folder due to " + e.message,
-            Toast.LENGTH_SHORT
+            context, "Failed saving to Download Folder due to " + e.message, Toast.LENGTH_SHORT
         ).show()
         progressDialog.dismiss()
     }
 }
 
 fun AdCount(userId: String?, bannerName: String?, key: String?) {
-    val ref: DatabaseReference =
-        FirebaseDatabase.getInstance().getReference(DATA.AD_S).child(userId!!)
-    ref.child(bannerName!!).addListenerForSingleValueEvent(object : ValueEventListener {
+    if (userId == null || bannerName == null || key == null) return
+    val ref = FirebaseDatabase.getInstance().getReference(DATA.AD_S).child(userId).child(bannerName)
+    ref.addListenerForSingleValueEvent(object : ValueEventListener {
         override fun onDataChange(snapshot: DataSnapshot) {
-            var adCount = DATA.EMPTY + snapshot.child(key!!).value
-            if (adCount == DATA.EMPTY || adCount == DATA.NULL) {
-                adCount = "0"
-            }
-            val newAdCount = adCount.toLong() + 1
-            val hashMap = HashMap<String?, Any>()
-            hashMap[key] = newAdCount
-            val reference: DatabaseReference =
-                FirebaseDatabase.getInstance().getReference(DATA.AD_S).child(userId)
-            reference.child(bannerName).updateChildren(hashMap).addOnCompleteListener {
+            val count = snapshot.child(key).value.toString().toLongOrNull() ?: 0L
+            ref.updateChildren(mapOf(key to count + 1)).addOnCompleteListener {
                 AdName(DATA.FirebaseUserUid, bannerName)
             }
         }
@@ -574,20 +454,12 @@ fun AdCount(userId: String?, bannerName: String?, key: String?) {
 }
 
 fun AdUserCount(userId: String?, key: String?, number: Int) {
-    val ref: DatabaseReference =
-        FirebaseDatabase.getInstance().getReference(DATA.USERS).child(userId!!)
+    if (userId == null || key == null) return
+    val ref = FirebaseDatabase.getInstance().getReference(DATA.USERS).child(userId)
     ref.addListenerForSingleValueEvent(object : ValueEventListener {
         override fun onDataChange(snapshot: DataSnapshot) {
-            var adCount = DATA.EMPTY + snapshot.child(key!!).value
-            if (adCount == DATA.EMPTY || adCount == DATA.NULL) {
-                adCount = "0"
-            }
-            val newAdCount = adCount.toLong() + number
-            val hashMap = HashMap<String?, Any>()
-            hashMap[key] = newAdCount
-            val reference: DatabaseReference =
-                FirebaseDatabase.getInstance().getReference(DATA.USERS).child(userId)
-            reference.updateChildren(hashMap)
+            val count = snapshot.child(key).value.toString().toLongOrNull() ?: 0L
+            ref.updateChildren(mapOf(key to count + number))
         }
 
         override fun onCancelled(error: DatabaseError) {}
@@ -595,17 +467,12 @@ fun AdUserCount(userId: String?, key: String?, number: Int) {
 }
 
 fun AdName(userId: String?, bannerName: String?) {
-    val ref: DatabaseReference =
-        FirebaseDatabase.getInstance().getReference(DATA.AD_S).child(userId!!)
-    ref.child(bannerName!!).addListenerForSingleValueEvent(object : ValueEventListener {
+    if (userId == null || bannerName == null) return
+    val ref = FirebaseDatabase.getInstance().getReference(DATA.AD_S).child(userId).child(bannerName)
+    ref.addListenerForSingleValueEvent(object : ValueEventListener {
         override fun onDataChange(snapshot: DataSnapshot) {
-            val item: ADs = snapshot.getValue(ADs::class.java)!!
-            if (item.name == null) {
-                val hashMap = HashMap<String?, Any?>()
-                hashMap[DATA.NAME] = bannerName
-                val reference: DatabaseReference =
-                    FirebaseDatabase.getInstance().getReference(DATA.AD_S).child(userId)
-                reference.child(bannerName).updateChildren(hashMap)
+            if (snapshot.getValue(ADs::class.java)?.name == null) {
+                ref.updateChildren(mapOf(DATA.NAME to bannerName))
             }
         }
 
@@ -619,7 +486,6 @@ fun Uri.getFileExtension(context: Context): String {
     return mime.getExtensionFromMimeType(cR.getType(this))!!
 }
 
-// Transformation
 class SimpleBlurTransformation(private val radius: Float) : Transformation {
     override val cacheKey: String = "${SimpleBlurTransformation::class.java.name}-$radius"
 

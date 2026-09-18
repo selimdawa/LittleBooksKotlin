@@ -6,6 +6,7 @@ import android.app.ProgressDialog
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
+import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.net.Uri
@@ -18,10 +19,14 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.core.graphics.createBitmap
+import androidx.core.graphics.scale
 import coil3.load
 import coil3.request.crossfade
 import coil3.request.placeholder
 import coil3.request.transformations
+import coil3.size.Size
+import coil3.transform.Transformation
 import com.flatcode.littlebooksadmin.R
 import com.flatcode.littlebooksadmin.model.Book
 import com.flatcode.littlebooksadmin.model.Category
@@ -38,31 +43,19 @@ import com.theartofdev.edmodo.cropper.CropImageView
 import java.io.FileOutputStream
 import java.text.MessageFormat
 
-fun Context.intentClear(c: Class<*>?) {
-    val intent = Intent(this, c)
-    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
-    this.startActivity(intent)
-}
+import androidx.core.os.bundleOf
 
-fun Context.intent1(c: Class<*>?) {
-    val intent = Intent(this, c)
-    this.startActivity(intent)
-}
-
-fun Context.intentExtra(c: Class<*>?, key: String?, value: String?) {
-    val intent = Intent(this, c)
-    intent.putExtra(key, value)
-    this.startActivity(intent)
-}
-
-fun Context.intentExtra2(
-    c: Class<*>?, key: String?, value: String?,
-    key2: String?, value2: String?,
+inline fun <reified T : Activity> Context.openActivity(
+    clear: Boolean = false,
+    vararg extras: Pair<String, Any?>
 ) {
-    val intent = Intent(this, c)
-    intent.putExtra(key, value)
-    intent.putExtra(key2, value2)
-    this.startActivity(intent)
+    val intent = Intent(this, T::class.java).apply {
+        if (clear) addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
+        if (extras.isNotEmpty()) {
+            putExtras(bundleOf(*extras))
+        }
+    }
+    startActivity(intent)
 }
 
 fun Context.deleteBook(
@@ -258,8 +251,7 @@ fun ImageView.loadWithGlideBlur(isUser: Boolean, Url: String, level: Int) {
 }
 
 fun ImageView.isFavorite(Id: String?, UserId: String?) {
-    val reference =
-        FirebaseDatabase.getInstance().reference.child(DATA.FAVORITES).child(UserId!!)
+    val reference = FirebaseDatabase.getInstance().reference.child(DATA.FAVORITES).child(UserId!!)
     reference.addValueEventListener(object : ValueEventListener {
         override fun onDataChange(dataSnapshot: DataSnapshot) {
             if (dataSnapshot.child(Id!!).exists()) {
@@ -277,11 +269,11 @@ fun ImageView.isFavorite(Id: String?, UserId: String?) {
 
 fun ImageView.checkFavorite(bookId: String?) {
     if (this.tag == "add") {
-        FirebaseDatabase.getInstance().reference.child(DATA.FAVORITES)
-            .child(DATA.FirebaseUserUid).child(bookId!!).setValue(true)
+        FirebaseDatabase.getInstance().reference.child(DATA.FAVORITES).child(DATA.FirebaseUserUid)
+            .child(bookId!!).setValue(true)
     } else {
-        FirebaseDatabase.getInstance().reference.child(DATA.FAVORITES)
-            .child(DATA.FirebaseUserUid).child(bookId!!).removeValue()
+        FirebaseDatabase.getInstance().reference.child(DATA.FAVORITES).child(DATA.FirebaseUserUid)
+            .child(bookId!!).removeValue()
     }
 }
 
@@ -306,10 +298,9 @@ fun Context.moreOptionDialog(item: Book?) {
     val options = arrayOf("Edit", "Delete")
 
     val builder = AlertDialog.Builder(this)
-    builder.setTitle("Choose Options")
-        .setItems(options) { dialog: DialogInterface?, which: Int ->
+    builder.setTitle("Choose Options").setItems(options) { dialog: DialogInterface?, which: Int ->
             if (which == 0) {
-                this.intentExtra(BookEditActivity::class.java, DATA.BOOK_ID, bookId)
+                this.openActivity<BookEditActivity>(extras = arrayOf(DATA.BOOK_ID to bookId))
             } else if (which == 1) {
                 this.dialogOptionDelete(
                     DATA.EMPTY + publisher,
@@ -333,10 +324,9 @@ fun Context.moreCategories(item: Category) {
     val options = arrayOf("Edit", "Delete")
 
     val builder = AlertDialog.Builder(this)
-    builder.setTitle("Choose Options")
-        .setItems(options) { dialog: DialogInterface?, which: Int ->
+    builder.setTitle("Choose Options").setItems(options) { dialog: DialogInterface?, which: Int ->
             if (which == 0) {
-                this.intentExtra(CategoryEditActivity::class.java, DATA.CATEGORY_ID, id)
+                this.openActivity<CategoryEditActivity>(extras = arrayOf(DATA.CATEGORY_ID to id))
             } else if (which == 1) {
                 this.dialogOptionDelete(
                     DATA.EMPTY + publisher,
@@ -441,8 +431,7 @@ fun Context.dialogUpdateEditorChoice(dialogDelete: Dialog, bookId: String?) {
         dialogDelete.dismiss()
     }.addOnFailureListener { e: Exception ->
         dialog.dismiss()
-        Toast.makeText(this, "Failed to update db duo to " + e.message, Toast.LENGTH_SHORT)
-            .show()
+        Toast.makeText(this, "Failed to update db duo to " + e.message, Toast.LENGTH_SHORT).show()
         dialogDelete.dismiss()
     }
 }
@@ -460,8 +449,7 @@ fun Context.addToEditorsChoice(activity: Activity?, bookId: String?, number: Int
         activity!!.finish()
     }.addOnFailureListener { e: Exception ->
         dialog.dismiss()
-        Toast.makeText(this, "Failed to update db duo to " + e.message, Toast.LENGTH_SHORT)
-            .show()
+        Toast.makeText(this, "Failed to update db duo to " + e.message, Toast.LENGTH_SHORT).show()
     }
 }
 
@@ -469,4 +457,58 @@ fun Context.getFileExtension(uri: Uri?): String? {
     val cR = this.contentResolver
     val mime = MimeTypeMap.getSingleton()
     return mime.getExtensionFromMimeType(cR.getType(uri!!))
+}
+
+class SimpleBlurTransformation(private val radius: Float) : Transformation() {
+    override val cacheKey: String = "${SimpleBlurTransformation::class.java.name}-$radius"
+
+    override suspend fun transform(input: Bitmap, size: Size): Bitmap {
+        if (input.isRecycled) return input
+        val scaleFactor = 6
+        val w = (input.width / scaleFactor).coerceAtLeast(1)
+        val h = (input.height / scaleFactor).coerceAtLeast(1)
+        val small = input.scale(w, h, true)
+        val r = (radius / scaleFactor).toInt().coerceAtLeast(1)
+        val pix = IntArray(w * h)
+        small.getPixels(pix, 0, w, 0, 0, w, h)
+        val blurred = IntArray(w * h)
+        for (y in 0 until h) for (x in 0 until w) {
+            var rs = 0L
+            var gs = 0L
+            var bs = 0L
+            var c = 0
+            for (i in -r..r) {
+                val xi = (x + i).coerceIn(0, w - 1)
+                val p = pix[y * w + xi]
+                rs += (p shr 16) and 0xff
+                gs += (p shr 8) and 0xff
+                bs += p and 0xff
+                c++
+            }
+            blurred[y * w + x] =
+                (0xff shl 24) or ((rs / c).toInt() shl 16) or ((gs / c).toInt() shl 8) or (bs / c).toInt()
+        }
+        for (x in 0 until w) for (y in 0 until h) {
+            var rs = 0L
+            var gs = 0L
+            var bs = 0L
+            var c = 0
+            for (i in -r..r) {
+                val yi = (y + i).coerceIn(0, h - 1)
+                val p = blurred[yi * w + x]
+                rs += (p shr 16) and 0xff
+                gs += (p shr 8) and 0xff
+                bs += p and 0xff
+                c++
+            }
+            pix[y * w + x] =
+                (0xff shl 24) or ((rs / c).toInt() shl 16) or ((gs / c).toInt() shl 8) or (bs / c).toInt()
+        }
+        val output = createBitmap(w, h, Bitmap.Config.ARGB_8888)
+        output.setPixels(pix, 0, w, 0, 0, w, h)
+        val finalOutput = output.scale(input.width, input.height, true)
+        if (output != finalOutput) output.recycle()
+        if (small != input) small.recycle()
+        return finalOutput
+    }
 }

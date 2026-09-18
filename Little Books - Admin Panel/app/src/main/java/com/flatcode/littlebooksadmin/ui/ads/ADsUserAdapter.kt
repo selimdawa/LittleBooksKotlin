@@ -14,9 +14,7 @@ import com.flatcode.littlebooksadmin.filter.ADsUserFilter
 import com.flatcode.littlebooksadmin.model.User
 import com.flatcode.littlebooksadmin.Application
 import com.flatcode.littlebooksadmin.ui.ads.AdsInfoActivity
-import com.flatcode.littlebooksadmin.utils.DATA
-import com.flatcode.littlebooksadmin.utils.intentExtra
-import com.flatcode.littlebooksadmin.utils.loadWithGlide
+import com.flatcode.littlebooksadmin.utils.*
 import com.flatcode.littlebooksadmin.databinding.ItemAdsUserBinding
 import java.text.MessageFormat
 
@@ -60,7 +58,7 @@ class ADsUserAdapter(private val context: Context, var list: ArrayList<User?>, i
         holder.binding.numberADsClick.text = MessageFormat.format("{0}{1}", DATA.EMPTY, adClicked)
 
         holder.binding.item.setOnClickListener {
-            context.intentExtra(AdsInfoActivity::class.java, DATA.PROFILE_ID, userId)
+            context.openActivity<AdsInfoActivity>(extras = arrayOf(DATA.PROFILE_ID to userId))
         }
     }
 

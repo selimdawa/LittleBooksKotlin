@@ -21,7 +21,7 @@ import com.flatcode.littlebooks.R
 import com.flatcode.littlebooks.utils.DATA
 import com.flatcode.littlebooks.utils.glide
 import com.flatcode.littlebooks.utils.glideBlur
-import com.flatcode.littlebooks.utils.intentExtra
+import com.flatcode.littlebooks.utils.openActivity
 import com.flatcode.littlebooks.utils.loadCategory
 import com.flatcode.littlebooks.utils.loadPdfInfo
 import com.flatcode.littlebooks.databinding.ActivityBookDetailsBinding
@@ -71,7 +71,7 @@ class BookDetailsActivity : AppCompatActivity() {
             viewModel.toggleFavorite(DATA.FirebaseUserUid, bookId!!, !isFavorite)
         }
         binding!!.read.setOnClickListener {
-            context.intentExtra(BookViewActivity::class.java, DATA.BOOK_ID, bookId)
+            context.openActivity<BookViewActivity>(false, DATA.BOOK_ID to bookId)
         }
         binding!!.addComment.setOnClickListener { addCommentDialog() }
 

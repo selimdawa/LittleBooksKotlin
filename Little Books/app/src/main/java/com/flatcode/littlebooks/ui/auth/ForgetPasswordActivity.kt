@@ -15,7 +15,7 @@ import androidx.core.view.updateLayoutParams
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import com.flatcode.littlebooks.utils.intent1
+import com.flatcode.littlebooks.utils.openActivity
 import com.flatcode.littlebooks.databinding.ActivityForgetPasswordBinding
 import com.flatcode.littlebooks.utils.Resource
 import com.flatcode.littlebooks.viewmodel.AuthViewModel
@@ -54,11 +54,11 @@ class ForgetPasswordActivity : AppCompatActivity() {
         dialog!!.setCanceledOnTouchOutside(false)
 
         binding!!.noAccount.setOnClickListener {
-            context.intent1(RegisterActivity::class.java)
+            context.openActivity<RegisterActivity>()
             finish()
         }
         binding!!.login.setOnClickListener {
-            context.intent1(LoginActivity::class.java)
+            context.openActivity<LoginActivity>()
             finish()
         }
         binding!!.go.setOnClickListener { validateDate() }

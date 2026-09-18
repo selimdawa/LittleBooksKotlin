@@ -19,7 +19,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.flatcode.littlebooksadmin.R
 import com.flatcode.littlebooksadmin.utils.DATA
-import com.flatcode.littlebooksadmin.utils.VOID
+import com.flatcode.littlebooksadmin.utils.*
 import com.flatcode.littlebooksadmin.utils.Resource
 import com.flatcode.littlebooksadmin.databinding.ActivityProfileEditBinding
 import com.flatcode.littlebooksadmin.ui.profile.ProfileViewModel
@@ -64,7 +64,7 @@ class ProfileEditActivity : AppCompatActivity() {
         binding.toolbar.nameSpace.setText(R.string.edit_profile)
         binding.toolbar.back.setOnClickListener { onBackPressed() }
 
-        binding.image.setOnClickListener { VOID.cropImageSquare(activity) }
+        binding.image.setOnClickListener { activity?.cropImageSquare() }
         binding.go.setOnClickListener { validateData() }
     }
 
@@ -78,7 +78,7 @@ class ProfileEditActivity : AppCompatActivity() {
                             is Resource.Success -> {
                                 resource.data?.let { user ->
                                     binding.nameEt.setText(user.username)
-                                    VOID.Glide(true, context, user.profileImage ?: DATA.BASIC, binding.profileImage)
+                                    binding.profileImage.loadWithGlide(true, user.profileImage ?: DATA.BASIC)
                                 }
                             }
                             is Resource.Error -> {
@@ -119,7 +119,7 @@ class ProfileEditActivity : AppCompatActivity() {
             viewModel.updateProfile(
                 username,
                 imageUri,
-                if (imageUri != null) VOID.getFileExtension(imageUri, context) else null
+                if (imageUri != null) context.getFileExtension(imageUri) else null
             )
         }
     }
@@ -132,7 +132,7 @@ class ProfileEditActivity : AppCompatActivity() {
                 imageUri = uri
                 requestPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), 0)
             } else {
-                VOID.cropImageSquare(activity)
+                activity?.cropImageSquare()
             }
         }
         if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {

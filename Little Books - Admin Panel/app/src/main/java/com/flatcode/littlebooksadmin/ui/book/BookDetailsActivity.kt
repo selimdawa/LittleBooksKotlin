@@ -30,6 +30,7 @@ import com.flatcode.littlebooksadmin.utils.*
 import com.flatcode.littlebooksadmin.databinding.ActivityBookDetailsBinding
 import com.flatcode.littlebooksadmin.databinding.DialogCommentAddBinding
 import com.flatcode.littlebooksadmin.ui.book.BookDetailsViewModel
+import com.flatcode.littlebooksadmin.ui.profile.ProfileActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -83,7 +84,7 @@ class BookDetailsActivity : AppCompatActivity() {
         }
         binding.toolbar.back.setOnClickListener { onBackPressed() }
         binding.read.setOnClickListener {
-            context.intentExtra(BookViewActivity::class.java, DATA.BOOK_ID, bookId)
+            context.openActivity<BookViewActivity>(extras = arrayOf(DATA.BOOK_ID to bookId))
         }
         binding.download.setOnClickListener {
             if (ContextCompat.checkSelfPermission(
@@ -152,7 +153,7 @@ class BookDetailsActivity : AppCompatActivity() {
                                     binding.publisherName.text = user.username
                                     binding.publisherImage.loadWithGlide(true, user.profileImage ?: DATA.BASIC)
                                     binding.userInfo.setOnClickListener {
-                                        context.intentExtra(ProfileActivity::class.java, DATA.PROFILE_ID, user.id)
+                                        context.openActivity<ProfileActivity>(extras = arrayOf(DATA.PROFILE_ID to user.id))
                                     }
                                 }
                             }
@@ -225,8 +226,8 @@ class BookDetailsActivity : AppCompatActivity() {
     private val resultPermissionLauncher =
         registerForActivityResult(RequestPermission()) { isGranted: Boolean ->
             if (isGranted) {
-                VOID.downloadBook(
-                    context, DATA.EMPTY + bookId,
+                context.downloadBook(
+                    DATA.EMPTY + bookId,
                     DATA.EMPTY + bookTitle, DATA.EMPTY + bookUrl
                 )
             } else {

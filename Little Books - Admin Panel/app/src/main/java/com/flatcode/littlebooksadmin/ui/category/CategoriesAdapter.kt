@@ -54,9 +54,8 @@ class CategoriesAdapter(private val context: Context, var list: ArrayList<Catego
 
         holder.binding.more.setOnClickListener { context.moreCategories(item) }
         holder.binding.item.setOnClickListener {
-            context.intentExtra2(
-                BooksCategoryActivity::class.java,
-                DATA.CATEGORY_ID, categoryId, DATA.CATEGORY_NAME, name
+            context.openActivity<BooksCategoryActivity>(
+                extras = arrayOf(DATA.CATEGORY_ID to categoryId, DATA.CATEGORY_NAME to name)
             )
         }
     }

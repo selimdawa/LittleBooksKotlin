@@ -16,7 +16,7 @@ import com.flatcode.littlebooks.utils.DATA
 import com.flatcode.littlebooks.utils.checkFavorite
 import com.flatcode.littlebooks.utils.checkLove
 import com.flatcode.littlebooks.utils.glide
-import com.flatcode.littlebooks.utils.intentExtra
+import com.flatcode.littlebooks.utils.openActivity
 import com.flatcode.littlebooks.utils.isFavorite
 import com.flatcode.littlebooks.utils.isLoves
 import com.flatcode.littlebooks.utils.moreOptionDialog
@@ -87,7 +87,7 @@ class LinearBookAdapter(
         holder.loves.setOnClickListener { holder.loves.checkLove(bookId) }
         holder.more.setOnClickListener { context?.moreOptionDialog(item) }
         holder.item.setOnClickListener {
-            context?.intentExtra(BookDetailsActivity::class.java, DATA.BOOK_ID, item.id)
+            context?.openActivity<BookDetailsActivity>(false, DATA.BOOK_ID to item.id)
         }
     }
 

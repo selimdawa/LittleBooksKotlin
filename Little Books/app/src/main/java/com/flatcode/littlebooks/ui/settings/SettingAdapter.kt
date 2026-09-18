@@ -12,7 +12,7 @@ import com.flatcode.littlebooks.model.Setting
 import com.flatcode.littlebooks.utils.DATA
 import com.flatcode.littlebooks.utils.dialogAboutApp
 import com.flatcode.littlebooks.utils.dialogLogout
-import com.flatcode.littlebooks.utils.intent1
+import com.flatcode.littlebooks.utils.openActivity
 import com.flatcode.littlebooks.utils.rateApp
 import com.flatcode.littlebooks.utils.shareApp
 import com.flatcode.littlebooks.databinding.ItemSettingBinding
@@ -52,7 +52,7 @@ class SettingAdapter(private val context: Context?, private val list: ArrayList<
                 "9" -> context?.dialogLogout()
                 "10" -> context?.shareApp()
                 "11" -> context?.rateApp()
-                else -> context?.intent1(to)
+                else -> to?.let { context?.openActivity(it) }
             }
         }
     }

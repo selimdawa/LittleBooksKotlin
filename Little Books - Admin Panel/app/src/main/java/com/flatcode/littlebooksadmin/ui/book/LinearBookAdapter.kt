@@ -75,7 +75,7 @@ class LinearBookAdapter(private val context: Context, var list: ArrayList<Book?>
             context.moreOptionDialog(item)
         }
         holder.binding.item.setOnClickListener {
-            context.intentExtra(BookDetailsActivity::class.java, DATA.BOOK_ID, item.id)
+            context.openActivity<BookDetailsActivity>(extras = arrayOf(DATA.BOOK_ID to item.id))
         }
     }
 

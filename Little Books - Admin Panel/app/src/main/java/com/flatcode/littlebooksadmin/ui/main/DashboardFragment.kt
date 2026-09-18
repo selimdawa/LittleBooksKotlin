@@ -66,7 +66,7 @@ class DashboardFragment : Fragment() {
 
     private fun initUI() {
         binding.toolbar.image.setOnClickListener {
-            mContext.intentExtra(ProfileActivity::class.java, DATA.PROFILE_ID, DATA.FirebaseUserUid)
+            mContext.openActivity<ProfileActivity>(extras = arrayOf(DATA.PROFILE_ID to DATA.FirebaseUserUid))
         }
 
         adapter = MainAdapter(mContext, list)

@@ -9,7 +9,6 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import com.flatcode.littlebooksadmin.utils.VOID
 import com.flatcode.littlebooksadmin.databinding.ActivityForgetPasswordBinding
 import com.google.firebase.auth.FirebaseAuth
 

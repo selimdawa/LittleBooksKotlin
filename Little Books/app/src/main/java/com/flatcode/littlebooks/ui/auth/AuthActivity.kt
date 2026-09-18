@@ -8,7 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updateLayoutParams
-import com.flatcode.littlebooks.utils.intent1
+import com.flatcode.littlebooks.utils.openActivity
 import com.flatcode.littlebooks.databinding.ActivityAuthBinding
 
 class AuthActivity : AppCompatActivity() {
@@ -31,8 +31,8 @@ class AuthActivity : AppCompatActivity() {
             insets
         }
 
-        binding!!.loginBtn.setOnClickListener { context.intent1(LoginActivity::class.java) }
-        binding!!.skipBtn.setOnClickListener { context.intent1(RegisterActivity::class.java) }
+        binding!!.loginBtn.setOnClickListener { context.openActivity<LoginActivity>() }
+        binding!!.skipBtn.setOnClickListener { context.openActivity<RegisterActivity>() }
     }
 }
 

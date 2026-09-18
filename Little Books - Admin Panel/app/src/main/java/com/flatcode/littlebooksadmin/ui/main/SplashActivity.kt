@@ -42,9 +42,9 @@ class SplashActivity : AppCompatActivity() {
 
     private fun checkUser() {
         if (viewModel.isUserLoggedIn()) {
-            VOID.IntentClear(context, MainActivity::class.java)
+            context.openActivity<MainActivity>(clear = true)
         } else {
-            VOID.IntentClear(context, LoginActivity::class.java)
+            context.openActivity<LoginActivity>(clear = true)
         }
         finish()
     }

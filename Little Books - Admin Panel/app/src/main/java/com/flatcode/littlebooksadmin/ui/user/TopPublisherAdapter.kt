@@ -14,8 +14,7 @@ import com.flatcode.littlebooksadmin.filter.TopPublisherFilter
 import com.flatcode.littlebooksadmin.model.User
 import com.flatcode.littlebooksadmin.R
 import com.flatcode.littlebooksadmin.ui.profile.ProfileActivity
-import com.flatcode.littlebooksadmin.utils.DATA
-import com.flatcode.littlebooksadmin.utils.VOID
+import com.flatcode.littlebooksadmin.utils.*
 import com.flatcode.littlebooksadmin.databinding.ItemTopPublisherBinding
 import java.text.MessageFormat
 
@@ -58,7 +57,7 @@ class TopPublisherAdapter(
         val profileImage = DATA.EMPTY + item.profileImage
         val numberBooks = DATA.EMPTY + item.booksCount
 
-        VOID.Glide(false, context, profileImage, holder.binding.imageProfile)
+        holder.binding.imageProfile.loadWithGlide(false, profileImage)
 
         if (username == DATA.EMPTY) {
             holder.binding.username.visibility = View.GONE
@@ -73,7 +72,7 @@ class TopPublisherAdapter(
         holder.binding.numberBooks.text = numberBooks
 
         holder.binding.item.setOnClickListener {
-            VOID.IntentExtra(context, ProfileActivity::class.java, DATA.PROFILE_ID, userId)
+            context.openActivity<ProfileActivity>(extras = arrayOf(DATA.PROFILE_ID to userId))
         }
     }
 

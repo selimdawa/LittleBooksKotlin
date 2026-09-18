@@ -7,8 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.flatcode.littlebooksadmin.R
-import com.flatcode.littlebooksadmin.utils.DATA
-import com.flatcode.littlebooksadmin.utils.VOID
+import com.flatcode.littlebooksadmin.utils.*
 import com.flatcode.littlebooksadmin.databinding.ActivityPrivacyPolicyBinding
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -35,7 +34,7 @@ class PrivacyPolicyActivity : AppCompatActivity() {
         binding.toolbar.nameSpace.setText(R.string.privacy_policy)
         binding.toolbar.back.setOnClickListener { onBackPressed() }
 
-        binding.edit.setOnClickListener { VOID.Intent1(context, PrivacyPolicyEditActivity::class.java) }
+        binding.edit.setOnClickListener { context.openActivity<PrivacyPolicyEditActivity>() }
     }
 
     private fun privacyPolicy() {

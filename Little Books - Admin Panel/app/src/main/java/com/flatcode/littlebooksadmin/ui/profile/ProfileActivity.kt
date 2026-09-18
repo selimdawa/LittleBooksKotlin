@@ -14,7 +14,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.flatcode.littlebooksadmin.R
 import com.flatcode.littlebooksadmin.utils.DATA
-import com.flatcode.littlebooksadmin.utils.VOID
+import com.flatcode.littlebooksadmin.utils.*
 import com.flatcode.littlebooksadmin.utils.Resource
 import com.flatcode.littlebooksadmin.databinding.ActivityProfileBinding
 import com.flatcode.littlebooksadmin.ui.profile.ProfileViewModel
@@ -57,12 +57,12 @@ class ProfileActivity : AppCompatActivity() {
         if (profileId == DATA.FirebaseUserUid) {
             binding.follow.visibility = View.GONE
             binding.editOrInfo.setImageResource(R.drawable.ic_edit_white)
-            binding.editOrInfo.setOnClickListener { VOID.Intent1(context, ProfileEditActivity::class.java) }
+            binding.editOrInfo.setOnClickListener { context.openActivity<ProfileEditActivity>() }
         } else {
             binding.follow.visibility = View.VISIBLE
             binding.editOrInfo.setImageResource(R.drawable.ic_books)
             binding.editOrInfo.setOnClickListener {
-                VOID.IntentExtra(context, ProfileInfoActivity::class.java, DATA.PROFILE_ID, profileId)
+                context.openActivity<ProfileInfoActivity>(extras = arrayOf(DATA.PROFILE_ID to profileId))
             }
         }
 
@@ -81,7 +81,7 @@ class ProfileActivity : AppCompatActivity() {
                             is Resource.Success -> {
                                 resource.data?.let { user ->
                                     binding.username.text = user.username
-                                    VOID.Glide(true, context, user.profileImage ?: DATA.BASIC, binding.profile)
+                                    binding.profile.loadWithGlide(true, user.profileImage ?: DATA.BASIC)
                                 }
                             }
                             is Resource.Error -> {

@@ -57,7 +57,7 @@ class StaggeredBookAdapter(private val context: Context, var list: ArrayList<Boo
         holder.binding.more.setOnClickListener { context.moreOptionDialog(item) }
 
         holder.item.setOnClickListener {
-            context.intentExtra(BookDetailsActivity::class.java, DATA.BOOK_ID, bookId)
+            context.openActivity<BookDetailsActivity>(extras = arrayOf(DATA.BOOK_ID to bookId))
         }
     }
 
