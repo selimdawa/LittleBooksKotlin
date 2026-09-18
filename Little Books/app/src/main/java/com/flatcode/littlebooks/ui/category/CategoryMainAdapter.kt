@@ -11,7 +11,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.flatcode.littlebooks.ui.book.BooksCategoryActivity
 import com.flatcode.littlebooks.model.Category
 import com.flatcode.littlebooks.utils.DATA
-import com.flatcode.littlebooks.utils.VOID
+import com.flatcode.littlebooks.utils.glide
+import com.flatcode.littlebooks.utils.glideBlur
+import com.flatcode.littlebooks.utils.intentExtra2
 import com.flatcode.littlebooks.databinding.ItemCategoryMainBinding
 
 class CategoryMainAdapter(private val context: Context?, var list: ArrayList<Category?>) :
@@ -30,8 +32,8 @@ class CategoryMainAdapter(private val context: Context?, var list: ArrayList<Cat
         val name = DATA.EMPTY + item.category
         val image = DATA.EMPTY + item.image
 
-        VOID.Glide_(false, context, image, holder.image)
-        VOID.GlideBlur(false, context, image, holder.imageBlur, 50)
+        holder.image.glide(false, image)
+        holder.imageBlur.glideBlur(false, image, 50)
 
         if (name == DATA.EMPTY) {
             holder.name.visibility = View.GONE
@@ -41,8 +43,8 @@ class CategoryMainAdapter(private val context: Context?, var list: ArrayList<Cat
         }
 
         holder.card.setOnClickListener {
-            VOID.IntentExtra2(
-                context, BooksCategoryActivity::class.java, DATA.CATEGORY_ID, id, DATA.CATEGORY_NAME, name
+            context?.intentExtra2(
+                BooksCategoryActivity::class.java, DATA.CATEGORY_ID, id, DATA.CATEGORY_NAME, name
             )
         }
     }

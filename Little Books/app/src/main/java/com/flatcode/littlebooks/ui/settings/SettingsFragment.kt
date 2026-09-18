@@ -18,7 +18,8 @@ import com.flatcode.littlebooks.ui.splash.*
 import com.flatcode.littlebooks.model.Setting
 import com.flatcode.littlebooks.R
 import com.flatcode.littlebooks.utils.DATA
-import com.flatcode.littlebooks.utils.VOID
+import com.flatcode.littlebooks.utils.glide
+import com.flatcode.littlebooks.utils.intentExtra
 import com.flatcode.littlebooks.databinding.FragmentSettingsBinding
 import com.flatcode.littlebooks.utils.Resource
 import com.flatcode.littlebooks.viewmodel.ProfileViewModel
@@ -43,7 +44,7 @@ class SettingsFragment : Fragment() {
         binding!!.recyclerView.adapter = adapter
 
         binding!!.toolbar.item.setOnClickListener {
-            VOID.IntentExtra(context, ProfileActivity::class.java, DATA.PROFILE_ID, DATA.FirebaseUserUid)
+            context?.intentExtra(ProfileActivity::class.java, DATA.PROFILE_ID, DATA.FirebaseUserUid)
         }
 
         observeViewModel()
@@ -58,7 +59,7 @@ class SettingsFragment : Fragment() {
                     viewModel.user.collect { resource ->
                         if (resource is Resource.Success) {
                             val user = resource.data
-                            VOID.Glide_(true, context, user?.profileImage, binding!!.toolbar.imageProfile)
+                            binding!!.toolbar.imageProfile.glide(true, user?.profileImage)
                             binding!!.toolbar.username.text = user?.username
                             binding!!.toolbar.email.text = user?.email
                         }

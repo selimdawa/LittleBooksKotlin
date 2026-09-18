@@ -5,7 +5,7 @@ import android.net.Uri
 import com.flatcode.littlebooks.model.Book
 import com.flatcode.littlebooks.model.Comment
 import com.flatcode.littlebooks.utils.DATA
-import com.flatcode.littlebooks.utils.VOID
+import com.flatcode.littlebooks.utils.getFileExtension
 import com.flatcode.littlebooks.db.BookDao
 import com.flatcode.littlebooks.db.CommentDao
 import com.flatcode.littlebooks.utils.Resource
@@ -206,7 +206,7 @@ class BookRepository @Inject constructor(
         return try {
             val id = db.getReference(DATA.BOOKS).push().key ?: throw Exception("Could not generate book ID")
             val filePathAndName = "PDF/Books/$id"
-            val extension = VOID.getFileExtension(bookUri, context)
+            val extension = bookUri.getFileExtension(context)
             val reference = FirebaseStorage.getInstance().getReference("$filePathAndName.${extension}")
             val task = reference.putFile(bookUri).await()
             val downloadUrl = task.storage.downloadUrl.await()
@@ -219,7 +219,7 @@ class BookRepository @Inject constructor(
     suspend fun uploadBookImage(userId: String, imageUri: Uri, context: Context): Resource<String> {
         return try {
             val filePathAndName = "BookImages/$userId"
-            val extension = VOID.getFileExtension(imageUri, context)
+            val extension = imageUri.getFileExtension(context)
             val reference = FirebaseStorage.getInstance().getReference("$filePathAndName.${extension}")
             val task = reference.putFile(imageUri).await()
             val downloadUrl = task.storage.downloadUrl.await()

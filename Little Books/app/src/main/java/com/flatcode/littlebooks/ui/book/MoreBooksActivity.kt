@@ -18,7 +18,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.RecyclerView
 import com.flatcode.littlebooks.model.Book
 import com.flatcode.littlebooks.utils.DATA
-import com.flatcode.littlebooks.utils.VOID
+import com.flatcode.littlebooks.utils.bannerAd
 import com.flatcode.littlebooks.databinding.ActivityPageLinearBinding
 import com.flatcode.littlebooks.utils.Resource
 import com.flatcode.littlebooks.viewmodel.BookViewModel
@@ -64,7 +64,7 @@ class MoreBooksActivity : AppCompatActivity() {
         binding!!.toolbar.nameSpace.text = name
         binding!!.toolbar.close.setOnClickListener { onBackPressed() }
         binding!!.toolbar.back.setOnClickListener { onBackPressed() }
-        VOID.BannerAd(context, binding!!.adView, DATA.BANNER_SMART_MORE_BOOKS)
+        binding!!.adView.bannerAd(context, DATA.BANNER_SMART_MORE_BOOKS)
 
         if (isReverse == "true") {
             recyclerView = binding!!.recyclerViewReverse

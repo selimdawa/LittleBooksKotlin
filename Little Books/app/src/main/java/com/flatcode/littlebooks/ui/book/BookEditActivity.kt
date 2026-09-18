@@ -22,7 +22,8 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.flatcode.littlebooks.R
 import com.flatcode.littlebooks.utils.DATA
-import com.flatcode.littlebooks.utils.VOID
+import com.flatcode.littlebooks.utils.glide
+import com.flatcode.littlebooks.utils.loadCategory
 import com.flatcode.littlebooks.databinding.ActivityBookEditBinding
 import com.flatcode.littlebooks.utils.Resource
 import com.flatcode.littlebooks.viewmodel.BookViewModel
@@ -100,9 +101,9 @@ class BookEditActivity : AppCompatActivity() {
                             val book = resource.data
                             binding!!.titleEt.setText(book?.title)
                             binding!!.descriptionEt.setText(book?.description)
-                            VOID.Glide_(false, context, book?.image, binding!!.image)
+                            binding!!.image.glide(false, book?.image)
                             selectedId = book?.categoryId ?: ""
-                            VOID.loadCategory(selectedId, binding!!.category)
+                            binding!!.category.loadCategory(selectedId)
                         }
                     }
                 }

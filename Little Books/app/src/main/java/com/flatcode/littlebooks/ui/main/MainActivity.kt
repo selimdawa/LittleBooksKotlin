@@ -22,7 +22,9 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.navOptions
 import com.flatcode.littlebooks.R
 import com.flatcode.littlebooks.utils.DATA
-import com.flatcode.littlebooks.utils.VOID
+import com.flatcode.littlebooks.utils.closeApp
+import com.flatcode.littlebooks.utils.glide
+import com.flatcode.littlebooks.utils.intentExtra
 import com.flatcode.littlebooks.databinding.ActivityMainBinding
 import com.flatcode.littlebooks.ui.profile.ProfileActivity
 import com.flatcode.littlebooks.utils.Resource
@@ -139,7 +141,7 @@ class MainActivity : AppCompatActivity() {
 
         MobileAds.initialize(applicationContext) { }
         binding!!.toolbar.image.setOnClickListener {
-            VOID.IntentExtra(context, ProfileActivity::class.java, DATA.PROFILE_ID, DATA.FirebaseUserUid)
+            context.intentExtra(ProfileActivity::class.java, DATA.PROFILE_ID, DATA.FirebaseUserUid)
         }
         loadUserInfo()
         observeViewModel()
@@ -152,7 +154,7 @@ class MainActivity : AppCompatActivity() {
                     when (resource) {
                         is Resource.Success -> {
                             val user = resource.data
-                            VOID.Glide_(true, context, user?.profileImage, binding!!.toolbar.image)
+                            binding!!.toolbar.image.glide(true, user?.profileImage)
                         }
                         is Resource.Error -> {
                             // Handle error
@@ -172,7 +174,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onBackPressed() {
         super.onBackPressed()
-        VOID.closeApp(context, activity)
+        context.closeApp(activity)
     }
 }
 

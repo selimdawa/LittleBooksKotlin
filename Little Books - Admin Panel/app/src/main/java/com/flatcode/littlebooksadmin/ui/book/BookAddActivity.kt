@@ -23,9 +23,9 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.flatcode.littlebooksadmin.R
 import com.flatcode.littlebooksadmin.utils.DATA
-import com.flatcode.littlebooksadmin.utils.VOID
 import com.flatcode.littlebooksadmin.model.Category
 import com.flatcode.littlebooksadmin.utils.Resource
+import com.flatcode.littlebooksadmin.utils.getFileExtension
 import com.flatcode.littlebooksadmin.databinding.ActivityBookAddBinding
 import com.flatcode.littlebooksadmin.ui.book.BookAddViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -147,12 +147,12 @@ class BookAddActivity : AppCompatActivity() {
         } else {
             viewModel.uploadBook(
                 uri!!,
-                VOID.getFileExtension(uri, context) ?: "pdf",
+                context.getFileExtension(uri) ?: "pdf",
                 title,
                 description,
                 selectedId ?: "",
                 imageUri,
-                if (imageUri != null) VOID.getFileExtension(imageUri, context) else null
+                if (imageUri != null) context.getFileExtension(imageUri) else null
             )
         }
     }

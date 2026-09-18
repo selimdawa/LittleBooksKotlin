@@ -16,7 +16,7 @@ import com.flatcode.littlebooksadmin.model.Book
 import com.flatcode.littlebooksadmin.model.Category
 import com.flatcode.littlebooksadmin.ui.category.BooksCategoryActivity
 import com.flatcode.littlebooksadmin.utils.DATA
-import com.flatcode.littlebooksadmin.utils.VOID
+import com.flatcode.littlebooksadmin.utils.*
 import com.flatcode.littlebooksadmin.databinding.ItemCategoriesBinding
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -41,7 +41,7 @@ class CategoriesAdapter(private val context: Context, var list: ArrayList<Catego
         val name = DATA.EMPTY + item.category
         val image = DATA.EMPTY + item.image
 
-        VOID.Glide(false, context, image, holder.binding.image)
+        holder.binding.image.loadWithGlide(false, image)
 
         if (item.category == DATA.EMPTY) {
             holder.binding.name.visibility = View.GONE
@@ -52,10 +52,10 @@ class CategoriesAdapter(private val context: Context, var list: ArrayList<Catego
 
         nrBooks(holder.binding.numberBooks, categoryId)
 
-        holder.binding.more.setOnClickListener { VOID.moreCategories(context, item) }
+        holder.binding.more.setOnClickListener { context.moreCategories(item) }
         holder.binding.item.setOnClickListener {
-            VOID.IntentExtra2(
-                context, BooksCategoryActivity::class.java,
+            context.intentExtra2(
+                BooksCategoryActivity::class.java,
                 DATA.CATEGORY_ID, categoryId, DATA.CATEGORY_NAME, name
             )
         }

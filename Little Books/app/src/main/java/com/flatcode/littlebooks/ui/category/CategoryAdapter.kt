@@ -9,7 +9,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.flatcode.littlebooks.ui.book.BooksCategoryActivity
 import com.flatcode.littlebooks.model.Category
 import com.flatcode.littlebooks.utils.DATA
-import com.flatcode.littlebooks.utils.VOID
+import com.flatcode.littlebooks.utils.glide
+import com.flatcode.littlebooks.utils.intentExtra2
 import com.flatcode.littlebooks.databinding.ItemCategoryBinding
 
 class CategoryAdapter(private val context: Context?, var list: ArrayList<Category?>) :
@@ -26,11 +27,11 @@ class CategoryAdapter(private val context: Context?, var list: ArrayList<Categor
         val name = item.category
         val image = item.image
 
-        VOID.Glide_(false, context, image, binding!!.image)
+        binding!!.image.glide(false, image)
 
         holder.itemView.setOnClickListener {
-            VOID.IntentExtra2(
-                context, BooksCategoryActivity::class.java, DATA.CATEGORY_ID, id, DATA.CATEGORY_NAME, name
+            context?.intentExtra2(
+                BooksCategoryActivity::class.java, DATA.CATEGORY_ID, id, DATA.CATEGORY_NAME, name
             )
         }
     }

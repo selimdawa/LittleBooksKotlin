@@ -14,7 +14,7 @@ import com.flatcode.littlebooksadmin.filter.MoreBooksFilter
 import com.flatcode.littlebooksadmin.model.Book
 import com.flatcode.littlebooksadmin.ui.book.BookDetailsActivity
 import com.flatcode.littlebooksadmin.utils.DATA
-import com.flatcode.littlebooksadmin.utils.VOID
+import com.flatcode.littlebooksadmin.utils.*
 import com.flatcode.littlebooksadmin.databinding.ItemBookLinearBinding
 
 class LinearBookAdapter(private val context: Context, var list: ArrayList<Book?>, isUser: Boolean) :
@@ -45,7 +45,7 @@ class LinearBookAdapter(private val context: Context, var list: ArrayList<Book?>
             holder.binding.more.visibility = View.GONE
         }
 
-        VOID.Glide(false, context, image, holder.binding.image)
+        holder.binding.image.loadWithGlide(false, image)
 
         if (item.title == DATA.EMPTY) {
             holder.binding.title.visibility = View.GONE
@@ -65,17 +65,17 @@ class LinearBookAdapter(private val context: Context, var list: ArrayList<Book?>
         holder.binding.numberLoves.text = nrLoves
         holder.binding.numberDownloads.text = nrDownloads
 
-        VOID.isFavorite(holder.binding.favorites, item.id, DATA.FirebaseUserUid)
-        VOID.isLoves(holder.binding.loves, item.id)
+        holder.binding.favorites.isFavorite(item.id, DATA.FirebaseUserUid)
+        holder.binding.loves.isLoves(item.id)
         holder.binding.favorites.setOnClickListener {
-            VOID.checkFavorite(holder.binding.favorites, bookId)
+            holder.binding.favorites.checkFavorite(bookId)
         }
-        holder.binding.loves.setOnClickListener { VOID.checkLove(holder.binding.loves, bookId) }
+        holder.binding.loves.setOnClickListener { holder.binding.loves.checkLove(bookId) }
         holder.binding.more.setOnClickListener {
-            VOID.moreOptionDialog(context, item)
+            context.moreOptionDialog(item)
         }
         holder.binding.item.setOnClickListener {
-            VOID.IntentExtra(context, BookDetailsActivity::class.java, DATA.BOOK_ID, item.id)
+            context.intentExtra(BookDetailsActivity::class.java, DATA.BOOK_ID, item.id)
         }
     }
 

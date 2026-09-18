@@ -14,7 +14,10 @@ import com.flatcode.littlebooks.ui.book.BookDetailsActivity
 import com.flatcode.littlebooks.filter.PDFMainFilter
 import com.flatcode.littlebooks.model.Book
 import com.flatcode.littlebooks.utils.DATA
-import com.flatcode.littlebooks.utils.VOID
+import com.flatcode.littlebooks.utils.checkFavorite
+import com.flatcode.littlebooks.utils.glide
+import com.flatcode.littlebooks.utils.intentExtra
+import com.flatcode.littlebooks.utils.isFavorite
 import com.flatcode.littlebooks.databinding.ItemBookMainBinding
 
 class MainBookAdapter(
@@ -67,21 +70,21 @@ class MainBookAdapter(
             holder.line.visibility = View.GONE
         }
 
-        VOID.Glide_(false, context, image, holder.image)
+        holder.image.glide(false, image)
 
         binding!!.views.text = viewsCount
         binding!!.downloads.text = downloadsCount
         binding!!.loves.text = lovesCount
         binding!!.name.text = title
 
-        VOID.isFavorite(holder.favorites, item.id, DATA.FirebaseUserUid)
+        holder.favorites.isFavorite(item.id, DATA.FirebaseUserUid)
 
         holder.favorites.setOnClickListener {
-            VOID.checkFavorite(holder.favorites, bookId)
+            holder.favorites.checkFavorite(bookId)
         }
 
         holder.itemView.setOnClickListener {
-            VOID.IntentExtra(context, BookDetailsActivity::class.java, DATA.BOOK_ID, bookId)
+            context?.intentExtra(BookDetailsActivity::class.java, DATA.BOOK_ID, bookId)
         }
     }
 

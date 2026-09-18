@@ -12,7 +12,7 @@ import com.flatcode.littlebooks.model.Comment
 import com.flatcode.littlebooks.model.User
 import com.flatcode.littlebooks.Application
 import com.flatcode.littlebooks.utils.DATA
-import com.flatcode.littlebooks.utils.VOID
+import com.flatcode.littlebooks.utils.glide
 import com.flatcode.littlebooks.databinding.ItemCommentBinding
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -60,7 +60,7 @@ class CommentAdapter(private val context: Context, var list: ArrayList<Comment?>
                     val item = snapshot.child(publisher).getValue(User::class.java)!!
                     val username = item.username
                     val profileImage = item.profileImage
-                    VOID.Glide_(true, context, profileImage, holder.binding.profile)
+                    holder.binding.profile.glide(true, profileImage)
                     holder.binding.name.text = username
                 }
             }

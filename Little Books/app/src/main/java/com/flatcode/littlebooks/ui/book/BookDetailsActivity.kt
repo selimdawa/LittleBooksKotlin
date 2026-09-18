@@ -19,7 +19,11 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.flatcode.littlebooks.model.Comment
 import com.flatcode.littlebooks.R
 import com.flatcode.littlebooks.utils.DATA
-import com.flatcode.littlebooks.utils.VOID
+import com.flatcode.littlebooks.utils.glide
+import com.flatcode.littlebooks.utils.glideBlur
+import com.flatcode.littlebooks.utils.intentExtra
+import com.flatcode.littlebooks.utils.loadCategory
+import com.flatcode.littlebooks.utils.loadPdfInfo
 import com.flatcode.littlebooks.databinding.ActivityBookDetailsBinding
 import com.flatcode.littlebooks.databinding.DialogCommentAddBinding
 import com.flatcode.littlebooks.utils.Resource
@@ -67,7 +71,7 @@ class BookDetailsActivity : AppCompatActivity() {
             viewModel.toggleFavorite(DATA.FirebaseUserUid, bookId!!, !isFavorite)
         }
         binding!!.read.setOnClickListener {
-            VOID.IntentExtra(context, BookViewActivity::class.java, DATA.BOOK_ID, bookId)
+            context.intentExtra(BookViewActivity::class.java, DATA.BOOK_ID, bookId)
         }
         binding!!.addComment.setOnClickListener { addCommentDialog() }
 
@@ -96,10 +100,10 @@ class BookDetailsActivity : AppCompatActivity() {
                                 binding!!.views.text = DATA.EMPTY + book?.viewsCount
                                 binding!!.downloads.text = DATA.EMPTY + book?.downloadsCount
                                 // binding!!.pages.text = DATA.EMPTY + book?.pagesCount // layout doesn't have pages count text view?
-                                VOID.loadCategory(DATA.EMPTY + book?.categoryId, binding!!.category)
-                                VOID.Glide_(false, context, book?.url, binding!!.image)
-                                VOID.GlideBlur(false, context, DATA.EMPTY + book?.url, binding!!.cover, 50)
-                                VOID.loadPdfInfo(DATA.EMPTY + book?.url, binding!!.size)
+                                binding!!.category.loadCategory(DATA.EMPTY + book?.categoryId)
+                                binding!!.image.glide(false, book?.url)
+                                binding!!.cover.glideBlur(false, DATA.EMPTY + book?.url, 50)
+                                binding!!.size.loadPdfInfo(DATA.EMPTY + book?.url)
                             }
                             is Resource.Error -> {
                                 Toast.makeText(context, resource.message, Toast.LENGTH_SHORT).show()

@@ -21,7 +21,8 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.flatcode.littlebooks.R
 import com.flatcode.littlebooks.utils.DATA
-import com.flatcode.littlebooks.utils.VOID
+import com.flatcode.littlebooks.utils.cropImageSquare
+import com.flatcode.littlebooks.utils.glide
 import com.flatcode.littlebooks.databinding.ActivityProfileEditBinding
 import com.flatcode.littlebooks.utils.Resource
 import com.flatcode.littlebooks.viewmodel.ProfileViewModel
@@ -61,7 +62,7 @@ class ProfileEditActivity : AppCompatActivity() {
 
         binding!!.toolbar.nameSpace.setText(R.string.edit_profile)
         binding!!.toolbar.back.setOnClickListener { onBackPressed() }
-        binding!!.image.setOnClickListener { VOID.CropImageSquare(activity) }
+        binding!!.image.setOnClickListener { activity!!.cropImageSquare() }
         binding!!.go.setOnClickListener { validateData() }
 
         observeViewModel()
@@ -81,7 +82,7 @@ class ProfileEditActivity : AppCompatActivity() {
                     viewModel.user.collect { resource ->
                         if (resource is Resource.Success) {
                             val user = resource.data
-                            VOID.Glide_(true, context, user?.profileImage, binding!!.image)
+                            binding!!.image.glide(true, user?.profileImage)
                             binding!!.nameEt.setText(user?.username)
                         }
                     }
@@ -146,7 +147,7 @@ class ProfileEditActivity : AppCompatActivity() {
                 imageUri = uri
                 requestPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), 0)
             } else {
-                VOID.CropImageSquare(activity)
+                activity!!.cropImageSquare()
             }
         }
         if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {

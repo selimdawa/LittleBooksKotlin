@@ -15,7 +15,8 @@ import com.flatcode.littlebooks.ui.profile.ProfileActivity
 import com.flatcode.littlebooks.filter.PublisherFilter
 import com.flatcode.littlebooks.model.User
 import com.flatcode.littlebooks.utils.DATA
-import com.flatcode.littlebooks.utils.VOID
+import com.flatcode.littlebooks.utils.glide
+import com.flatcode.littlebooks.utils.intentExtra
 import com.flatcode.littlebooks.databinding.ItemPublisherBinding
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -40,7 +41,7 @@ class PublisherAdapter(private val context: Context, var list: ArrayList<User?>)
         val username = DATA.EMPTY + item.username
         val profileImage = DATA.EMPTY + item.profileImage
 
-        VOID.Glide_(true, context, profileImage, holder.binding.imageProfile)
+        holder.binding.imageProfile.glide(true, profileImage)
 
         if (username == DATA.EMPTY) {
             holder.binding.username.visibility = View.GONE
@@ -76,7 +77,7 @@ class PublisherAdapter(private val context: Context, var list: ArrayList<User?>)
         }
 
         holder.itemView.setOnClickListener {
-            VOID.IntentExtra(context, ProfileActivity::class.java, DATA.PROFILE_ID, item.id)
+            context.intentExtra(ProfileActivity::class.java, DATA.PROFILE_ID, item.id)
         }
     }
 

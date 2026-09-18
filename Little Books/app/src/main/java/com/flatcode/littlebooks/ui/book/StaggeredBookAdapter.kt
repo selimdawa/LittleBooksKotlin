@@ -13,7 +13,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.flatcode.littlebooks.filter.StaggerdFilter
 import com.flatcode.littlebooks.model.Book
 import com.flatcode.littlebooks.utils.DATA
-import com.flatcode.littlebooks.utils.VOID
+import com.flatcode.littlebooks.utils.checkFavorite
+import com.flatcode.littlebooks.utils.checkLove
+import com.flatcode.littlebooks.utils.glide
+import com.flatcode.littlebooks.utils.intentExtra
+import com.flatcode.littlebooks.utils.isFavorite
+import com.flatcode.littlebooks.utils.isLoves
 import com.flatcode.littlebooks.databinding.ItemBookStaggeredBinding
 
 class StaggeredBookAdapter(private val context: Context, var list: ArrayList<Book?>) :
@@ -36,7 +41,7 @@ class StaggeredBookAdapter(private val context: Context, var list: ArrayList<Boo
         val nrLoves = DATA.EMPTY + item.lovesCount
         val nrDownloads = DATA.EMPTY + item.downloadsCount
 
-        VOID.Glide_(false, context, image, holder.image)
+        holder.image.glide(false, image)
 
         if (title == DATA.EMPTY) {
             holder.title.visibility = View.GONE
@@ -54,14 +59,14 @@ class StaggeredBookAdapter(private val context: Context, var list: ArrayList<Boo
             holder.favorites.setVisibility(View.VISIBLE);
         }*/
 
-        VOID.isFavorite(holder.favorites, bookId, DATA.FirebaseUserUid)
-        VOID.isLoves(holder.loves, bookId)
+        holder.favorites.isFavorite(bookId, DATA.FirebaseUserUid)
+        holder.loves.isLoves(bookId)
 
-        holder.favorites.setOnClickListener { VOID.checkFavorite(holder.favorites, bookId) }
-        holder.loves.setOnClickListener { VOID.checkLove(holder.loves, bookId) }
+        holder.favorites.setOnClickListener { holder.favorites.checkFavorite(bookId) }
+        holder.loves.setOnClickListener { holder.loves.checkLove(bookId) }
 
         holder.item.setOnClickListener {
-            VOID.IntentExtra(context, BookDetailsActivity::class.java, DATA.BOOK_ID, bookId)
+            context.intentExtra(BookDetailsActivity::class.java, DATA.BOOK_ID, bookId)
         }
     }
 

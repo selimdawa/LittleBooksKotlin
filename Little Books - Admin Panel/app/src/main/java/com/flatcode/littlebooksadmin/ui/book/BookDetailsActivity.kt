@@ -25,8 +25,8 @@ import com.flatcode.littlebooksadmin.Application
 import com.flatcode.littlebooksadmin.model.Comment
 import com.flatcode.littlebooksadmin.R
 import com.flatcode.littlebooksadmin.utils.DATA
-import com.flatcode.littlebooksadmin.utils.VOID
 import com.flatcode.littlebooksadmin.utils.Resource
+import com.flatcode.littlebooksadmin.utils.*
 import com.flatcode.littlebooksadmin.databinding.ActivityBookDetailsBinding
 import com.flatcode.littlebooksadmin.databinding.DialogCommentAddBinding
 import com.flatcode.littlebooksadmin.ui.book.BookDetailsViewModel
@@ -77,21 +77,21 @@ class BookDetailsActivity : AppCompatActivity() {
         adapter = CommentAdapter(context, list)
         binding.recyclerView.adapter = adapter
 
-        binding.love.setOnClickListener { VOID.checkLove(binding.love, bookId) }
+        binding.love.setOnClickListener { binding.love.checkLove(bookId) }
         binding.favorite.setOnClickListener {
-            VOID.checkFavorite(binding.favorite, bookId)
+            binding.favorite.checkFavorite(bookId)
         }
         binding.toolbar.back.setOnClickListener { onBackPressed() }
         binding.read.setOnClickListener {
-            VOID.IntentExtra(context, BookViewActivity::class.java, DATA.BOOK_ID, bookId)
+            context.intentExtra(BookViewActivity::class.java, DATA.BOOK_ID, bookId)
         }
         binding.download.setOnClickListener {
             if (ContextCompat.checkSelfPermission(
                     context, Manifest.permission.WRITE_EXTERNAL_STORAGE
                 ) == PackageManager.PERMISSION_GRANTED
             ) {
-                VOID.downloadBook(
-                    context, DATA.EMPTY + bookId,
+                context.downloadBook(
+                    DATA.EMPTY + bookId,
                     DATA.EMPTY + bookTitle, DATA.EMPTY + bookUrl
                 )
             } else {
@@ -106,9 +106,9 @@ class BookDetailsActivity : AppCompatActivity() {
             }
         }
         
-        VOID.isLoves(binding.love, bookId)
-        VOID.nrLoves(binding.loves, bookId)
-        VOID.isFavorite(binding.favorite, bookId, DATA.FirebaseUserUid)
+        binding.love.isLoves(bookId)
+        binding.loves.nrLoves(bookId)
+        binding.favorite.isFavorite(bookId, DATA.FirebaseUserUid)
     }
 
     private fun observeViewModel() {
@@ -125,11 +125,11 @@ class BookDetailsActivity : AppCompatActivity() {
                                     binding.download.visibility = View.VISIBLE
                                     
                                     val date: String = Application.formatTimestamp(book.timestamp)
-                                    VOID.loadCategory(book.categoryId, binding.category)
-                                    VOID.loadPdfInfo(book.url, binding.size)
+                                    binding.category.loadCategory(book.categoryId)
+                                    binding.size.loadPdfInfo(book.url)
                                     
-                                    VOID.Glide(false, context, book.image ?: DATA.BASIC, binding.image)
-                                    VOID.Glide(false, context, book.image ?: DATA.BASIC, binding.cover)
+                                    binding.image.loadWithGlide(false, book.image ?: DATA.BASIC)
+                                    binding.cover.loadWithGlide(false, book.image ?: DATA.BASIC)
                                     binding.title.text = book.title
                                     binding.description.text = book.description
                                     binding.views.text = book.viewsCount.toString()
@@ -150,9 +150,9 @@ class BookDetailsActivity : AppCompatActivity() {
                             is Resource.Success -> {
                                 resource.data?.let { user ->
                                     binding.publisherName.text = user.username
-                                    VOID.Glide(true, context, user.profileImage ?: DATA.BASIC, binding.publisherImage)
+                                    binding.publisherImage.loadWithGlide(true, user.profileImage ?: DATA.BASIC)
                                     binding.userInfo.setOnClickListener {
-                                        VOID.IntentExtra(context, ProfileActivity::class.java, DATA.PROFILE_ID, user.id)
+                                        context.intentExtra(ProfileActivity::class.java, DATA.PROFILE_ID, user.id)
                                     }
                                 }
                             }

@@ -4,7 +4,7 @@ import android.content.Context
 import android.net.Uri
 import com.flatcode.littlebooks.model.User
 import com.flatcode.littlebooks.utils.DATA
-import com.flatcode.littlebooks.utils.VOID
+import com.flatcode.littlebooks.utils.getFileExtension
 import com.flatcode.littlebooks.db.UserDao
 import com.flatcode.littlebooks.utils.Resource
 import com.google.firebase.database.FirebaseDatabase
@@ -146,7 +146,7 @@ class UserRepository @Inject constructor(
     suspend fun uploadProfileImage(userId: String, imageUri: Uri, context: Context): Resource<String> {
         return try {
             val filePathAndName = "Images/Profile/$userId"
-            val extension = VOID.getFileExtension(imageUri, context)
+            val extension = imageUri.getFileExtension(context)
             val reference = FirebaseStorage.getInstance().getReference("$filePathAndName.${extension}")
             val task = reference.putFile(imageUri).await()
             val downloadUrl = task.storage.downloadUrl.await()

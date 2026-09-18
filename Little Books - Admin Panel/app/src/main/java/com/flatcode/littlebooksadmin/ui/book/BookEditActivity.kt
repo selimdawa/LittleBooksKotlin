@@ -20,9 +20,9 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.flatcode.littlebooksadmin.R
 import com.flatcode.littlebooksadmin.utils.DATA
-import com.flatcode.littlebooksadmin.utils.VOID
 import com.flatcode.littlebooksadmin.model.Category
 import com.flatcode.littlebooksadmin.utils.Resource
+import com.flatcode.littlebooksadmin.utils.*
 import com.flatcode.littlebooksadmin.databinding.ActivityBookEditBinding
 import com.flatcode.littlebooksadmin.ui.book.BookEditViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -85,7 +85,7 @@ class BookEditActivity : AppCompatActivity() {
                                     binding.titleEt.setText(book.title)
                                     binding.descriptionEt.setText(book.description)
                                     selectedId = book.categoryId ?: DATA.EMPTY
-                                    VOID.Glide(false, context, book.image ?: DATA.BASIC, binding.image)
+                                    binding.image.loadWithGlide(false, book.image ?: DATA.BASIC)
                                     
                                     // Set category name
                                     categoriesList.find { it.id == selectedId }?.let {
@@ -159,7 +159,7 @@ class BookEditActivity : AppCompatActivity() {
                 viewModel.updateBook(
                     it, title, description, selectedId,
                     imageUri,
-                    if (imageUri != null) VOID.getFileExtension(imageUri, context) else null
+                    if (imageUri != null) context.getFileExtension(imageUri) else null
                 )
             }
         }

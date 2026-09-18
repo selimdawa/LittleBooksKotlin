@@ -15,7 +15,8 @@ import com.flatcode.littlebooks.ui.category.CategoryAdapter
 import com.flatcode.littlebooks.model.Book
 import com.flatcode.littlebooks.model.Category
 import com.flatcode.littlebooks.utils.DATA
-import com.flatcode.littlebooks.utils.VOID
+import com.flatcode.littlebooks.utils.bannerAdTwo
+import com.flatcode.littlebooks.utils.intentExtra3
 import com.flatcode.littlebooks.databinding.FragmentHomeBinding
 import com.flatcode.littlebooks.utils.Resource
 import com.flatcode.littlebooks.viewmodel.HomeViewModel
@@ -64,42 +65,42 @@ class HomeFragment : Fragment() {
     }
 
     private fun setupUI() {
-        VOID.BannerAdTwo(
-            context, binding!!.adView, DATA.BANNER_SMART_HOME,
+        context?.bannerAdTwo(
+            binding!!.adView, DATA.BANNER_SMART_HOME,
             binding!!.adView2, DATA.BANNER_SMART_HOME_2
         )
 
         binding!!.showMore.setOnClickListener {
-            VOID.IntentExtra3(
-                context, MoreBooksActivity::class.java, DATA.SHOW_MORE_TYPE, DATA.EDITORS_CHOICE,
+            context?.intentExtra3(
+                MoreBooksActivity::class.java, DATA.SHOW_MORE_TYPE, DATA.EDITORS_CHOICE,
                 DATA.SHOW_MORE_NAME, binding!!.name.text.toString(),
                 DATA.SHOW_MORE_BOOLEAN, DATA.EMPTY + B_one
             )
         }
         binding!!.showMore2.setOnClickListener {
-            VOID.IntentExtra3(
-                context, MoreBooksActivity::class.java, DATA.SHOW_MORE_TYPE,
+            context?.intentExtra3(
+                MoreBooksActivity::class.java, DATA.SHOW_MORE_TYPE,
                 DATA.VIEWS_COUNT, DATA.SHOW_MORE_NAME, binding!!.mostViews.text.toString(),
                 DATA.SHOW_MORE_BOOLEAN, DATA.EMPTY + B_two
             )
         }
         binding!!.showMore3.setOnClickListener {
-            VOID.IntentExtra3(
-                context, MoreBooksActivity::class.java, DATA.SHOW_MORE_TYPE,
+            context?.intentExtra3(
+                MoreBooksActivity::class.java, DATA.SHOW_MORE_TYPE,
                 DATA.LOVES_COUNT, DATA.SHOW_MORE_NAME, binding!!.name3.text.toString(),
                 DATA.SHOW_MORE_BOOLEAN, DATA.EMPTY + B_three
             )
         }
         binding!!.showMore4.setOnClickListener {
-            VOID.IntentExtra3(
-                context, MoreBooksActivity::class.java, DATA.SHOW_MORE_TYPE,
+            context?.intentExtra3(
+                MoreBooksActivity::class.java, DATA.SHOW_MORE_TYPE,
                 DATA.DOWNLOADS_COUNT, DATA.SHOW_MORE_NAME, binding!!.name4.text.toString(),
                 DATA.SHOW_MORE_BOOLEAN, DATA.EMPTY + B_four
             )
         }
         binding!!.showMore5.setOnClickListener {
-            VOID.IntentExtra3(
-                context, MoreBooksActivity::class.java, DATA.SHOW_MORE_TYPE,
+            context?.intentExtra3(
+                MoreBooksActivity::class.java, DATA.SHOW_MORE_TYPE,
                 DATA.TIMESTAMP, DATA.SHOW_MORE_NAME, binding!!.name5.text.toString(),
                 DATA.SHOW_MORE_BOOLEAN, DATA.EMPTY + B_five
             )

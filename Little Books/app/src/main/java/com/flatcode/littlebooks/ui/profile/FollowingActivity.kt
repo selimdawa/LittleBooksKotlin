@@ -19,7 +19,7 @@ import com.flatcode.littlebooks.ui.publisher.PublisherAdapter
 import com.flatcode.littlebooks.model.User
 import com.flatcode.littlebooks.R
 import com.flatcode.littlebooks.utils.DATA
-import com.flatcode.littlebooks.utils.VOID
+import com.flatcode.littlebooks.utils.bannerAd
 import com.flatcode.littlebooks.databinding.ActivityPageStaggeredBinding
 import com.flatcode.littlebooks.utils.Resource
 import com.flatcode.littlebooks.viewmodel.FollowViewModel
@@ -55,7 +55,7 @@ class FollowingActivity : AppCompatActivity() {
         binding!!.toolbar.nameSpace.setText(R.string.following)
         binding!!.toolbar.close.setOnClickListener { onBackPressed() }
         binding!!.toolbar.back.setOnClickListener { onBackPressed() }
-        VOID.BannerAd(context, binding!!.adView, DATA.BANNER_SMART_FOLLOWING)
+        binding!!.adView.bannerAd(context, DATA.BANNER_SMART_FOLLOWING)
 
         binding!!.toolbar.search.setOnClickListener {
             binding!!.toolbar.toolbar.visibility = View.GONE

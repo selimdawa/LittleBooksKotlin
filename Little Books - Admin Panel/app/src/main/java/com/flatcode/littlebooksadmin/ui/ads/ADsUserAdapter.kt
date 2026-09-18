@@ -15,7 +15,8 @@ import com.flatcode.littlebooksadmin.model.User
 import com.flatcode.littlebooksadmin.Application
 import com.flatcode.littlebooksadmin.ui.ads.AdsInfoActivity
 import com.flatcode.littlebooksadmin.utils.DATA
-import com.flatcode.littlebooksadmin.utils.VOID
+import com.flatcode.littlebooksadmin.utils.intentExtra
+import com.flatcode.littlebooksadmin.utils.loadWithGlide
 import com.flatcode.littlebooksadmin.databinding.ItemAdsUserBinding
 import java.text.MessageFormat
 
@@ -42,7 +43,7 @@ class ADsUserAdapter(private val context: Context, var list: ArrayList<User?>, i
         val adClicked = DATA.EMPTY + item.adClick
         val formattedDate: String = Application.formatTimestamp(timestamp.toLong())
 
-        VOID.Glide(true, context, profileImage, holder.binding.profileImage)
+        holder.binding.profileImage.loadWithGlide(true, profileImage)
 
         if (username == DATA.EMPTY) {
             holder.binding.username.visibility = View.GONE
@@ -59,7 +60,7 @@ class ADsUserAdapter(private val context: Context, var list: ArrayList<User?>, i
         holder.binding.numberADsClick.text = MessageFormat.format("{0}{1}", DATA.EMPTY, adClicked)
 
         holder.binding.item.setOnClickListener {
-            VOID.IntentExtra(context, AdsInfoActivity::class.java, DATA.PROFILE_ID, userId)
+            context.intentExtra(AdsInfoActivity::class.java, DATA.PROFILE_ID, userId)
         }
     }
 

@@ -10,7 +10,11 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.flatcode.littlebooks.model.Setting
 import com.flatcode.littlebooks.utils.DATA
-import com.flatcode.littlebooks.utils.VOID
+import com.flatcode.littlebooks.utils.dialogAboutApp
+import com.flatcode.littlebooks.utils.dialogLogout
+import com.flatcode.littlebooks.utils.intent1
+import com.flatcode.littlebooks.utils.rateApp
+import com.flatcode.littlebooks.utils.shareApp
 import com.flatcode.littlebooks.databinding.ItemSettingBinding
 import java.text.MessageFormat
 
@@ -44,11 +48,11 @@ class SettingAdapter(private val context: Context?, private val list: ArrayList<
 
         holder.item.setOnClickListener {
             when (id) {
-                "8" -> VOID.dialogAboutApp(context)
-                "9" -> VOID.dialogLogout(context)
-                "10" -> VOID.shareApp(context)
-                "11" -> VOID.rateApp(context)
-                else -> VOID.Intent1(context, to)
+                "8" -> context?.dialogAboutApp()
+                "9" -> context?.dialogLogout()
+                "10" -> context?.shareApp()
+                "11" -> context?.rateApp()
+                else -> context?.intent1(to)
             }
         }
     }

@@ -9,7 +9,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import com.flatcode.littlebooksadmin.utils.VOID
+import com.flatcode.littlebooksadmin.utils.*
 import com.flatcode.littlebooksadmin.databinding.ActivitySplashBinding
 import com.flatcode.littlebooksadmin.ui.auth.LoginActivity
 import com.flatcode.littlebooksadmin.ui.auth.AuthViewModel

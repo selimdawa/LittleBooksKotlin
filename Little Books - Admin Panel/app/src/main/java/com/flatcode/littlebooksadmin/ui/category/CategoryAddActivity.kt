@@ -19,8 +19,8 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.flatcode.littlebooksadmin.R
 import com.flatcode.littlebooksadmin.utils.DATA
-import com.flatcode.littlebooksadmin.utils.VOID
 import com.flatcode.littlebooksadmin.utils.Resource
+import com.flatcode.littlebooksadmin.utils.*
 import com.flatcode.littlebooksadmin.databinding.ActivityCategoryAddBinding
 import com.flatcode.littlebooksadmin.ui.category.CategoryAddViewModel
 import com.theartofdev.edmodo.cropper.CropImage
@@ -62,7 +62,7 @@ class CategoryAddActivity : AppCompatActivity() {
         binding.toolbar.nameSpace.setText(R.string.add_new_category)
         binding.toolbar.back.setOnClickListener { onBackPressed() }
 
-        binding.image.setOnClickListener { VOID.cropImageSquare(activity) }
+        binding.image.setOnClickListener { activity?.cropImageSquare() }
         binding.toolbar.ok.setOnClickListener { validateData() }
     }
 
@@ -102,7 +102,7 @@ class CategoryAddActivity : AppCompatActivity() {
             viewModel.addCategory(
                 title,
                 imageUri,
-                VOID.getFileExtension(imageUri, context)
+                context.getFileExtension(imageUri)
             )
         }
     }
@@ -115,7 +115,7 @@ class CategoryAddActivity : AppCompatActivity() {
                 imageUri = uri
                 requestPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), 0)
             } else {
-                VOID.cropImageSquare(activity)
+                activity?.cropImageSquare()
             }
         }
         if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {

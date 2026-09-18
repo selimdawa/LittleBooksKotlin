@@ -13,7 +13,13 @@ import androidx.recyclerview.widget.RecyclerView
 import com.flatcode.littlebooks.filter.MoreBooksFilter
 import com.flatcode.littlebooks.model.Book
 import com.flatcode.littlebooks.utils.DATA
-import com.flatcode.littlebooks.utils.VOID
+import com.flatcode.littlebooks.utils.checkFavorite
+import com.flatcode.littlebooks.utils.checkLove
+import com.flatcode.littlebooks.utils.glide
+import com.flatcode.littlebooks.utils.intentExtra
+import com.flatcode.littlebooks.utils.isFavorite
+import com.flatcode.littlebooks.utils.isLoves
+import com.flatcode.littlebooks.utils.moreOptionDialog
 import com.flatcode.littlebooks.databinding.ItemBookLinearBinding
 
 class LinearBookAdapter(
@@ -48,7 +54,7 @@ class LinearBookAdapter(
             holder.more.visibility = View.GONE
         }
 
-        VOID.Glide_(false, context, image, holder.image)
+        holder.image.glide(false, image)
 
         if (item.title == DATA.EMPTY) {
             holder.title.visibility = View.GONE
@@ -74,14 +80,14 @@ class LinearBookAdapter(
             holder.favorites.setVisibility(View.VISIBLE);
         }*/
 
-        VOID.isFavorite(holder.favorites, item.id, DATA.FirebaseUserUid)
-        VOID.isLoves(holder.loves, item.id)
+        holder.favorites.isFavorite(item.id, DATA.FirebaseUserUid)
+        holder.loves.isLoves(item.id)
 
-        holder.favorites.setOnClickListener { VOID.checkFavorite(holder.favorites, bookId) }
-        holder.loves.setOnClickListener { VOID.checkLove(holder.loves, bookId) }
-        holder.more.setOnClickListener { VOID.moreOptionDialog(context, item) }
+        holder.favorites.setOnClickListener { holder.favorites.checkFavorite(bookId) }
+        holder.loves.setOnClickListener { holder.loves.checkLove(bookId) }
+        holder.more.setOnClickListener { context?.moreOptionDialog(item) }
         holder.item.setOnClickListener {
-            VOID.IntentExtra(context, BookDetailsActivity::class.java, DATA.BOOK_ID, item.id)
+            context?.intentExtra(BookDetailsActivity::class.java, DATA.BOOK_ID, item.id)
         }
     }
 

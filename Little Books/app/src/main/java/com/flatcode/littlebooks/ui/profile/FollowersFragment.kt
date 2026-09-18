@@ -12,7 +12,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.flatcode.littlebooks.ui.book.LinearBookAdapter
 import com.flatcode.littlebooks.model.Book
 import com.flatcode.littlebooks.utils.DATA
-import com.flatcode.littlebooks.utils.VOID
+import com.flatcode.littlebooks.utils.bannerAd
 import com.flatcode.littlebooks.databinding.FragmentFollowersBinding
 import com.flatcode.littlebooks.utils.Resource
 import com.flatcode.littlebooks.viewmodel.FollowViewModel
@@ -33,7 +33,7 @@ class FollowersFragment : Fragment() {
     ): View? {
         binding = FragmentFollowersBinding.inflate(inflater, container, false)
 
-        VOID.BannerAd(context, binding!!.adView, DATA.BANNER_SMART_FOLLOWERS_BOOKS)
+        binding!!.adView.bannerAd(context!!, DATA.BANNER_SMART_FOLLOWERS_BOOKS)
 
         adapter = LinearBookAdapter(context, list, false)
         binding!!.recyclerView.adapter = adapter

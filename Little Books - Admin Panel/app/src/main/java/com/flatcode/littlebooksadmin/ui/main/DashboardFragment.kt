@@ -22,10 +22,10 @@ import com.flatcode.littlebooksadmin.ui.user.*
 import com.flatcode.littlebooksadmin.ui.main.MainAdapter
 import com.flatcode.littlebooksadmin.R
 import com.flatcode.littlebooksadmin.utils.DATA
-import com.flatcode.littlebooksadmin.utils.VOID
 import com.flatcode.littlebooksadmin.model.Main
 import com.flatcode.littlebooksadmin.repository.MainRepository
 import com.flatcode.littlebooksadmin.utils.Resource
+import com.flatcode.littlebooksadmin.utils.*
 import com.flatcode.littlebooksadmin.databinding.FragmentDashboardBinding
 import com.flatcode.littlebooksadmin.ui.main.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -66,7 +66,7 @@ class DashboardFragment : Fragment() {
 
     private fun initUI() {
         binding.toolbar.image.setOnClickListener {
-            VOID.IntentExtra(mContext, ProfileActivity::class.java, DATA.PROFILE_ID, DATA.FirebaseUserUid)
+            mContext.intentExtra(ProfileActivity::class.java, DATA.PROFILE_ID, DATA.FirebaseUserUid)
         }
 
         adapter = MainAdapter(mContext, list)
@@ -82,7 +82,7 @@ class DashboardFragment : Fragment() {
                             is Resource.Loading -> { }
                             is Resource.Success -> {
                                 resource.data?.let { user ->
-                                    VOID.Glide(true, mContext, user.profileImage ?: DATA.BASIC, binding.toolbar.image)
+                                    binding.toolbar.image.loadWithGlide(true, user.profileImage ?: DATA.BASIC)
                                 }
                             }
                             is Resource.Error -> {

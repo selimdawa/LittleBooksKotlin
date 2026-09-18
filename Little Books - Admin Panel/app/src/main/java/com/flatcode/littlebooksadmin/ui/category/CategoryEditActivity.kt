@@ -16,7 +16,7 @@ import androidx.core.view.WindowInsetsCompat
 import com.flatcode.littlebooksadmin.model.Category
 import com.flatcode.littlebooksadmin.R
 import com.flatcode.littlebooksadmin.utils.DATA
-import com.flatcode.littlebooksadmin.utils.VOID
+import com.flatcode.littlebooksadmin.utils.*
 import com.flatcode.littlebooksadmin.databinding.ActivityCategoryAddBinding
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -57,7 +57,7 @@ class CategoryEditActivity : AppCompatActivity() {
         binding.toolbar.nameSpace.setText(R.string.edit_category)
         binding.toolbar.back.setOnClickListener { onBackPressed() }
 
-        binding.image.setOnClickListener { VOID.cropImageSquare(activity) }
+        binding.image.setOnClickListener { activity?.cropImageSquare() }
         binding.toolbar.ok.setOnClickListener { validateData() }
     }
 
@@ -80,7 +80,7 @@ class CategoryEditActivity : AppCompatActivity() {
         dialog!!.show()
         val filePathAndName = "Images/Category/$categoryId"
         val reference = FirebaseStorage.getInstance()
-            .getReference(filePathAndName + DATA.DOT + VOID.getFileExtension(imageUri, context))
+            .getReference(filePathAndName + DATA.DOT + context.getFileExtension(imageUri))
         reference.putFile(imageUri!!)
             .addOnSuccessListener { taskSnapshot: UploadTask.TaskSnapshot ->
                 val uriTask = taskSnapshot.storage.downloadUrl
@@ -123,7 +123,7 @@ class CategoryEditActivity : AppCompatActivity() {
                 val item = snapshot.getValue(Category::class.java)!!
                 val name = item.category
                 val image = item.image
-                VOID.Glide(true, context, image!!, binding.image)
+                binding.image.loadWithGlide(true, image!!)
                 binding.categoryEt.setText(name)
             }
 
@@ -139,7 +139,7 @@ class CategoryEditActivity : AppCompatActivity() {
                 imageUri = uri
                 requestPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), 0)
             } else {
-                VOID.cropImageSquare(activity)
+                activity?.cropImageSquare()
             }
         }
         if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {

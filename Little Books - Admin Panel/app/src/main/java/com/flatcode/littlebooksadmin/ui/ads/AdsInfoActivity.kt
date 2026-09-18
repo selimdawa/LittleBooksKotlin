@@ -17,8 +17,8 @@ import com.flatcode.littlebooksadmin.ui.ads.ADsInfoAdapter
 import com.flatcode.littlebooksadmin.model.ADs
 import com.flatcode.littlebooksadmin.R
 import com.flatcode.littlebooksadmin.utils.DATA
-import com.flatcode.littlebooksadmin.utils.VOID
 import com.flatcode.littlebooksadmin.utils.Resource
+import com.flatcode.littlebooksadmin.utils.loadWithGlide
 import com.flatcode.littlebooksadmin.databinding.ActivityAdsInfoBinding
 import com.flatcode.littlebooksadmin.ui.ads.AdsViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -73,7 +73,7 @@ class AdsInfoActivity : AppCompatActivity() {
                             is Resource.Success -> {
                                 resource.data?.let { user ->
                                     binding.username.text = user.username
-                                    VOID.Glide(true, context, user.profileImage ?: DATA.BASIC, binding.profileImage)
+                                    binding.profileImage.loadWithGlide(true, user.profileImage ?: DATA.BASIC)
                                 }
                             }
                             is Resource.Error -> {

@@ -15,7 +15,7 @@ import com.flatcode.littlebooksadmin.model.EditorsChoice
 import com.flatcode.littlebooksadmin.ui.book.BookDetailsActivity
 import com.flatcode.littlebooksadmin.ui.book.EditorsChoiceAddActivity
 import com.flatcode.littlebooksadmin.utils.DATA
-import com.flatcode.littlebooksadmin.utils.VOID
+import com.flatcode.littlebooksadmin.utils.*
 import com.flatcode.littlebooksadmin.databinding.ItemBookEditorsChoiceBinding
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -41,8 +41,8 @@ class EditorsChoiceAdapter(private val context: Context, var list: List<EditorsC
 
         holder.binding.numberEditorsChoice.text = MessageFormat.format("{0}{1}", DATA.EMPTY, id)
         holder.binding.add.setOnClickListener {
-            VOID.IntentExtra2(
-                context, EditorsChoiceAddActivity::class.java,
+            context.intentExtra2(
+                EditorsChoiceAddActivity::class.java,
                 DATA.EDITORS_CHOICE_ID, editorsChoiceId, DATA.OLD_BOOK_ID, null
             )
         }
@@ -71,17 +71,17 @@ class EditorsChoiceAdapter(private val context: Context, var list: List<EditorsC
                         holder.binding.remove.visibility = View.VISIBLE
                         holder.binding.change.visibility = View.VISIBLE
                         holder.binding.detailsCard.setOnClickListener {
-                            VOID.IntentExtra(context, BookDetailsActivity::class.java, DATA.BOOK_ID, id)
+                            context.intentExtra(BookDetailsActivity::class.java, DATA.BOOK_ID, id)
                         }
                         holder.binding.remove.setOnClickListener {
-                            VOID.dialogOptionDelete(
-                                context, null, id, null, null,
+                            context.dialogOptionDelete(
+                                null, id, null, null,
                                 false, true, null, null
                             )
                         }
                         holder.binding.change.setOnClickListener {
-                            VOID.IntentExtra2(
-                                context, EditorsChoiceAddActivity::class.java,
+                            context.intentExtra2(
+                                EditorsChoiceAddActivity::class.java,
                                 DATA.EDITORS_CHOICE_ID, position, DATA.OLD_BOOK_ID, id
                             )
                         }
@@ -112,7 +112,7 @@ class EditorsChoiceAdapter(private val context: Context, var list: List<EditorsC
                         holder.binding.numberViews.text = ViewsCount
                         holder.binding.numberLoves.text = LovesCount
                         holder.binding.numberDownloads.text = DownloadsCount
-                        VOID.Glide(false, context, BookImage, holder.binding.image)
+                        holder.binding.image.loadWithGlide(false, BookImage)
                         holder.binding.addCard.visibility = View.GONE
                         holder.binding.detailsCard.visibility = View.VISIBLE
                         holder.binding.remove.visibility = View.VISIBLE

@@ -15,7 +15,9 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.flatcode.littlebooksadmin.R
 import com.flatcode.littlebooksadmin.utils.DATA
-import com.flatcode.littlebooksadmin.utils.VOID
+import com.flatcode.littlebooksadmin.utils.cropImageSlider
+import com.flatcode.littlebooksadmin.utils.getFileExtension
+import com.flatcode.littlebooksadmin.utils.loadWithGlide
 import com.flatcode.littlebooksadmin.databinding.ActivitySliderShowBinding
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -56,83 +58,83 @@ class SliderShowActivity : AppCompatActivity() {
         dialog!!.setCanceledOnTouchOutside(false)
 
         binding.addOne.setOnClickListener {
-            VOID.cropImageSlider(activity)
+            activity?.cropImageSlider()
             IMAGE_NUMBER = 1
         }
         binding.addTwo.setOnClickListener {
-            VOID.cropImageSlider(activity)
+            activity?.cropImageSlider()
             IMAGE_NUMBER = 2
         }
         binding.addThree.setOnClickListener {
-            VOID.cropImageSlider(activity)
+            activity?.cropImageSlider()
             IMAGE_NUMBER = 3
         }
         binding.addFour.setOnClickListener {
-            VOID.cropImageSlider(activity)
+            activity?.cropImageSlider()
             IMAGE_NUMBER = 4
         }
         binding.addFive.setOnClickListener {
-            VOID.cropImageSlider(activity)
+            activity?.cropImageSlider()
             IMAGE_NUMBER = 5
         }
         binding.addSix.setOnClickListener {
-            VOID.cropImageSlider(activity)
+            activity?.cropImageSlider()
             IMAGE_NUMBER = 6
         }
         binding.addSeven.setOnClickListener {
-            VOID.cropImageSlider(activity)
+            activity?.cropImageSlider()
             IMAGE_NUMBER = 7
         }
         binding.addEight.setOnClickListener {
-            VOID.cropImageSlider(activity)
+            activity?.cropImageSlider()
             IMAGE_NUMBER = 8
         }
         binding.addNine.setOnClickListener {
-            VOID.cropImageSlider(activity)
+            activity?.cropImageSlider()
             IMAGE_NUMBER = 9
         }
         binding.addTeen.setOnClickListener {
-            VOID.cropImageSlider(activity)
+            activity?.cropImageSlider()
             IMAGE_NUMBER = 10
         }
         binding.addEleven.setOnClickListener {
-            VOID.cropImageSlider(activity)
+            activity?.cropImageSlider()
             IMAGE_NUMBER = 11
         }
         binding.addTwelfth.setOnClickListener {
-            VOID.cropImageSlider(activity)
+            activity?.cropImageSlider()
             IMAGE_NUMBER = 12
         }
         binding.addThirteen.setOnClickListener {
-            VOID.cropImageSlider(activity)
+            activity?.cropImageSlider()
             IMAGE_NUMBER = 13
         }
         binding.addFourteenth.setOnClickListener {
-            VOID.cropImageSlider(activity)
+            activity?.cropImageSlider()
             IMAGE_NUMBER = 14
         }
         binding.addFifteenth.setOnClickListener {
-            VOID.cropImageSlider(activity)
+            activity?.cropImageSlider()
             IMAGE_NUMBER = 15
         }
         binding.addSixteen.setOnClickListener {
-            VOID.cropImageSlider(activity)
+            activity?.cropImageSlider()
             IMAGE_NUMBER = 16
         }
         binding.addSeventeen.setOnClickListener {
-            VOID.cropImageSlider(activity)
+            activity?.cropImageSlider()
             IMAGE_NUMBER = 17
         }
         binding.addEighteen.setOnClickListener {
-            VOID.cropImageSlider(activity)
+            activity?.cropImageSlider()
             IMAGE_NUMBER = 18
         }
         binding.addNineteen.setOnClickListener {
-            VOID.cropImageSlider(activity)
+            activity?.cropImageSlider()
             IMAGE_NUMBER = 19
         }
         binding.addTwenty.setOnClickListener {
-            VOID.cropImageSlider(activity)
+            activity?.cropImageSlider()
             IMAGE_NUMBER = 20
         }
     }
@@ -277,26 +279,26 @@ class SliderShowActivity : AppCompatActivity() {
                 val nineteen = DATA.EMPTY + dataSnapshot.child("19").value
                 val twenty = DATA.EMPTY + dataSnapshot.child("20").value
 
-                VOID.Glide(false, context, one, binding.imageOne)
-                VOID.Glide(false, context, two, binding.imageTwo)
-                VOID.Glide(false, context, three, binding.imageThree)
-                VOID.Glide(false, context, four, binding.imageFour)
-                VOID.Glide(false, context, five, binding.imageFive)
-                VOID.Glide(false, context, six, binding.imageSix)
-                VOID.Glide(false, context, seven, binding.imageSeven)
-                VOID.Glide(false, context, eight, binding.imageEight)
-                VOID.Glide(false, context, nine, binding.imageNine)
-                VOID.Glide(false, context, teen, binding.imageTeen)
-                VOID.Glide(false, context, eleven, binding.imageEleven)
-                VOID.Glide(false, context, twelfth, binding.imageTwelfth)
-                VOID.Glide(false, context, thirteen, binding.imageThirteen)
-                VOID.Glide(false, context, fourteenth, binding.imageFourteenth)
-                VOID.Glide(false, context, fifteenth, binding.imageFifteenth)
-                VOID.Glide(false, context, sixteen, binding.imageSixteen)
-                VOID.Glide(false, context, seventeen, binding.imageSeventeen)
-                VOID.Glide(false, context, eighteen, binding.imageEighteen)
-                VOID.Glide(false, context, nineteen, binding.imageNineteen)
-                VOID.Glide(false, context, twenty, binding.imageTwenty)
+                binding.imageOne.loadWithGlide(false, one)
+                binding.imageTwo.loadWithGlide(false, two)
+                binding.imageThree.loadWithGlide(false, three)
+                binding.imageFour.loadWithGlide(false, four)
+                binding.imageFive.loadWithGlide(false, five)
+                binding.imageSix.loadWithGlide(false, six)
+                binding.imageSeven.loadWithGlide(false, seven)
+                binding.imageEight.loadWithGlide(false, eight)
+                binding.imageNine.loadWithGlide(false, nine)
+                binding.imageTeen.loadWithGlide(false, teen)
+                binding.imageEleven.loadWithGlide(false, eleven)
+                binding.imageTwelfth.loadWithGlide(false, twelfth)
+                binding.imageThirteen.loadWithGlide(false, thirteen)
+                binding.imageFourteenth.loadWithGlide(false, fourteenth)
+                binding.imageFifteenth.loadWithGlide(false, fifteenth)
+                binding.imageSixteen.loadWithGlide(false, sixteen)
+                binding.imageSeventeen.loadWithGlide(false, seventeen)
+                binding.imageEighteen.loadWithGlide(false, eighteen)
+                binding.imageNineteen.loadWithGlide(false, nineteen)
+                binding.imageTwenty.loadWithGlide(false, twenty)
             }
 
             override fun onCancelled(databaseError: DatabaseError) {}
@@ -308,7 +310,7 @@ class SliderShowActivity : AppCompatActivity() {
         dialog!!.show()
         val filePathAndName = "Images/SliderShow/" + (DATA.EMPTY + name)
         val ref = FirebaseStorage.getInstance()
-            .getReference(filePathAndName + DATA.DOT + VOID.getFileExtension(imageUri, context))
+            .getReference(filePathAndName + DATA.DOT + context.getFileExtension(imageUri))
         ref.putFile(imageUri!!).addOnSuccessListener { taskSnapshot: UploadTask.TaskSnapshot ->
             val uriTask = taskSnapshot.storage.downloadUrl
             while (!uriTask.isSuccessful);
@@ -345,7 +347,7 @@ class SliderShowActivity : AppCompatActivity() {
                 imageUri = uri
                 requestPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), 0)
             } else {
-                VOID.cropImageSlider(activity)
+                activity?.cropImageSlider()
             }
         }
         if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {

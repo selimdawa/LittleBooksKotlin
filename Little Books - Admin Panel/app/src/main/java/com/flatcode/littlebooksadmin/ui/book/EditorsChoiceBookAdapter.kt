@@ -15,7 +15,7 @@ import com.flatcode.littlebooksadmin.filter.EditorsChoiceBookFilter
 import com.flatcode.littlebooksadmin.model.Book
 import com.flatcode.littlebooksadmin.ui.book.BookDetailsActivity
 import com.flatcode.littlebooksadmin.utils.DATA
-import com.flatcode.littlebooksadmin.utils.VOID
+import com.flatcode.littlebooksadmin.utils.*
 import com.flatcode.littlebooksadmin.databinding.ItemEditorsChoiceBinding
 
 class EditorsChoiceBookAdapter(
@@ -42,7 +42,7 @@ class EditorsChoiceBookAdapter(
         val nrLoves = DATA.EMPTY + item.lovesCount
         val nrDownloads = DATA.EMPTY + item.downloadsCount
 
-        VOID.Glide(false, context, image, holder.binding.image)
+        holder.binding.image.loadWithGlide(false, image)
 
         if (item.title == DATA.EMPTY) {
             holder.binding.title.visibility = View.GONE
@@ -64,15 +64,15 @@ class EditorsChoiceBookAdapter(
 
         holder.binding.add.setOnClickListener {
             if (oldBookId != null) {
-                VOID.addToEditorsChoice(context, activity, bookId, number)
-                VOID.addToEditorsChoice(context, activity, oldBookId, 0)
+                context.addToEditorsChoice(activity, bookId, number)
+                context.addToEditorsChoice(activity, oldBookId, 0)
             } else {
-                VOID.addToEditorsChoice(context, activity, bookId, number)
+                context.addToEditorsChoice(activity, bookId, number)
             }
         }
 
         holder.binding.item.setOnClickListener {
-            VOID.IntentExtra(context, BookDetailsActivity::class.java, DATA.BOOK_ID, item.id)
+            context.intentExtra(BookDetailsActivity::class.java, DATA.BOOK_ID, item.id)
         }
     }
 
