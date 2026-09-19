@@ -23,7 +23,6 @@ class CategoriesFragment : Fragment() {
     private var binding: FragmentCategoriesBinding? = null
     private val viewModel: CategoryViewModel by viewModels()
     
-    private var list = ArrayList<Category?>()
     private var adapter: CategoryMainAdapter? = null
 
     override fun onCreateView(
@@ -31,7 +30,7 @@ class CategoriesFragment : Fragment() {
     ): View? {
         binding = FragmentCategoriesBinding.inflate(inflater, container, false)
 
-        adapter = CategoryMainAdapter(context, list)
+        adapter = CategoryMainAdapter()
         binding!!.recyclerView.adapter = adapter
 
         observeViewModel()
@@ -46,9 +45,7 @@ class CategoriesFragment : Fragment() {
                     when (resource) {
                         is Resource.Success -> {
                             binding!!.bar.visibility = View.GONE
-                            list.clear()
-                            resource.data?.let { list.addAll(it) }
-                            adapter?.notifyDataSetChanged()
+                            adapter?.submitList(resource.data as List<Category>)
                         }
                         is Resource.Error -> {
                             binding!!.bar.visibility = View.GONE

@@ -31,7 +31,6 @@ class MoreBooksActivity : AppCompatActivity() {
 
     private var binding: ActivityPageLinearBinding? = null
     private val context: Context = this@MoreBooksActivity
-    private var list = ArrayList<Book?>()
     private var adapter: LinearBookAdapter? = null
     private var type: String? = null
     private var name: String? = null
@@ -89,7 +88,7 @@ class MoreBooksActivity : AppCompatActivity() {
             override fun afterTextChanged(s: Editable) {}
         })
 
-        adapter = LinearBookAdapter(context, list, false)
+        adapter = LinearBookAdapter(false)
         recyclerView!!.adapter = adapter
 
         observeViewModel()
@@ -102,11 +101,10 @@ class MoreBooksActivity : AppCompatActivity() {
                     when (resource) {
                         is Resource.Success -> {
                             binding!!.progress.visibility = View.GONE
-                            list.clear()
-                            resource.data?.let { list.addAll(it) }
-                            binding!!.toolbar.number.text = MessageFormat.format("( {0} )", list.size)
-                            adapter!!.notifyDataSetChanged()
-                            if (list.isNotEmpty()) {
+                            val data = resource.data ?: emptyList()
+                            binding!!.toolbar.number.text = MessageFormat.format("( {0} )", data.size)
+                            adapter!!.submitFullList(data as List<Book>)
+                            if (data.isNotEmpty()) {
                                 recyclerView!!.visibility = View.VISIBLE
                                 binding!!.emptyText.visibility = View.GONE
                             } else {

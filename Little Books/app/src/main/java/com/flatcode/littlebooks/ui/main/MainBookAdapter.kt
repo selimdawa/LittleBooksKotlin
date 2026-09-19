@@ -1,147 +1,97 @@
 package com.flatcode.littlebooks.ui.main
 
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Filter
 import android.widget.Filterable
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.TextView
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.flatcode.littlebooks.ui.book.BookDetailsActivity
+import com.flatcode.littlebooks.databinding.ItemBookMainBinding
 import com.flatcode.littlebooks.filter.PDFMainFilter
 import com.flatcode.littlebooks.model.Book
+import com.flatcode.littlebooks.ui.book.BookDetailsActivity
 import com.flatcode.littlebooks.utils.DATA
 import com.flatcode.littlebooks.utils.checkFavorite
 import com.flatcode.littlebooks.utils.glide
 import com.flatcode.littlebooks.utils.intentExtra
 import com.flatcode.littlebooks.utils.isFavorite
-import com.flatcode.littlebooks.databinding.ItemBookMainBinding
 
 class MainBookAdapter(
-    private val context: Context?, var list: ArrayList<Book?>,
-    isDownloads: Boolean, isViews: Boolean, isLoves: Boolean
-) : RecyclerView.Adapter<MainBookAdapter.ViewHolder>(), Filterable {
-
-    private var binding: ItemBookMainBinding? = null
-    var filterList: ArrayList<Book?>
-    private var filter: PDFMainFilter? = null
-    private val isDownloads: Boolean
-    private val isViews: Boolean
+    private val isDownloads: Boolean,
+    private val isViews: Boolean,
     private val isLoves: Boolean
+) : ListAdapter<Book, MainBookAdapter.ViewHolder>(DiffCallback), Filterable {
+
+    var originalList: List<Book> = emptyList()
+    private var filter: PDFMainFilter? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        binding = ItemBookMainBinding.inflate(LayoutInflater.from(context), parent, false)
-        return ViewHolder(binding!!.root)
+        val binding = ItemBookMainBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return ViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val item = list[position]
-        val bookId = DATA.EMPTY + item!!.id
-        val title = DATA.EMPTY + item.title
-        val image = DATA.EMPTY + item.image
-        val viewsCount = DATA.EMPTY + item.viewsCount
-        val downloadsCount = DATA.EMPTY + item.downloadsCount
-        val lovesCount = DATA.EMPTY + item.lovesCount
-
-        if (isDownloads) {
-            holder.linearDownloads.visibility = View.VISIBLE
-        } else {
-            holder.linearDownloads.visibility = View.GONE
+        val item = getItem(position)
+        if (item != null) {
+            holder.bind(item)
         }
-
-        if (isLoves) {
-            holder.linearLoves.visibility = View.VISIBLE
-        } else {
-            holder.linearLoves.visibility = View.GONE
-        }
-
-        if (isViews) {
-            holder.linearViews.visibility = View.VISIBLE
-        } else {
-            holder.linearViews.visibility = View.GONE
-        }
-
-        if (isViews || isLoves || isDownloads) {
-            holder.line.visibility = View.VISIBLE
-        } else {
-            holder.line.visibility = View.GONE
-        }
-
-        holder.image.glide(false, image)
-
-        binding!!.views.text = viewsCount
-        binding!!.downloads.text = downloadsCount
-        binding!!.loves.text = lovesCount
-        binding!!.name.text = title
-
-        holder.favorites.isFavorite(item.id, DATA.FirebaseUserUid)
-
-        holder.favorites.setOnClickListener {
-            holder.favorites.checkFavorite(bookId)
-        }
-
-        holder.itemView.setOnClickListener {
-            context?.intentExtra(BookDetailsActivity::class.java, DATA.BOOK_ID, bookId)
-        }
-    }
-
-    override fun getItemCount(): Int {
-        return list.size
     }
 
     override fun getFilter(): Filter {
         if (filter == null) {
-            filter = PDFMainFilter(filterList, this)
+            filter = PDFMainFilter(ArrayList(originalList), this)
         }
         return filter!!
     }
 
-    inner class ViewHolder(itemView: View?) : RecyclerView.ViewHolder(itemView!!) {
-        var linearDownloads: LinearLayout
-        var linearLoves: LinearLayout
-        var linearViews: LinearLayout
-        var linear1: LinearLayout
-        var linear2: LinearLayout
-        var downloads: TextView
-        var loves: TextView
-        var views: TextView
-        var favorites: ImageView
-        var download: ImageView
-        var love: ImageView
-        var view: ImageView
-        var image: ImageView
-        var item: LinearLayout
-        var line: View
+    fun submitFullList(list: List<Book>?) {
+        originalList = list ?: emptyList()
+        submitList(originalList)
+    }
 
-        init {
-            image = binding!!.image
-            linearDownloads = binding!!.linearDownloads
-            linearLoves = binding!!.linearLoves
-            linearViews = binding!!.linearViews
-            favorites = binding!!.favorites
-            downloads = binding!!.downloads
-            loves = binding!!.loves
-            views = binding!!.views
-            download = binding!!.download
-            love = binding!!.love
-            view = binding!!.view
-            item = binding!!.item
-            line = binding!!.line
-            linear1 = binding!!.linear1
-            linear2 = binding!!.linear2
+    fun setFilteredList(list: List<Book?>?) {
+        submitList(list?.filterNotNull() ?: emptyList())
+    }
+
+    inner class ViewHolder(private val binding: ItemBookMainBinding) :
+        RecyclerView.ViewHolder(binding.root) {
+
+        fun bind(item: Book) {
+            val context = itemView.context
+            val bookId = DATA.EMPTY + item.id
+
+            binding.linearDownloads.visibility = if (isDownloads) View.VISIBLE else View.GONE
+            binding.linearLoves.visibility = if (isLoves) View.VISIBLE else View.GONE
+            binding.linearViews.visibility = if (isViews) View.VISIBLE else View.GONE
+            binding.line.visibility = if (isViews || isLoves || isDownloads) View.VISIBLE else View.GONE
+
+            binding.image.glide(false, item.image)
+            binding.views.text = DATA.EMPTY + item.viewsCount
+            binding.downloads.text = DATA.EMPTY + item.downloadsCount
+            binding.loves.text = DATA.EMPTY + item.lovesCount
+            binding.name.text = item.title
+
+            binding.favorites.isFavorite(item.id, DATA.FirebaseUserUid)
+
+            binding.favorites.setOnClickListener {
+                binding.favorites.checkFavorite(bookId)
+            }
+
+            itemView.setOnClickListener {
+                context.intentExtra(BookDetailsActivity::class.java, DATA.BOOK_ID, bookId)
+            }
         }
     }
 
-    init {
-        filterList = list
-        this.isDownloads = isDownloads
-        this.isViews = isViews
-        this.isLoves = isLoves
+    companion object {
+        private val DiffCallback = object : DiffUtil.ItemCallback<Book>() {
+            override fun areItemsTheSame(oldItem: Book, newItem: Book): Boolean =
+                oldItem.id == newItem.id
+
+            override fun areContentsTheSame(oldItem: Book, newItem: Book): Boolean =
+                oldItem == newItem
+        }
     }
 }
-
-
-

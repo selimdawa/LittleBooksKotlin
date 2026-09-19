@@ -32,7 +32,6 @@ class FollowersActivity : AppCompatActivity() {
 
     private var binding: ActivityPageStaggeredBinding? = null
     private val context: Context = this@FollowersActivity
-    private var list = ArrayList<User?>()
     private var adapter: PublisherAdapter? = null
 
     private val viewModel: FollowViewModel by viewModels()
@@ -75,7 +74,7 @@ class FollowersActivity : AppCompatActivity() {
             override fun afterTextChanged(s: Editable) {}
         })
 
-        adapter = PublisherAdapter(context, list)
+        adapter = PublisherAdapter()
         binding!!.recyclerView.adapter = adapter
 
         observeViewModel()
@@ -88,17 +87,16 @@ class FollowersActivity : AppCompatActivity() {
                     when (resource) {
                         is Resource.Success -> {
                             binding!!.progress.visibility = View.GONE
-                            list.clear()
-                            resource.data?.let { list.addAll(it) }
-                            binding!!.toolbar.number.text = MessageFormat.format("( {0} )", list.size)
-                            if (list.isNotEmpty()) {
+                            val data = resource.data ?: emptyList()
+                            binding!!.toolbar.number.text = MessageFormat.format("( {0} )", data.size)
+                            adapter!!.submitFullList(data as List<User>)
+                            if (data.isNotEmpty()) {
                                 binding!!.recyclerView.visibility = View.VISIBLE
                                 binding!!.emptyText.visibility = View.GONE
                             } else {
                                 binding!!.recyclerView.visibility = View.GONE
                                 binding!!.emptyText.visibility = View.VISIBLE
                             }
-                            adapter!!.notifyDataSetChanged()
                         }
                         is Resource.Error -> {
                             binding!!.progress.visibility = View.GONE

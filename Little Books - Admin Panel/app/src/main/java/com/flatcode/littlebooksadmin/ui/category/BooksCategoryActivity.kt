@@ -81,7 +81,7 @@ class BooksCategoryActivity : AppCompatActivity() {
             override fun afterTextChanged(s: Editable?) {}
         })
 
-        adapter = StaggeredBookAdapter(context, list)
+        adapter = StaggeredBookAdapter()
         binding.recyclerView.adapter = adapter
 
         binding.switchBar.all.setOnClickListener {

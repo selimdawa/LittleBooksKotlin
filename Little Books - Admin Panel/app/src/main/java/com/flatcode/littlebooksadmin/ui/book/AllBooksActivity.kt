@@ -121,21 +121,11 @@ class AllBooksActivity : AppCompatActivity() {
         }
     }
 
-    private fun updateList(books: List<com.flatcode.littlebooksadmin.model.Book>) {
-        list.clear()
-        books.forEach {
-            val legacyBook = Book(
-                it.publisher, it.id, it.title, it.description, it.categoryId,
-                it.url, it.image, it.timestamp, it.viewsCount, it.downloadsCount,
-                it.lovesCount, it.editorsChoice
-            )
-            list.add(legacyBook)
-        }
-        
-        binding.toolbar.number.text = MessageFormat.format("( {0} )", list.size)
-        adapter!!.notifyDataSetChanged()
-        
-        if (list.isNotEmpty()) {
+    private fun updateList(books: List<Book>) {
+        binding.toolbar.number.text = MessageFormat.format("( {0} )", books.size)
+        adapter?.submitUnfilteredList(books)
+
+        if (books.isNotEmpty()) {
             binding.recyclerView.visibility = View.VISIBLE
             binding.emptyText.visibility = View.GONE
         } else {

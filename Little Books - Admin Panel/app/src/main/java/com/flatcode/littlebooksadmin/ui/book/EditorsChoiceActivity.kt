@@ -52,7 +52,7 @@ class EditorsChoiceActivity : AppCompatActivity() {
         binding.toolbar.nameSpace.setText(R.string.editors_choice)
         binding.toolbar.back.setOnClickListener { onBackPressed() }
 
-        adapter = EditorsChoiceAdapter(context, list)
+        adapter = EditorsChoiceAdapter()
         binding.recyclerView.adapter = adapter
     }
 
@@ -79,7 +79,7 @@ class EditorsChoiceActivity : AppCompatActivity() {
         for (i in 0..49) {
             list.add(editorsChoice)
         }
-        adapter!!.notifyDataSetChanged()
+        adapter!!.submitList(ArrayList(list))
     }
 
     override fun onResume() {

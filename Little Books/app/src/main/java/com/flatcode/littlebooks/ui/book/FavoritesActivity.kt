@@ -28,7 +28,6 @@ class FavoritesActivity : AppCompatActivity() {
     private var binding: ActivityFavoritesBinding? = null
     var context: Context = this@FavoritesActivity
     
-    private var list = ArrayList<Book?>()
     private var adapter: StaggeredBookAdapter? = null
     
     private val viewModel: BookViewModel by viewModels()
@@ -49,7 +48,7 @@ class FavoritesActivity : AppCompatActivity() {
             insets
         }
 
-        adapter = StaggeredBookAdapter(context, list)
+        adapter = StaggeredBookAdapter()
         binding.recyclerView.adapter = adapter
 
         binding.back.setOnClickListener { onBackPressed() }
@@ -65,10 +64,9 @@ class FavoritesActivity : AppCompatActivity() {
                     when (resource) {
                         is Resource.Success -> {
                             binding.bar.visibility = View.GONE
-                            list.clear()
-                            resource.data?.let { list.addAll(it) }
-                            adapter?.notifyDataSetChanged()
-                            if (list.isEmpty()) {
+                            val data = resource.data ?: emptyList()
+                            adapter?.submitFullList(data as List<Book>)
+                            if (data.isEmpty()) {
                                 binding.empty.visibility = View.VISIBLE
                                 binding.recyclerView.visibility = View.GONE
                             } else {

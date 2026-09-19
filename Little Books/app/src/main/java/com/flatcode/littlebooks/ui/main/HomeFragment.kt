@@ -29,22 +29,16 @@ class HomeFragment : Fragment() {
     private var binding: FragmentHomeBinding? = null
     private val viewModel: HomeViewModel by viewModels()
 
-    private var categoryList = ArrayList<Category?>()
     private var categoryAdapter: CategoryAdapter? = null
 
-    private var editorsChoiceList = ArrayList<Book?>()
     private var editorsChoiceAdapter: MainBookAdapter? = null
 
-    private var mostViewedList = ArrayList<Book?>()
     private var mostViewedAdapter: MainBookAdapter? = null
 
-    private var mostLovedList = ArrayList<Book?>()
     private var mostLovedAdapter: MainBookAdapter? = null
 
-    private var mostDownloadedList = ArrayList<Book?>()
     private var mostDownloadedAdapter: MainBookAdapter? = null
 
-    private var newBooksList = ArrayList<Book?>()
     private var newBooksAdapter: MainBookAdapter? = null
 
     private val B_one = false
@@ -106,22 +100,22 @@ class HomeFragment : Fragment() {
             )
         }
 
-        categoryAdapter = CategoryAdapter(context, categoryList)
+        categoryAdapter = CategoryAdapter()
         binding!!.recyclerCategory.adapter = categoryAdapter
 
-        editorsChoiceAdapter = MainBookAdapter(context, editorsChoiceList, true, false, true)
+        editorsChoiceAdapter = MainBookAdapter(true, false, true)
         binding!!.recyclerView.adapter = editorsChoiceAdapter
 
-        mostViewedAdapter = MainBookAdapter(context, mostViewedList, false, true, false)
+        mostViewedAdapter = MainBookAdapter(false, true, false)
         binding!!.recyclerView2.adapter = mostViewedAdapter
 
-        mostLovedAdapter = MainBookAdapter(context, mostLovedList, false, false, true)
+        mostLovedAdapter = MainBookAdapter(false, false, true)
         binding!!.recyclerView3.adapter = mostLovedAdapter
 
-        mostDownloadedAdapter = MainBookAdapter(context, mostDownloadedList, true, false, false)
+        mostDownloadedAdapter = MainBookAdapter(true, false, false)
         binding!!.recyclerView4.adapter = mostDownloadedAdapter
 
-        newBooksAdapter = MainBookAdapter(context, newBooksList, false, true, true)
+        newBooksAdapter = MainBookAdapter(false, true, true)
         binding!!.recyclerView5.adapter = newBooksAdapter
     }
 
@@ -131,38 +125,38 @@ class HomeFragment : Fragment() {
                 launch {
                     viewModel.sliderCount.collect { resource ->
                         if (resource is Resource.Success) {
-                            binding!!.imageSlider.setSliderAdapter(ImageSliderAdapter(context, resource.data!!))
+                            binding!!.imageSlider.setSliderAdapter(ImageSliderAdapter(resource.data!!))
                         }
                     }
                 }
                 launch {
                     viewModel.categories.collect { resource ->
-                        handleResource(resource, categoryList, categoryAdapter)
+                        handleResource(resource, categoryAdapter)
                     }
                 }
                 launch {
                     viewModel.editorsChoiceBooks.collect { resource ->
-                        handleResource(resource, editorsChoiceList, editorsChoiceAdapter, binding!!.bar, binding!!.recyclerView, binding!!.empty)
+                        handleResource(resource, editorsChoiceAdapter, binding!!.bar, binding!!.recyclerView, binding!!.empty)
                     }
                 }
                 launch {
                     viewModel.mostViewedBooks.collect { resource ->
-                        handleResource(resource, mostViewedList, mostViewedAdapter, binding!!.bar2, binding!!.recyclerView2, binding!!.empty2)
+                        handleResource(resource, mostViewedAdapter, binding!!.bar2, binding!!.recyclerView2, binding!!.empty2)
                     }
                 }
                 launch {
                     viewModel.mostLovedBooks.collect { resource ->
-                        handleResource(resource, mostLovedList, mostLovedAdapter, binding!!.bar3, binding!!.recyclerView3, binding!!.empty3)
+                        handleResource(resource, mostLovedAdapter, binding!!.bar3, binding!!.recyclerView3, binding!!.empty3)
                     }
                 }
                 launch {
                     viewModel.mostDownloadedBooks.collect { resource ->
-                        handleResource(resource, mostDownloadedList, mostDownloadedAdapter, binding!!.bar4, binding!!.recyclerView4, binding!!.empty4)
+                        handleResource(resource, mostDownloadedAdapter, binding!!.bar4, binding!!.recyclerView4, binding!!.empty4)
                     }
                 }
                 launch {
                     viewModel.newBooks.collect { resource ->
-                        handleResource(resource, newBooksList, newBooksAdapter, binding!!.bar5, binding!!.recyclerView5, binding!!.empty5)
+                        handleResource(resource, newBooksAdapter, binding!!.bar5, binding!!.recyclerView5, binding!!.empty5)
                     }
                 }
             }
@@ -171,7 +165,6 @@ class HomeFragment : Fragment() {
 
     private fun <T> handleResource(
         resource: Resource<List<T>>,
-        list: ArrayList<T?>,
         adapter: RecyclerView.Adapter<*>?,
         bar: View? = null,
         recyclerView: View? = null,
@@ -179,11 +172,13 @@ class HomeFragment : Fragment() {
     ) {
         when (resource) {
             is Resource.Success -> {
-                list.clear()
-                resource.data?.let { list.addAll(it) }
-                adapter?.notifyDataSetChanged()
+                val data = resource.data ?: emptyList()
+                when (adapter) {
+                    is CategoryAdapter -> adapter.submitList(data as List<Category>)
+                    is MainBookAdapter -> adapter.submitFullList(data as List<Book>)
+                }
                 bar?.visibility = View.GONE
-                if (list.isNotEmpty()) {
+                if (data.isNotEmpty()) {
                     recyclerView?.visibility = View.VISIBLE
                     empty?.visibility = View.GONE
                 } else {

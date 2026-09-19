@@ -73,7 +73,7 @@ class MyBooksActivity : AppCompatActivity() {
             override fun afterTextChanged(s: Editable?) {}
         })
 
-        adapter = LinearBookAdapter(context, list, true)
+        adapter = LinearBookAdapter(true)
         binding.recyclerView.adapter = adapter
 
         binding.switchBar.all.setOnClickListener {

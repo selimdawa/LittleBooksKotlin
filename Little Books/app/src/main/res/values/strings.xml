@@ -69,4 +69,8 @@
     <string name="facebook">Facebook</string>
     <string name="default_size">13Mb</string>
     <string name="default_date_format">dd/MM/yyyy</string>
+    <string name="password_hint">********</string>
+    <string name="back">Back</string>
+    <string name="close">Close</string>
+    <string name="crop_image">Crop Image</string>
 </resources>

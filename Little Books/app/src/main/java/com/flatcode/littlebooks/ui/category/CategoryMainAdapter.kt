@@ -1,72 +1,64 @@
 package com.flatcode.littlebooks.ui.category
 
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
-import com.google.android.material.card.MaterialCardView
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.flatcode.littlebooks.ui.book.BooksCategoryActivity
+import com.flatcode.littlebooks.databinding.ItemCategoryMainBinding
 import com.flatcode.littlebooks.model.Category
+import com.flatcode.littlebooks.ui.book.BooksCategoryActivity
 import com.flatcode.littlebooks.utils.DATA
 import com.flatcode.littlebooks.utils.glide
 import com.flatcode.littlebooks.utils.glideBlur
 import com.flatcode.littlebooks.utils.intentExtra2
-import com.flatcode.littlebooks.databinding.ItemCategoryMainBinding
 
-class CategoryMainAdapter(private val context: Context?, var list: ArrayList<Category?>) :
-    RecyclerView.Adapter<CategoryMainAdapter.ViewHolder>() {
-
-    private var binding: ItemCategoryMainBinding? = null
+class CategoryMainAdapter : ListAdapter<Category, CategoryMainAdapter.ViewHolder>(DiffCallback) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        binding = ItemCategoryMainBinding.inflate(LayoutInflater.from(context), parent, false)
-        return ViewHolder(binding!!.root)
+        val binding =
+            ItemCategoryMainBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return ViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val item = list[position]
-        val id = DATA.EMPTY + item!!.id
-        val name = DATA.EMPTY + item.category
-        val image = DATA.EMPTY + item.image
-
-        holder.image.glide(false, image)
-        holder.imageBlur.glideBlur(false, image, 50)
-
-        if (name == DATA.EMPTY) {
-            holder.name.visibility = View.GONE
-        } else {
-            holder.name.visibility = View.VISIBLE
-            holder.name.text = name
-        }
-
-        holder.card.setOnClickListener {
-            context?.intentExtra2(
-                BooksCategoryActivity::class.java, DATA.CATEGORY_ID, id, DATA.CATEGORY_NAME, name
-            )
+        val item = getItem(position)
+        if (item != null) {
+            holder.bind(item)
         }
     }
 
-    override fun getItemCount(): Int {
-        return list.size
+    class ViewHolder(private val binding: ItemCategoryMainBinding) :
+        RecyclerView.ViewHolder(binding.root) {
+
+        fun bind(item: Category) {
+            val context = itemView.context
+            val name = DATA.EMPTY + item.category
+            val image = DATA.EMPTY + item.image
+
+            binding.image.glide(false, image)
+            binding.imageBlur.glideBlur(false, image, 50)
+
+            binding.name.visibility = if (name.isEmpty()) View.GONE else View.VISIBLE
+            binding.name.text = name
+
+            binding.card.setOnClickListener {
+                context.intentExtra2(
+                    BooksCategoryActivity::class.java, DATA.CATEGORY_ID, item.id,
+                    DATA.CATEGORY_NAME, name
+                )
+            }
+        }
     }
 
-    inner class ViewHolder(view: View?) : RecyclerView.ViewHolder(view!!) {
-        var image: ImageView
-        var imageBlur: ImageView
-        var name: TextView
-        var card: MaterialCardView
+    companion object {
+        private val DiffCallback = object : DiffUtil.ItemCallback<Category>() {
+            override fun areItemsTheSame(oldItem: Category, newItem: Category): Boolean =
+                oldItem.id == newItem.id
 
-        init {
-            image = binding!!.image
-            imageBlur = binding!!.imageBlur
-            name = binding!!.name
-            card = binding!!.card
+            override fun areContentsTheSame(oldItem: Category, newItem: Category): Boolean =
+                oldItem == newItem
         }
     }
 }
-
-
-

@@ -1,39 +1,48 @@
 package com.flatcode.littlebooksadmin.ui.ads
 
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Filter
 import android.widget.Filterable
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.TextView
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.flatcode.littlebooksadmin.Application
+import com.flatcode.littlebooksadmin.databinding.ItemAdsUserBinding
 import com.flatcode.littlebooksadmin.filter.ADsUserFilter
 import com.flatcode.littlebooksadmin.model.User
-import com.flatcode.littlebooksadmin.Application
-import com.flatcode.littlebooksadmin.ui.ads.AdsInfoActivity
-import com.flatcode.littlebooksadmin.utils.*
-import com.flatcode.littlebooksadmin.databinding.ItemAdsUserBinding
+import com.flatcode.littlebooksadmin.utils.DATA
+import com.flatcode.littlebooksadmin.utils.loadWithGlide
+import com.flatcode.littlebooksadmin.utils.openActivity
 import java.text.MessageFormat
 
-class ADsUserAdapter(private val context: Context, var list: ArrayList<User?>, isUser: Boolean) :
-    RecyclerView.Adapter<ADsUserAdapter.ViewHolder>(), Filterable {
+class ADsUserAdapter(val isUser: Boolean) :
+    ListAdapter<User, ADsUserAdapter.ViewHolder>(UserDiffCallback()), Filterable {
 
-    var filterList: ArrayList<User?>
+    var unfilteredList: List<User?> = emptyList()
+        private set
+
     private var filter: ADsUserFilter? = null
-    var isUser: Boolean
-    var all = 0
+
+    fun submitUnfilteredList(list: List<User?>?) {
+        unfilteredList = list ?: emptyList()
+        super.submitList(unfilteredList.filterNotNull())
+    }
+
+    fun submitFilteredList(list: List<User?>?) {
+        super.submitList(list?.filterNotNull() ?: emptyList())
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val binding = ItemAdsUserBinding.inflate(LayoutInflater.from(context), parent, false)
+        val binding = ItemAdsUserBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return ViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val item = list[position]
-        val userId = DATA.EMPTY + item!!.id
+        val item = getItem(position)
+        val context = holder.itemView.context
+        val userId = DATA.EMPTY + item.id
         val username = DATA.EMPTY + item.username
         val profileImage = DATA.EMPTY + item.profileImage
         val timestamp = DATA.EMPTY + item.timestamp
@@ -50,10 +59,10 @@ class ADsUserAdapter(private val context: Context, var list: ArrayList<User?>, i
             holder.binding.username.text = username
         }
 
-        val First = holder.position
-        val Final = list.size - First
+        val first = position
+        val finalCount = itemCount - first
         holder.binding.time.text = formattedDate
-        holder.binding.rank.text = MessageFormat.format("{0}", Final)
+        holder.binding.rank.text = MessageFormat.format("{0}", finalCount)
         holder.binding.numberADsLoad.text = MessageFormat.format("{0}{1}", DATA.EMPTY, adLoaded)
         holder.binding.numberADsClick.text = MessageFormat.format("{0}{1}", DATA.EMPTY, adClicked)
 
@@ -62,54 +71,22 @@ class ADsUserAdapter(private val context: Context, var list: ArrayList<User?>, i
         }
     }
 
-    override fun getItemCount(): Int {
-        return list.size
-    }
-
     override fun getFilter(): Filter {
         if (filter == null) {
-            filter = ADsUserFilter(filterList, this)
+            filter = ADsUserFilter(this)
         }
         return filter!!
     }
 
-    inner class ViewHolder(val binding: ItemAdsUserBinding) : RecyclerView.ViewHolder(binding.root)
-/*private void ADsNumber(String userId, String type, String hash, TextView numberADs) {
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference(DATA.AD_S).child(userId);
-        ref.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                int i = 0;
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    ADs item = snapshot.getValue(ADs.class);
-                    assert item != null;
-                    if (type.equals(DATA.AD_LOADED)) {
-                        i = i + item.getAdsLoadedCount();
-                    } else if (type.equals(DATA.AD_CLICKED)) {
-                        i = i + item.getAdsClickedCount();
-                    }
-                    numberADs.setText(MessageFormat.format("{0}{1}", DATA.EMPTY, i));
-                    updateAdsCount(i);
-                }
-            }
-
-            private void updateAdsCount(int i) {
-                HashMap<String, Object> hashMap = new HashMap<>();
-                hashMap.put(hash, i);
-                DatabaseReference reference = FirebaseDatabase.getInstance().getReference(DATA.USERS);
-                reference.child(userId).updateChildren(hashMap);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-    }*/
-
-    init {
-        filterList = list
-        this.isUser = isUser
-    }
+    class ViewHolder(val binding: ItemAdsUserBinding) : RecyclerView.ViewHolder(binding.root)
 }
 
+class UserDiffCallback : DiffUtil.ItemCallback<User>() {
+    override fun areItemsTheSame(oldItem: User, newItem: User): Boolean {
+        return oldItem.id == newItem.id
+    }
+
+    override fun areContentsTheSame(oldItem: User, newItem: User): Boolean {
+        return oldItem == newItem
+    }
+}

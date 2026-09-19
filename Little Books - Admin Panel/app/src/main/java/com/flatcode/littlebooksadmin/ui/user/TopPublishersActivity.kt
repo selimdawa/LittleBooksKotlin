@@ -72,7 +72,7 @@ class TopPublishersActivity : AppCompatActivity() {
             override fun afterTextChanged(s: Editable) {}
         })
 
-        adapter = TopPublisherAdapter(context, list, true)
+        adapter = TopPublisherAdapter(true)
         binding.recyclerView.adapter = adapter
     }
 
@@ -109,7 +109,7 @@ class TopPublishersActivity : AppCompatActivity() {
         }
         
         binding.toolbar.number.text = MessageFormat.format("( {0} )", list.size)
-        adapter!!.notifyDataSetChanged()
+        adapter!!.submitUnfilteredList(list)
         
         if (list.isNotEmpty()) {
             binding.recyclerView.visibility = View.VISIBLE

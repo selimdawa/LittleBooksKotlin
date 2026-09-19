@@ -43,7 +43,6 @@ class BookDetailsActivity : AppCompatActivity() {
     private var bookTitle: String? = null
     private var bookUrl: String? = null
     private var dialog: ProgressDialog? = null
-    private var list: ArrayList<Comment?> = arrayListOf()
     private var adapter: CommentAdapter? = null
     
     private val viewModel: BookDetailsViewModel by viewModels()
@@ -75,7 +74,7 @@ class BookDetailsActivity : AppCompatActivity() {
         dialog!!.setTitle("Please wait...")
         dialog!!.setCanceledOnTouchOutside(false)
 
-        adapter = CommentAdapter(context, list)
+        adapter = CommentAdapter()
         binding.recyclerView.adapter = adapter
 
         binding.love.setOnClickListener { binding.love.checkLove(bookId) }
@@ -196,13 +195,8 @@ class BookDetailsActivity : AppCompatActivity() {
     }
 
     private fun updateComments(comments: List<com.flatcode.littlebooksadmin.model.Comment>) {
-        list.clear()
-        comments.forEach {
-            val legacyComment = Comment(it.id, it.bookId, it.timestamp, it.comment, it.publisher)
-            list.add(legacyComment)
-        }
-        adapter?.notifyDataSetChanged()
-        binding.textComment.visibility = if (list.isEmpty()) View.GONE else View.VISIBLE
+        adapter?.submitList(comments)
+        binding.textComment.visibility = if (comments.isEmpty()) View.GONE else View.VISIBLE
     }
 
     private fun addCommentDialog() {

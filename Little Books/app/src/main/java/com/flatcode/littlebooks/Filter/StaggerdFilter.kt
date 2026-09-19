@@ -1,9 +1,10 @@
 package com.flatcode.littlebooks.filter
 
 import android.widget.Filter
-import com.flatcode.littlebooks.ui.book.StaggeredBookAdapter
 import com.flatcode.littlebooks.model.Book
-import java.util.*
+import com.flatcode.littlebooks.ui.book.StaggeredBookAdapter
+import java.util.ArrayList
+import java.util.Locale
 
 class StaggerdFilter(var list: ArrayList<Book?>, var adapter: StaggeredBookAdapter) : Filter() {
     override fun performFiltering(constraint: CharSequence): FilterResults {
@@ -27,9 +28,6 @@ class StaggerdFilter(var list: ArrayList<Book?>, var adapter: StaggeredBookAdapt
     }
 
     override fun publishResults(constraint: CharSequence, results: FilterResults) {
-        adapter.list = (results.values as ArrayList<Book?>)
-        adapter.notifyDataSetChanged()
+        adapter.setFilteredList(results.values as? List<Book?>)
     }
 }
-
-

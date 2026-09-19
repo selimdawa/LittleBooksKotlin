@@ -5,31 +5,29 @@ import com.flatcode.littlebooksadmin.model.User
 import com.flatcode.littlebooksadmin.ui.user.PublisherAdapter
 
 class PublisherFilter(
-    private var filterList: List<User?>,
     private var adapter: PublisherAdapter
 ) : Filter() {
     override fun performFiltering(constraint: CharSequence?): FilterResults {
-        var constraint = constraint
+        var charSequence = constraint
         val results = FilterResults()
-        if (constraint != null && constraint.isNotEmpty()) {
-            constraint = constraint.toString().uppercase()
-            val filteredModels = ArrayList<User?>()
-            for (i in filterList.indices) {
-                if (filterList[i]!!.username!!.uppercase().contains(constraint)) {
-                    filteredModels.add(filterList[i])
+        if (charSequence != null && charSequence.isNotEmpty()) {
+            charSequence = charSequence.toString().uppercase()
+            val filteredModels = ArrayList<User>()
+            for (item in adapter.unfilteredList) {
+                if (item.username?.uppercase()?.contains(charSequence) == true) {
+                    filteredModels.add(item)
                 }
             }
             results.count = filteredModels.size
             results.values = filteredModels
         } else {
-            results.count = filterList.size
-            results.values = filterList
+            results.count = adapter.unfilteredList.size
+            results.values = adapter.unfilteredList
         }
         return results
     }
 
     override fun publishResults(constraint: CharSequence?, results: FilterResults) {
-        adapter.list = results.values as ArrayList<User?>
-        adapter.notifyDataSetChanged()
+        adapter.submitFilteredList(results.values as? List<User>)
     }
 }

@@ -5,18 +5,18 @@ import com.flatcode.littlebooksadmin.model.Book
 import com.flatcode.littlebooksadmin.ui.book.EditorsChoiceBookAdapter
 
 class EditorsChoiceBookFilter(
-    private var filterList: List<Book?>,
-    private var adapter: EditorsChoiceBookAdapter
+    private val adapter: EditorsChoiceBookAdapter
 ) : Filter() {
     override fun performFiltering(constraint: CharSequence?): FilterResults {
-        var constraint = constraint
+        var query = constraint
         val results = FilterResults()
-        if (constraint != null && constraint.isNotEmpty()) {
-            constraint = constraint.toString().uppercase()
-            val filteredModels = ArrayList<Book?>()
-            for (i in filterList.indices) {
-                if (filterList[i]!!.title!!.uppercase().contains(constraint)) {
-                    filteredModels.add(filterList[i])
+        val filterList = adapter.unfilteredList
+        if (query != null && query.isNotEmpty()) {
+            query = query.toString().uppercase()
+            val filteredModels = ArrayList<Book>()
+            for (item in filterList) {
+                if (item.title?.uppercase()?.contains(query) == true) {
+                    filteredModels.add(item)
                 }
             }
             results.count = filteredModels.size
@@ -28,8 +28,8 @@ class EditorsChoiceBookFilter(
         return results
     }
 
+    @Suppress("UNCHECKED_CAST")
     override fun publishResults(constraint: CharSequence?, results: FilterResults) {
-        adapter.list = results.values as ArrayList<Book?>
-        adapter.notifyDataSetChanged()
+        adapter.submitFilteredList(results.values as? List<Book>)
     }
 }

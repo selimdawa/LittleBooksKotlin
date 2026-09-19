@@ -31,7 +31,6 @@ import kotlinx.coroutines.launch
 class SettingsFragment : Fragment() {
 
     private var binding: FragmentSettingsBinding? = null
-    private var list = ArrayList<Setting>()
     private var adapter: SettingAdapter? = null
     private val viewModel: ProfileViewModel by viewModels()
 
@@ -40,7 +39,7 @@ class SettingsFragment : Fragment() {
     ): View? {
         binding = FragmentSettingsBinding.inflate(inflater, container, false)
 
-        adapter = SettingAdapter(context, list)
+        adapter = SettingAdapter()
         binding!!.recyclerView.adapter = adapter
 
         binding!!.toolbar.item.setOnClickListener {
@@ -95,7 +94,7 @@ class SettingsFragment : Fragment() {
     private fun loadSettings(
         explorePublishers: Int, myBooks: Int, followers: Int, following: Int, favorites: Int
     ) {
-        list.clear()
+        val list = mutableListOf<Setting>()
         list.add(Setting("1", "Edit Profile", R.drawable.ic_edit_white, 0, ProfileEditActivity::class.java))
         list.add(Setting("2", "Explore Publishers", R.drawable.ic_search_person, explorePublishers, ExplorePublishersActivity::class.java))
         list.add(Setting("3", "Followers", R.drawable.ic_followers, followers, FollowersActivity::class.java))
@@ -108,7 +107,7 @@ class SettingsFragment : Fragment() {
         list.add(Setting("10", "Share App", R.drawable.ic_share, 0, null))
         list.add(Setting("11", "Rate APP", R.drawable.ic_heart_selected, 0, null))
         list.add(Setting("12", "Privacy Policy", R.drawable.ic_privacy_policy, 0, PrivacyPolicyActivity::class.java))
-        adapter!!.notifyDataSetChanged()
+        adapter?.submitList(list)
     }
 
     override fun onResume() {

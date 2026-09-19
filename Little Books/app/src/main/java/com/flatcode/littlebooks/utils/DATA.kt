@@ -86,6 +86,10 @@ object DATA {
     var BANNER_SMART_MORE_BOOKS = "BannerSmartMoreBooks"
     var BANNER_SMART_MY_BOOKS = "BannerSmartMyBooks"
     var BANNER_SMART_PUBLISHERS_BOOKS = "BannerSmartPublishersBooks"
+
+    //Cloudinary
+    const val CLOUDINARY_CLOUD_NAME = "j8jsphcf"
+    const val CLOUDINARY_UPLOAD_PRESET = "flat_code"
 }
 
 

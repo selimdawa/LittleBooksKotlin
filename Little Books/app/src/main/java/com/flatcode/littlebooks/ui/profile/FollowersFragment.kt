@@ -24,7 +24,6 @@ class FollowersFragment : Fragment() {
 
     private var binding: FragmentFollowersBinding? = null
     private val viewModel: FollowViewModel by viewModels()
-    private var list = ArrayList<Book?>()
     private var adapter: LinearBookAdapter? = null
     private var type: String = DATA.TIMESTAMP
 
@@ -35,7 +34,7 @@ class FollowersFragment : Fragment() {
 
         binding!!.adView.bannerAd(context!!, DATA.BANNER_SMART_FOLLOWERS_BOOKS)
 
-        adapter = LinearBookAdapter(context, list, false)
+        adapter = LinearBookAdapter(false)
         binding!!.recyclerView.adapter = adapter
 
         binding!!.switchBar.all.setOnClickListener {
@@ -67,10 +66,9 @@ class FollowersFragment : Fragment() {
                     when (resource) {
                         is Resource.Success -> {
                             binding!!.progress.visibility = View.GONE
-                            list.clear()
-                            resource.data?.let { list.addAll(it) }
-                            adapter?.notifyDataSetChanged()
-                            if (list.isNotEmpty()) {
+                            val data = resource.data ?: emptyList()
+                            adapter?.submitFullList(data as List<Book>)
+                            if (data.isNotEmpty()) {
                                 binding!!.recyclerView.visibility = View.VISIBLE
                                 binding!!.emptyText.visibility = View.GONE
                             } else {

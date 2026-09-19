@@ -31,7 +31,6 @@ class MyBooksActivity : AppCompatActivity() {
 
     private var binding: ActivityPageLinearSwitchBinding? = null
     private val context: Context = this@MyBooksActivity
-    private var list = ArrayList<Book?>()
     private var adapter: LinearBookAdapter? = null
     private var type: String = DATA.TIMESTAMP
 
@@ -75,7 +74,7 @@ class MyBooksActivity : AppCompatActivity() {
             override fun afterTextChanged(s: Editable) {}
         })
 
-        adapter = LinearBookAdapter(context, list, true)
+        adapter = LinearBookAdapter(true)
         binding!!.recyclerView.adapter = adapter
 
         binding!!.switchBar.all.setOnClickListener {
@@ -109,11 +108,10 @@ class MyBooksActivity : AppCompatActivity() {
                     when (resource) {
                         is Resource.Success -> {
                             binding!!.progress.visibility = View.GONE
-                            list.clear()
-                            resource.data?.let { list.addAll(it) }
-                            binding!!.toolbar.number.text = MessageFormat.format("( {0} )", list.size)
-                            adapter!!.notifyDataSetChanged()
-                            if (list.isNotEmpty()) {
+                            val data = resource.data ?: emptyList()
+                            binding!!.toolbar.number.text = MessageFormat.format("( {0} )", data.size)
+                            adapter!!.submitFullList(data as List<Book>)
+                            if (data.isNotEmpty()) {
                                 binding!!.recyclerView.visibility = View.VISIBLE
                                 binding!!.emptyText.visibility = View.GONE
                             } else {

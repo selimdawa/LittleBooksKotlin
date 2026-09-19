@@ -1,38 +1,47 @@
 package com.flatcode.littlebooksadmin.ui.user
 
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Filter
 import android.widget.Filterable
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.TextView
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.flatcode.littlebooksadmin.R
+import com.flatcode.littlebooksadmin.databinding.ItemTopPublisherBinding
 import com.flatcode.littlebooksadmin.filter.TopPublisherFilter
 import com.flatcode.littlebooksadmin.model.User
-import com.flatcode.littlebooksadmin.R
 import com.flatcode.littlebooksadmin.ui.profile.ProfileActivity
-import com.flatcode.littlebooksadmin.utils.*
-import com.flatcode.littlebooksadmin.databinding.ItemTopPublisherBinding
+import com.flatcode.littlebooksadmin.utils.DATA
+import com.flatcode.littlebooksadmin.utils.loadWithGlide
+import com.flatcode.littlebooksadmin.utils.openActivity
 import java.text.MessageFormat
 
-class TopPublisherAdapter(
-    private val context: Context, var list: ArrayList<User?>, isUser: Boolean
-) : RecyclerView.Adapter<TopPublisherAdapter.ViewHolder>(), Filterable {
+class TopPublisherAdapter(val isUser: Boolean) :
+    ListAdapter<User, TopPublisherAdapter.ViewHolder>(TopPublisherDiffCallback()), Filterable {
 
-    var filterList: ArrayList<User?>
+    var unfilteredList: List<User?> = emptyList()
+        private set
+
     private var filter: TopPublisherFilter? = null
-    var isUser: Boolean
 
-    override fun onCreateViewHolder(parent: ViewGroup, VT: Int): TopPublisherAdapter.ViewHolder {
-        val binding = ItemTopPublisherBinding.inflate(LayoutInflater.from(context), parent, false)
+    fun submitUnfilteredList(list: List<User?>?) {
+        unfilteredList = list ?: emptyList()
+        super.submitList(unfilteredList.filterNotNull())
+    }
+
+    fun submitFilteredList(list: List<User?>?) {
+        super.submitList(list?.filterNotNull() ?: emptyList())
+    }
+
+    override fun onCreateViewHolder(parent: ViewGroup, VT: Int): ViewHolder {
+        val binding = ItemTopPublisherBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return ViewHolder(binding)
     }
 
-    override fun onBindViewHolder(holder: TopPublisherAdapter.ViewHolder, position: Int) {
-        val all = list.size
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        val all = itemCount
         val loop = position / 2
         val round = loop * 2
         val round2 = round + 1
@@ -51,8 +60,9 @@ class TopPublisherAdapter(
             x++
         }
 
-        val item = list[position]
-        val userId = DATA.EMPTY + item!!.id
+        val item = getItem(position)
+        val context = holder.itemView.context
+        val userId = DATA.EMPTY + item.id
         val username = DATA.EMPTY + item.username
         val profileImage = DATA.EMPTY + item.profileImage
         val numberBooks = DATA.EMPTY + item.booksCount
@@ -66,9 +76,9 @@ class TopPublisherAdapter(
             holder.binding.username.text = username
         }
 
-        val First = holder.position
-        val Final = list.size - First
-        holder.binding.rank.text = MessageFormat.format("{0}", Final)
+        val first = position
+        val finalCount = itemCount - first
+        holder.binding.rank.text = MessageFormat.format("{0}", finalCount)
         holder.binding.numberBooks.text = numberBooks
 
         holder.binding.item.setOnClickListener {
@@ -76,22 +86,22 @@ class TopPublisherAdapter(
         }
     }
 
-    override fun getItemCount(): Int {
-        return list.size
-    }
-
     override fun getFilter(): Filter {
         if (filter == null) {
-            filter = TopPublisherFilter(filterList, this)
+            filter = TopPublisherFilter(this)
         }
         return filter!!
     }
 
-    inner class ViewHolder(val binding: ItemTopPublisherBinding) : RecyclerView.ViewHolder(binding.root)
-
-    init {
-        filterList = list
-        this.isUser = isUser
-    }
+    class ViewHolder(val binding: ItemTopPublisherBinding) : RecyclerView.ViewHolder(binding.root)
 }
 
+class TopPublisherDiffCallback : DiffUtil.ItemCallback<User>() {
+    override fun areItemsTheSame(oldItem: User, newItem: User): Boolean {
+        return oldItem.id == newItem.id
+    }
+
+    override fun areContentsTheSame(oldItem: User, newItem: User): Boolean {
+        return oldItem == newItem
+    }
+}

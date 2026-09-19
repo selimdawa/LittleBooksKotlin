@@ -30,7 +30,6 @@ class BooksCategoryActivity : AppCompatActivity() {
 
     private var binding: ActivityPageStaggeredSwitchBinding? = null
     private val context: Context = this@BooksCategoryActivity
-    private var list = ArrayList<Book?>()
     private var adapter: StaggeredBookAdapter? = null
     private var categoryId: String? = null
     private var categoryName: String? = null
@@ -81,7 +80,7 @@ class BooksCategoryActivity : AppCompatActivity() {
             override fun afterTextChanged(s: Editable) {}
         })
 
-        adapter = StaggeredBookAdapter(context, list)
+        adapter = StaggeredBookAdapter()
         binding!!.recyclerView.adapter = adapter
 
         binding!!.switchBar.all.setOnClickListener {
@@ -119,18 +118,17 @@ class BooksCategoryActivity : AppCompatActivity() {
                     when (resource) {
                         is Resource.Success -> {
                             binding!!.progress.visibility = View.GONE
-                            list.clear()
-                            resource.data?.let { list.addAll(it) }
-                            binding!!.toolbar.number.text = MessageFormat.format("( {0} )", list.size)
-                            if (list.isNotEmpty()) {
+                            val data = resource.data ?: emptyList()
+                            binding!!.toolbar.number.text = MessageFormat.format("( {0} )", data.size)
+                            if (data.isNotEmpty()) {
                                 binding!!.recyclerView.visibility = View.VISIBLE
                                 binding!!.emptyText.visibility = View.GONE
-                                list.reverse()
+                                adapter!!.submitFullList(data.reversed() as List<Book>)
                             } else {
                                 binding!!.recyclerView.visibility = View.GONE
                                 binding!!.emptyText.visibility = View.VISIBLE
+                                adapter!!.submitFullList(emptyList())
                             }
-                            adapter!!.notifyDataSetChanged()
                         }
                         is Resource.Error -> {
                             binding!!.progress.visibility = View.GONE

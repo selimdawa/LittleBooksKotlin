@@ -10,6 +10,8 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.flatcode.littlebooksadmin.model.Comment
 import com.flatcode.littlebooksadmin.model.User
@@ -22,34 +24,33 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 
-class CommentAdapter(private val context: Context, var list: ArrayList<Comment?>) :
-    RecyclerView.Adapter<CommentAdapter.ViewHolder>() {
+class CommentAdapter : ListAdapter<Comment, CommentAdapter.ViewHolder>(CommentDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val binding = ItemCommentBinding.inflate(LayoutInflater.from(context), parent, false)
+        val binding = ItemCommentBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return ViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val item = list[position]
-        val commentId = item!!.id
-        val bookId = DATA.EMPTY + item.bookId
-        val comment = DATA.EMPTY + item.comment
-        val publisher = DATA.EMPTY + item.publisher
-        val timestamp = DATA.EMPTY + item.timestamp
+        val item = getItem(position)
+        val commentId = item.id
+        val bookId = item.bookId ?: ""
+        val comment = item.comment ?: ""
+        val publisher = item.publisher ?: ""
+        val timestamp = item.timestamp
 
-        val date: String = Application.formatTimestamp(timestamp.toLong())
+        val date = Application.formatTimestamp(timestamp)
         holder.binding.date.text = date
         holder.binding.comment.text = comment
 
         loadUserDetails(publisher, holder)
 
         holder.itemView.setOnClickListener {
-            if (publisher == DATA.FirebaseUserUid) deleteComment(commentId, bookId)
+            if (publisher == DATA.FirebaseUserUid) deleteComment(holder.itemView.context, commentId, bookId)
         }
     }
 
-    private fun deleteComment(commentId: String?, bookId: String?) {
+    private fun deleteComment(context: Context, commentId: String?, bookId: String?) {
         val builder = AlertDialog.Builder(context)
         builder.setTitle("Delete Comment")
             .setMessage("Are you sure you want to delete this comment?")
@@ -60,16 +61,12 @@ class CommentAdapter(private val context: Context, var list: ArrayList<Comment?>
                         Toast.makeText(context, "Deleted...", Toast.LENGTH_SHORT).show()
                     }.addOnFailureListener { e: Exception ->
                         Toast.makeText(
-                            context, "Failed to delete duo to " + e.message, Toast.LENGTH_SHORT
+                            context, "Failed to delete due to ${e.message}", Toast.LENGTH_SHORT
                         ).show()
                     }
             }
             .setNegativeButton("CANCEL") { dialog: DialogInterface, which: Int -> dialog.dismiss() }
             .show()
-    }
-
-    override fun getItemCount(): Int {
-        return list.size
     }
 
     class ViewHolder(val binding: ItemCommentBinding) : RecyclerView.ViewHolder(binding.root)
@@ -89,6 +86,16 @@ class CommentAdapter(private val context: Context, var list: ArrayList<Comment?>
 
             override fun onCancelled(error: DatabaseError) {}
         })
+    }
+}
+
+class CommentDiffCallback : DiffUtil.ItemCallback<Comment>() {
+    override fun areItemsTheSame(oldItem: Comment, newItem: Comment): Boolean {
+        return oldItem.id == newItem.id
+    }
+
+    override fun areContentsTheSame(oldItem: Comment, newItem: Comment): Boolean {
+        return oldItem == newItem
     }
 }
 

@@ -1,9 +1,10 @@
 package com.flatcode.littlebooks.filter
 
 import android.widget.Filter
-import com.flatcode.littlebooks.ui.publisher.PublisherAdapter
 import com.flatcode.littlebooks.model.User
-import java.util.*
+import com.flatcode.littlebooks.ui.publisher.PublisherAdapter
+import java.util.ArrayList
+import java.util.Locale
 
 class PublisherFilter(var list: ArrayList<User?>, var adapter: PublisherAdapter) : Filter() {
     override fun performFiltering(constraint: CharSequence): FilterResults {
@@ -27,9 +28,6 @@ class PublisherFilter(var list: ArrayList<User?>, var adapter: PublisherAdapter)
     }
 
     override fun publishResults(constraint: CharSequence, results: FilterResults) {
-        adapter.list = (results.values as ArrayList<User?>)
-        adapter.notifyDataSetChanged()
+        adapter.setFilteredList(results.values as? List<User?>)
     }
 }
-
-

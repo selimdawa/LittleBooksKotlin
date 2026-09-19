@@ -12,6 +12,7 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Environment
+import android.text.format.DateFormat
 import android.view.LayoutInflater
 import android.view.Window
 import android.view.WindowManager
@@ -51,6 +52,9 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.Serializable
 import java.text.MessageFormat
+import java.util.Calendar
+import java.util.Locale
+
 
 inline fun <reified T : Activity> Context.openActivity(
     clear: Boolean = false, vararg extras: Pair<String, Any?>
@@ -484,6 +488,12 @@ fun Uri.getFileExtension(context: Context): String {
     val cR: ContentResolver = context.contentResolver
     val mime: MimeTypeMap = MimeTypeMap.getSingleton()
     return mime.getExtensionFromMimeType(cR.getType(this))!!
+}
+
+fun Long.formatTimestamp(): String {
+    val calendar = Calendar.getInstance(Locale.ENGLISH)
+    calendar.timeInMillis = this
+    return DateFormat.format("dd/MM/yyyy", calendar).toString()
 }
 
 class SimpleBlurTransformation(private val radius: Float) : Transformation {

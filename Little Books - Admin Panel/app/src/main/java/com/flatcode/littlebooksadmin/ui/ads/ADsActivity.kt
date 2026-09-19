@@ -73,7 +73,7 @@ class ADsActivity : AppCompatActivity() {
             override fun afterTextChanged(s: Editable) {}
         })
 
-        adapter = ADsUserAdapter(context, list, true)
+        adapter = ADsUserAdapter(true)
         binding.recyclerView.adapter = adapter
 
         binding.name.setOnClickListener {
@@ -127,7 +127,7 @@ class ADsActivity : AppCompatActivity() {
         }
         
         binding.toolbar.number.text = MessageFormat.format("( {0} )", list.size)
-        adapter!!.notifyDataSetChanged()
+        adapter!!.submitUnfilteredList(list)
         
         if (list.isNotEmpty()) {
             binding.recyclerView.visibility = View.VISIBLE

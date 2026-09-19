@@ -1,57 +1,54 @@
 package com.flatcode.littlebooks.ui.category
 
-import android.content.Context
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.flatcode.littlebooks.ui.book.BooksCategoryActivity
+import com.flatcode.littlebooks.databinding.ItemCategoryBinding
 import com.flatcode.littlebooks.model.Category
+import com.flatcode.littlebooks.ui.book.BooksCategoryActivity
 import com.flatcode.littlebooks.utils.DATA
 import com.flatcode.littlebooks.utils.glide
 import com.flatcode.littlebooks.utils.intentExtra2
-import com.flatcode.littlebooks.databinding.ItemCategoryBinding
 
-class CategoryAdapter(private val context: Context?, var list: ArrayList<Category?>) :
-    RecyclerView.Adapter<CategoryAdapter.ViewHolder>() {
+class CategoryAdapter : ListAdapter<Category, CategoryAdapter.ViewHolder>(DiffCallback) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        binding = ItemCategoryBinding.inflate(LayoutInflater.from(context), parent, false)
-        return ViewHolder(binding!!.root)
+        val binding = ItemCategoryBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return ViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val item = list[position]
-        val id = item!!.id
-        val name = item.category
-        val image = item.image
-
-        binding!!.image.glide(false, image)
-
-        holder.itemView.setOnClickListener {
-            context?.intentExtra2(
-                BooksCategoryActivity::class.java, DATA.CATEGORY_ID, id, DATA.CATEGORY_NAME, name
-            )
+        val item = getItem(position)
+        if (item != null) {
+            holder.bind(item)
         }
     }
 
-    override fun getItemCount(): Int {
-        return list.size
-    }
+    class ViewHolder(private val binding: ItemCategoryBinding) :
+        RecyclerView.ViewHolder(binding.root) {
 
-    class ViewHolder(itemView: View?) : RecyclerView.ViewHolder(itemView!!) {
-        var image: ImageView
+        fun bind(item: Category) {
+            val context = itemView.context
+            binding.image.glide(false, item.image)
 
-        init {
-            image = binding!!.image
+            itemView.setOnClickListener {
+                context.intentExtra2(
+                    BooksCategoryActivity::class.java, DATA.CATEGORY_ID, item.id,
+                    DATA.CATEGORY_NAME, item.category
+                )
+            }
         }
     }
 
     companion object {
-        private var binding: ItemCategoryBinding? = null
+        private val DiffCallback = object : DiffUtil.ItemCallback<Category>() {
+            override fun areItemsTheSame(oldItem: Category, newItem: Category): Boolean =
+                oldItem.id == newItem.id
+
+            override fun areContentsTheSame(oldItem: Category, newItem: Category): Boolean =
+                oldItem == newItem
+        }
     }
 }
-
-
-

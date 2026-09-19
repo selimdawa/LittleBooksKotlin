@@ -1,61 +1,55 @@
 package com.flatcode.littlebooksadmin.ui.book
 
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageButton
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.TextView
-import androidx.cardview.widget.CardView
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.flatcode.littlebooksadmin.databinding.ItemBookEditorsChoiceBinding
 import com.flatcode.littlebooksadmin.model.Book
 import com.flatcode.littlebooksadmin.model.EditorsChoice
-import com.flatcode.littlebooksadmin.ui.book.BookDetailsActivity
-import com.flatcode.littlebooksadmin.ui.book.EditorsChoiceAddActivity
 import com.flatcode.littlebooksadmin.utils.DATA
-import com.flatcode.littlebooksadmin.utils.*
-import com.flatcode.littlebooksadmin.databinding.ItemBookEditorsChoiceBinding
+import com.flatcode.littlebooksadmin.utils.dialogOptionDelete
+import com.flatcode.littlebooksadmin.utils.loadWithGlide
+import com.flatcode.littlebooksadmin.utils.openActivity
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import java.text.MessageFormat
 
-class EditorsChoiceAdapter(private val context: Context, var list: List<EditorsChoice>) :
-    RecyclerView.Adapter<EditorsChoiceAdapter.ViewHolder>() {
+class EditorsChoiceAdapter :
+    ListAdapter<EditorsChoice, EditorsChoiceAdapter.ViewHolder>(EditorsChoiceDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val binding = ItemBookEditorsChoiceBinding.inflate(LayoutInflater.from(context), parent, false)
+        val binding =
+            ItemBookEditorsChoiceBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return ViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        val context = holder.itemView.context
         val id = position + 1
         val editorsChoiceId = DATA.EMPTY + id
 
-        loadBookDetails(
-            id, editorsChoiceId, holder
-        )
+        loadBookDetails(id, editorsChoiceId, holder)
 
         holder.binding.numberEditorsChoice.text = MessageFormat.format("{0}{1}", DATA.EMPTY, id)
         holder.binding.add.setOnClickListener {
             context.openActivity<EditorsChoiceAddActivity>(
-                extras = arrayOf(DATA.EDITORS_CHOICE_ID to editorsChoiceId, DATA.OLD_BOOK_ID to null)
+                extras = arrayOf(
+                    DATA.EDITORS_CHOICE_ID to editorsChoiceId, DATA.OLD_BOOK_ID to null
+                )
             )
         }
     }
 
-    override fun getItemCount(): Int {
-        return list.size
-    }
+    class ViewHolder(val binding: ItemBookEditorsChoiceBinding) :
+        RecyclerView.ViewHolder(binding.root)
 
-    inner class ViewHolder(val binding: ItemBookEditorsChoiceBinding) : RecyclerView.ViewHolder(binding.root)
-
-    private fun loadBookDetails(
-        i: Int, position: String, holder: ViewHolder
-    ) {
+    private fun loadBookDetails(i: Int, position: String, holder: ViewHolder) {
+        val context = holder.itemView.context
         val ref = FirebaseDatabase.getInstance().getReference(DATA.BOOKS)
         ref.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
@@ -74,13 +68,14 @@ class EditorsChoiceAdapter(private val context: Context, var list: List<EditorsC
                         }
                         holder.binding.remove.setOnClickListener {
                             context.dialogOptionDelete(
-                                null, id, null, null,
-                                false, true, null, null
+                                null, id, null, null, false, true, null, null
                             )
                         }
                         holder.binding.change.setOnClickListener {
                             context.openActivity<EditorsChoiceAddActivity>(
-                                extras = arrayOf(DATA.EDITORS_CHOICE_ID to position, DATA.OLD_BOOK_ID to id)
+                                extras = arrayOf(
+                                    DATA.EDITORS_CHOICE_ID to position, DATA.OLD_BOOK_ID to id
+                                )
                             )
                         }
                     } else {
@@ -96,21 +91,13 @@ class EditorsChoiceAdapter(private val context: Context, var list: List<EditorsC
                 val ref = FirebaseDatabase.getInstance().getReference(DATA.BOOKS)
                 ref.child(text).addListenerForSingleValueEvent(object : ValueEventListener {
                     override fun onDataChange(dataSnapshot: DataSnapshot) {
-                        //get data
                         val item = dataSnapshot.getValue(Book::class.java)!!
-                        val Title = DATA.EMPTY + item.title
-                        val Description = DATA.EMPTY + item.description
-                        val ViewsCount = DATA.EMPTY + item.viewsCount
-                        val LovesCount = DATA.EMPTY + item.lovesCount
-                        val DownloadsCount = DATA.EMPTY + item.downloadsCount
-                        val BookImage = DATA.EMPTY + item.image
-
-                        holder.binding.title.text = Title
-                        holder.binding.description.text = Description
-                        holder.binding.numberViews.text = ViewsCount
-                        holder.binding.numberLoves.text = LovesCount
-                        holder.binding.numberDownloads.text = DownloadsCount
-                        holder.binding.image.loadWithGlide(false, BookImage)
+                        holder.binding.title.text = item.title
+                        holder.binding.description.text = item.description
+                        holder.binding.numberViews.text = item.viewsCount.toString()
+                        holder.binding.numberLoves.text = item.lovesCount.toString()
+                        holder.binding.numberDownloads.text = item.downloadsCount.toString()
+                        holder.binding.image.loadWithGlide(false, item.image ?: "")
                         holder.binding.addCard.visibility = View.GONE
                         holder.binding.detailsCard.visibility = View.VISIBLE
                         holder.binding.remove.visibility = View.VISIBLE
@@ -126,3 +113,12 @@ class EditorsChoiceAdapter(private val context: Context, var list: List<EditorsC
     }
 }
 
+class EditorsChoiceDiffCallback : DiffUtil.ItemCallback<EditorsChoice>() {
+    override fun areItemsTheSame(oldItem: EditorsChoice, newItem: EditorsChoice): Boolean {
+        return oldItem === newItem // They are all placeholders, but for now strict identity
+    }
+
+    override fun areContentsTheSame(oldItem: EditorsChoice, newItem: EditorsChoice): Boolean {
+        return true // Contents are identical for placeholders
+    }
+}

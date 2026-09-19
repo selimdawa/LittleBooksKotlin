@@ -1,6 +1,6 @@
 [versions]
 agp = "9.4.0"
-androidImageCropper = "2.8.0"
+androidImageCropper = "4.5.0"
 androidPdfViewer = "3.2.0-beta06"
 #noinspection GradleDependency
 autoimageslider = "1.4.0"
@@ -25,11 +25,12 @@ coroutines = "1.11.0"
 timber = "5.0.1"
 navigation = "2.10.1"
 room = "2.8.5"
+cloudinary = "3.1.2"
 ksp = "2.3.11"
 kotlin = "2.4.20"
 
 [libraries]
-android-image-cropper = { module = "com.theartofdev.edmodo:android-image-cropper", version.ref = "androidImageCropper" }
+android-image-cropper = { module = "com.github.CanHub:Android-Image-Cropper", version.ref = "androidImageCropper" }
 android-pdf-viewer = { module = "io.github.oothp:android-pdf-viewer", version.ref = "androidPdfViewer" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
@@ -39,7 +40,7 @@ firebase-auth = { module = "com.google.firebase:firebase-auth" }
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
 firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics" }
 firebase-database = { module = "com.google.firebase:firebase-database" }
-firebase-storage = { module = "com.google.firebase:firebase-storage" }
+cloudinary-android = { module = "com.cloudinary:cloudinary-android", version.ref = "cloudinary" }
 coil = { module = "io.coil-kt:coil", version.ref = "coil" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }

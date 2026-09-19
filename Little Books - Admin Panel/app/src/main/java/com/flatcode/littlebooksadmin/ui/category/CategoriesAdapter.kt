@@ -1,49 +1,59 @@
 package com.flatcode.littlebooksadmin.ui.category
 
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Filter
 import android.widget.Filterable
-import android.widget.ImageButton
-import android.widget.ImageView
-import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.flatcode.littlebooksadmin.databinding.ItemCategoriesBinding
 import com.flatcode.littlebooksadmin.filter.CategoriesFilter
 import com.flatcode.littlebooksadmin.model.Book
 import com.flatcode.littlebooksadmin.model.Category
-import com.flatcode.littlebooksadmin.ui.category.BooksCategoryActivity
 import com.flatcode.littlebooksadmin.utils.DATA
-import com.flatcode.littlebooksadmin.utils.*
-import com.flatcode.littlebooksadmin.databinding.ItemCategoriesBinding
+import com.flatcode.littlebooksadmin.utils.loadWithGlide
+import com.flatcode.littlebooksadmin.utils.moreCategories
+import com.flatcode.littlebooksadmin.utils.openActivity
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import java.text.MessageFormat
 
-class CategoriesAdapter(private val context: Context, var list: ArrayList<Category?>) :
-    RecyclerView.Adapter<CategoriesAdapter.ViewHolder>(), Filterable {
+class CategoriesAdapter : ListAdapter<Category, CategoriesAdapter.ViewHolder>(CategoryDiffCallback()), Filterable {
 
-    var filterList: ArrayList<Category?>
+    var unfilteredList: List<Category> = emptyList()
+        private set
+
     private var filter: CategoriesFilter? = null
 
-    override fun onCreateViewHolder(parent: ViewGroup, VT: Int): ViewHolder {
-        val binding = ItemCategoriesBinding.inflate(LayoutInflater.from(context), parent, false)
+    fun submitUnfilteredList(list: List<Category>?) {
+        unfilteredList = list ?: emptyList()
+        super.submitList(unfilteredList)
+    }
+
+    fun submitFilteredList(list: List<Category>?) {
+        super.submitList(list ?: emptyList())
+    }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        val binding = ItemCategoriesBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return ViewHolder(binding)
     }
 
-    override fun onBindViewHolder(holder: CategoriesAdapter.ViewHolder, position: Int) {
-        val item = list[position]
-        val categoryId = DATA.EMPTY + item!!.id
-        val name = DATA.EMPTY + item.category
-        val image = DATA.EMPTY + item.image
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        val item = getItem(position)
+        val context = holder.itemView.context
+        val categoryId = item.id
+        val name = item.category.orEmpty()
+        val image = item.image.orEmpty()
 
         holder.binding.image.loadWithGlide(false, image)
 
-        if (item.category == DATA.EMPTY) {
+        if (item.category.isNullOrEmpty()) {
             holder.binding.name.visibility = View.GONE
         } else {
             holder.binding.name.visibility = View.VISIBLE
@@ -60,18 +70,14 @@ class CategoriesAdapter(private val context: Context, var list: ArrayList<Catego
         }
     }
 
-    override fun getItemCount(): Int {
-        return list.size
-    }
-
     override fun getFilter(): Filter {
         if (filter == null) {
-            filter = CategoriesFilter(filterList, this)
+            filter = CategoriesFilter(this)
         }
         return filter!!
     }
 
-    inner class ViewHolder(val binding: ItemCategoriesBinding) : RecyclerView.ViewHolder(binding.root)
+    class ViewHolder(val binding: ItemCategoriesBinding) : RecyclerView.ViewHolder(binding.root)
 
     private fun nrBooks(number: TextView, categoryId: String) {
         val reference = FirebaseDatabase.getInstance().reference.child(DATA.BOOKS)
@@ -88,9 +94,14 @@ class CategoriesAdapter(private val context: Context, var list: ArrayList<Catego
             override fun onCancelled(databaseError: DatabaseError) {}
         })
     }
-
-    init {
-        filterList = list
-    }
 }
 
+class CategoryDiffCallback : DiffUtil.ItemCallback<Category>() {
+    override fun areItemsTheSame(oldItem: Category, newItem: Category): Boolean {
+        return oldItem.id == newItem.id
+    }
+
+    override fun areContentsTheSame(oldItem: Category, newItem: Category): Boolean {
+        return oldItem == newItem
+    }
+}

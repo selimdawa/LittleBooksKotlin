@@ -16,17 +16,17 @@ import androidx.core.view.updateLayoutParams
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import com.flatcode.littlebooks.model.Comment
 import com.flatcode.littlebooks.R
-import com.flatcode.littlebooks.utils.DATA
-import com.flatcode.littlebooks.utils.glide
-import com.flatcode.littlebooks.utils.glideBlur
-import com.flatcode.littlebooks.utils.openActivity
-import com.flatcode.littlebooks.utils.loadCategory
-import com.flatcode.littlebooks.utils.loadPdfInfo
 import com.flatcode.littlebooks.databinding.ActivityBookDetailsBinding
 import com.flatcode.littlebooks.databinding.DialogCommentAddBinding
+import com.flatcode.littlebooks.model.Comment
+import com.flatcode.littlebooks.utils.DATA
 import com.flatcode.littlebooks.utils.Resource
+import com.flatcode.littlebooks.utils.glide
+import com.flatcode.littlebooks.utils.glideBlur
+import com.flatcode.littlebooks.utils.loadCategory
+import com.flatcode.littlebooks.utils.loadPdfInfo
+import com.flatcode.littlebooks.utils.openActivity
 import com.flatcode.littlebooks.viewmodel.BookViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -37,10 +37,9 @@ class BookDetailsActivity : AppCompatActivity() {
     private var binding: ActivityBookDetailsBinding? = null
     var context: Context = this@BookDetailsActivity
     var bookId: String? = null
-    
-    private var commentList = ArrayList<Comment?>()
+
     private var adapterComment: CommentAdapter? = null
-    
+
     private val viewModel: BookViewModel by viewModels()
     private var progressDialog: ProgressDialog? = null
 
@@ -60,7 +59,7 @@ class BookDetailsActivity : AppCompatActivity() {
         }
 
         bookId = intent.getStringExtra(DATA.BOOK_ID)
-        
+
         progressDialog = ProgressDialog(this)
         progressDialog!!.setTitle("Please wait")
         progressDialog!!.setCanceledOnTouchOutside(false)
@@ -75,7 +74,7 @@ class BookDetailsActivity : AppCompatActivity() {
         }
         binding!!.addComment.setOnClickListener { addCommentDialog() }
 
-        adapterComment = CommentAdapter(context, commentList)
+        adapterComment = CommentAdapter()
         binding!!.recyclerView.adapter = adapterComment
 
         observeViewModel()
@@ -105,9 +104,11 @@ class BookDetailsActivity : AppCompatActivity() {
                                 binding!!.cover.glideBlur(false, DATA.EMPTY + book?.url, 50)
                                 binding!!.size.loadPdfInfo(DATA.EMPTY + book?.url)
                             }
+
                             is Resource.Error -> {
                                 Toast.makeText(context, resource.message, Toast.LENGTH_SHORT).show()
                             }
+
                             is Resource.Loading -> {
                                 // Handle loading
                             }
@@ -131,10 +132,7 @@ class BookDetailsActivity : AppCompatActivity() {
                 launch {
                     viewModel.comments.collect { resource ->
                         if (resource is Resource.Success) {
-                            commentList.clear()
-                            resource.data?.let { commentList.addAll(it) }
-                            adapterComment?.notifyDataSetChanged()
-                            // binding!!.commentsCount.text = DATA.EMPTY + commentList.size // layout doesn't have commentsCount ID
+                            adapterComment?.submitList(resource.data as List<Comment>)
                         }
                     }
                 }
@@ -160,6 +158,3 @@ class BookDetailsActivity : AppCompatActivity() {
         }
     }
 }
-
-
-

@@ -69,7 +69,7 @@ class DashboardFragment : Fragment() {
             mContext.openActivity<ProfileActivity>(extras = arrayOf(DATA.PROFILE_ID to DATA.FirebaseUserUid))
         }
 
-        adapter = MainAdapter(mContext, list)
+        adapter = MainAdapter()
         binding.recyclerView.adapter = adapter
     }
 
@@ -131,7 +131,7 @@ class DashboardFragment : Fragment() {
         list.add(Main(R.drawable.ic_ads, "AD's", stats.ads, ADsActivity::class.java))
         list.add(Main(R.drawable.ic_privacy_policy, "Privacy Policy", 0, PrivacyPolicyActivity::class.java))
         
-        adapter?.notifyDataSetChanged()
+        adapter?.submitList(ArrayList(list))
         binding.bar.visibility = View.GONE
         binding.recyclerView.visibility = View.VISIBLE
     }

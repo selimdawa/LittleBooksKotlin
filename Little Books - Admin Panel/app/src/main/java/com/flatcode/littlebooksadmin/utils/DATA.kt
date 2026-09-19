@@ -77,5 +77,9 @@ object DATA {
     val AUTH = FirebaseAuth.getInstance()
     val FIREBASE_USER = AUTH.currentUser
     val FirebaseUserUid = FIREBASE_USER!!.uid
+
+    //Cloudinary
+    const val CLOUDINARY_CLOUD_NAME = "j8jsphcf"
+    const val CLOUDINARY_UPLOAD_PRESET = "flat_code"
 }
 

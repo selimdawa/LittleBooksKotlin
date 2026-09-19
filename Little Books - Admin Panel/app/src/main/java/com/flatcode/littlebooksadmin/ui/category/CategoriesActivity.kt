@@ -72,7 +72,7 @@ class CategoriesActivity : AppCompatActivity() {
             override fun afterTextChanged(s: Editable) {}
         })
 
-        adapter = CategoriesAdapter(context, list)
+        adapter = CategoriesAdapter()
         binding.recyclerView.adapter = adapter
     }
 
@@ -109,7 +109,7 @@ class CategoriesActivity : AppCompatActivity() {
         }
         
         binding.toolbar.number.text = MessageFormat.format("( {0} )", list.size)
-        adapter!!.notifyDataSetChanged()
+        adapter!!.submitUnfilteredList(list.filterNotNull())
         
         if (list.isNotEmpty()) {
             binding.recyclerView.visibility = View.VISIBLE

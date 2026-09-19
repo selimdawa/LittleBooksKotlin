@@ -1,112 +1,92 @@
 package com.flatcode.littlebooks.ui.book
 
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Filter
 import android.widget.Filterable
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.TextView
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.flatcode.littlebooks.databinding.ItemBookStaggeredBinding
 import com.flatcode.littlebooks.filter.StaggerdFilter
 import com.flatcode.littlebooks.model.Book
 import com.flatcode.littlebooks.utils.DATA
 import com.flatcode.littlebooks.utils.checkFavorite
 import com.flatcode.littlebooks.utils.checkLove
 import com.flatcode.littlebooks.utils.glide
-import com.flatcode.littlebooks.utils.openActivity
 import com.flatcode.littlebooks.utils.isFavorite
 import com.flatcode.littlebooks.utils.isLoves
-import com.flatcode.littlebooks.databinding.ItemBookStaggeredBinding
+import com.flatcode.littlebooks.utils.openActivity
 
-class StaggeredBookAdapter(private val context: Context, var list: ArrayList<Book?>) :
-    RecyclerView.Adapter<StaggeredBookAdapter.ViewHolder>(), Filterable {
+class StaggeredBookAdapter : ListAdapter<Book, StaggeredBookAdapter.ViewHolder>(DiffCallback),
+    Filterable {
 
-    private var binding: ItemBookStaggeredBinding? = null
-
-    var filterList: ArrayList<Book?>
+    var originalList: List<Book> = emptyList()
     private var filter: StaggerdFilter? = null
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        binding = ItemBookStaggeredBinding.inflate(LayoutInflater.from(context), parent, false)
-        return ViewHolder(binding!!.root)
+        val binding = ItemBookStaggeredBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return ViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val item = list[position]
-        val bookId = DATA.EMPTY + item!!.id
-        val title = DATA.EMPTY + item.title
-        val image = DATA.EMPTY + item.image
-        val nrLoves = DATA.EMPTY + item.lovesCount
-        val nrDownloads = DATA.EMPTY + item.downloadsCount
-
-        holder.image.glide(false, image)
-
-        if (title == DATA.EMPTY) {
-            holder.title.visibility = View.GONE
-        } else {
-            holder.title.visibility = View.VISIBLE
-            holder.title.text = title
+        val item = getItem(position)
+        if (item != null) {
+            holder.bind(item)
         }
-
-        holder.numberLoves.text = nrLoves
-        holder.numberDownloads.text = nrDownloads
-
-        /*if (item.getPublisher().equals(DATA.FirebaseUserUid)) {
-            holder.favorites.setVisibility(View.GONE);
-        } else {
-            holder.favorites.setVisibility(View.VISIBLE);
-        }*/
-
-        holder.favorites.isFavorite(bookId, DATA.FirebaseUserUid)
-        holder.loves.isLoves(bookId)
-
-        holder.favorites.setOnClickListener { holder.favorites.checkFavorite(bookId) }
-        holder.loves.setOnClickListener { holder.loves.checkLove(bookId) }
-
-        holder.item.setOnClickListener {
-            context.openActivity<BookDetailsActivity>(false, DATA.BOOK_ID to bookId)
-        }
-    }
-
-    override fun getItemCount(): Int {
-        return list.size
     }
 
     override fun getFilter(): Filter {
         if (filter == null) {
-            filter = StaggerdFilter(filterList, this)
+            filter = StaggerdFilter(ArrayList(originalList), this)
         }
         return filter!!
     }
 
-    inner class ViewHolder(view: View?) : RecyclerView.ViewHolder(
-        view!!
-    ) {
-        var image: ImageView
-        var favorites: ImageView
-        var loves: ImageView
-        var title: TextView
-        var numberLoves: TextView
-        var numberDownloads: TextView
-        var item: LinearLayout
+    fun submitFullList(list: List<Book>?) {
+        originalList = list ?: emptyList()
+        submitList(originalList)
+    }
 
-        init {
-            image = binding!!.image
-            title = binding!!.title
-            favorites = binding!!.favorites
-            loves = binding!!.loves
-            numberLoves = binding!!.numberLoves
-            numberDownloads = binding!!.numberDownloads
-            item = binding!!.item
+    fun setFilteredList(list: List<Book?>?) {
+        submitList(list?.filterNotNull() ?: emptyList())
+    }
+
+    inner class ViewHolder(private val binding: ItemBookStaggeredBinding) :
+        RecyclerView.ViewHolder(binding.root) {
+
+        fun bind(item: Book) {
+            val context = itemView.context
+            val bookId = DATA.EMPTY + item.id
+
+            binding.image.glide(false, item.image)
+
+            binding.title.visibility = if (item.title.isNullOrEmpty()) View.GONE else View.VISIBLE
+            binding.title.text = item.title
+
+            binding.numberLoves.text = DATA.EMPTY + item.lovesCount
+            binding.numberDownloads.text = DATA.EMPTY + item.downloadsCount
+
+            binding.favorites.isFavorite(bookId, DATA.FirebaseUserUid)
+            binding.loves.isLoves(bookId)
+
+            binding.favorites.setOnClickListener { binding.favorites.checkFavorite(bookId) }
+            binding.loves.setOnClickListener { binding.loves.checkLove(bookId) }
+
+            binding.item.setOnClickListener {
+                context.openActivity<BookDetailsActivity>(false, DATA.BOOK_ID to bookId)
+            }
         }
     }
 
-    init {
-        filterList = list
+    companion object {
+        private val DiffCallback = object : DiffUtil.ItemCallback<Book>() {
+            override fun areItemsTheSame(oldItem: Book, newItem: Book): Boolean =
+                oldItem.id == newItem.id
+
+            override fun areContentsTheSame(oldItem: Book, newItem: Book): Boolean =
+                oldItem == newItem
+        }
     }
 }
-
-
-

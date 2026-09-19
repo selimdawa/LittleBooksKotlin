@@ -58,7 +58,7 @@ dependencies {
     implementation(platform(libs.firebase.bom)) //Firebase BOM
     implementation(libs.firebase.auth)
     implementation(libs.firebase.database)
-    implementation(libs.firebase.storage)
+    implementation(libs.cloudinary.android)
     implementation(libs.firebase.analytics)
     implementation(libs.firebase.crashlytics)
     //MVVM

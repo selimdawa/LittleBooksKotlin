@@ -5,18 +5,18 @@ import com.flatcode.littlebooksadmin.model.Category
 import com.flatcode.littlebooksadmin.ui.category.CategoriesAdapter
 
 class CategoriesFilter(
-    private var filterList: List<Category?>,
-    private var adapter: CategoriesAdapter
+    private val adapter: CategoriesAdapter
 ) : Filter() {
     override fun performFiltering(constraint: CharSequence?): FilterResults {
-        var constraint = constraint
+        var query = constraint
         val results = FilterResults()
-        if (constraint != null && constraint.isNotEmpty()) {
-            constraint = constraint.toString().uppercase()
-            val filteredModels = ArrayList<Category?>()
-            for (i in filterList.indices) {
-                if (filterList[i]!!.category!!.uppercase().contains(constraint)) {
-                    filteredModels.add(filterList[i])
+        val filterList = adapter.unfilteredList
+        if (query != null && query.isNotEmpty()) {
+            query = query.toString().uppercase()
+            val filteredModels = ArrayList<Category>()
+            for (item in filterList) {
+                if (item.category?.uppercase()?.contains(query) == true) {
+                    filteredModels.add(item)
                 }
             }
             results.count = filteredModels.size
@@ -28,8 +28,8 @@ class CategoriesFilter(
         return results
     }
 
+    @Suppress("UNCHECKED_CAST")
     override fun publishResults(constraint: CharSequence?, results: FilterResults) {
-        adapter.list = results.values as ArrayList<Category?>
-        adapter.notifyDataSetChanged()
+        adapter.submitFilteredList(results.values as? List<Category>)
     }
 }
