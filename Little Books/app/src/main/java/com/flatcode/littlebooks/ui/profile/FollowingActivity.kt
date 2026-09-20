@@ -22,6 +22,7 @@ import com.flatcode.littlebooks.utils.DATA
 import com.flatcode.littlebooks.utils.bannerAd
 import com.flatcode.littlebooks.databinding.ActivityPageStaggeredBinding
 import com.flatcode.littlebooks.utils.Resource
+import com.flatcode.littlebooks.utils.openActivity
 import com.flatcode.littlebooks.viewmodel.FollowViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -74,7 +75,14 @@ class FollowingActivity : AppCompatActivity() {
             override fun afterTextChanged(s: Editable) {}
         })
 
-        adapter = PublisherAdapter()
+        adapter = PublisherAdapter(
+            onItemClick = { user ->
+                context.openActivity<ProfileActivity>(false, DATA.PROFILE_ID to user.id)
+            },
+            onFollowClick = { user, isFollowing ->
+                // ViewModel logic for follow/unfollow
+            }
+        )
         binding!!.recyclerView.adapter = adapter
 
         observeViewModel()

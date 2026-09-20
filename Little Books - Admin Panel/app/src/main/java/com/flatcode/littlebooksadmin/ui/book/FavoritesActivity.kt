@@ -30,7 +30,6 @@ class FavoritesActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityPageStaggeredSwitchBinding
     private val context: Context = this@FavoritesActivity
-    private var list: ArrayList<Book?> = arrayListOf()
     private var adapter: StaggeredBookAdapter? = null
     private var type: String = DATA.TIMESTAMP
     
@@ -73,7 +72,7 @@ class FavoritesActivity : AppCompatActivity() {
             override fun afterTextChanged(s: Editable) {}
         })
 
-        adapter = StaggeredBookAdapter(context, list)
+        adapter = StaggeredBookAdapter()
         binding.recyclerView.adapter = adapter
 
         binding.switchBar.all.setOnClickListener {

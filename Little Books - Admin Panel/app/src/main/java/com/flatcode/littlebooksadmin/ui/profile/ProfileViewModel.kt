@@ -51,10 +51,10 @@ class ProfileViewModel @Inject constructor(
         }
     }
 
-    fun updateProfile(username: String, imageUri: Uri?, extension: String?) {
+    fun updateProfile(username: String, imageUri: Uri?) {
         viewModelScope.launch {
             _updateState.value = Resource.Loading()
-            _updateState.value = repository.updateUserProfile(username, imageUri, extension)
+            _updateState.value = repository.updateUserProfile(username, imageUri)
         }
     }
 }

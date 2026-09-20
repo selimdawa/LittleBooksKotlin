@@ -5,16 +5,16 @@ import android.net.Uri
 import com.flatcode.littlebooks.model.Book
 import com.flatcode.littlebooks.model.Comment
 import com.flatcode.littlebooks.utils.DATA
-import com.flatcode.littlebooks.utils.getFileExtension
 import com.flatcode.littlebooks.db.BookDao
 import com.flatcode.littlebooks.db.CommentDao
 import com.flatcode.littlebooks.utils.Resource
+import com.flatcode.littlebooks.utils.cloudinaryUpload
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.Query
-import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.tasks.await
+import java.net.URL
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -207,30 +207,11 @@ class BookRepository @Inject constructor(
     }
 
     suspend fun uploadBookFile(userId: String, bookUri: Uri, context: Context): Resource<String> {
-        return try {
-            val id = db.getReference(DATA.BOOKS).push().key ?: throw Exception("Could not generate book ID")
-            val filePathAndName = "PDF/Books/$id"
-            val extension = bookUri.getFileExtension(context)
-            val reference = FirebaseStorage.getInstance().getReference("$filePathAndName.${extension}")
-            val task = reference.putFile(bookUri).await()
-            val downloadUrl = task.storage.downloadUrl.await()
-            Resource.Success(downloadUrl.toString())
-        } catch (e: Exception) {
-            Resource.Error(e.message ?: "An unknown error occurred")
-        }
+        return cloudinaryUpload(bookUri)
     }
 
     suspend fun uploadBookImage(userId: String, imageUri: Uri, context: Context): Resource<String> {
-        return try {
-            val filePathAndName = "BookImages/$userId"
-            val extension = imageUri.getFileExtension(context)
-            val reference = FirebaseStorage.getInstance().getReference("$filePathAndName.${extension}")
-            val task = reference.putFile(imageUri).await()
-            val downloadUrl = task.storage.downloadUrl.await()
-            Resource.Success(downloadUrl.toString())
-        } catch (e: Exception) {
-            Resource.Error(e.message ?: "An unknown error occurred")
-        }
+        return cloudinaryUpload(imageUri)
     }
 
     suspend fun addBook(bookData: Map<String, Any?>): Resource<String> {
@@ -292,8 +273,7 @@ class BookRepository @Inject constructor(
 
     suspend fun getBookFile(pdfUrl: String): Resource<ByteArray> {
         return try {
-            val reference = FirebaseStorage.getInstance().getReferenceFromUrl(pdfUrl)
-            val bytes = reference.getBytes(DATA.MAX_BYTES_PDF.toLong()).await()
+            val bytes = URL(pdfUrl).readBytes()
             Resource.Success(bytes)
         } catch (e: Exception) {
             Resource.Error(e.message ?: "An unknown error occurred")
@@ -302,8 +282,6 @@ class BookRepository @Inject constructor(
 
     suspend fun deleteBook(bookId: String, bookUrl: String): Resource<Unit> {
         return try {
-            val storageRef = FirebaseStorage.getInstance().getReferenceFromUrl(bookUrl)
-            storageRef.delete().await()
             db.getReference(DATA.BOOKS).child(bookId).removeValue().await()
             val book = bookDao.getBookById(bookId)
             if (book != null) bookDao.deleteBook(book)
@@ -331,5 +309,3 @@ class BookRepository @Inject constructor(
         }
     }
 }
-
-

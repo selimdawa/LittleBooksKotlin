@@ -97,7 +97,6 @@ class EditorsChoiceAdapter :
             })
     }
 }
-}
 
 class EditorsChoiceDiffCallback : DiffUtil.ItemCallback<EditorsChoice>() {
     override fun areItemsTheSame(oldItem: EditorsChoice, newItem: EditorsChoice): Boolean {

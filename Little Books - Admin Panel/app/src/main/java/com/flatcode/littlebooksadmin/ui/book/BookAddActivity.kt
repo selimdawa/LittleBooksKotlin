@@ -147,12 +147,10 @@ class BookAddActivity : AppCompatActivity() {
         } else {
             viewModel.uploadBook(
                 uri!!,
-                context.getFileExtension(uri) ?: "pdf",
                 title,
                 description,
                 selectedId ?: "",
-                imageUri,
-                if (imageUri != null) context.getFileExtension(imageUri) else null
+                imageUri
             )
         }
     }

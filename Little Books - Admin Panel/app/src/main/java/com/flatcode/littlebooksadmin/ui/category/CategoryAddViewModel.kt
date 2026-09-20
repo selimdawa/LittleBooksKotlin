@@ -19,10 +19,10 @@ class CategoryAddViewModel @Inject constructor(
     private val _addState = MutableStateFlow<Resource<Unit>?>(null)
     val addState: StateFlow<Resource<Unit>?> = _addState
 
-    fun addCategory(name: String, imageUri: Uri?, extension: String?) {
+    fun addCategory(name: String, imageUri: Uri?) {
         viewModelScope.launch {
             _addState.value = Resource.Loading()
-            _addState.value = repository.addCategory(name, imageUri, extension)
+            _addState.value = repository.addCategory(name, imageUri)
         }
     }
 }

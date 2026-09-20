@@ -158,8 +158,7 @@ class BookEditActivity : AppCompatActivity() {
             bookId?.let {
                 viewModel.updateBook(
                     it, title, description, selectedId,
-                    imageUri,
-                    if (imageUri != null) context.getFileExtension(imageUri) else null
+                    imageUri
                 )
             }
         }

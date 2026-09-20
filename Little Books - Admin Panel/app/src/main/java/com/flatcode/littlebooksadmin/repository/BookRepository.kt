@@ -1,6 +1,9 @@
 package com.flatcode.littlebooksadmin.repository
 
 import android.net.Uri
+import com.cloudinary.android.MediaManager
+import com.cloudinary.android.callback.ErrorInfo
+import com.cloudinary.android.callback.UploadCallback
 import com.flatcode.littlebooksadmin.utils.DATA
 import com.flatcode.littlebooksadmin.db.BookDao
 import com.flatcode.littlebooksadmin.db.CommentDao
@@ -12,19 +15,21 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
-import com.google.firebase.storage.FirebaseStorage
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.coroutines.resume
 
 @Singleton
 class BookRepository @Inject constructor(
     private val db: FirebaseDatabase,
-    private val storage: FirebaseStorage,
     private val bookDao: BookDao,
     private val commentDao: CommentDao
 ) {
@@ -115,63 +120,96 @@ class BookRepository @Inject constructor(
 
     suspend fun uploadBook(
         uri: Uri,
-        extension: String,
         title: String,
         description: String,
         categoryId: String
-    ): Resource<String> {
-        return try {
-            val ref = db.getReference(DATA.BOOKS)
-            val id = ref.push().key ?: return Resource.Error("Could not generate ID")
-            
-            val filePath = "PDF/Books/$id.$extension"
-            val storageRef = storage.getReference(filePath)
-            
-            val uploadTask = storageRef.putFile(uri).await()
-            val downloadUrl = uploadTask.storage.downloadUrl.await().toString()
-            
-            val book = Book(
-                publisher = DATA.FirebaseUserUid,
-                id = id,
-                title = title,
-                description = description,
-                categoryId = categoryId,
-                url = downloadUrl,
-                timestamp = System.currentTimeMillis(),
-                image = DATA.BASIC
-            )
-            
-            ref.child(id).setValue(book).await()
-            bookDao.insertBook(book)
-            
-            // Increment book count for user
-            incrementUserBookCount(DATA.FirebaseUserUid)
-            
-            Resource.Success(id)
-        } catch (e: Exception) {
-            Resource.Error(e.message ?: "Unknown error")
+    ): Resource<String> = suspendCancellableCoroutine { continuation ->
+        val ref = db.getReference(DATA.BOOKS)
+        val id = ref.push().key
+        if (id == null) {
+            continuation.resume(Resource.Error("Could not generate ID"))
+            return@suspendCancellableCoroutine
         }
+
+        MediaManager.get().upload(uri)
+            .option("folder", "PDF/Books/")
+            .option("public_id", id)
+            .callback(object : UploadCallback {
+                override fun onStart(requestId: String?) {}
+                override fun onProgress(requestId: String?, bytes: Long, totalBytes: Long) {}
+                override fun onSuccess(requestId: String?, resultData: Map<*, *>?) {
+                    val downloadUrl = resultData?.get("secure_url") as? String
+                    if (downloadUrl != null) {
+                        CoroutineScope(Dispatchers.IO).launch {
+                            try {
+                                val book = Book(
+                                    publisher = DATA.FirebaseUserUid,
+                                    id = id,
+                                    title = title,
+                                    description = description,
+                                    categoryId = categoryId,
+                                    url = downloadUrl,
+                                    timestamp = System.currentTimeMillis(),
+                                    image = DATA.BASIC
+                                )
+
+                                ref.child(id).setValue(book).await()
+                                bookDao.insertBook(book)
+
+                                // Increment book count for user
+                                incrementUserBookCount(DATA.FirebaseUserUid)
+
+                                continuation.resume(Resource.Success(id))
+                            } catch (e: Exception) {
+                                continuation.resume(Resource.Error(e.message ?: "Database update failed"))
+                            }
+                        }
+                    } else {
+                        continuation.resume(Resource.Error("Cloudinary upload failed: secure_url is null"))
+                    }
+                }
+
+                override fun onError(requestId: String?, error: ErrorInfo?) {
+                    continuation.resume(Resource.Error(error?.description ?: "Cloudinary upload failed"))
+                }
+
+                override fun onReschedule(requestId: String?, error: ErrorInfo?) {}
+            }).dispatch()
     }
 
     suspend fun uploadBookImage(
         bookId: String,
-        uri: Uri,
-        extension: String
-    ): Resource<Unit> {
-        return try {
-            val filePath = "BookImages/$bookId.$extension"
-            val storageRef = storage.getReference(filePath)
-            
-            val uploadTask = storageRef.putFile(uri).await()
-            val downloadUrl = uploadTask.storage.downloadUrl.await().toString()
-            
-            val ref = db.getReference(DATA.BOOKS).child(bookId)
-            ref.child(DATA.IMAGE).setValue(downloadUrl).await()
-            
-            Resource.Success(Unit)
-        } catch (e: Exception) {
-            Resource.Error(e.message ?: "Unknown error")
-        }
+        uri: Uri
+    ): Resource<Unit> = suspendCancellableCoroutine { continuation ->
+        MediaManager.get().upload(uri)
+            .option("folder", "BookImages/")
+            .option("public_id", bookId)
+            .callback(object : UploadCallback {
+                override fun onStart(requestId: String?) {}
+                override fun onProgress(requestId: String?, bytes: Long, totalBytes: Long) {}
+                override fun onSuccess(requestId: String?, resultData: Map<*, *>?) {
+                    val downloadUrl = resultData?.get("secure_url") as? String
+                    if (downloadUrl != null) {
+                        CoroutineScope(Dispatchers.IO).launch {
+                            try {
+                                val ref = db.getReference(DATA.BOOKS).child(bookId)
+                                ref.child(DATA.IMAGE).setValue(downloadUrl).await()
+                                continuation.resume(Resource.Success(Unit))
+                            } catch (e: Exception) {
+                                continuation.resume(Resource.Error(e.message ?: "Database update failed"))
+                            }
+                        }
+                    } else {
+                        continuation.resume(Resource.Error("Cloudinary upload failed: secure_url is null"))
+                    }
+                }
+
+                override fun onError(requestId: String?, error: ErrorInfo?) {
+                    continuation.resume(Resource.Error(error?.description ?: "Cloudinary upload failed"))
+                }
+
+                override fun onReschedule(requestId: String?, error: ErrorInfo?) {}
+            }).dispatch()
     }
 
     suspend fun getBookById(bookId: String): Resource<Book> {

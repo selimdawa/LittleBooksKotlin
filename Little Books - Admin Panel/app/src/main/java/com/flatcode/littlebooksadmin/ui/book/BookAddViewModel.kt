@@ -40,28 +40,26 @@ class BookAddViewModel @Inject constructor(
 
     fun uploadBook(
         uri: Uri,
-        extension: String,
         title: String,
         description: String,
         categoryId: String,
-        imageUri: Uri?,
-        imageExtension: String?
+        imageUri: Uri?
     ) {
         viewModelScope.launch {
             _uploadState.value = Resource.Loading()
-            val result = repository.uploadBook(uri, extension, title, description, categoryId)
+            val result = repository.uploadBook(uri, title, description, categoryId)
             _uploadState.value = result
-            
-            if (result is Resource.Success && imageUri != null && imageExtension != null) {
-                uploadBookImage(result.data!!, imageUri, imageExtension)
+
+            if (result is Resource.Success && imageUri != null) {
+                uploadBookImage(result.data!!, imageUri)
             }
         }
     }
 
-    private fun uploadBookImage(bookId: String, uri: Uri, extension: String) {
+    private fun uploadBookImage(bookId: String, uri: Uri) {
         viewModelScope.launch {
             _imageUploadState.value = Resource.Loading()
-            val result = repository.uploadBookImage(bookId, uri, extension)
+            val result = repository.uploadBookImage(bookId, uri)
             _imageUploadState.value = result
         }
     }

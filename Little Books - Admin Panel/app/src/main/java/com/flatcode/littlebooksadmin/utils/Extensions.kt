@@ -37,12 +37,11 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
-import com.google.firebase.storage.FirebaseStorage
-import com.google.firebase.storage.StorageMetadata
-import com.theartofdev.edmodo.cropper.CropImage
-import com.theartofdev.edmodo.cropper.CropImageView
 import java.io.FileOutputStream
+import java.net.HttpURLConnection
+import java.net.URL
 import java.text.MessageFormat
+import java.util.concurrent.Executors
 
 inline fun <reified T : Activity> Context.openActivity(
     clear: Boolean = false, vararg extras: Pair<String, Any?>
@@ -64,19 +63,13 @@ fun Context.deleteBook(
     dialog.setTitle("Please wait")
     dialog.setMessage("Deleting $bookTitle ...")
     dialog.show()
-    val storageReference = FirebaseStorage.getInstance().getReferenceFromUrl(bookUrl!!)
-    storageReference.delete().addOnSuccessListener {
-        val reference = FirebaseDatabase.getInstance().getReference(DATA.BOOKS)
-        reference.child(bookId!!).removeValue().addOnSuccessListener {
-            dialog.dismiss()
-            Toast.makeText(this, "Books Deleted Successfully...", Toast.LENGTH_SHORT).show()
-            dialogDelete.dismiss()
-            incrementItemRemoveCount(DATA.USERS, publisher, DATA.BOOKS_COUNT)
-        }.addOnFailureListener { e: Exception ->
-            dialog.dismiss()
-            dialogDelete.dismiss()
-            Toast.makeText(this, "" + e.message, Toast.LENGTH_SHORT).show()
-        }
+
+    val reference = FirebaseDatabase.getInstance().getReference(DATA.BOOKS)
+    reference.child(bookId!!).removeValue().addOnSuccessListener {
+        dialog.dismiss()
+        Toast.makeText(this, "Books Deleted Successfully...", Toast.LENGTH_SHORT).show()
+        dialogDelete.dismiss()
+        incrementItemRemoveCount(DATA.USERS, publisher, DATA.BOOKS_COUNT)
     }.addOnFailureListener { e: Exception ->
         dialog.dismiss()
         dialogDelete.dismiss()
@@ -101,15 +94,9 @@ fun Context.deleteCategory(dialogDelete: Dialog, id: String?, name: String?) {
 }
 
 fun TextView.loadPdfInfo(pdfUrl: String?) {
-    val ref = FirebaseStorage.getInstance().getReferenceFromUrl(pdfUrl!!)
-    ref.metadata.addOnSuccessListener { storageMetadata: StorageMetadata ->
-        val bytes = storageMetadata.sizeBytes.toDouble()
-        val kb = bytes / 1024
-        val mb = kb / 1024
-        if (mb > 1) this.text = String.format("%.2f", mb) + " MB" else if (kb > 1) this.text =
-            String.format("%.2f", mb) + " MB" else this.text =
-            String.format("%.2f", bytes) + " bytes"
-    }
+    // Cloudinary metadata is not easily accessible from client without Admin API
+    // Setting a placeholder or empty for now
+    this.text = "N/A"
 }
 
 fun TextView.loadCategory(categoryId: String?) {
@@ -174,17 +161,36 @@ fun Context.downloadBook(bookId: String, bookTitle: String, bookUrl: String?) {
     progressDialog.setCanceledOnTouchOutside(false)
     progressDialog.show()
 
-    val storageReference = FirebaseStorage.getInstance().getReferenceFromUrl(bookUrl!!)
-    storageReference.getBytes(DATA.MAX_BYTES_PDF.toLong())
-        .addOnSuccessListener { bytes: ByteArray ->
-            saveDownloadedBook(progressDialog, bytes, nameWithExtension, bookId)
-            incrementItemCount(DATA.BOOKS, bookId, DATA.DOWNLOADS_COUNT)
-        }.addOnFailureListener { e: Exception ->
-            progressDialog.dismiss()
-            Toast.makeText(
-                this, "Failed to download due to " + e.message, Toast.LENGTH_SHORT
-            ).show()
+    val executor = Executors.newSingleThreadExecutor()
+    executor.execute {
+        try {
+            val url = URL(bookUrl)
+            val connection = url.openConnection() as HttpURLConnection
+            connection.connect()
+
+            if (connection.responseCode != HttpURLConnection.HTTP_OK) {
+                (this as Activity).runOnUiThread {
+                    progressDialog.dismiss()
+                    Toast.makeText(this, "Server returned HTTP ${connection.responseCode}", Toast.LENGTH_SHORT).show()
+                }
+                return@execute
+            }
+
+            val inputStream = connection.inputStream
+            val bytes = inputStream.readBytes()
+            inputStream.close()
+
+            (this as Activity).runOnUiThread {
+                saveDownloadedBook(progressDialog, bytes, nameWithExtension, bookId)
+                incrementItemCount(DATA.BOOKS, bookId, DATA.DOWNLOADS_COUNT)
+            }
+        } catch (e: Exception) {
+            (this as Activity).runOnUiThread {
+                progressDialog.dismiss()
+                Toast.makeText(this, "Failed to download due to " + e.message, Toast.LENGTH_SHORT).show()
+            }
         }
+    }
 }
 
 private fun Context.saveDownloadedBook(
@@ -402,18 +408,6 @@ fun Context.dialogOptionDelete(
     dialog.findViewById<View>(R.id.no).setOnClickListener { dialog.dismiss() }
     dialog.show()
     dialog.window!!.attributes = lp
-}
-
-fun Activity.cropImageSquare() {
-    CropImage.activity().setGuidelines(CropImageView.Guidelines.ON).setMultiTouchEnabled(true)
-        .setMinCropResultSize(DATA.MIX_SQUARE, DATA.MIX_SQUARE).setAspectRatio(1, 1)
-        .setCropShape(CropImageView.CropShape.OVAL).start(this)
-}
-
-fun Activity.cropImageSlider() {
-    CropImage.activity().setGuidelines(CropImageView.Guidelines.ON).setMultiTouchEnabled(true)
-        .setMinCropResultSize(DATA.MIX_SLIDER_X, DATA.MIX_SLIDER_Y).setAspectRatio(16, 9)
-        .setCropShape(CropImageView.CropShape.OVAL).start(this)
 }
 
 fun Context.dialogUpdateEditorChoice(dialogDelete: Dialog, bookId: String?) {

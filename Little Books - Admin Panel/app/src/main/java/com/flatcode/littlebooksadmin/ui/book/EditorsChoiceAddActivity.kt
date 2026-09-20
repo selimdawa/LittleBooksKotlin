@@ -32,7 +32,6 @@ class EditorsChoiceAddActivity : AppCompatActivity() {
     private lateinit var binding: ActivityEditorsChoiceAddBinding
     private var activity: Activity? = null
     private val context: Context = also { activity = it as Activity }
-    private var list: ArrayList<Book?> = arrayListOf()
     private var adapter: EditorsChoiceBookAdapter? = null
     private var editorsChoiceId: String? = null
     private var type: String = DATA.TIMESTAMP
@@ -83,7 +82,7 @@ class EditorsChoiceAddActivity : AppCompatActivity() {
             override fun afterTextChanged(s: Editable) {}
         })
 
-        adapter = EditorsChoiceBookAdapter(context, activity, oldBookId, list, id)
+        adapter = EditorsChoiceBookAdapter(activity, oldBookId, id)
         binding.recyclerView.adapter = adapter
 
         binding.all.setOnClickListener {

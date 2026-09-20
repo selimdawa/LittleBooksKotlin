@@ -2,11 +2,15 @@ package com.flatcode.littlebooks.di
 
 import android.content.Context
 import androidx.room.Room
-import com.flatcode.littlebooks.db.*
+import com.flatcode.littlebooks.db.AdsDao
 import com.flatcode.littlebooks.db.AppDatabase
+import com.flatcode.littlebooks.db.BookDao
+import com.flatcode.littlebooks.db.CategoryDao
+import com.flatcode.littlebooks.db.CommentDao
+import com.flatcode.littlebooks.db.SettingDao
+import com.flatcode.littlebooks.db.UserDao
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.storage.FirebaseStorage
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -28,15 +32,9 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideFirebaseStorage(): FirebaseStorage = FirebaseStorage.getInstance()
-
-    @Provides
-    @Singleton
     fun provideAppDatabase(@ApplicationContext context: Context): AppDatabase {
         return Room.databaseBuilder(
-            context,
-            AppDatabase::class.java,
-            AppDatabase.DATABASE_NAME
+            context, AppDatabase::class.java, AppDatabase.DATABASE_NAME
         ).fallbackToDestructiveMigration().build()
     }
 
@@ -58,5 +56,3 @@ object AppModule {
     @Provides
     fun provideSettingDao(db: AppDatabase): SettingDao = db.settingDao()
 }
-
-

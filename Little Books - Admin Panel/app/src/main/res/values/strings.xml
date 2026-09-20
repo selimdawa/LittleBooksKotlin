@@ -94,4 +94,7 @@
     <string name="book_title">Book Title</string>
     <string name="book_category">Book Category</string>
     <string name="password_hint">********</string>
+    <string name="close">Close</string>
+    <string name="done">Done</string>
+    <string name="crop_image">Crop Image</string>
 </resources>

@@ -74,7 +74,7 @@ class BookDetailsActivity : AppCompatActivity() {
         }
         binding!!.addComment.setOnClickListener { addCommentDialog() }
 
-        adapterComment = CommentAdapter()
+        adapterComment = CommentAdapter { }
         binding!!.recyclerView.adapter = adapterComment
 
         observeViewModel()

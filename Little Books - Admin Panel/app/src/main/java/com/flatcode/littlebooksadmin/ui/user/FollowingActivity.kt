@@ -30,7 +30,6 @@ class FollowingActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityPageStaggeredBinding
     private val context: Context = this@FollowingActivity
-    private var list: ArrayList<User?> = arrayListOf()
     private var adapter: PublisherAdapter? = null
     
     private val viewModel: UsersViewModel by viewModels()
@@ -72,7 +71,7 @@ class FollowingActivity : AppCompatActivity() {
             override fun afterTextChanged(s: Editable) {}
         })
 
-        adapter = PublisherAdapter(context, list)
+        adapter = PublisherAdapter()
         binding.recyclerView.adapter = adapter
     }
 
@@ -100,19 +99,10 @@ class FollowingActivity : AppCompatActivity() {
     }
 
     private fun updateList(users: List<com.flatcode.littlebooksadmin.model.User>) {
-        list.clear()
-        users.forEach {
-            val legacyUser = User(
-                it.id, it.username, it.profileImage, it.email, it.timestamp,
-                it.version, it.booksCount, it.adLoad, it.adClick
-            )
-            list.add(legacyUser)
-        }
+        binding.toolbar.number.text = MessageFormat.format("( {0} )", users.size)
+        adapter?.submitUnfilteredList(users)
         
-        binding.toolbar.number.text = MessageFormat.format("( {0} )", list.size)
-        adapter!!.notifyDataSetChanged()
-        
-        if (list.isNotEmpty()) {
+        if (users.isNotEmpty()) {
             binding.recyclerView.visibility = View.VISIBLE
             binding.emptyText.visibility = View.GONE
         } else {

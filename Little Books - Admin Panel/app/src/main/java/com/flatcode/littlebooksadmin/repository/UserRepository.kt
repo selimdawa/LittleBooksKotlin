@@ -1,6 +1,9 @@
 package com.flatcode.littlebooksadmin.repository
 
 import android.net.Uri
+import com.cloudinary.android.MediaManager
+import com.cloudinary.android.callback.ErrorInfo
+import com.cloudinary.android.callback.UploadCallback
 import com.flatcode.littlebooksadmin.utils.DATA
 import com.flatcode.littlebooksadmin.model.Book
 import com.flatcode.littlebooksadmin.model.User
@@ -9,13 +12,17 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
-import com.google.firebase.storage.FirebaseStorage
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.coroutines.resume
 
 @Singleton
 class UserRepository @Inject constructor(
@@ -115,25 +122,51 @@ class UserRepository @Inject constructor(
         }
     }
 
-    suspend fun updateUserProfile(username: String, imageUri: Uri?, extension: String?): Resource<Unit> {
-        return try {
+    suspend fun updateUserProfile(username: String, imageUri: Uri?): Resource<Unit> =
+        suspendCancellableCoroutine { continuation ->
             val myId = DATA.FirebaseUserUid
             val updates = mutableMapOf<String, Any>(DATA.USER_NAME to username)
-            
-            if (imageUri != null && extension != null) {
-                val filePath = "Images/Profile/$myId.$extension"
-                val storageRef = FirebaseStorage.getInstance().getReference(filePath)
-                val uploadTask = storageRef.putFile(imageUri).await()
-                val downloadUrl = uploadTask.storage.downloadUrl.await().toString()
-                updates[DATA.PROFILE_IMAGE] = downloadUrl
+
+            if (imageUri != null) {
+                MediaManager.get().upload(imageUri)
+                    .option("folder", "Images/Profile/")
+                    .option("public_id", myId)
+                    .callback(object : UploadCallback {
+                        override fun onStart(requestId: String?) {}
+                        override fun onProgress(requestId: String?, bytes: Long, totalBytes: Long) {}
+                        override fun onSuccess(requestId: String?, resultData: Map<*, *>?) {
+                            val downloadUrl = resultData?.get("secure_url") as? String
+                            if (downloadUrl != null) {
+                                updates[DATA.PROFILE_IMAGE] = downloadUrl
+                            }
+                            CoroutineScope(Dispatchers.IO).launch {
+                                try {
+                                    db.getReference(DATA.USERS).child(myId).updateChildren(updates)
+                                        .await()
+                                    continuation.resume(Resource.Success(Unit))
+                                } catch (e: Exception) {
+                                    continuation.resume(Resource.Error(e.message ?: "Update failed"))
+                                }
+                            }
+                        }
+
+                        override fun onError(requestId: String?, error: ErrorInfo?) {
+                            continuation.resume(Resource.Error(error?.description ?: "Upload failed"))
+                        }
+
+                        override fun onReschedule(requestId: String?, error: ErrorInfo?) {}
+                    }).dispatch()
+            } else {
+                CoroutineScope(Dispatchers.IO).launch {
+                    try {
+                        db.getReference(DATA.USERS).child(myId).updateChildren(updates).await()
+                        continuation.resume(Resource.Success(Unit))
+                    } catch (e: Exception) {
+                        continuation.resume(Resource.Error(e.message ?: "Update failed"))
+                    }
+                }
             }
-            
-            db.getReference(DATA.USERS).child(myId).updateChildren(updates).await()
-            Resource.Success(Unit)
-        } catch (e: Exception) {
-            Resource.Error(e.message ?: "Update failed")
         }
-    }
 
     fun getFollow(userId: String, type: String): Flow<Resource<List<User>>> = callbackFlow {
         trySend(Resource.Loading())

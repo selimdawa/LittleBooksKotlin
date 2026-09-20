@@ -16,9 +16,12 @@ import com.flatcode.littlebooksadmin.utils.DATA
 import com.flatcode.littlebooksadmin.utils.Resource
 import com.flatcode.littlebooksadmin.databinding.ActivityBookViewBinding
 import com.flatcode.littlebooksadmin.ui.book.BookEditViewModel
-import com.google.firebase.storage.FirebaseStorage
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.net.HttpURLConnection
+import java.net.URL
 import java.text.MessageFormat
 
 @AndroidEntryPoint
@@ -77,26 +80,47 @@ class BookViewActivity : AppCompatActivity() {
     }
 
     private fun loadBookFromUrl(pdfUrl: String) {
-        val reference = FirebaseStorage.getInstance().getReferenceFromUrl(pdfUrl)
-        reference.getBytes(DATA.MAX_BYTES_PDF.toLong()).addOnSuccessListener { bytes: ByteArray? ->
-            binding.progressBar.visibility = View.GONE
-            binding.pdfView.fromBytes(bytes).swipeHorizontal(false)
-                .onPageChange { page: Int, pageCount: Int ->
-                    val correctPage = page + 1
-                    binding.toolbar.numberPage.text =
-                        MessageFormat.format("{0}/{1}", correctPage, pageCount)
-                }.onError { t: Throwable ->
-                    Toast.makeText(context, DATA.EMPTY + t.message, Toast.LENGTH_SHORT).show()
+        lifecycleScope.launch(Dispatchers.IO) {
+            try {
+                val url = URL(pdfUrl)
+                val connection = url.openConnection() as HttpURLConnection
+                connection.connect()
+
+                if (connection.responseCode != HttpURLConnection.HTTP_OK) {
+                    withContext(Dispatchers.Main) {
+                        binding.progressBar.visibility = View.GONE
+                        Toast.makeText(context, "Server returned HTTP ${connection.responseCode}", Toast.LENGTH_SHORT).show()
+                    }
+                    return@launch
                 }
-                .onPageError { page: Int, t: Throwable ->
-                    Toast.makeText(
-                        context, "Error on page " + page + DATA.SPACE + t.message,
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }.load()
-        }.addOnFailureListener { 
-            binding.progressBar.visibility = View.GONE 
-            Toast.makeText(context, "Failed to load PDF", Toast.LENGTH_SHORT).show()
+
+                val inputStream = connection.inputStream
+                val bytes = inputStream.readBytes()
+                inputStream.close()
+
+                withContext(Dispatchers.Main) {
+                    binding.progressBar.visibility = View.GONE
+                    binding.pdfView.fromBytes(bytes).swipeHorizontal(false)
+                        .onPageChange { page: Int, pageCount: Int ->
+                            val correctPage = page + 1
+                            binding.toolbar.numberPage.text =
+                                MessageFormat.format("{0}/{1}", correctPage, pageCount)
+                        }.onError { t: Throwable ->
+                            Toast.makeText(context, DATA.EMPTY + t.message, Toast.LENGTH_SHORT).show()
+                        }
+                        .onPageError { page: Int, t: Throwable ->
+                            Toast.makeText(
+                                context, "Error on page " + page + DATA.SPACE + t.message,
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }.load()
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    binding.progressBar.visibility = View.GONE
+                    Toast.makeText(context, "Failed to load PDF: ${e.message}", Toast.LENGTH_SHORT).show()
+                }
+            }
         }
     }
 }

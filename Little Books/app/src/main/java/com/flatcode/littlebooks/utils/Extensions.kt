@@ -12,7 +12,6 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Environment
-import android.text.format.DateFormat
 import android.view.LayoutInflater
 import android.view.Window
 import android.view.WindowManager
@@ -45,27 +44,41 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
-import com.google.firebase.storage.FirebaseStorage
-import com.theartofdev.edmodo.cropper.CropImage
-import com.theartofdev.edmodo.cropper.CropImageView
+import com.canhub.cropper.CropImage
+import com.canhub.cropper.CropImageView
+import com.cloudinary.android.MediaManager
+import com.cloudinary.android.callback.ErrorInfo
+import com.cloudinary.android.callback.UploadCallback
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.withContext
+import kotlinx.coroutines.launch
+import kotlin.coroutines.resume
 import java.io.File
 import java.io.FileOutputStream
 import java.io.Serializable
+import java.net.HttpURLConnection
+import java.net.URL
 import java.text.MessageFormat
-import java.util.Calendar
-import java.util.Locale
 
 inline fun <reified T : Activity> Context.openActivity(
     clear: Boolean = false, vararg extras: Pair<String, Any?>
+) = openActivity(T::class.java, clear, *extras)
+
+fun Context.openActivity(
+    activity: Class<*>, clear: Boolean = false, vararg extras: Pair<String, Any?>
 ) {
-    val intent = Intent(this, T::class.java).apply {
+    val intent = Intent(this, activity).apply {
         if (clear) addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
-        extras.forEach { (key, value) ->
-            when (value) {
-                is String -> putExtra(key, value)
-                is Int -> putExtra(key, value)
-                is Boolean -> putExtra(key, value)
-                is Serializable -> putExtra(key, value)
+        extras.forEach { (k, v) ->
+            when (v) {
+                is String -> putExtra(k, v)
+                is Int -> putExtra(k, v)
+                is Boolean -> putExtra(k, v)
+                is Long -> putExtra(k, v)
+                is Double -> putExtra(k, v)
+                is Serializable -> putExtra(k, v)
             }
         }
     }
@@ -101,21 +114,16 @@ fun Context.deleteBook(
         setMessage("Deleting $bookTitle ...")
         show()
     }
-    FirebaseStorage.getInstance().getReferenceFromUrl(bookUrl!!).delete().addOnSuccessListener {
-        FirebaseDatabase.getInstance().getReference(DATA.BOOKS).child(bookId!!).removeValue()
-            .addOnSuccessListener {
-                dialog.dismiss()
-                Toast.makeText(this, "Books Deleted Successfully...", Toast.LENGTH_SHORT).show()
-                dialogDelete.dismiss()
-                incrementItemRemoveCount(DATA.USERS, publisher, DATA.BOOKS_COUNT)
-            }.addOnFailureListener { e ->
-                dialog.dismiss()
-                Toast.makeText(this, e.message, Toast.LENGTH_SHORT).show()
-            }
-    }.addOnFailureListener { e ->
-        dialog.dismiss()
-        Toast.makeText(this, e.message, Toast.LENGTH_SHORT).show()
-    }
+    FirebaseDatabase.getInstance().getReference(DATA.BOOKS).child(bookId!!).removeValue()
+        .addOnSuccessListener {
+            dialog.dismiss()
+            Toast.makeText(this, "Books Deleted Successfully...", Toast.LENGTH_SHORT).show()
+            dialogDelete.dismiss()
+            incrementItemRemoveCount(DATA.USERS, publisher, DATA.BOOKS_COUNT)
+        }.addOnFailureListener { e ->
+            dialog.dismiss()
+            Toast.makeText(this, e.message, Toast.LENGTH_SHORT).show()
+        }
 }
 
 fun Context.downloadBook(bookId: String, bookTitle: String, bookUrl: String?) {
@@ -127,15 +135,21 @@ fun Context.downloadBook(bookId: String, bookTitle: String, bookUrl: String?) {
         show()
     }
 
-    FirebaseStorage.getInstance().getReferenceFromUrl(bookUrl!!)
-        .getBytes(DATA.MAX_BYTES_PDF.toLong()).addOnSuccessListener { bytes ->
-            saveDownloadedBook(this, progressDialog, bytes, nameWithExtension, bookId)
-            incrementItemCount(DATA.BOOKS, bookId, DATA.DOWNLOADS_COUNT)
-        }.addOnFailureListener { e ->
-            progressDialog.dismiss()
-            Toast.makeText(this, "Failed to download due to ${e.message}", Toast.LENGTH_SHORT)
-                .show()
+    @Suppress("DEPRECATION")
+    GlobalScope.launch(Dispatchers.IO) {
+        try {
+            val bytes = URL(bookUrl!!).readBytes()
+            withContext(Dispatchers.Main) {
+                saveDownloadedBook(this@downloadBook, progressDialog, bytes, nameWithExtension, bookId)
+                incrementItemCount(DATA.BOOKS, bookId, DATA.DOWNLOADS_COUNT)
+            }
+        } catch (e: Exception) {
+            withContext(Dispatchers.Main) {
+                progressDialog.dismiss()
+                Toast.makeText(this@downloadBook, "Failed to download due to ${e.message}", Toast.LENGTH_SHORT).show()
+            }
         }
+    }
 }
 
 fun Context.closeApp(a: Activity?) {
@@ -223,11 +237,25 @@ fun Context.dialogOptionDelete(
     }
 }
 
-fun Activity.cropImageSquare() {
-    CropImage.activity().setGuidelines(CropImageView.Guidelines.ON).setMultiTouchEnabled(true)
-        .setMinCropResultSize(DATA.MIN_SQUARE, DATA.MIN_SQUARE).setAspectRatio(1, 1)
-        .setCropShape(CropImageView.CropShape.OVAL).start(this)
-}
+suspend fun cloudinaryUpload(uri: Uri): Resource<String> =
+    suspendCancellableCoroutine { continuation ->
+        MediaManager.get().upload(uri)
+            .option("upload_preset", DATA.CLOUDINARY_UPLOAD_PRESET)
+            .callback(object : UploadCallback {
+                override fun onStart(requestId: String) {}
+                override fun onProgress(requestId: String, bytes: Long, totalBytes: Long) {}
+                override fun onSuccess(requestId: String, resultData: Map<*, *>) {
+                    val url = resultData["secure_url"] as? String ?: resultData["url"] as String
+                    continuation.resume(Resource.Success(url))
+                }
+
+                override fun onError(requestId: String, error: ErrorInfo) {
+                    continuation.resume(Resource.Error(error.description))
+                }
+
+                override fun onReschedule(requestId: String, error: ErrorInfo) {}
+            }).dispatch()
+    }
 
 fun ImageView.glide(isUser: Boolean, url: String?) {
     val placeholder = if (isUser) R.drawable.basic_user else R.drawable.basic_book
@@ -315,13 +343,26 @@ fun ImageView.isLoves(bookId: String?) {
 
 fun TextView.loadPdfInfo(pdfUrl: String?) {
     pdfUrl ?: return
-    FirebaseStorage.getInstance().getReferenceFromUrl(pdfUrl).metadata.addOnSuccessListener {
-        val bytes = it.sizeBytes.toDouble()
-        val kb = bytes / 1024
-        val mb = kb / 1024
-        text = if (mb > 1) "%.2f MB".format(mb)
-        else if (kb > 1) "%.2f KB".format(kb)
-        else "$bytes bytes"
+    text = "PDF Book"
+    @Suppress("DEPRECATION")
+    GlobalScope.launch(Dispatchers.IO) {
+        try {
+            val url = URL(pdfUrl)
+            val connection = url.openConnection() as HttpURLConnection
+            connection.requestMethod = "HEAD"
+            val bytes = connection.contentLengthLong.toDouble()
+            if (bytes > 0) {
+                val kb = bytes / 1024
+                val mb = kb / 1024
+                withContext(Dispatchers.Main) {
+                    text = if (mb > 1) "%.2f MB".format(mb)
+                    else if (kb > 1) "%.2f KB".format(kb)
+                    else "$bytes bytes"
+                }
+            }
+        } catch (e: Exception) {
+            // ignore
+        }
     }
 }
 
@@ -490,9 +531,9 @@ fun Uri.getFileExtension(context: Context): String {
 }
 
 fun Long.formatTimestamp(): String {
-    val calendar = Calendar.getInstance(Locale.ENGLISH)
+    val calendar = java.util.Calendar.getInstance(java.util.Locale.ENGLISH)
     calendar.timeInMillis = this
-    return DateFormat.format("dd/MM/yyyy", calendar).toString()
+    return android.text.format.DateFormat.format("dd/MM/yyyy", calendar).toString()
 }
 
 class SimpleBlurTransformation(private val radius: Float) : Transformation {

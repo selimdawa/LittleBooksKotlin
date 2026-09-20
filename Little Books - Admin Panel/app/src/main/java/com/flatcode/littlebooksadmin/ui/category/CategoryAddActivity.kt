@@ -23,7 +23,10 @@ import com.flatcode.littlebooksadmin.utils.Resource
 import com.flatcode.littlebooksadmin.utils.*
 import com.flatcode.littlebooksadmin.databinding.ActivityCategoryAddBinding
 import com.flatcode.littlebooksadmin.ui.category.CategoryAddViewModel
-import com.theartofdev.edmodo.cropper.CropImage
+import com.canhub.cropper.CropImageContract
+import com.canhub.cropper.CropImageContractOptions
+import com.canhub.cropper.CropImageOptions
+import com.canhub.cropper.CropImageView
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -37,6 +40,35 @@ class CategoryAddActivity : AppCompatActivity() {
     private var dialog: ProgressDialog? = null
     
     private val viewModel: CategoryAddViewModel by viewModels()
+
+    private val cropImage = registerForActivityResult(CropImageContract()) { result ->
+        if (result.isSuccessful) {
+            imageUri = result.uriContent
+            binding.image.setImageURI(imageUri)
+        } else {
+            val exception = result.error
+            exception?.let {
+                Toast.makeText(context, "Error! ${it.message}", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun startCrop() {
+        cropImage.launch(
+            CropImageContractOptions(
+                uri = null,
+                cropImageOptions = CropImageOptions(
+                    guidelines = CropImageView.Guidelines.ON,
+                    aspectRatioX = 1,
+                    aspectRatioY = 1,
+                    fixAspectRatio = true,
+                    minCropResultWidth = DATA.MIX_SQUARE,
+                    minCropResultHeight = DATA.MIX_SQUARE,
+                    cropShape = CropImageView.CropShape.RECTANGLE
+                )
+            )
+        )
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,7 +94,7 @@ class CategoryAddActivity : AppCompatActivity() {
         binding.toolbar.nameSpace.setText(R.string.add_new_category)
         binding.toolbar.back.setOnClickListener { onBackPressed() }
 
-        binding.image.setOnClickListener { activity?.cropImageSquare() }
+        binding.image.setOnClickListener { startCrop() }
         binding.toolbar.ok.setOnClickListener { validateData() }
     }
 
@@ -101,32 +133,8 @@ class CategoryAddActivity : AppCompatActivity() {
         } else {
             viewModel.addCategory(
                 title,
-                imageUri,
-                context.getFileExtension(imageUri)
+                imageUri
             )
-        }
-    }
-
-    public override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == CropImage.PICK_IMAGE_CHOOSER_REQUEST_CODE && resultCode == RESULT_OK) {
-            val uri = CropImage.getPickImageResultUri(context, data)
-            if (CropImage.isReadExternalStoragePermissionsRequired(context, uri)) {
-                imageUri = uri
-                requestPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), 0)
-            } else {
-                activity?.cropImageSquare()
-            }
-        }
-        if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
-            val result = CropImage.getActivityResult(data)
-            if (resultCode == RESULT_OK) {
-                imageUri = result.uri
-                binding.image.setImageURI(imageUri)
-            } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
-                val error = result.error
-                Toast.makeText(this, "Error! $error", Toast.LENGTH_SHORT).show()
-            }
         }
     }
 }

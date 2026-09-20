@@ -45,7 +45,7 @@ class LoginActivity : AppCompatActivity() {
             binding!!.toolbarRl.updateLayoutParams<ViewGroup.MarginLayoutParams> {
                 topMargin = systemBars.top + 20 // Original margin was 20sp
             }
-            binding!!.go.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+            binding!!.loginBtn.updateLayoutParams<ViewGroup.MarginLayoutParams> {
                 bottomMargin = systemBars.bottom + 20 // Original margin was 20sp
             }
             insets
@@ -57,7 +57,7 @@ class LoginActivity : AppCompatActivity() {
 
         binding!!.forget.setOnClickListener { context.openActivity<ForgetPasswordActivity>() }
         binding!!.noAccount.setOnClickListener { context.openActivity<RegisterActivity>() }
-        binding!!.go.setOnClickListener { validateDate() }
+        binding!!.loginBtn.setOnClickListener { validateDate() }
 
         observeViewModel()
     }

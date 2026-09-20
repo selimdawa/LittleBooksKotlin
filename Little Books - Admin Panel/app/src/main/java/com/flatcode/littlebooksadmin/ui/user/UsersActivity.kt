@@ -30,7 +30,6 @@ class UsersActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityUsersBinding
     private val context: Context = this@UsersActivity
-    private var list: ArrayList<User?> = arrayListOf()
     private var adapter: PublisherAdapter? = null
     private var filterType: String = DATA.ALL
     
@@ -73,7 +72,7 @@ class UsersActivity : AppCompatActivity() {
             override fun afterTextChanged(s: Editable) {}
         })
 
-        adapter = PublisherAdapter(context, list)
+        adapter = PublisherAdapter()
         binding.recyclerView.adapter = adapter
 
         binding.all.setOnClickListener {
@@ -113,25 +112,18 @@ class UsersActivity : AppCompatActivity() {
         }
     }
 
-    private fun updateList(users: List<com.flatcode.littlebooksadmin.model.User>) {
-        list.clear()
-        users.forEach {
-            val legacyUser = User(
-                it.id, it.username, it.profileImage, it.email, it.timestamp,
-                it.version, it.booksCount, it.adLoad, it.adClick
-            )
-            
-            when (filterType) {
-                DATA.ALL -> list.add(legacyUser)
-                DATA.USER -> if (it.booksCount <= 0) list.add(legacyUser)
-                DATA.PUBLISHER -> if (it.booksCount >= 1) list.add(legacyUser)
-            }
+    private fun updateList(users: List<User>) {
+        val filteredUsers = when (filterType) {
+            DATA.ALL -> users
+            DATA.USER -> users.filter { it.booksCount <= 0 }
+            DATA.PUBLISHER -> users.filter { it.booksCount >= 1 }
+            else -> users
         }
-        
-        binding.toolbar.number.text = MessageFormat.format("( {0} )", list.size)
-        adapter!!.notifyDataSetChanged()
-        
-        if (list.isNotEmpty()) {
+
+        binding.toolbar.number.text = MessageFormat.format("( {0} )", filteredUsers.size)
+        adapter?.submitUnfilteredList(filteredUsers)
+
+        if (filteredUsers.isNotEmpty()) {
             binding.recyclerView.visibility = View.VISIBLE
             binding.emptyText.visibility = View.GONE
         } else {

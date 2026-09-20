@@ -4,11 +4,10 @@ import android.content.Context
 import android.net.Uri
 import com.flatcode.littlebooks.model.User
 import com.flatcode.littlebooks.utils.DATA
-import com.flatcode.littlebooks.utils.getFileExtension
 import com.flatcode.littlebooks.db.UserDao
 import com.flatcode.littlebooks.utils.Resource
+import com.flatcode.littlebooks.utils.cloudinaryUpload
 import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
@@ -144,17 +143,6 @@ class UserRepository @Inject constructor(
     }
 
     suspend fun uploadProfileImage(userId: String, imageUri: Uri, context: Context): Resource<String> {
-        return try {
-            val filePathAndName = "Images/Profile/$userId"
-            val extension = imageUri.getFileExtension(context)
-            val reference = FirebaseStorage.getInstance().getReference("$filePathAndName.${extension}")
-            val task = reference.putFile(imageUri).await()
-            val downloadUrl = task.storage.downloadUrl.await()
-            Resource.Success(downloadUrl.toString())
-        } catch (e: Exception) {
-            Resource.Error(e.message ?: "An unknown error occurred")
-        }
+        return cloudinaryUpload(imageUri)
     }
 }
-
-

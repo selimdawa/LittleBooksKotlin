@@ -12,7 +12,7 @@ import com.flatcode.littlebooks.ui.book.BooksCategoryActivity
 import com.flatcode.littlebooks.utils.DATA
 import com.flatcode.littlebooks.utils.glide
 import com.flatcode.littlebooks.utils.glideBlur
-import com.flatcode.littlebooks.utils.intentExtra2
+import com.flatcode.littlebooks.utils.openActivity
 
 class CategoryMainAdapter : ListAdapter<Category, CategoryMainAdapter.ViewHolder>(DiffCallback) {
 
@@ -44,9 +44,8 @@ class CategoryMainAdapter : ListAdapter<Category, CategoryMainAdapter.ViewHolder
             binding.name.text = name
 
             binding.card.setOnClickListener {
-                context.intentExtra2(
-                    BooksCategoryActivity::class.java, DATA.CATEGORY_ID, item.id,
-                    DATA.CATEGORY_NAME, name
+                context.openActivity<BooksCategoryActivity>(
+                    false, DATA.CATEGORY_ID to item.id, DATA.CATEGORY_NAME to name
                 )
             }
         }

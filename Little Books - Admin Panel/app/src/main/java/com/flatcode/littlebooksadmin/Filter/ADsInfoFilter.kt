@@ -5,17 +5,17 @@ import com.flatcode.littlebooksadmin.model.ADs
 import com.flatcode.littlebooksadmin.ui.ads.ADsInfoAdapter
 
 class ADsInfoFilter(
-    private var filterList: List<ADs?>,
     private var adapter: ADsInfoAdapter
 ) : Filter() {
     override fun performFiltering(constraint: CharSequence?): FilterResults {
         var constraint = constraint
         val results = FilterResults()
+        val filterList = adapter.unfilteredList
         if (constraint != null && constraint.isNotEmpty()) {
             constraint = constraint.toString().uppercase()
-            val filteredModels = ArrayList<ADs?>()
+            val filteredModels = ArrayList<ADs>()
             for (i in filterList.indices) {
-                if (filterList[i]!!.name!!.uppercase().contains(constraint)) {
+                if (filterList[i].name?.uppercase()?.contains(constraint) == true) {
                     filteredModels.add(filterList[i])
                 }
             }
@@ -29,7 +29,6 @@ class ADsInfoFilter(
     }
 
     override fun publishResults(constraint: CharSequence?, results: FilterResults) {
-        adapter.list = results.values as ArrayList<ADs?>
-        adapter.notifyDataSetChanged()
+        adapter.submitFilteredList(results.values as? List<ADs>)
     }
 }

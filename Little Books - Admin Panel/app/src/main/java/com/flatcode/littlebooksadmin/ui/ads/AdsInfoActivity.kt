@@ -29,7 +29,6 @@ class AdsInfoActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityAdsInfoBinding
     private val context: Context = this@AdsInfoActivity
-    private var list: ArrayList<ADs?> = arrayListOf()
     private var adapter: ADsInfoAdapter? = null
     private var profileId: String? = null
     
@@ -59,7 +58,7 @@ class AdsInfoActivity : AppCompatActivity() {
         binding.toolbar.nameSpace.setText(R.string.info_ads)
         binding.toolbar.back.setOnClickListener { onBackPressed() }
 
-        adapter = ADsInfoAdapter(context, list, true)
+        adapter = ADsInfoAdapter(true)
         binding.recyclerView.adapter = adapter
     }
 
@@ -90,7 +89,15 @@ class AdsInfoActivity : AppCompatActivity() {
                             }
                             is Resource.Success -> {
                                 binding.progress.visibility = View.GONE
-                                updateList(resource.data ?: emptyList())
+                                val ads = resource.data ?: emptyList()
+                                adapter?.submitUnfilteredList(ads)
+                                if (ads.isNotEmpty()) {
+                                    binding.recyclerView.visibility = View.VISIBLE
+                                    binding.emptyText.visibility = View.GONE
+                                } else {
+                                    binding.recyclerView.visibility = View.GONE
+                                    binding.emptyText.visibility = View.VISIBLE
+                                }
                             }
                             is Resource.Error -> {
                                 binding.progress.visibility = View.GONE
@@ -103,22 +110,6 @@ class AdsInfoActivity : AppCompatActivity() {
         }
     }
 
-    private fun updateList(ads: List<com.flatcode.littlebooksadmin.model.ADs>) {
-        list.clear()
-        ads.forEach {
-            val legacyAds = ADs(it.name, it.adsLoadedCount, it.adsClickedCount)
-            list.add(legacyAds)
-        }
-        adapter!!.notifyDataSetChanged()
-        
-        if (list.isNotEmpty()) {
-            binding.recyclerView.visibility = View.VISIBLE
-            binding.emptyText.visibility = View.GONE
-        } else {
-            binding.recyclerView.visibility = View.GONE
-            binding.emptyText.visibility = View.VISIBLE
-        }
-    }
 }
 
 

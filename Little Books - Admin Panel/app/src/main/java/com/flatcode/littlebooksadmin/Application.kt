@@ -2,6 +2,7 @@ package com.flatcode.littlebooksadmin
 
 import android.app.Application
 import android.text.format.DateFormat
+import com.cloudinary.android.MediaManager
 import com.flatcode.littlebooksadmin.utils.DATA
 import dagger.hilt.android.HiltAndroidApp
 import io.selimdawa.multicolors.MultiColorManager
@@ -14,13 +15,13 @@ class Application : Application() {
     override fun onCreate() {
         super.onCreate()
         MultiColorManager.init(this)
-    }
 
-    // Cloudinary Initialization
-    val config = mapOf(
-        "cloud_name" to DATA.CLOUDINARY_CLOUD_NAME, "secure" to true
-    )
-    MediaManager.init(this, config)
+        val config = mapOf(
+            "cloud_name" to DATA.CLOUDINARY_CLOUD_NAME,
+            "upload_preset" to DATA.CLOUDINARY_UPLOAD_PRESET
+        )
+        MediaManager.init(this, config)
+    }
 
     companion object {
         fun formatTimestamp(timestamp: Long): String {

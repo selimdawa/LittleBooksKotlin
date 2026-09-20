@@ -8,7 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.IntentCompat
 import com.canhub.cropper.CropImageOptions
 import com.canhub.cropper.CropImageView
-import com.flatcode.littletasks.databinding.ActivityCropBinding
+import com.flatcode.littlebooks.databinding.ActivityCropBinding
 
 class CropActivity : AppCompatActivity() {
 
