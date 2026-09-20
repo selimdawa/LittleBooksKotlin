@@ -143,10 +143,11 @@
             android:name=".ui.ads.AdsInfoActivity"
             android:windowSoftInputMode="adjustResize"
             android:screenOrientation="portrait" />
+
         <activity
-            android:name="com.canhub.cropper.CropImageActivity"
+            android:name=".utils.CropActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/Base.Theme.AppCompat" />
+            android:theme="@style/Theme.AppCompat.NoActionBar" />
     </application>
 
 </manifest>

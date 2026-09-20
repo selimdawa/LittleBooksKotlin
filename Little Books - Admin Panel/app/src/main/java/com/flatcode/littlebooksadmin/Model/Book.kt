@@ -1,9 +1,11 @@
 package com.flatcode.littlebooksadmin.model
 
+import android.os.Parcelable
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import java.io.Serializable
+import kotlinx.parcelize.Parcelize
 
+@Parcelize
 @Entity(tableName = "books")
 data class Book(
     var publisher: String? = null,
@@ -19,4 +21,4 @@ data class Book(
     var downloadsCount: Int = 0,
     var lovesCount: Int = 0,
     var editorsChoice: Int = 0
-) : Serializable
+) : Parcelable

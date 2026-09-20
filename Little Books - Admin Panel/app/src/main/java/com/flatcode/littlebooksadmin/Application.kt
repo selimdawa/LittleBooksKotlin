@@ -3,9 +3,11 @@ package com.flatcode.littlebooksadmin
 import android.app.Application
 import android.text.format.DateFormat
 import com.cloudinary.android.MediaManager
+import com.flatcode.littlebooksadmin.BuildConfig
 import com.flatcode.littlebooksadmin.utils.DATA
 import dagger.hilt.android.HiltAndroidApp
 import io.selimdawa.multicolors.MultiColorManager
+import timber.log.Timber
 import java.util.Calendar
 import java.util.Locale
 
@@ -15,6 +17,10 @@ class Application : Application() {
     override fun onCreate() {
         super.onCreate()
         MultiColorManager.init(this)
+
+        if (BuildConfig.DEBUG) {
+            Timber.plant(Timber.DebugTree())
+        }
 
         val config = mapOf(
             "cloud_name" to DATA.CLOUDINARY_CLOUD_NAME,

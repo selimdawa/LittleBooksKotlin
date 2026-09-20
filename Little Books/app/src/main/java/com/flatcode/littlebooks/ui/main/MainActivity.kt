@@ -20,6 +20,8 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.navOptions
+import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.setupWithNavController
 import com.flatcode.littlebooks.R
 import com.flatcode.littlebooks.utils.DATA
 import com.flatcode.littlebooks.utils.closeApp
@@ -33,6 +35,7 @@ import com.google.android.gms.ads.MobileAds
 import com.nafis.bottomnavigation.NafisBottomNavigation
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -42,12 +45,14 @@ class MainActivity : AppCompatActivity() {
     var context: Context = also { activity = it }
     var bottomNavigation: NafisBottomNavigation? = null
     private lateinit var navController: NavController
+    private lateinit var appBarConfiguration: AppBarConfiguration
 
     private val viewModel: MainViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
+        Timber.d("MainActivity: onCreate")
         binding = ActivityMainBinding.inflate(layoutInflater)
         val view = binding!!.root
         setContentView(view)
@@ -64,6 +69,21 @@ class MainActivity : AppCompatActivity() {
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.fragmentContainer) as NavHostFragment
         navController = navHostFragment.navController
 
+        // Navigation UI: Define top-level destinations
+        appBarConfiguration = AppBarConfiguration(
+            setOf(R.id.homeFragment, R.id.categoriesFragment, R.id.followersFragment, R.id.settingsFragment)
+        )
+
+        // Sync Toolbar with Navigation (Optional, since you have a custom title setup)
+        // binding!!.toolbar.root.findViewById<MaterialToolbar>(R.id.toolbar_internal).setupWithNavController(navController, appBarConfiguration)
+
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            when (destination.id) {
+                R.id.homeFragment -> binding!!.toolbar.card.visibility = View.VISIBLE
+                else -> binding!!.toolbar.card.visibility = View.GONE
+            }
+        }
+
         bottomNavigation = binding!!.bottomNavigation
         bottomNavigation!!.add(NafisBottomNavigation.Model(1, R.drawable.ic_settings))
         bottomNavigation!!.add(NafisBottomNavigation.Model(2, R.drawable.ic_home))
@@ -72,26 +92,10 @@ class MainActivity : AppCompatActivity() {
 
         bottomNavigation!!.setOnShowListener { item: NafisBottomNavigation.Model ->
             val destinationId = when (item.id) {
-                1 -> {
-                    binding!!.toolbar.card.visibility = View.GONE
-                    R.id.settingsFragment
-                }
-
-                2 -> {
-                    binding!!.toolbar.card.visibility = View.VISIBLE
-                    R.id.homeFragment
-                }
-
-                3 -> {
-                    binding!!.toolbar.card.visibility = View.GONE
-                    R.id.followersFragment
-                }
-
-                4 -> {
-                    binding!!.toolbar.card.visibility = View.GONE
-                    R.id.categoriesFragment
-                }
-
+                1 -> R.id.settingsFragment
+                2 -> R.id.homeFragment
+                3 -> R.id.followersFragment
+                4 -> R.id.categoriesFragment
                 else -> R.id.homeFragment
             }
             navController.navigate(destinationId, navOptions {
