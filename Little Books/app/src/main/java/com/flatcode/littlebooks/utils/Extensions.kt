@@ -55,7 +55,6 @@ import java.text.MessageFormat
 import java.util.Calendar
 import java.util.Locale
 
-
 inline fun <reified T : Activity> Context.openActivity(
     clear: Boolean = false, vararg extras: Pair<String, Any?>
 ) {

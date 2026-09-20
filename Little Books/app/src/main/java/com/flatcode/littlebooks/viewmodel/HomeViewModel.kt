@@ -20,8 +20,8 @@ class HomeViewModel @Inject constructor(
     private val categoryRepository: CategoryRepository
 ) : ViewModel() {
 
-    private val _sliderCount = MutableStateFlow<Resource<Int>>(Resource.Loading())
-    val sliderCount: StateFlow<Resource<Int>> = _sliderCount
+    private val _sliderImages = MutableStateFlow<Resource<List<String>>>(Resource.Loading())
+    val sliderImages: StateFlow<Resource<List<String>>> = _sliderImages
 
     private val _categories = MutableStateFlow<Resource<List<Category>>>(Resource.Loading())
     val categories: StateFlow<Resource<List<Category>>> = _categories
@@ -47,7 +47,7 @@ class HomeViewModel @Inject constructor(
 
     fun fetchHomeData() {
         viewModelScope.launch {
-            _sliderCount.value = bookRepository.getSliderCount()
+            _sliderImages.value = bookRepository.getSliderImages()
             _categories.value = categoryRepository.getCategories()
             _editorsChoiceBooks.value = bookRepository.getEditorsChoiceBooks()
             

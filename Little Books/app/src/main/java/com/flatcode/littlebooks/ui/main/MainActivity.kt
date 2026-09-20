@@ -24,7 +24,7 @@ import com.flatcode.littlebooks.R
 import com.flatcode.littlebooks.utils.DATA
 import com.flatcode.littlebooks.utils.closeApp
 import com.flatcode.littlebooks.utils.glide
-import com.flatcode.littlebooks.utils.intentExtra
+import com.flatcode.littlebooks.utils.openActivity
 import com.flatcode.littlebooks.databinding.ActivityMainBinding
 import com.flatcode.littlebooks.ui.profile.ProfileActivity
 import com.flatcode.littlebooks.utils.Resource
@@ -141,7 +141,7 @@ class MainActivity : AppCompatActivity() {
 
         MobileAds.initialize(applicationContext) { }
         binding!!.toolbar.image.setOnClickListener {
-            context.intentExtra(ProfileActivity::class.java, DATA.PROFILE_ID, DATA.FirebaseUserUid)
+            context.openActivity<ProfileActivity>(false, DATA.PROFILE_ID to DATA.FirebaseUserUid)
         }
         loadUserInfo()
         observeViewModel()

@@ -21,7 +21,6 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
-import java.text.MessageFormat
 
 class CategoriesAdapter : ListAdapter<Category, CategoriesAdapter.ViewHolder>(CategoryDiffCallback()), Filterable {
 
@@ -53,10 +52,8 @@ class CategoriesAdapter : ListAdapter<Category, CategoriesAdapter.ViewHolder>(Ca
 
         holder.binding.image.loadWithGlide(false, image)
 
-        if (item.category.isNullOrEmpty()) {
-            holder.binding.name.visibility = View.GONE
-        } else {
-            holder.binding.name.visibility = View.VISIBLE
+        holder.binding.name.visibility = if (item.category.isNullOrEmpty()) View.GONE else View.VISIBLE
+        if (!item.category.isNullOrEmpty()) {
             holder.binding.name.text = name
         }
 
@@ -71,10 +68,7 @@ class CategoriesAdapter : ListAdapter<Category, CategoriesAdapter.ViewHolder>(Ca
     }
 
     override fun getFilter(): Filter {
-        if (filter == null) {
-            filter = CategoriesFilter(this)
-        }
-        return filter!!
+        return filter ?: CategoriesFilter(this).also { filter = it }
     }
 
     class ViewHolder(val binding: ItemCategoriesBinding) : RecyclerView.ViewHolder(binding.root)
@@ -83,12 +77,10 @@ class CategoriesAdapter : ListAdapter<Category, CategoriesAdapter.ViewHolder>(Ca
         val reference = FirebaseDatabase.getInstance().reference.child(DATA.BOOKS)
         reference.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
-                var i = 0
-                for (snapshot in dataSnapshot.children) {
-                    val item = snapshot.getValue(Book::class.java)!!
-                    if (item.categoryId == categoryId) i++
+                val i = dataSnapshot.children.count {
+                    it.getValue(Book::class.java)?.categoryId == categoryId
                 }
-                number.text = MessageFormat.format("{0}{1}", DATA.EMPTY, i)
+                number.text = i.toString()
             }
 
             override fun onCancelled(databaseError: DatabaseError) {}

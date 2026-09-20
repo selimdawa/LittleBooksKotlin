@@ -22,6 +22,11 @@ import com.flatcode.littlebooks.utils.glide
 import com.flatcode.littlebooks.utils.intentExtra
 import com.flatcode.littlebooks.databinding.FragmentSettingsBinding
 import com.flatcode.littlebooks.utils.Resource
+import com.flatcode.littlebooks.utils.dialogAboutApp
+import com.flatcode.littlebooks.utils.dialogLogout
+import com.flatcode.littlebooks.utils.openActivity
+import com.flatcode.littlebooks.utils.rateApp
+import com.flatcode.littlebooks.utils.shareApp
 import com.flatcode.littlebooks.viewmodel.ProfileViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.combine
@@ -39,11 +44,21 @@ class SettingsFragment : Fragment() {
     ): View? {
         binding = FragmentSettingsBinding.inflate(inflater, container, false)
 
-        adapter = SettingAdapter()
+        adapter = SettingAdapter { item ->
+            val id = item.id
+            val to = item.c
+            when (id) {
+                "8" -> context?.dialogAboutApp()
+                "9" -> context?.dialogLogout()
+                "10" -> context?.shareApp()
+                "11" -> context?.rateApp()
+                else -> to?.let { context?.openActivity(it) }
+            }
+        }
         binding!!.recyclerView.adapter = adapter
 
         binding!!.toolbar.item.setOnClickListener {
-            context?.intentExtra(ProfileActivity::class.java, DATA.PROFILE_ID, DATA.FirebaseUserUid)
+            context?.openActivity<ProfileActivity>(false, DATA.PROFILE_ID to DATA.FirebaseUserUid)
         }
 
         observeViewModel()

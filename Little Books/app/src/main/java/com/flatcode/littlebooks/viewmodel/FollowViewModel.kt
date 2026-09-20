@@ -49,6 +49,12 @@ class FollowViewModel @Inject constructor(
             }
         }
     }
+
+    fun followUser(currentUserId: String, targetUserId: String, follow: Boolean) {
+        viewModelScope.launch {
+            userRepository.followUser(currentUserId, targetUserId, follow)
+        }
+    }
 }
 
 

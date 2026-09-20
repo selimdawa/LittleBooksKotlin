@@ -21,7 +21,9 @@ import com.flatcode.littlebooks.utils.DATA
 import com.flatcode.littlebooks.utils.bannerAd
 import com.flatcode.littlebooks.databinding.ActivityPageStaggeredBinding
 import com.flatcode.littlebooks.utils.Resource
+import com.flatcode.littlebooks.utils.openActivity
 import com.flatcode.littlebooks.viewmodel.ProfileViewModel
+import com.flatcode.littlebooks.ui.profile.ProfileActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import java.text.MessageFormat
@@ -73,7 +75,14 @@ class ExplorePublishersActivity : AppCompatActivity() {
             override fun afterTextChanged(s: Editable) {}
         })
 
-        adapter = PublisherAdapter()
+        adapter = PublisherAdapter(
+            onItemClick = { item ->
+                context.openActivity<ProfileActivity>(false, DATA.PROFILE_ID to item.id)
+            },
+            onFollowClick = { item, isFollowing ->
+                viewModel.followUser(DATA.FirebaseUserUid, item.id, !isFollowing)
+            }
+        )
         binding!!.recyclerView.adapter = adapter
 
         observeViewModel()

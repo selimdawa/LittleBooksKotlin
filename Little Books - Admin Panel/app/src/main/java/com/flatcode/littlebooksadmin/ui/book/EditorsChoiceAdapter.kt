@@ -17,7 +17,6 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
-import java.text.MessageFormat
 
 class EditorsChoiceAdapter :
     ListAdapter<EditorsChoice, EditorsChoiceAdapter.ViewHolder>(EditorsChoiceDiffCallback()) {
@@ -31,11 +30,11 @@ class EditorsChoiceAdapter :
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val context = holder.itemView.context
         val id = position + 1
-        val editorsChoiceId = DATA.EMPTY + id
+        val editorsChoiceId = id.toString()
 
         loadBookDetails(id, editorsChoiceId, holder)
 
-        holder.binding.numberEditorsChoice.text = MessageFormat.format("{0}{1}", DATA.EMPTY, id)
+        holder.binding.numberEditorsChoice.text = id.toString()
         holder.binding.add.setOnClickListener {
             context.openActivity<EditorsChoiceAddActivity>(
                 extras = arrayOf(
@@ -51,18 +50,26 @@ class EditorsChoiceAdapter :
     private fun loadBookDetails(i: Int, position: String, holder: ViewHolder) {
         val context = holder.itemView.context
         val ref = FirebaseDatabase.getInstance().getReference(DATA.BOOKS)
-        ref.addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                for (snapshot in dataSnapshot.children) {
-                    val item = snapshot.getValue(Book::class.java)!!
-                    if (item.editorsChoice == i) {
-                        val id = DATA.EMPTY + item.id
+        ref.orderByChild(DATA.EDITORS_CHOICE).equalTo(i.toDouble())
+            .addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                    val snapshot = dataSnapshot.children.firstOrNull()
+                    if (snapshot != null) {
+                        val item = snapshot.getValue(Book::class.java)!!
+                        val id = item.id
 
-                        loadBook(id, holder)
+                        holder.binding.title.text = item.title
+                        holder.binding.description.text = item.description
+                        holder.binding.numberViews.text = item.viewsCount.toString()
+                        holder.binding.numberLoves.text = item.lovesCount.toString()
+                        holder.binding.numberDownloads.text = item.downloadsCount.toString()
+                        holder.binding.image.loadWithGlide(false, item.image ?: "")
+
                         holder.binding.addCard.visibility = View.GONE
                         holder.binding.detailsCard.visibility = View.VISIBLE
                         holder.binding.remove.visibility = View.VISIBLE
                         holder.binding.change.visibility = View.VISIBLE
+                        
                         holder.binding.detailsCard.setOnClickListener {
                             context.openActivity<BookDetailsActivity>(extras = arrayOf(DATA.BOOK_ID to id))
                         }
@@ -85,32 +92,11 @@ class EditorsChoiceAdapter :
                         holder.binding.change.visibility = View.GONE
                     }
                 }
-            }
 
-            private fun loadBook(text: String, holder: ViewHolder) {
-                val ref = FirebaseDatabase.getInstance().getReference(DATA.BOOKS)
-                ref.child(text).addListenerForSingleValueEvent(object : ValueEventListener {
-                    override fun onDataChange(dataSnapshot: DataSnapshot) {
-                        val item = dataSnapshot.getValue(Book::class.java)!!
-                        holder.binding.title.text = item.title
-                        holder.binding.description.text = item.description
-                        holder.binding.numberViews.text = item.viewsCount.toString()
-                        holder.binding.numberLoves.text = item.lovesCount.toString()
-                        holder.binding.numberDownloads.text = item.downloadsCount.toString()
-                        holder.binding.image.loadWithGlide(false, item.image ?: "")
-                        holder.binding.addCard.visibility = View.GONE
-                        holder.binding.detailsCard.visibility = View.VISIBLE
-                        holder.binding.remove.visibility = View.VISIBLE
-                        holder.binding.change.visibility = View.VISIBLE
-                    }
-
-                    override fun onCancelled(error: DatabaseError) {}
-                })
-            }
-
-            override fun onCancelled(error: DatabaseError) {}
-        })
+                override fun onCancelled(error: DatabaseError) {}
+            })
     }
+}
 }
 
 class EditorsChoiceDiffCallback : DiffUtil.ItemCallback<EditorsChoice>() {

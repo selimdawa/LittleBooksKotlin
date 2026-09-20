@@ -21,6 +21,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.graphics.createBitmap
 import androidx.core.graphics.scale
+import androidx.core.os.bundleOf
 import coil3.load
 import coil3.request.crossfade
 import coil3.request.placeholder
@@ -43,11 +44,8 @@ import com.theartofdev.edmodo.cropper.CropImageView
 import java.io.FileOutputStream
 import java.text.MessageFormat
 
-import androidx.core.os.bundleOf
-
 inline fun <reified T : Activity> Context.openActivity(
-    clear: Boolean = false,
-    vararg extras: Pair<String, Any?>
+    clear: Boolean = false, vararg extras: Pair<String, Any?>
 ) {
     val intent = Intent(this, T::class.java).apply {
         if (clear) addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -299,21 +297,21 @@ fun Context.moreOptionDialog(item: Book?) {
 
     val builder = AlertDialog.Builder(this)
     builder.setTitle("Choose Options").setItems(options) { dialog: DialogInterface?, which: Int ->
-            if (which == 0) {
-                this.openActivity<BookEditActivity>(extras = arrayOf(DATA.BOOK_ID to bookId))
-            } else if (which == 1) {
-                this.dialogOptionDelete(
-                    DATA.EMPTY + publisher,
-                    DATA.EMPTY + bookId,
-                    DATA.EMPTY + bookUrl,
-                    DATA.EMPTY + bookTitle,
-                    false,
-                    false,
-                    null,
-                    null
-                )
-            }
-        }.show()
+        if (which == 0) {
+            this.openActivity<BookEditActivity>(extras = arrayOf(DATA.BOOK_ID to bookId))
+        } else if (which == 1) {
+            this.dialogOptionDelete(
+                DATA.EMPTY + publisher,
+                DATA.EMPTY + bookId,
+                DATA.EMPTY + bookUrl,
+                DATA.EMPTY + bookTitle,
+                false,
+                false,
+                null,
+                null
+            )
+        }
+    }.show()
 }
 
 fun Context.moreCategories(item: Category) {
@@ -325,21 +323,21 @@ fun Context.moreCategories(item: Category) {
 
     val builder = AlertDialog.Builder(this)
     builder.setTitle("Choose Options").setItems(options) { dialog: DialogInterface?, which: Int ->
-            if (which == 0) {
-                this.openActivity<CategoryEditActivity>(extras = arrayOf(DATA.CATEGORY_ID to id))
-            } else if (which == 1) {
-                this.dialogOptionDelete(
-                    DATA.EMPTY + publisher,
-                    null,
-                    null,
-                    null,
-                    true,
-                    false,
-                    DATA.EMPTY + id,
-                    DATA.EMPTY + name
-                )
-            }
-        }.show()
+        if (which == 0) {
+            this.openActivity<CategoryEditActivity>(extras = arrayOf(DATA.CATEGORY_ID to id))
+        } else if (which == 1) {
+            this.dialogOptionDelete(
+                DATA.EMPTY + publisher,
+                null,
+                null,
+                null,
+                true,
+                false,
+                DATA.EMPTY + id,
+                DATA.EMPTY + name
+            )
+        }
+    }.show()
 }
 
 fun ImageView.isLoves(bookId: String?) {

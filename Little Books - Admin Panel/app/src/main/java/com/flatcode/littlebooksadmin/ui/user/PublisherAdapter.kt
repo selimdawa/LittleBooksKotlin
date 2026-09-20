@@ -20,7 +20,6 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
-import java.text.MessageFormat
 
 class PublisherAdapter : ListAdapter<User, PublisherAdapter.ViewHolder>(UserDiffCallback()), Filterable {
 
@@ -39,18 +38,12 @@ class PublisherAdapter : ListAdapter<User, PublisherAdapter.ViewHolder>(UserDiff
 
         holder.binding.imageProfile.loadWithGlide(true, image)
 
-        if (item.username.isNullOrEmpty()) {
-            holder.binding.username.visibility = View.GONE
-        } else {
-            holder.binding.username.visibility = View.VISIBLE
+        holder.binding.username.visibility = if (item.username.isNullOrEmpty()) View.GONE else View.VISIBLE
+        if (!item.username.isNullOrEmpty()) {
             holder.binding.username.text = item.username
         }
 
-        if (item.id == DATA.FirebaseUserUid) {
-            holder.binding.add.visibility = View.GONE
-        } else {
-            holder.binding.add.visibility = View.VISIBLE
-        }
+        holder.binding.add.visibility = if (item.id == DATA.FirebaseUserUid) View.GONE else View.VISIBLE
 
         nrFollowers(holder.binding.numberFollowers, id)
         nrBooks(holder.binding.numberBooks, id)
@@ -82,10 +75,7 @@ class PublisherAdapter : ListAdapter<User, PublisherAdapter.ViewHolder>(UserDiff
     }
 
     override fun getFilter(): Filter {
-        if (filter == null) {
-            filter = PublisherFilter(this)
-        }
-        return filter!!
+        return filter ?: PublisherFilter(this).also { filter = it }
     }
 
     inner class ViewHolder(val binding: ItemPublisherBinding) : RecyclerView.ViewHolder(binding.root)
@@ -113,7 +103,7 @@ class PublisherAdapter : ListAdapter<User, PublisherAdapter.ViewHolder>(UserDiff
             .child(userId).child(DATA.FOLLOWERS)
         reference.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
-                numberConnected.text = MessageFormat.format("{0}", dataSnapshot.childrenCount)
+                numberConnected.text = dataSnapshot.childrenCount.toString()
             }
 
             override fun onCancelled(databaseError: DatabaseError) {}

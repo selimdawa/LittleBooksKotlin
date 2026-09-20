@@ -1,15 +1,10 @@
 package com.flatcode.littlebooksadmin.ui.book
 
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Filter
 import android.widget.Filterable
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.TextView
-import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.flatcode.littlebooksadmin.filter.MoreBooksFilter
@@ -55,17 +50,13 @@ class LinearBookAdapter(private val isUser: Boolean) :
 
         holder.binding.image.loadWithGlide(false, image)
 
-        if (item.title.isNullOrEmpty()) {
-            holder.binding.title.visibility = View.GONE
-        } else {
-            holder.binding.title.visibility = View.VISIBLE
+        holder.binding.title.visibility = if (item.title.isNullOrEmpty()) View.GONE else View.VISIBLE
+        if (!item.title.isNullOrEmpty()) {
             holder.binding.title.text = title
         }
 
-        if (item.description.isNullOrEmpty()) {
-            holder.binding.description.visibility = View.GONE
-        } else {
-            holder.binding.description.visibility = View.VISIBLE
+        holder.binding.description.visibility = if (item.description.isNullOrEmpty()) View.GONE else View.VISIBLE
+        if (!item.description.isNullOrEmpty()) {
             holder.binding.description.text = description
         }
 
@@ -88,10 +79,7 @@ class LinearBookAdapter(private val isUser: Boolean) :
     }
 
     override fun getFilter(): Filter {
-        if (filter == null) {
-            filter = MoreBooksFilter(this)
-        }
-        return filter!!
+        return filter ?: MoreBooksFilter(this).also { filter = it }
     }
 
     inner class ViewHolder(val binding: ItemBookLinearBinding) : RecyclerView.ViewHolder(binding.root)

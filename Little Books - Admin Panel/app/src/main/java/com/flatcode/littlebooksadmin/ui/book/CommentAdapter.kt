@@ -2,13 +2,8 @@ package com.flatcode.littlebooksadmin.ui.book
 
 import android.app.AlertDialog
 import android.content.Context
-import android.content.DialogInterface
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -51,10 +46,10 @@ class CommentAdapter : ListAdapter<Comment, CommentAdapter.ViewHolder>(CommentDi
     }
 
     private fun deleteComment(context: Context, commentId: String?, bookId: String?) {
-        val builder = AlertDialog.Builder(context)
-        builder.setTitle("Delete Comment")
+        AlertDialog.Builder(context)
+            .setTitle("Delete Comment")
             .setMessage("Are you sure you want to delete this comment?")
-            .setPositiveButton("DELETE") { dialog: DialogInterface?, which: Int ->
+            .setPositiveButton("DELETE") { dialog, _ ->
                 val ref = FirebaseDatabase.getInstance().getReference(DATA.BOOKS)
                 ref.child(bookId!!).child(DATA.COMMENTS).child(commentId!!).removeValue()
                     .addOnSuccessListener {
@@ -64,8 +59,9 @@ class CommentAdapter : ListAdapter<Comment, CommentAdapter.ViewHolder>(CommentDi
                             context, "Failed to delete due to ${e.message}", Toast.LENGTH_SHORT
                         ).show()
                     }
+                dialog.dismiss()
             }
-            .setNegativeButton("CANCEL") { dialog: DialogInterface, which: Int -> dialog.dismiss() }
+            .setNegativeButton("CANCEL") { dialog, _ -> dialog.dismiss() }
             .show()
     }
 

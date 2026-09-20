@@ -15,7 +15,7 @@ import com.flatcode.littlebooks.ui.book.BookDetailsActivity
 import com.flatcode.littlebooks.utils.DATA
 import com.flatcode.littlebooks.utils.checkFavorite
 import com.flatcode.littlebooks.utils.glide
-import com.flatcode.littlebooks.utils.intentExtra
+import com.flatcode.littlebooks.utils.openActivity
 import com.flatcode.littlebooks.utils.isFavorite
 
 class MainBookAdapter(
@@ -80,7 +80,7 @@ class MainBookAdapter(
             }
 
             itemView.setOnClickListener {
-                context.intentExtra(BookDetailsActivity::class.java, DATA.BOOK_ID, bookId)
+                context.openActivity<BookDetailsActivity>(false, DATA.BOOK_ID to bookId)
             }
         }
     }

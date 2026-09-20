@@ -51,10 +51,14 @@ class BookRepository @Inject constructor(
         }
     }
 
-    suspend fun getSliderCount(): Resource<Int> {
+    suspend fun getSliderImages(): Resource<List<String>> {
         return try {
             val snapshot = db.getReference(DATA.SLIDER_SHOW).get().await()
-            Resource.Success(snapshot.childrenCount.toInt())
+            val list = mutableListOf<String>()
+            for (data in snapshot.children) {
+                data.value?.toString()?.let { list.add(it) }
+            }
+            Resource.Success(list)
         } catch (e: Exception) {
             Resource.Error(e.message ?: "An unknown error occurred")
         }

@@ -21,6 +21,7 @@ import com.flatcode.littlebooks.utils.DATA
 import com.flatcode.littlebooks.utils.bannerAd
 import com.flatcode.littlebooks.databinding.ActivityPageLinearBinding
 import com.flatcode.littlebooks.utils.Resource
+import com.flatcode.littlebooks.utils.openActivity
 import com.flatcode.littlebooks.viewmodel.BookViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -88,7 +89,9 @@ class MoreBooksActivity : AppCompatActivity() {
             override fun afterTextChanged(s: Editable) {}
         })
 
-        adapter = LinearBookAdapter(false)
+        adapter = LinearBookAdapter(false) { item ->
+            context.openActivity<BookDetailsActivity>(false, DATA.BOOK_ID to item.id)
+        }
         recyclerView!!.adapter = adapter
 
         observeViewModel()

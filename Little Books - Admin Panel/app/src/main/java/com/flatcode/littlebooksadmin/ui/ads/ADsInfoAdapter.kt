@@ -10,7 +10,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.flatcode.littlebooksadmin.databinding.ItemInfoAdsBinding
 import com.flatcode.littlebooksadmin.filter.ADsInfoFilter
 import com.flatcode.littlebooksadmin.model.ADs
-import com.flatcode.littlebooksadmin.utils.DATA
 
 class ADsInfoAdapter(private val isUser: Boolean) :
     ListAdapter<ADs, ADsInfoAdapter.ViewHolder>(ADsDiffCallback()), Filterable {
@@ -44,15 +43,12 @@ class ADsInfoAdapter(private val isUser: Boolean) :
             holder.binding.name.text = name
         }
 
-        holder.binding.numberADsLoad.text = "${DATA.EMPTY}$adsLoadedCount"
-        holder.binding.numberADsClick.text = "${DATA.EMPTY}$adsClickedCount"
+        holder.binding.numberADsLoad.text = adsLoadedCount.toString()
+        holder.binding.numberADsClick.text = adsClickedCount.toString()
     }
 
     override fun getFilter(): Filter {
-        if (filter == null) {
-            filter = ADsInfoFilter(this)
-        }
-        return filter!!
+        return filter ?: ADsInfoFilter(this).also { filter = it }
     }
 
     class ViewHolder(val binding: ItemInfoAdsBinding) : RecyclerView.ViewHolder(binding.root)

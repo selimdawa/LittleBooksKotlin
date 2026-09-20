@@ -123,9 +123,9 @@ class HomeFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch {
-                    viewModel.sliderCount.collect { resource ->
+                    viewModel.sliderImages.collect { resource ->
                         if (resource is Resource.Success) {
-                            binding!!.imageSlider.setSliderAdapter(ImageSliderAdapter(resource.data!!))
+                            binding!!.imageSlider.setSliderAdapter(ImageSliderAdapter(resource.data ?: emptyList()))
                         }
                     }
                 }

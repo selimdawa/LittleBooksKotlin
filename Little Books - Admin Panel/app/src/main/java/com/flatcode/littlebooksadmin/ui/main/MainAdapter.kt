@@ -10,8 +10,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.flatcode.littlebooksadmin.R
 import com.flatcode.littlebooksadmin.databinding.ItemMainBinding
 import com.flatcode.littlebooksadmin.model.Main
-import com.flatcode.littlebooksadmin.utils.DATA
-import java.text.MessageFormat
 
 class MainAdapter : ListAdapter<Main, MainAdapter.ViewHolder>(MainDiffCallback()) {
 
@@ -28,17 +26,11 @@ class MainAdapter : ListAdapter<Main, MainAdapter.ViewHolder>(MainDiffCallback()
         val name = model.title
         val c = model.c
 
-        if (image != 0) {
-            holder.binding.image.setImageResource(image)
-        } else {
-            holder.binding.image.setImageResource(R.drawable.ic_load)
-        }
+        holder.binding.image.setImageResource(if (image != 0) image else R.drawable.ic_load)
 
+        holder.binding.number.visibility = if (number != 0) View.VISIBLE else View.GONE
         if (number != 0) {
-            holder.binding.number.visibility = View.VISIBLE
-            holder.binding.number.text = MessageFormat.format("{0}{1}", DATA.EMPTY, number)
-        } else {
-            holder.binding.number.visibility = View.GONE
+            holder.binding.number.text = number.toString()
         }
 
         holder.binding.name.text = name
