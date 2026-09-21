@@ -8,12 +8,13 @@ import android.widget.Toast
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.flatcode.littlebooksadmin.Application
+import com.flatcode.littlebooksadmin.R
+import com.flatcode.littlebooksadmin.databinding.ItemCommentBinding
 import com.flatcode.littlebooksadmin.model.Comment
 import com.flatcode.littlebooksadmin.model.User
-import com.flatcode.littlebooksadmin.Application
 import com.flatcode.littlebooksadmin.utils.DATA
-import com.flatcode.littlebooksadmin.utils.*
-import com.flatcode.littlebooksadmin.databinding.ItemCommentBinding
+import com.flatcode.littlebooksadmin.utils.loadWithGlide
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
@@ -41,28 +42,29 @@ class CommentAdapter : ListAdapter<Comment, CommentAdapter.ViewHolder>(CommentDi
         loadUserDetails(publisher, holder)
 
         holder.itemView.setOnClickListener {
-            if (publisher == DATA.FirebaseUserUid) deleteComment(holder.itemView.context, commentId, bookId)
+            if (publisher == DATA.FirebaseUserUid) deleteComment(
+                holder.itemView.context, commentId, bookId
+            )
         }
     }
 
     private fun deleteComment(context: Context, commentId: String?, bookId: String?) {
-        AlertDialog.Builder(context)
-            .setTitle("Delete Comment")
-            .setMessage("Are you sure you want to delete this comment?")
-            .setPositiveButton("DELETE") { dialog, _ ->
+        AlertDialog.Builder(context).setTitle(R.string.delete_comment)
+            .setMessage(R.string.are_you_sure_delete_comment)
+            .setPositiveButton(R.string.delete) { dialog, _ ->
                 val ref = FirebaseDatabase.getInstance().getReference(DATA.BOOKS)
                 ref.child(bookId!!).child(DATA.COMMENTS).child(commentId!!).removeValue()
                     .addOnSuccessListener {
-                        Toast.makeText(context, "Deleted...", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, R.string.deleted, Toast.LENGTH_SHORT).show()
                     }.addOnFailureListener { e: Exception ->
                         Toast.makeText(
-                            context, "Failed to delete due to ${e.message}", Toast.LENGTH_SHORT
+                            context,
+                            context.getString(R.string.error_message, e.message),
+                            Toast.LENGTH_SHORT
                         ).show()
                     }
                 dialog.dismiss()
-            }
-            .setNegativeButton("CANCEL") { dialog, _ -> dialog.dismiss() }
-            .show()
+            }.setNegativeButton(R.string.cancel) { dialog, _ -> dialog.dismiss() }.show()
     }
 
     class ViewHolder(val binding: ItemCommentBinding) : RecyclerView.ViewHolder(binding.root)
@@ -94,4 +96,3 @@ class CommentDiffCallback : DiffUtil.ItemCallback<Comment>() {
         return oldItem == newItem
     }
 }
-

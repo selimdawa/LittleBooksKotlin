@@ -32,7 +32,8 @@ import com.flatcode.littlebooks.ui.profile.ProfileActivity
 import com.flatcode.littlebooks.utils.Resource
 import com.flatcode.littlebooks.viewmodel.MainViewModel
 import com.google.android.gms.ads.MobileAds
-import com.nafis.bottomnavigation.NafisBottomNavigation
+import io.selimdawa.bubblebottom.BubbleBottomNavigation
+import io.selimdawa.bubblebottom.Model
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -43,7 +44,7 @@ class MainActivity : AppCompatActivity() {
     private var binding: ActivityMainBinding? = null
     var activity: Activity? = null
     var context: Context = also { activity = it }
-    var bottomNavigation: NafisBottomNavigation? = null
+    var bottomNavigation: BubbleBottomNavigation? = null
     private lateinit var navController: NavController
     private lateinit var appBarConfiguration: AppBarConfiguration
 
@@ -66,12 +67,18 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
-        val navHostFragment = supportFragmentManager.findFragmentById(R.id.fragmentContainer) as NavHostFragment
+        val navHostFragment =
+            supportFragmentManager.findFragmentById(R.id.fragmentContainer) as NavHostFragment
         navController = navHostFragment.navController
 
         // Navigation UI: Define top-level destinations
         appBarConfiguration = AppBarConfiguration(
-            setOf(R.id.homeFragment, R.id.categoriesFragment, R.id.followersFragment, R.id.settingsFragment)
+            setOf(
+                R.id.homeFragment,
+                R.id.categoriesFragment,
+                R.id.followersFragment,
+                R.id.settingsFragment
+            )
         )
 
         // Sync Toolbar with Navigation (Optional, since you have a custom title setup)
@@ -84,31 +91,24 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        bottomNavigation = binding!!.bottomNavigation
-        bottomNavigation!!.add(NafisBottomNavigation.Model(1, R.drawable.ic_settings))
-        bottomNavigation!!.add(NafisBottomNavigation.Model(2, R.drawable.ic_home))
-        bottomNavigation!!.add(NafisBottomNavigation.Model(3, R.drawable.ic_books))
-        bottomNavigation!!.add(NafisBottomNavigation.Model(4, R.drawable.ic_group))
+        binding?.bottomNavigation?.apply {
+            add(Model(R.id.settingsFragment, R.drawable.ic_settings))
+            add(Model(R.id.homeFragment, R.drawable.ic_home))
+            add(Model(R.id.followersFragment, R.drawable.ic_books))
+            add(Model(R.id.categoriesFragment, R.drawable.ic_group))
 
-        bottomNavigation!!.setOnShowListener { item: NafisBottomNavigation.Model ->
-            val destinationId = when (item.id) {
-                1 -> R.id.settingsFragment
-                2 -> R.id.homeFragment
-                3 -> R.id.followersFragment
-                4 -> R.id.categoriesFragment
-                else -> R.id.homeFragment
+            setOnClickMenuListener { model ->
+                navController.navigate(model.id, navOptions {
+                    popUpTo(navController.graph.findStartDestination().id) {
+                        saveState = true
+                    }
+                    launchSingleTop = true
+                    restoreState = true
+                })
             }
-            navController.navigate(destinationId, navOptions {
-                popUpTo(navController.graph.findStartDestination().id) {
-                    saveState = true
-                }
-                launchSingleTop = true
-                restoreState = true
-            })
-        }
 
-        bottomNavigation!!.show(2, true)
-        bottomNavigation!!.setOnClickMenuListener { item: NafisBottomNavigation.Model ->
+            show(R.id.homeFragment, false)
+        }/* bottomNavigation!!.setOnClickMenuListener { item: NafisBottomNavigation.Model ->
             when (item.id) {
                 1 -> Toast.makeText(
                     applicationContext, R.string.settings, Toast.LENGTH_SHORT
@@ -141,7 +141,7 @@ class MainActivity : AppCompatActivity() {
                 4 -> Toast.makeText(applicationContext, R.string.categories, Toast.LENGTH_SHORT)
                     .show()
             }
-        }
+        } */
 
         MobileAds.initialize(applicationContext) { }
         binding!!.toolbar.image.setOnClickListener {
@@ -160,9 +160,11 @@ class MainActivity : AppCompatActivity() {
                             val user = resource.data
                             binding!!.toolbar.image.glide(true, user?.profileImage)
                         }
+
                         is Resource.Error -> {
                             // Handle error
                         }
+
                         is Resource.Loading -> {
                             // Handle loading
                         }
@@ -181,6 +183,3 @@ class MainActivity : AppCompatActivity() {
         context.closeApp(activity)
     }
 }
-
-
-

@@ -60,36 +60,38 @@ fun Context.deleteBook(
     bookUrl: String?, bookTitle: String?,
 ) {
     val dialog = ProgressDialog(this)
-    dialog.setTitle("Please wait")
-    dialog.setMessage("Deleting $bookTitle ...")
+    dialog.setTitle(R.string.please_wait)
+    dialog.setMessage(getString(R.string.deleting_item, bookTitle))
     dialog.show()
 
     val reference = FirebaseDatabase.getInstance().getReference(DATA.BOOKS)
     reference.child(bookId!!).removeValue().addOnSuccessListener {
         dialog.dismiss()
-        Toast.makeText(this, "Books Deleted Successfully...", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, R.string.books_deleted_successfully, Toast.LENGTH_SHORT).show()
         dialogDelete.dismiss()
         incrementItemRemoveCount(DATA.USERS, publisher, DATA.BOOKS_COUNT)
     }.addOnFailureListener { e: Exception ->
         dialog.dismiss()
         dialogDelete.dismiss()
-        Toast.makeText(this, "" + e.message, Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, getString(R.string.error_message, e.message), Toast.LENGTH_SHORT)
+            .show()
     }
 }
 
 fun Context.deleteCategory(dialogDelete: Dialog, id: String?, name: String?) {
     val dialog = ProgressDialog(this)
-    dialog.setTitle("Please wait")
-    dialog.setMessage("Deleting $name ...")
+    dialog.setTitle(R.string.please_wait)
+    dialog.setMessage(getString(R.string.deleting_item, name))
     dialog.show()
     val reference = FirebaseDatabase.getInstance().getReference(DATA.CATEGORIES)
     reference.child(id!!).removeValue().addOnSuccessListener {
         dialog.dismiss()
-        Toast.makeText(this, "category Deleted Successfully...", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, R.string.category_deleted_successfully, Toast.LENGTH_SHORT).show()
         dialogDelete.dismiss()
     }.addOnFailureListener { e: Exception ->
         dialog.dismiss()
-        Toast.makeText(this, "" + e.message, Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, getString(R.string.error_message, e.message), Toast.LENGTH_SHORT)
+            .show()
     }
 }
 
@@ -156,8 +158,8 @@ fun Context.downloadBook(bookId: String, bookTitle: String, bookUrl: String?) {
     val nameWithExtension = "$bookTitle.pdf"
 
     val progressDialog = ProgressDialog(this)
-    progressDialog.setTitle("Please wait")
-    progressDialog.setMessage("Downloading $nameWithExtension...")
+    progressDialog.setTitle(R.string.please_wait)
+    progressDialog.setMessage(getString(R.string.downloading_item, nameWithExtension))
     progressDialog.setCanceledOnTouchOutside(false)
     progressDialog.show()
 
@@ -171,7 +173,11 @@ fun Context.downloadBook(bookId: String, bookTitle: String, bookUrl: String?) {
             if (connection.responseCode != HttpURLConnection.HTTP_OK) {
                 (this as Activity).runOnUiThread {
                     progressDialog.dismiss()
-                    Toast.makeText(this, "Server returned HTTP ${connection.responseCode}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        this,
+                        getString(R.string.server_returned_http, connection.responseCode),
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
                 return@execute
             }
@@ -187,7 +193,11 @@ fun Context.downloadBook(bookId: String, bookTitle: String, bookUrl: String?) {
         } catch (e: Exception) {
             (this as Activity).runOnUiThread {
                 progressDialog.dismiss()
-                Toast.makeText(this, "Failed to download due to " + e.message, Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    this,
+                    getString(R.string.error_message, e.message),
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
     }
@@ -205,12 +215,14 @@ private fun Context.saveDownloadedBook(
         val out = FileOutputStream(FilePath)
         out.write(bytes)
         out.close()
-        Toast.makeText(this, "Saved to Download Folder", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, R.string.saved_to_download_folder, Toast.LENGTH_SHORT).show()
         progressDialog.dismiss()
         incrementItemCount(DATA.BOOKS, bookId, DATA.DOWNLOADS_COUNT)
     } catch (e: Exception) {
         Toast.makeText(
-            this, "Failed saving to Download Folder due to " + e.message, Toast.LENGTH_SHORT
+            this,
+            getString(R.string.failed_saving_to_download_folder, e.message),
+            Toast.LENGTH_SHORT
         ).show()
         progressDialog.dismiss()
     }
@@ -299,25 +311,26 @@ fun Context.moreOptionDialog(item: Book?) {
     val bookTitle = item.title
     val publisher = item.publisher
 
-    val options = arrayOf("Edit", "Delete")
+    val options = arrayOf(getString(R.string.edit), getString(R.string.delete))
 
     val builder = AlertDialog.Builder(this)
-    builder.setTitle("Choose Options").setItems(options) { dialog: DialogInterface?, which: Int ->
-        if (which == 0) {
-            this.openActivity<BookEditActivity>(extras = arrayOf(DATA.BOOK_ID to bookId))
-        } else if (which == 1) {
-            this.dialogOptionDelete(
-                DATA.EMPTY + publisher,
-                DATA.EMPTY + bookId,
-                DATA.EMPTY + bookUrl,
-                DATA.EMPTY + bookTitle,
-                false,
-                false,
-                null,
-                null
-            )
-        }
-    }.show()
+    builder.setTitle(R.string.choose_options)
+        .setItems(options) { dialog: DialogInterface?, which: Int ->
+            if (which == 0) {
+                this.openActivity<BookEditActivity>(extras = arrayOf(DATA.BOOK_ID to bookId))
+            } else if (which == 1) {
+                this.dialogOptionDelete(
+                    DATA.EMPTY + publisher,
+                    DATA.EMPTY + bookId,
+                    DATA.EMPTY + bookUrl,
+                    DATA.EMPTY + bookTitle,
+                    false,
+                    false,
+                    null,
+                    null
+                )
+            }
+        }.show()
 }
 
 fun Context.moreCategories(item: Category) {
@@ -325,25 +338,26 @@ fun Context.moreCategories(item: Category) {
     val name = item.category
     val publisher = item.publisher
 
-    val options = arrayOf("Edit", "Delete")
+    val options = arrayOf(getString(R.string.edit), getString(R.string.delete))
 
     val builder = AlertDialog.Builder(this)
-    builder.setTitle("Choose Options").setItems(options) { dialog: DialogInterface?, which: Int ->
-        if (which == 0) {
-            this.openActivity<CategoryEditActivity>(extras = arrayOf(DATA.CATEGORY_ID to id))
-        } else if (which == 1) {
-            this.dialogOptionDelete(
-                DATA.EMPTY + publisher,
-                null,
-                null,
-                null,
-                true,
-                false,
-                DATA.EMPTY + id,
-                DATA.EMPTY + name
-            )
-        }
-    }.show()
+    builder.setTitle(R.string.choose_options)
+        .setItems(options) { dialog: DialogInterface?, which: Int ->
+            if (which == 0) {
+                this.openActivity<CategoryEditActivity>(extras = arrayOf(DATA.CATEGORY_ID to id))
+            } else if (which == 1) {
+                this.dialogOptionDelete(
+                    DATA.EMPTY + publisher,
+                    null,
+                    null,
+                    null,
+                    true,
+                    false,
+                    DATA.EMPTY + id,
+                    DATA.EMPTY + name
+                )
+            }
+        }.show()
 }
 
 fun ImageView.isLoves(bookId: String?) {
@@ -412,36 +426,38 @@ fun Context.dialogOptionDelete(
 
 fun Context.dialogUpdateEditorChoice(dialogDelete: Dialog, bookId: String?) {
     val dialog = ProgressDialog(this)
-    dialog.setMessage("Updating Editors Choice...")
+    dialog.setMessage(getString(R.string.updating_editors_choice))
     dialog.show()
     val hashMap = HashMap<String?, Any>()
     hashMap[DATA.EDITORS_CHOICE] = 0
     val reference = FirebaseDatabase.getInstance().getReference(DATA.BOOKS)
     reference.child(bookId!!).updateChildren(hashMap).addOnSuccessListener {
         dialog.dismiss()
-        Toast.makeText(this, "Editors Choice updated...", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, R.string.editors_choice_updated, Toast.LENGTH_SHORT).show()
         dialogDelete.dismiss()
     }.addOnFailureListener { e: Exception ->
         dialog.dismiss()
-        Toast.makeText(this, "Failed to update db duo to " + e.message, Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, getString(R.string.error_message, e.message), Toast.LENGTH_SHORT)
+            .show()
         dialogDelete.dismiss()
     }
 }
 
 fun Context.addToEditorsChoice(activity: Activity?, bookId: String?, number: Int) {
     val dialog = ProgressDialog(this)
-    dialog.setMessage("Updating Editors Choice...")
+    dialog.setMessage(getString(R.string.updating_editors_choice))
     dialog.show()
     val hashMap = HashMap<String?, Any>()
     hashMap[DATA.EDITORS_CHOICE] = number
     val reference = FirebaseDatabase.getInstance().getReference(DATA.BOOKS)
     reference.child(bookId!!).updateChildren(hashMap).addOnSuccessListener {
         dialog.dismiss()
-        Toast.makeText(this, "Editors Choice updated...", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, R.string.editors_choice_updated, Toast.LENGTH_SHORT).show()
         activity!!.finish()
     }.addOnFailureListener { e: Exception ->
         dialog.dismiss()
-        Toast.makeText(this, "Failed to update db duo to " + e.message, Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, getString(R.string.error_message, e.message), Toast.LENGTH_SHORT)
+            .show()
     }
 }
 

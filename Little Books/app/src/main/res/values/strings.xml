@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">Little Books</string>
+
     <string name="new_user_signup">SignUp</string>
     <string name="email">Email</string>
     <string name="password">Password</string>
@@ -18,10 +19,6 @@
     <string name="Comments">Comments</string>
     <string name="categories">Categories</string>
     <string name="name">Name</string>
-    //Theme
-    <string name="basic_theme">Basic Theme</string>
-    <string name="sec_theme">Sec Theme</string>
-    //Needed
     <string name="none_display">There are no items to display</string>
     <string name="editors_choice">Editors Choice</string>
     <string name="most_views">Most Views</string>
@@ -37,7 +34,6 @@
     <string name="yes">YES</string>
     <string name="do_you_want_to_exit">Do you want to Exit ?</string>
     <string name="about_app">The application was designed by "Flat Code"</string>
-    <string name="details_books">Details Book</string>
     //Pages
     <string name="favorites">Favorites</string>
     <string name="explore_publishers">Explore Publishers</string>
@@ -63,7 +59,6 @@
     //Test AD's
     <string name="admob_id">ca-app-pub-3940256099942544~3347511713</string>
     <string name="banner_home">ca-app-pub-3940256099942544/6300978111</string>
-    <string name="password_dots">********</string>
     <string name="zero">0</string>
     <string name="website">Website</string>
     <string name="facebook">Facebook</string>

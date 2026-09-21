@@ -5,18 +5,19 @@ import android.content.Context
 import android.os.Bundle
 import android.util.Patterns
 import android.widget.Toast
-import androidx.activity.viewModels
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import com.flatcode.littlebooksadmin.ui.main.MainActivity
-import com.flatcode.littlebooksadmin.utils.*
+import com.flatcode.littlebooksadmin.R
 import com.flatcode.littlebooksadmin.databinding.ActivityLoginBinding
-import com.flatcode.littlebooksadmin.ui.auth.AuthViewModel
+import com.flatcode.littlebooksadmin.ui.main.MainActivity
+import com.flatcode.littlebooksadmin.utils.Resource
+import com.flatcode.littlebooksadmin.utils.openActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -26,7 +27,7 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var binding: ActivityLoginBinding
     private val context: Context = this@LoginActivity
     private var dialog: ProgressDialog? = null
-    
+
     private val viewModel: AuthViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -47,7 +48,7 @@ class LoginActivity : AppCompatActivity() {
 
     private fun initUI() {
         dialog = ProgressDialog(this)
-        dialog!!.setTitle("Please wait...")
+        dialog!!.setTitle(R.string.please_wait)
         dialog!!.setCanceledOnTouchOutside(false)
 
         binding.forget.setOnClickListener { context.openActivity<ForgetPasswordActivity>() }
@@ -60,17 +61,20 @@ class LoginActivity : AppCompatActivity() {
                 viewModel.loginState.collect { resource ->
                     when (resource) {
                         is Resource.Loading -> {
-                            dialog!!.setMessage("Logging In...")
+                            dialog!!.setMessage(getString(R.string.logging_in))
                             dialog!!.show()
                         }
+
                         is Resource.Success -> {
                             dialog!!.dismiss()
                             context.openActivity<MainActivity>(clear = true)
                         }
+
                         is Resource.Error -> {
                             dialog!!.dismiss()
                             Toast.makeText(context, resource.message, Toast.LENGTH_SHORT).show()
                         }
+
                         null -> {}
                     }
                 }
@@ -83,13 +87,11 @@ class LoginActivity : AppCompatActivity() {
         val password = binding.passwordEt.text.toString().trim()
 
         if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            Toast.makeText(context, "Invalid email pattern...!", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, R.string.invalid_email, Toast.LENGTH_SHORT).show()
         } else if (password.isEmpty()) {
-            Toast.makeText(context, "Enter password...!", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, R.string.enter_password, Toast.LENGTH_SHORT).show()
         } else {
             viewModel.login(email, password)
         }
     }
 }
-
-

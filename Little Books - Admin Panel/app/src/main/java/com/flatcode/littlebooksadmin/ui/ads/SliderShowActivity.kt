@@ -47,7 +47,7 @@ class SliderShowActivity : AppCompatActivity() {
         } else {
             val exception = result.error
             exception?.let {
-                Toast.makeText(context, "Error! ${it.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, getString(R.string.error_message, it.message), Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -85,7 +85,7 @@ class SliderShowActivity : AppCompatActivity() {
         binding.toolbar.back.setOnClickListener { onBackPressed() }
 
         dialog = ProgressDialog(context)
-        dialog!!.setTitle("Please wait...")
+        dialog!!.setTitle(R.string.please_wait)
         dialog!!.setCanceledOnTouchOutside(false)
 
         binding.addOne.setOnClickListener {
@@ -337,7 +337,7 @@ class SliderShowActivity : AppCompatActivity() {
     }
 
     private fun uploadImage(name: String) {
-        dialog!!.setMessage("Posting photo...")
+        dialog!!.setMessage(getString(R.string.posting_photo))
         dialog!!.show()
         MediaManager.get().upload(imageUri)
             .option("folder", "Images/SliderShow/")
@@ -352,7 +352,7 @@ class SliderShowActivity : AppCompatActivity() {
 
                 override fun onError(requestId: String?, error: ErrorInfo?) {
                     dialog!!.dismiss()
-                    Toast.makeText(context, "Error! " + error?.description, Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, getString(R.string.error_message, error?.description), Toast.LENGTH_SHORT).show()
                 }
 
                 override fun onReschedule(requestId: String?, error: ErrorInfo?) {}
@@ -360,7 +360,7 @@ class SliderShowActivity : AppCompatActivity() {
     }
 
     private fun updateImage(imageUrl: String, name: String) {
-        dialog!!.setMessage("Posting photo...")
+        dialog!!.setMessage(getString(R.string.posting_photo))
         dialog!!.show()
         val hashMap = HashMap<String, Any>()
         if (imageUri != null) {
@@ -369,10 +369,10 @@ class SliderShowActivity : AppCompatActivity() {
         val reference = FirebaseDatabase.getInstance().getReference(DATA.SLIDER_SHOW)
         reference.updateChildren(hashMap).addOnSuccessListener {
             dialog!!.dismiss()
-            Toast.makeText(context, "The photo has been posted", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, R.string.photo_posted, Toast.LENGTH_SHORT).show()
         }.addOnFailureListener { e: Exception ->
             dialog!!.dismiss()
-            Toast.makeText(context, "Error! " + e.message, Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, getString(R.string.error_message, e.message), Toast.LENGTH_SHORT).show()
         }
     }
 

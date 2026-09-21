@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/dashboardFragment"
-        android:name="com.flatcode.littlebooksadmin.ui.fragment.DashboardFragment"
-        android:label="DashboardFragment"
+        android:name="com.flatcode.littlebooksadmin.ui.main.DashboardFragment"
+        android:label="@string/dashboard"
         tools:layout="@layout/fragment_dashboard" />
 </navigation>

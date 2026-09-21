@@ -44,7 +44,7 @@ class PrivacyPolicyEditActivity : AppCompatActivity() {
     private fun validateData() {
         description = binding.text.text.toString().trim { it <= ' ' }
         if (TextUtils.isEmpty(description)) {
-            Toast.makeText(context, "Enter Privacy Policy...", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, R.string.enter_privacy_policy, Toast.LENGTH_SHORT).show()
         } else {
             update()
         }
@@ -55,9 +55,9 @@ class PrivacyPolicyEditActivity : AppCompatActivity() {
         hashMap[DATA.PRIVACY_POLICY] = DATA.EMPTY + description
         val ref = FirebaseDatabase.getInstance().getReference(DATA.TOOLS)
         ref.updateChildren(hashMap).addOnSuccessListener {
-            Toast.makeText(context, "Privacy Policy updated...", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, R.string.privacy_policy_updated, Toast.LENGTH_SHORT).show()
         }.addOnFailureListener { e: Exception ->
-            Toast.makeText(context, DATA.EMPTY + e.message, Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, getString(R.string.error_message, e.message), Toast.LENGTH_SHORT).show()
         }
     }
 

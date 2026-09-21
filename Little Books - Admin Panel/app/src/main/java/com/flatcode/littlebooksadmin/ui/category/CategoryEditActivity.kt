@@ -46,7 +46,7 @@ class CategoryEditActivity : AppCompatActivity() {
         } else {
             val exception = result.error
             exception?.let {
-                Toast.makeText(context, "Error! ${it.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, getString(R.string.error_message, it.message), Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -83,7 +83,7 @@ class CategoryEditActivity : AppCompatActivity() {
         categoryId = intent.getStringExtra(DATA.CATEGORY_ID)
 
         dialog = ProgressDialog(context)
-        dialog!!.setTitle("Please wait...")
+        dialog!!.setTitle(R.string.please_wait)
         dialog!!.setCanceledOnTouchOutside(false)
         loadCategoryInfo()
 
@@ -98,7 +98,7 @@ class CategoryEditActivity : AppCompatActivity() {
     private fun validateData() {
         name = binding.categoryEt.text.toString().trim { it <= ' ' }
         if (TextUtils.isEmpty(name)) {
-            Toast.makeText(context, "Enter name...", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, R.string.enter_name, Toast.LENGTH_SHORT).show()
         } else {
             if (imageUri == null) {
                 updateCategory(DATA.EMPTY)
@@ -109,7 +109,7 @@ class CategoryEditActivity : AppCompatActivity() {
     }
 
     private fun uploadImage() {
-        dialog!!.setMessage("Updating Category...")
+        dialog!!.setMessage(getString(R.string.updating_category))
         dialog!!.show()
         MediaManager.get().upload(imageUri)
             .option("folder", "Images/Category/")
@@ -134,7 +134,7 @@ class CategoryEditActivity : AppCompatActivity() {
     }
 
     private fun updateCategory(imageUrl: String?) {
-        dialog!!.setMessage("Updating category image...")
+        dialog!!.setMessage(getString(R.string.updating_category_image))
         dialog!!.show()
         val hashMap = HashMap<String?, Any>()
         hashMap[DATA.CATEGORY] = DATA.EMPTY + name
@@ -145,11 +145,11 @@ class CategoryEditActivity : AppCompatActivity() {
         reference.child(categoryId!!).updateChildren(hashMap)
             .addOnSuccessListener {
                 dialog!!.dismiss()
-                Toast.makeText(context, "Category updated...", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, R.string.category_updated, Toast.LENGTH_SHORT).show()
             }.addOnFailureListener { e: Exception ->
                 dialog!!.dismiss()
                 Toast.makeText(
-                    context, "Failed to update db duo to " + e.message, Toast.LENGTH_SHORT
+                    context, getString(R.string.error_message, e.message), Toast.LENGTH_SHORT
                 ).show()
             }
     }

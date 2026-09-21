@@ -3,18 +3,17 @@ package com.flatcode.littlebooksadmin.ui.book
 import android.app.Activity
 import android.app.ProgressDialog
 import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.text.TextUtils
 import android.widget.Toast
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -22,12 +21,9 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.flatcode.littlebooksadmin.R
-import com.flatcode.littlebooksadmin.utils.DATA
+import com.flatcode.littlebooksadmin.databinding.ActivityBookAddBinding
 import com.flatcode.littlebooksadmin.model.Category
 import com.flatcode.littlebooksadmin.utils.Resource
-import com.flatcode.littlebooksadmin.utils.getFileExtension
-import com.flatcode.littlebooksadmin.databinding.ActivityBookAddBinding
-import com.flatcode.littlebooksadmin.ui.book.BookAddViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -40,7 +36,7 @@ class BookAddActivity : AppCompatActivity() {
     private var imageUri: Uri? = null
     private var categoriesList: List<Category> = emptyList()
     private var dialog: ProgressDialog? = null
-    
+
     private val viewModel: BookAddViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -61,7 +57,7 @@ class BookAddActivity : AppCompatActivity() {
 
     private fun initUI() {
         dialog = ProgressDialog(context)
-        dialog!!.setTitle("Please wait...")
+        dialog!!.setTitle(R.string.please_wait)
         dialog!!.setCanceledOnTouchOutside(false)
 
         binding.toolbar.nameSpace.setText(R.string.add_new_book)
@@ -79,10 +75,13 @@ class BookAddActivity : AppCompatActivity() {
                 launch {
                     viewModel.categories.collect { resource ->
                         when (resource) {
-                            is Resource.Loading -> { /* Show some loading for categories if needed */ }
+                            is Resource.Loading -> { /* Show some loading for categories if needed */
+                            }
+
                             is Resource.Success -> {
                                 categoriesList = resource.data ?: emptyList()
                             }
+
                             is Resource.Error -> {
                                 Toast.makeText(context, resource.message, Toast.LENGTH_SHORT).show()
                             }
@@ -93,17 +92,22 @@ class BookAddActivity : AppCompatActivity() {
                     viewModel.uploadState.collect { resource ->
                         when (resource) {
                             is Resource.Loading -> {
-                                dialog!!.setMessage("Uploading Book...")
+                                dialog!!.setMessage(getString(R.string.uploading_book))
                                 dialog!!.show()
                             }
+
                             is Resource.Success -> {
                                 dialog!!.dismiss()
-                                Toast.makeText(context, "Successfully uploaded...", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(
+                                    context, R.string.successfully_uploaded, Toast.LENGTH_SHORT
+                                ).show()
                             }
+
                             is Resource.Error -> {
                                 dialog!!.dismiss()
                                 Toast.makeText(context, resource.message, Toast.LENGTH_SHORT).show()
                             }
+
                             null -> {}
                         }
                     }
@@ -112,18 +116,22 @@ class BookAddActivity : AppCompatActivity() {
                     viewModel.imageUploadState.collect { resource ->
                         when (resource) {
                             is Resource.Loading -> {
-                                dialog!!.setMessage("Updating Image Book...")
+                                dialog!!.setMessage(getString(R.string.updating_image_book))
                                 dialog!!.show()
                             }
+
                             is Resource.Success -> {
                                 dialog!!.dismiss()
-                                Toast.makeText(context, "Image updated...", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(context, R.string.image_updated, Toast.LENGTH_SHORT)
+                                    .show()
                                 finish()
                             }
+
                             is Resource.Error -> {
                                 dialog!!.dismiss()
                                 Toast.makeText(context, resource.message, Toast.LENGTH_SHORT).show()
                             }
+
                             null -> {}
                         }
                     }
@@ -137,20 +145,16 @@ class BookAddActivity : AppCompatActivity() {
         val description = binding.descriptionEt.text.toString().trim()
 
         if (TextUtils.isEmpty(title)) {
-            Toast.makeText(context, "Enter Title...", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, R.string.enter_title, Toast.LENGTH_SHORT).show()
         } else if (TextUtils.isEmpty(description)) {
-            Toast.makeText(context, "Enter Description...", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, R.string.enter_description, Toast.LENGTH_SHORT).show()
         } else if (TextUtils.isEmpty(selectedTitle)) {
-            Toast.makeText(context, "Pick Category...", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, R.string.pick_category, Toast.LENGTH_SHORT).show()
         } else if (uri == null) {
-            Toast.makeText(context, "Pick Book...", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, R.string.pick_book, Toast.LENGTH_SHORT).show()
         } else {
             viewModel.uploadBook(
-                uri!!,
-                title,
-                description,
-                selectedId ?: "",
-                imageUri
+                uri!!, title, description, selectedId ?: "", imageUri
             )
         }
     }
@@ -160,15 +164,14 @@ class BookAddActivity : AppCompatActivity() {
 
     private fun categoryPickDialog() {
         if (categoriesList.isEmpty()) {
-            Toast.makeText(context, "Loading categories...", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, R.string.loading_categories, Toast.LENGTH_SHORT).show()
             return
         }
-        
+
         val categories = categoriesList.map { it.category }.toTypedArray()
 
         val builder = AlertDialog.Builder(context)
-        builder.setTitle("Pick Category")
-            .setItems(categories) { _, which ->
+        builder.setTitle(R.string.pick_category).setItems(categories) { _, which ->
                 selectedTitle = categoriesList[which].category
                 selectedId = categoriesList[which].id
                 binding.category.text = selectedTitle
@@ -203,7 +206,7 @@ class BookAddActivity : AppCompatActivity() {
         } else {
             binding.book.setBackgroundResource(R.color.red)
             binding.choose.setText(R.string.choose_book)
-            Toast.makeText(context, "Cancelled picking book", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, R.string.cancelled_picking_book, Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -217,5 +220,3 @@ class BookAddActivity : AppCompatActivity() {
         private const val BOOK_PICK_CODE = 1000
     }
 }
-
-

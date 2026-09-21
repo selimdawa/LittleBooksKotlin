@@ -71,7 +71,7 @@ class BookDetailsActivity : AppCompatActivity() {
         binding.toolbar.nameSpace.setText(R.string.details_books)
         binding.download.visibility = View.GONE
         dialog = ProgressDialog(context)
-        dialog!!.setTitle("Please wait...")
+        dialog!!.setTitle(R.string.please_wait)
         dialog!!.setCanceledOnTouchOutside(false)
 
         adapter = CommentAdapter()
@@ -100,7 +100,7 @@ class BookDetailsActivity : AppCompatActivity() {
         }
         binding.addComment.setOnClickListener {
             if (DATA.FIREBASE_USER == null) {
-                Toast.makeText(context, "You're not logged in...", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, R.string.not_logged_in, Toast.LENGTH_SHORT).show()
             } else {
                 addCommentDialog()
             }
@@ -175,12 +175,12 @@ class BookDetailsActivity : AppCompatActivity() {
                     viewModel.addCommentState.collect { resource ->
                         when (resource) {
                             is Resource.Loading -> {
-                                dialog!!.setMessage("Adding comment...")
+                                dialog!!.setMessage(getString(R.string.adding_comment))
                                 dialog!!.show()
                             }
                             is Resource.Success -> {
                                 dialog!!.dismiss()
-                                Toast.makeText(context, "Comment Added...", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(context, R.string.comment_added, Toast.LENGTH_SHORT).show()
                             }
                             is Resource.Error -> {
                                 dialog!!.dismiss()
@@ -209,7 +209,7 @@ class BookDetailsActivity : AppCompatActivity() {
         commentAddBinding.submit.setOnClickListener {
             val comment = commentAddBinding.comment.text.toString().trim()
             if (TextUtils.isEmpty(comment)) {
-                Toast.makeText(context, "Enter your comment...", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, R.string.enter_comment, Toast.LENGTH_SHORT).show()
             } else {
                 alertDialog.dismiss()
                 bookId?.let { viewModel.addComment(it, comment) }
@@ -225,7 +225,7 @@ class BookDetailsActivity : AppCompatActivity() {
                     DATA.EMPTY + bookTitle, DATA.EMPTY + bookUrl
                 )
             } else {
-                Toast.makeText(context, "Permission was denied...", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, R.string.permission_denied, Toast.LENGTH_SHORT).show()
             }
         }
 }

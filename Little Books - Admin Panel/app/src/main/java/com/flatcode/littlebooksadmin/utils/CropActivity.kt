@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.IntentCompat
 import com.canhub.cropper.CropImageOptions
 import com.canhub.cropper.CropImageView
+import com.flatcode.littlebooksadmin.R
 import com.flatcode.littlebooksadmin.databinding.ActivityCropBinding
 
 class CropActivity : AppCompatActivity() {
@@ -33,7 +34,7 @@ class CropActivity : AppCompatActivity() {
         minHeight = intent.getIntExtra("MIN_HEIGHT", 500)
 
         if (imageUri == null) {
-            Toast.makeText(this, "No image selected", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, R.string.no_image_selected, Toast.LENGTH_SHORT).show()
             finish()
             return
         }
@@ -68,7 +69,7 @@ class CropActivity : AppCompatActivity() {
                 setResult(RESULT_OK, intent)
                 finish()
             } else {
-                Toast.makeText(this, "Crop failed: ${result.error?.message}", Toast.LENGTH_SHORT)
+                Toast.makeText(this, getString(R.string.crop_failed, result.error?.message), Toast.LENGTH_SHORT)
                     .show()
             }
         }

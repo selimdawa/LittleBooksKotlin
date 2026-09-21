@@ -9,8 +9,7 @@ import kotlinx.parcelize.Parcelize
 @Entity(tableName = "books")
 data class Book(
     var publisher: String? = null,
-    @PrimaryKey
-    var id: String = "",
+    @PrimaryKey var id: String = "",
     var title: String? = null,
     var description: String? = null,
     var categoryId: String? = null,

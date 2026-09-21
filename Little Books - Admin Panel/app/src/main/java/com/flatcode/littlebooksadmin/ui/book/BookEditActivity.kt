@@ -1,6 +1,6 @@
 package com.flatcode.littlebooksadmin.ui.book
 
-import android.app.AlertDialog
+import androidx.appcompat.app.AlertDialog
 import android.app.ProgressDialog
 import android.content.Context
 import android.content.Intent
@@ -62,7 +62,7 @@ class BookEditActivity : AppCompatActivity() {
 
     private fun initUI() {
         dialog = ProgressDialog(context)
-        dialog!!.setTitle("Please wait...")
+        dialog!!.setTitle(R.string.please_wait)
         dialog!!.setCanceledOnTouchOutside(false)
 
         binding.toolbar.nameSpace.setText(R.string.edit_book)
@@ -118,13 +118,13 @@ class BookEditActivity : AppCompatActivity() {
                     viewModel.updateState.collect { resource ->
                         when (resource) {
                             is Resource.Loading -> {
-                                dialog!!.setMessage("Updating book info...")
+                                dialog!!.setMessage(getString(R.string.updating_book_info))
                                 dialog!!.show()
                             }
                             is Resource.Success -> {
                                 if (imageUri == null) {
                                     dialog!!.dismiss()
-                                    Toast.makeText(context, "Book info updated...", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(context, R.string.book_info_updated, Toast.LENGTH_SHORT).show()
                                     finish()
                                 } else {
                                     // Handle image upload if needed, or if it's already triggered by ViewModel
@@ -149,11 +149,11 @@ class BookEditActivity : AppCompatActivity() {
         val description = binding.descriptionEt.text.toString().trim()
         
         if (TextUtils.isEmpty(title)) {
-            Toast.makeText(context, "Enter Title...", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, R.string.enter_title, Toast.LENGTH_SHORT).show()
         } else if (TextUtils.isEmpty(description)) {
-            Toast.makeText(context, "Enter Description...", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, R.string.enter_description, Toast.LENGTH_SHORT).show()
         } else if (TextUtils.isEmpty(selectedId)) {
-            Toast.makeText(context, "Pick Category", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, R.string.pick_category, Toast.LENGTH_SHORT).show()
         } else {
             bookId?.let {
                 viewModel.updateBook(
@@ -170,7 +170,7 @@ class BookEditActivity : AppCompatActivity() {
         val categoriesArray = categoriesList.map { it.category }.toTypedArray()
         
         val builder = AlertDialog.Builder(context)
-        builder.setTitle("Choose Category")
+        builder.setTitle(R.string.choose_category)
             .setItems(categoriesArray) { _, which ->
                 selectedId = categoriesList[which].id ?: DATA.EMPTY
                 binding.category.text = categoriesList[which].category

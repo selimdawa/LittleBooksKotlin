@@ -33,7 +33,7 @@
                     android:layout_height="wrap_content"
                     android:background="?mc_tick">
 
-                    <com.smarteist.autoimageslider.SliderView
+                    <io.selimdawa.autoimageslider.SliderView
                         android:id="@+id/imageSlider"
                         android:layout_width="match_parent"
                         android:layout_height="0dp"

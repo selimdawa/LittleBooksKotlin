@@ -8,24 +8,24 @@
     <fragment
         android:id="@+id/settingsFragment"
         android:name="com.flatcode.littlebooks.ui.settings.SettingsFragment"
-        android:label="SettingsFragment"
+        android:label="@string/settings"
         tools:layout="@layout/fragment_settings" />
 
     <fragment
         android:id="@+id/homeFragment"
         android:name="com.flatcode.littlebooks.ui.main.HomeFragment"
-        android:label="HomeFragment"
+        android:label="@string/home"
         tools:layout="@layout/fragment_home" />
 
     <fragment
         android:id="@+id/followersFragment"
         android:name="com.flatcode.littlebooks.ui.profile.FollowersFragment"
-        android:label="FollowersFragment"
+        android:label="@string/followers"
         tools:layout="@layout/fragment_followers" />
 
     <fragment
         android:id="@+id/categoriesFragment"
         android:name="com.flatcode.littlebooks.ui.category.CategoriesFragment"
-        android:label="CategoriesFragment"
+        android:label="@string/categories"
         tools:layout="@layout/fragment_categories" />
 </navigation>

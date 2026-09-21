@@ -4,18 +4,18 @@ import android.content.Context
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
-import androidx.activity.viewModels
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import com.flatcode.littlebooksadmin.R
+import com.flatcode.littlebooksadmin.databinding.ActivityBookViewBinding
 import com.flatcode.littlebooksadmin.utils.DATA
 import com.flatcode.littlebooksadmin.utils.Resource
-import com.flatcode.littlebooksadmin.databinding.ActivityBookViewBinding
-import com.flatcode.littlebooksadmin.ui.book.BookEditViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -30,7 +30,7 @@ class BookViewActivity : AppCompatActivity() {
     private lateinit var binding: ActivityBookViewBinding
     private val context: Context = this@BookViewActivity
     private var bookId: String? = null
-    
+
     private val viewModel: BookEditViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -49,7 +49,7 @@ class BookViewActivity : AppCompatActivity() {
 
         initUI()
         observeViewModel()
-        
+
         bookId?.let { viewModel.loadBook(it) }
     }
 
@@ -66,9 +66,11 @@ class BookViewActivity : AppCompatActivity() {
                         is Resource.Loading -> {
                             binding.progressBar.visibility = View.VISIBLE
                         }
+
                         is Resource.Success -> {
                             resource.data?.url?.let { loadBookFromUrl(it) }
                         }
+
                         is Resource.Error -> {
                             binding.progressBar.visibility = View.GONE
                             Toast.makeText(context, resource.message, Toast.LENGTH_SHORT).show()
@@ -89,7 +91,11 @@ class BookViewActivity : AppCompatActivity() {
                 if (connection.responseCode != HttpURLConnection.HTTP_OK) {
                     withContext(Dispatchers.Main) {
                         binding.progressBar.visibility = View.GONE
-                        Toast.makeText(context, "Server returned HTTP ${connection.responseCode}", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            context,
+                            getString(R.string.server_returned_http, connection.responseCode),
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                     return@launch
                 }
@@ -106,11 +112,15 @@ class BookViewActivity : AppCompatActivity() {
                             binding.toolbar.numberPage.text =
                                 MessageFormat.format("{0}/{1}", correctPage, pageCount)
                         }.onError { t: Throwable ->
-                            Toast.makeText(context, DATA.EMPTY + t.message, Toast.LENGTH_SHORT).show()
-                        }
-                        .onPageError { page: Int, t: Throwable ->
                             Toast.makeText(
-                                context, "Error on page " + page + DATA.SPACE + t.message,
+                                context,
+                                getString(R.string.error_message, t.message),
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }.onPageError { page: Int, t: Throwable ->
+                            Toast.makeText(
+                                context,
+                                getString(R.string.error_on_page, page, t.message),
                                 Toast.LENGTH_SHORT
                             ).show()
                         }.load()
@@ -118,11 +128,13 @@ class BookViewActivity : AppCompatActivity() {
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
                     binding.progressBar.visibility = View.GONE
-                    Toast.makeText(context, "Failed to load PDF: ${e.message}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        context,
+                        getString(R.string.failed_to_load_pdf, e.message),
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
         }
     }
 }
-
-

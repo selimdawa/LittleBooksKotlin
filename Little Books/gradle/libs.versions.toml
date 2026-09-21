@@ -2,8 +2,7 @@
 agp = "9.4.0"
 androidImageCropper = "4.5.0"
 androidPdfViewer = "3.2.0-beta06"
-#noinspection GradleDependency
-autoimageslider = "1.4.0"
+autoImageSlider = "1.0.1"
 coil = "2.7.0"
 firebaseBom = "34.19.0"
 coreKtx = "1.19.0"
@@ -11,8 +10,8 @@ appcompat = "1.8.0"
 material = "1.14.0"
 activity = "1.13.0"
 fragment = "1.9.0"
-materialRipple = "1.0.2"
-nafisbottomnav = "5.0"
+materialRipple = "1.0.1"
+bubbleBottom = "1.0.2"
 playServicesAds = "25.5.0"
 googleServices = "4.5.0"
 multicolors = "1.0.10"
@@ -30,7 +29,7 @@ kotlin = "2.4.20"
 android-image-cropper = { module = "com.github.CanHub:Android-Image-Cropper", version.ref = "androidImageCropper" }
 android-pdf-viewer = { module = "io.github.oothp:android-pdf-viewer", version.ref = "androidPdfViewer" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
-autoimageslider = { module = "com.github.smarteist:autoimageslider", version.ref = "autoimageslider" }
+autoimageslider = { module = "io.github.selimdawa:auto-image-slider", version.ref = "autoImageSlider" }
 firebase-auth = { module = "com.google.firebase:firebase-auth" }
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
 firebase-database = { module = "com.google.firebase:firebase-database" }
@@ -41,8 +40,8 @@ material = { group = "com.google.android.material", name = "material", version.r
 androidx-activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
 androidx-fragment-ktx = { group = "androidx.fragment", name = "fragment-ktx", version.ref = "fragment" }
 multicolors = { module = "com.github.selimdawa:MultiColors", version.ref = "multicolors" }
-material-ripple = { module = "com.balysv:material-ripple", version.ref = "materialRipple" }
-nafisbottomnav = { module = "com.github.Foysalofficial:NafisBottomNav", version.ref = "nafisbottomnav" }
+material-ripple = { module = "io.github.selimdawa:material-ripple-effect", version.ref = "materialRipple" }
+bubblebottom = { module = "io.github.selimdawa:bubble-bottom", version.ref = "bubbleBottom" }
 play-services-ads = { module = "com.google.android.gms:play-services-ads", version.ref = "playServicesAds" }
 #MVVM
 androidx-lifecycle-viewmodel-ktx = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "lifecycle" }

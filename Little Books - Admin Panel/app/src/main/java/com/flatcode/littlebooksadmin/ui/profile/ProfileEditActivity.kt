@@ -48,7 +48,7 @@ class ProfileEditActivity : AppCompatActivity() {
         } else {
             val exception = result.error
             exception?.let {
-                Toast.makeText(context, "Error! ${it.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, getString(R.string.error_message, it.message), Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -90,7 +90,7 @@ class ProfileEditActivity : AppCompatActivity() {
 
     private fun initUI() {
         dialog = ProgressDialog(context)
-        dialog!!.setTitle("Please wait...")
+        dialog!!.setTitle(R.string.please_wait)
         dialog!!.setCanceledOnTouchOutside(false)
 
         binding.toolbar.nameSpace.setText(R.string.edit_profile)
@@ -123,12 +123,12 @@ class ProfileEditActivity : AppCompatActivity() {
                     viewModel.updateState.collect { resource ->
                         when (resource) {
                             is Resource.Loading -> {
-                                dialog!!.setMessage("Updating user profile...")
+                                dialog!!.setMessage(getString(R.string.updating_user_profile))
                                 dialog!!.show()
                             }
                             is Resource.Success -> {
                                 dialog!!.dismiss()
-                                Toast.makeText(context, "Profile updated...", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(context, R.string.profile_updated, Toast.LENGTH_SHORT).show()
                                 finish()
                             }
                             is Resource.Error -> {
@@ -146,7 +146,7 @@ class ProfileEditActivity : AppCompatActivity() {
     private fun validateData() {
         val username = binding.nameEt.text.toString().trim()
         if (TextUtils.isEmpty(username)) {
-            Toast.makeText(context, "Enter name...", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, R.string.enter_name, Toast.LENGTH_SHORT).show()
         } else {
             viewModel.updateProfile(
                 username,

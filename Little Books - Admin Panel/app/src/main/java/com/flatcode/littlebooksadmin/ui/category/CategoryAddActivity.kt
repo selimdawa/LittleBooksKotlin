@@ -48,7 +48,7 @@ class CategoryAddActivity : AppCompatActivity() {
         } else {
             val exception = result.error
             exception?.let {
-                Toast.makeText(context, "Error! ${it.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, getString(R.string.error_message, it.message), Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -88,7 +88,7 @@ class CategoryAddActivity : AppCompatActivity() {
 
     private fun initUI() {
         dialog = ProgressDialog(context)
-        dialog!!.setTitle("Please wait...")
+        dialog!!.setTitle(R.string.please_wait)
         dialog!!.setCanceledOnTouchOutside(false)
 
         binding.toolbar.nameSpace.setText(R.string.add_new_category)
@@ -104,12 +104,12 @@ class CategoryAddActivity : AppCompatActivity() {
                 viewModel.addState.collect { resource ->
                     when (resource) {
                         is Resource.Loading -> {
-                            dialog!!.setMessage("Uploading Category...")
+                            dialog!!.setMessage(getString(R.string.uploading_category))
                             dialog!!.show()
                         }
                         is Resource.Success -> {
                             dialog!!.dismiss()
-                            Toast.makeText(context, "Successfully uploaded...", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, R.string.successfully_uploaded, Toast.LENGTH_SHORT).show()
                             finish()
                         }
                         is Resource.Error -> {
@@ -127,9 +127,9 @@ class CategoryAddActivity : AppCompatActivity() {
         val title = binding.categoryEt.text.toString().trim()
 
         if (TextUtils.isEmpty(title)) {
-            Toast.makeText(context, "Enter Title...", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, R.string.enter_title, Toast.LENGTH_SHORT).show()
         } else if (imageUri == null) {
-            Toast.makeText(context, "Pick Image...", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, R.string.pick_image, Toast.LENGTH_SHORT).show()
         } else {
             viewModel.addCategory(
                 title,

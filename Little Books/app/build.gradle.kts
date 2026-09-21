@@ -39,6 +39,7 @@ android {
     buildFeatures {
         dataBinding = true
         viewBinding = true
+        buildConfig = true
     }
 }
 
@@ -76,7 +77,7 @@ dependencies {
     ksp(libs.androidx.room.compiler)
     //Other
     implementation(libs.material.ripple)                //Ripple Effect
-    implementation(libs.nafisbottomnav)                 //Bottom Navigation
+    implementation(libs.bubblebottom)                   //Bottom Navigation
     implementation(libs.play.services.ads)              //ADs Google AdMob
     implementation(libs.android.pdf.viewer)             //PDF View
     implementation(libs.timber)
