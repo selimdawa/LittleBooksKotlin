@@ -3,9 +3,19 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:ignore="all">
 
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <!-- Internet Access -->
     <uses-permission android:name="android.permission.INTERNET" />
+
+    <!-- Legacy Storage (Required for Android 9 and below) -->
+    <uses-permission
+        android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="29" />
+
+    <!-- Modern Granular Storage (Required for Android 13+) -->
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
 
     <application
         android:name=".Application"

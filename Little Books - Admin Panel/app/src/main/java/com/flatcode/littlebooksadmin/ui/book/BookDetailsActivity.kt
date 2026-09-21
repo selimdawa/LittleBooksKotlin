@@ -4,6 +4,7 @@ import android.Manifest
 import android.app.ProgressDialog
 import android.content.Context
 import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.text.TextUtils
 import android.view.LayoutInflater
@@ -86,16 +87,23 @@ class BookDetailsActivity : AppCompatActivity() {
             context.openActivity<BookViewActivity>(extras = arrayOf(DATA.BOOK_ID to bookId))
         }
         binding.download.setOnClickListener {
-            if (ContextCompat.checkSelfPermission(
-                    context, Manifest.permission.WRITE_EXTERNAL_STORAGE
-                ) == PackageManager.PERMISSION_GRANTED
-            ) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                 context.downloadBook(
                     DATA.EMPTY + bookId,
                     DATA.EMPTY + bookTitle, DATA.EMPTY + bookUrl
                 )
             } else {
-                resultPermissionLauncher.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                if (ContextCompat.checkSelfPermission(
+                        context, Manifest.permission.WRITE_EXTERNAL_STORAGE
+                    ) == PackageManager.PERMISSION_GRANTED
+                ) {
+                    context.downloadBook(
+                        DATA.EMPTY + bookId,
+                        DATA.EMPTY + bookTitle, DATA.EMPTY + bookUrl
+                    )
+                } else {
+                    resultPermissionLauncher.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                }
             }
         }
         binding.addComment.setOnClickListener {

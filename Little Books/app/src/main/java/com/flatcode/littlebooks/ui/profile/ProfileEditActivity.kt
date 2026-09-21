@@ -9,7 +9,8 @@ import android.text.TextUtils
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.viewModels
+import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
+import com.flatcode.littlebooks.utils.PermissionUtils
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -79,22 +80,35 @@ class ProfileEditActivity : AppCompatActivity() {
         loadUserInfo()
     }
 
+    private val requestPermissionLauncher =
+        registerForActivityResult(RequestPermission()) { isGranted: Boolean ->
+            if (isGranted) {
+                startCrop()
+            } else {
+                Toast.makeText(context, "Permission denied...", Toast.LENGTH_SHORT).show()
+            }
+        }
+
     private fun startCrop() {
-        cropImage.launch(
-            CropImageContractOptions(
-                uri = null,
-                cropImageOptions = CropImageOptions(
-                    guidelines = CropImageView.Guidelines.ON,
-                    multiTouchEnabled = true,
-                    minCropResultWidth = DATA.MIN_SQUARE,
-                    minCropResultHeight = DATA.MIN_SQUARE,
-                    aspectRatioX = 1,
-                    aspectRatioY = 1,
-                    fixAspectRatio = true,
-                    cropShape = CropImageView.CropShape.OVAL
+        if (PermissionUtils.checkStoragePermission(context)) {
+            cropImage.launch(
+                CropImageContractOptions(
+                    uri = null,
+                    cropImageOptions = CropImageOptions(
+                        guidelines = CropImageView.Guidelines.ON,
+                        multiTouchEnabled = true,
+                        minCropResultWidth = DATA.MIN_SQUARE,
+                        minCropResultHeight = DATA.MIN_SQUARE,
+                        aspectRatioX = 1,
+                        aspectRatioY = 1,
+                        fixAspectRatio = true,
+                        cropShape = CropImageView.CropShape.OVAL
+                    )
                 )
             )
-        )
+        } else {
+            requestPermissionLauncher.launch(PermissionUtils.storagePermission)
+        }
     }
 
     private fun loadUserInfo() {

@@ -11,7 +11,8 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.ActivityResult
-import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
+import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
+import com.flatcode.littlebooks.utils.PermissionUtils
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -198,10 +199,23 @@ class BookEditActivity : AppCompatActivity() {
             }
         }
 
+    private val requestPermissionLauncher =
+        registerForActivityResult(RequestPermission()) { isGranted: Boolean ->
+            if (isGranted) {
+                pickImageGallery()
+            } else {
+                Toast.makeText(context, "Permission denied...", Toast.LENGTH_SHORT).show()
+            }
+        }
+
     private fun pickImageGallery() {
-        val intent = Intent(Intent.ACTION_PICK)
-        intent.type = "image/*"
-        galleryActivityResultLauncher.launch(intent)
+        if (PermissionUtils.checkStoragePermission(context)) {
+            val intent = Intent(Intent.ACTION_PICK)
+            intent.type = "image/*"
+            galleryActivityResultLauncher.launch(intent)
+        } else {
+            requestPermissionLauncher.launch(PermissionUtils.storagePermission)
+        }
     }
 }
 
