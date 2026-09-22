@@ -82,7 +82,7 @@
                                 app:layout_constraintBottom_toBottomOf="parent"
                                 app:layout_constraintDimensionRatio="1:1"
                                 app:layout_constraintEnd_toEndOf="parent"
-                                app:tint="?mc_tick" />
+                                app:tint="?mc_track" />
 
                         </androidx.constraintlayout.widget.ConstraintLayout>
 

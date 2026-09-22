@@ -6,7 +6,7 @@
     android:layout_width="300dp"
     android:layout_height="wrap_content"
     android:padding="20dp"
-    app:cardBackgroundColor="?mc_tick"
+    app:cardBackgroundColor="?mc_track"
     app:cardCornerRadius="30dp"
     app:cardElevation="3dp"
     app:cardUseCompatPadding="true"

@@ -36,7 +36,7 @@
                         android:layout_width="25dp"
                         android:layout_height="25dp"
                         android:layout_gravity="left"
-                        android:background="?mc_tick"
+                        android:background="?mc_track"
                         android:contentDescription="@null"
                         android:padding="2dp"
                         android:src="@drawable/ic_star_unselected"
@@ -103,7 +103,7 @@
                     android:padding="5sp"
                     android:src="@drawable/ic_more"
                     android:visibility="gone"
-                    app:tint="?mc_tick" />
+                    app:tint="?mc_track" />
 
             </LinearLayout>
 

@@ -39,7 +39,7 @@
                     android:layout_gravity="center"
                     android:gravity="center"
                     android:text="@string/none_display"
-                    android:textColor="?mc_tick"
+                    android:textColor="?mc_track"
                     android:textSize="32sp" />
 
             </LinearLayout>

@@ -3,7 +3,7 @@
     android:shape="rectangle">
     <stroke
         android:width="2dp"
-        android:color="?mc_tick" />
+        android:color="?mc_track" />
 
     <corners android:radius="10dp" />
     <solid android:color="?attr/colorOnBackground" />
