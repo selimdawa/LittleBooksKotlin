@@ -1,6 +1,10 @@
 package com.flatcode.littlebooksadmin.db
 
-import androidx.room.*
+import androidx.room.Dao
+import androidx.room.Delete
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
 import com.flatcode.littlebooksadmin.model.Book
 import kotlinx.coroutines.flow.Flow
 
@@ -24,5 +28,3 @@ interface BookDao {
     @Query("DELETE FROM books")
     suspend fun clearBooks()
 }
-
-

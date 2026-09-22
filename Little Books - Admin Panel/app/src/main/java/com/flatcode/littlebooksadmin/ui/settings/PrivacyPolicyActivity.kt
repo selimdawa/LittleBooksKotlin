@@ -32,7 +32,7 @@ class PrivacyPolicyActivity : AppCompatActivity() {
         }
 
         binding.toolbar.nameSpace.setText(R.string.privacy_policy)
-        binding.toolbar.back.setOnClickListener { onBackPressed() }
+        binding.toolbar.back.setOnClickListener { onBackPressedDispatcher.onBackPressed() }
 
         binding.edit.setOnClickListener { context.openActivity<PrivacyPolicyEditActivity>() }
     }

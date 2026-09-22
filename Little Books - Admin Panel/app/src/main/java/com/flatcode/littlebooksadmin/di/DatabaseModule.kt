@@ -48,4 +48,3 @@ object DatabaseModule {
     fun provideCommentDao(database: AppDatabase): CommentDao = database.commentDao()
 }
 
-

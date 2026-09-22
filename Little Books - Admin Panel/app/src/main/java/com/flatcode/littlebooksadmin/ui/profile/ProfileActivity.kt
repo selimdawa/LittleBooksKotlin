@@ -52,7 +52,7 @@ class ProfileActivity : AppCompatActivity() {
     }
 
     private fun initUI() {
-        binding.back.setOnClickListener { onBackPressed() }
+        binding.back.setOnClickListener { onBackPressedDispatcher.onBackPressed() }
 
         if (profileId == DATA.FirebaseUserUid) {
             binding.follow.visibility = View.GONE

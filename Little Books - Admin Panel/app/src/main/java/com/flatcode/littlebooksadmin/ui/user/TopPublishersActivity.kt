@@ -6,6 +6,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -35,8 +36,23 @@ class TopPublishersActivity : AppCompatActivity() {
     
     private val viewModel: UsersViewModel by viewModels()
 
+    private val onBackPressedCallback = object : OnBackPressedCallback(true) {
+        override fun handleOnBackPressed() {
+            if (DATA.searchStatus) {
+                binding.toolbar.toolbar.visibility = View.VISIBLE
+                binding.toolbar.toolbarSearch.visibility = View.GONE
+                DATA.searchStatus = false
+                binding.toolbar.textSearch.setText(DATA.EMPTY)
+            } else {
+                isEnabled = false
+                onBackPressedDispatcher.onBackPressed()
+            }
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
         enableEdgeToEdge()
         binding = ActivityPageStaggeredBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -51,10 +67,11 @@ class TopPublishersActivity : AppCompatActivity() {
         observeViewModel()
     }
 
+
     private fun initUI() {
         binding.toolbar.nameSpace.setText(R.string.top_publishers)
-        binding.toolbar.close.setOnClickListener { onBackPressed() }
-        binding.toolbar.back.setOnClickListener { onBackPressed() }
+        binding.toolbar.close.setOnClickListener { onBackPressedDispatcher.onBackPressed() }
+        binding.toolbar.back.setOnClickListener { onBackPressedDispatcher.onBackPressed() }
 
         binding.toolbar.search.setOnClickListener {
             binding.toolbar.toolbar.visibility = View.GONE
@@ -120,14 +137,7 @@ class TopPublishersActivity : AppCompatActivity() {
         }
     }
 
-    override fun onBackPressed() {
-        if (DATA.searchStatus) {
-            binding.toolbar.toolbar.visibility = View.VISIBLE
-            binding.toolbar.toolbarSearch.visibility = View.GONE
-            DATA.searchStatus = false
-            binding.toolbar.textSearch.setText(DATA.EMPTY)
-        } else super.onBackPressed()
-    }
+
 
     override fun onResume() {
         super.onResume()

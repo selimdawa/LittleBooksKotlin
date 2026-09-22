@@ -1,35 +1,33 @@
 package com.flatcode.littlebooksadmin.ui.category
 
-import android.Manifest
 import android.app.Activity
-import androidx.appcompat.app.AlertDialog
-import com.flatcode.littlebooksadmin.utils.Dialogs
 import android.content.Context
-import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.text.TextUtils
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import com.flatcode.littlebooksadmin.model.Category
-import com.flatcode.littlebooksadmin.R
-import com.flatcode.littlebooksadmin.utils.DATA
-import com.flatcode.littlebooksadmin.utils.*
-import com.flatcode.littlebooksadmin.databinding.ActivityCategoryAddBinding
-import com.cloudinary.android.MediaManager
-import com.cloudinary.android.callback.ErrorInfo
-import com.cloudinary.android.callback.UploadCallback
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
 import com.canhub.cropper.CropImageContract
 import com.canhub.cropper.CropImageContractOptions
 import com.canhub.cropper.CropImageOptions
 import com.canhub.cropper.CropImageView
+import com.cloudinary.android.MediaManager
+import com.cloudinary.android.callback.ErrorInfo
+import com.cloudinary.android.callback.UploadCallback
+import com.flatcode.littlebooksadmin.R
+import com.flatcode.littlebooksadmin.databinding.ActivityCategoryAddBinding
+import com.flatcode.littlebooksadmin.model.Category
+import com.flatcode.littlebooksadmin.utils.DATA
+import com.flatcode.littlebooksadmin.utils.Dialogs
+import com.flatcode.littlebooksadmin.utils.loadImage
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 
 class CategoryEditActivity : AppCompatActivity() {
 
@@ -47,7 +45,9 @@ class CategoryEditActivity : AppCompatActivity() {
         } else {
             val exception = result.error
             exception?.let {
-                Toast.makeText(context, getString(R.string.error_message, it.message), Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    context, getString(R.string.error_message, it.message), Toast.LENGTH_SHORT
+                ).show()
             }
         }
     }
@@ -55,8 +55,7 @@ class CategoryEditActivity : AppCompatActivity() {
     private fun startCrop() {
         cropImage.launch(
             CropImageContractOptions(
-                uri = null,
-                cropImageOptions = CropImageOptions(
+                uri = null, cropImageOptions = CropImageOptions(
                     guidelines = CropImageView.Guidelines.ON,
                     aspectRatioX = 1,
                     aspectRatioY = 1,
@@ -87,7 +86,7 @@ class CategoryEditActivity : AppCompatActivity() {
         loadCategoryInfo()
 
         binding.toolbar.nameSpace.setText(R.string.edit_category)
-        binding.toolbar.back.setOnClickListener { onBackPressed() }
+        binding.toolbar.back.setOnClickListener { onBackPressedDispatcher.onBackPressed() }
 
         binding.image.setOnClickListener { startCrop() }
         binding.toolbar.ok.setOnClickListener { validateData() }
@@ -110,10 +109,8 @@ class CategoryEditActivity : AppCompatActivity() {
     private fun uploadImage() {
         dialog = Dialogs.createProgressDialog(context, getString(R.string.updating_category))
         dialog!!.show()
-        MediaManager.get().upload(imageUri)
-            .option("folder", "Images/Category/")
-            .option("public_id", categoryId)
-            .callback(object : UploadCallback {
+        MediaManager.get().upload(imageUri).option("folder", "Images/Category/")
+            .option("public_id", categoryId).callback(object : UploadCallback {
                 override fun onStart(requestId: String?) {}
                 override fun onProgress(requestId: String?, bytes: Long, totalBytes: Long) {}
                 override fun onSuccess(requestId: String?, resultData: Map<*, *>?) {
@@ -124,7 +121,9 @@ class CategoryEditActivity : AppCompatActivity() {
                 override fun onError(requestId: String?, error: ErrorInfo?) {
                     dialog!!.dismiss()
                     Toast.makeText(
-                        context, "Failed to upload image due to " + error?.description, Toast.LENGTH_SHORT
+                        context,
+                        "Failed to upload image due to " + error?.description,
+                        Toast.LENGTH_SHORT
                     ).show()
                 }
 
@@ -141,8 +140,7 @@ class CategoryEditActivity : AppCompatActivity() {
             hashMap[DATA.IMAGE] = DATA.EMPTY + imageUrl
         }
         val reference = FirebaseDatabase.getInstance().getReference(DATA.CATEGORIES)
-        reference.child(categoryId!!).updateChildren(hashMap)
-            .addOnSuccessListener {
+        reference.child(categoryId!!).updateChildren(hashMap).addOnSuccessListener {
                 dialog!!.dismiss()
                 Toast.makeText(context, R.string.category_updated, Toast.LENGTH_SHORT).show()
             }.addOnFailureListener { e: Exception ->
@@ -168,6 +166,3 @@ class CategoryEditActivity : AppCompatActivity() {
         })
     }
 }
-
-
-

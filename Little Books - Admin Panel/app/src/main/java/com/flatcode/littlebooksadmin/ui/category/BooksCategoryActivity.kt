@@ -6,6 +6,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -38,9 +39,24 @@ class BooksCategoryActivity : AppCompatActivity() {
     
     private val viewModel: BooksViewModel by viewModels()
 
+    private val onBackPressedCallback = object : OnBackPressedCallback(true) {
+        override fun handleOnBackPressed() {
+            if (DATA.searchStatus) {
+                binding.toolbar.toolbar.visibility = View.VISIBLE
+                binding.toolbar.toolbarSearch.visibility = View.GONE
+                DATA.searchStatus = false
+                binding.toolbar.textSearch.setText(DATA.EMPTY)
+            } else {
+                isEnabled = false
+                onBackPressedDispatcher.onBackPressed()
+            }
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
         binding = ActivityPageStaggeredSwitchBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
@@ -62,8 +78,8 @@ class BooksCategoryActivity : AppCompatActivity() {
 
     private fun initUI() {
         binding.toolbar.nameSpace.text = categoryName
-        binding.toolbar.back.setOnClickListener { onBackPressed() }
-        binding.toolbar.close.setOnClickListener { onBackPressed() }
+        binding.toolbar.back.setOnClickListener { onBackPressedDispatcher.onBackPressed() }
+        binding.toolbar.close.setOnClickListener { onBackPressedDispatcher.onBackPressed() }
 
         binding.toolbar.search.setOnClickListener {
             binding.toolbar.toolbar.visibility = View.GONE
@@ -129,7 +145,7 @@ class BooksCategoryActivity : AppCompatActivity() {
         }
     }
 
-    private fun updateList(books: List<com.flatcode.littlebooksadmin.model.Book>) {
+    private fun updateList(books: List<Book>) {
         list.clear()
         books.forEach {
             val legacyBook = Book(
@@ -151,15 +167,4 @@ class BooksCategoryActivity : AppCompatActivity() {
             binding.emptyText.visibility = View.VISIBLE
         }
     }
-
-    override fun onBackPressed() {
-        if (DATA.searchStatus) {
-            binding.toolbar.toolbar.visibility = View.VISIBLE
-            binding.toolbar.toolbarSearch.visibility = View.GONE
-            DATA.searchStatus = false
-            binding.toolbar.textSearch.setText(DATA.EMPTY)
-        } else super.onBackPressed()
-    }
 }
-
-

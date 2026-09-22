@@ -21,5 +21,3 @@ interface CategoryDao {
     @Query("DELETE FROM categories")
     suspend fun clearCategories()
 }
-
-

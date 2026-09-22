@@ -55,7 +55,7 @@ class BookViewActivity : AppCompatActivity() {
 
     private fun initUI() {
         binding.toolbar.numberPage.visibility = View.VISIBLE
-        binding.toolbar.back.setOnClickListener { onBackPressed() }
+        binding.toolbar.back.setOnClickListener { onBackPressedDispatcher.onBackPressed() }
     }
 
     private fun observeViewModel() {

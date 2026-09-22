@@ -91,7 +91,7 @@ class CategoryAddActivity : AppCompatActivity() {
         dialog = Dialogs.createProgressDialog(context, getString(R.string.please_wait))
 
         binding.toolbar.nameSpace.setText(R.string.add_new_category)
-        binding.toolbar.back.setOnClickListener { onBackPressed() }
+        binding.toolbar.back.setOnClickListener { onBackPressedDispatcher.onBackPressed() }
 
         binding.image.setOnClickListener { startCrop() }
         binding.toolbar.ok.setOnClickListener { validateData() }
@@ -137,5 +137,3 @@ class CategoryAddActivity : AppCompatActivity() {
         }
     }
 }
-
-

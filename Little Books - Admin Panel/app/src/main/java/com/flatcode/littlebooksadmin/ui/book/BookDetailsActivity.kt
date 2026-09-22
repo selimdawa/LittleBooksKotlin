@@ -80,7 +80,7 @@ class BookDetailsActivity : AppCompatActivity() {
         binding.favorite.setOnClickListener {
             binding.favorite.checkFavorite(bookId)
         }
-        binding.toolbar.back.setOnClickListener { onBackPressed() }
+        binding.toolbar.back.setOnClickListener { onBackPressedDispatcher.onBackPressed() }
         binding.read.setOnClickListener {
             context.openActivity<BookViewActivity>(extras = arrayOf(DATA.BOOK_ID to bookId))
         }
@@ -235,7 +235,3 @@ class BookDetailsActivity : AppCompatActivity() {
             }
         }
 }
-
-
-
-

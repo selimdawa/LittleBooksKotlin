@@ -83,7 +83,7 @@ class SliderShowActivity : AppCompatActivity() {
         }
 
         binding.toolbar.nameSpace.setText(R.string.slider_show)
-        binding.toolbar.back.setOnClickListener { onBackPressed() }
+        binding.toolbar.back.setOnClickListener { onBackPressedDispatcher.onBackPressed() }
 
         dialog = Dialogs.createProgressDialog(context, getString(R.string.please_wait))
 

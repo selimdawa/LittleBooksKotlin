@@ -50,7 +50,7 @@ class EditorsChoiceActivity : AppCompatActivity() {
 
     private fun initUI() {
         binding.toolbar.nameSpace.setText(R.string.editors_choice)
-        binding.toolbar.back.setOnClickListener { onBackPressed() }
+        binding.toolbar.back.setOnClickListener { onBackPressedDispatcher.onBackPressed() }
 
         adapter = EditorsChoiceAdapter()
         binding.recyclerView.adapter = adapter
@@ -87,5 +87,3 @@ class EditorsChoiceActivity : AppCompatActivity() {
         viewModel.loadEditorsChoiceBooks()
     }
 }
-
-

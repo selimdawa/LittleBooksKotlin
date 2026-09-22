@@ -6,21 +6,20 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
 import android.widget.Toast
-import androidx.activity.viewModels
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import com.flatcode.littlebooksadmin.ui.book.LinearBookAdapter
-import com.flatcode.littlebooksadmin.model.Book
 import com.flatcode.littlebooksadmin.R
+import com.flatcode.littlebooksadmin.databinding.ActivityPageLinearSwitchBinding
+import com.flatcode.littlebooksadmin.model.Book
 import com.flatcode.littlebooksadmin.utils.DATA
 import com.flatcode.littlebooksadmin.utils.Resource
-import com.flatcode.littlebooksadmin.databinding.ActivityPageLinearSwitchBinding
-import com.flatcode.littlebooksadmin.ui.book.BooksViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import java.text.MessageFormat
@@ -33,11 +32,23 @@ class MyBooksActivity : AppCompatActivity() {
     private var list: ArrayList<Book?> = arrayListOf()
     private var adapter: LinearBookAdapter? = null
     private var type: String = DATA.TIMESTAMP
-    
+
     private val viewModel: BooksViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (DATA.searchStatus) {
+                    binding.toolbar.toolbar.visibility = View.VISIBLE
+                    binding.toolbar.toolbarSearch.visibility = View.GONE
+                    DATA.searchStatus = false
+                    binding.toolbar.textSearch.setText(DATA.EMPTY)
+                } else {
+                    finish()
+                }
+            }
+        })
         enableEdgeToEdge()
         binding = ActivityPageLinearSwitchBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -54,22 +65,24 @@ class MyBooksActivity : AppCompatActivity() {
 
     private fun initUI() {
         binding.toolbar.nameSpace.setText(R.string.my_books)
-        binding.toolbar.close.setOnClickListener { onBackPressed() }
-        binding.toolbar.back.setOnClickListener { onBackPressed() }
+        binding.toolbar.close.setOnClickListener { onBackPressedDispatcher.onBackPressed() }
+        binding.toolbar.back.setOnClickListener { onBackPressedDispatcher.onBackPressed() }
 
         binding.toolbar.search.setOnClickListener {
             binding.toolbar.toolbar.visibility = View.GONE
             binding.toolbar.toolbarSearch.visibility = View.VISIBLE
             DATA.searchStatus = true
         }
-        
+
         binding.toolbar.textSearch.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 try {
                     adapter!!.filter.filter(s)
-                } catch (e: Exception) { }
+                } catch (e: Exception) {
+                }
             }
+
             override fun afterTextChanged(s: Editable?) {}
         })
 
@@ -106,11 +119,13 @@ class MyBooksActivity : AppCompatActivity() {
                         is Resource.Loading -> {
                             binding.progress.visibility = View.VISIBLE
                         }
+
                         is Resource.Success -> {
                             binding.progress.visibility = View.GONE
                             val books = resource.data ?: emptyList()
                             updateList(books)
                         }
+
                         is Resource.Error -> {
                             binding.progress.visibility = View.GONE
                             Toast.makeText(context, resource.message, Toast.LENGTH_SHORT).show()
@@ -125,16 +140,25 @@ class MyBooksActivity : AppCompatActivity() {
         list.clear()
         books.forEach {
             val legacyBook = Book(
-                it.publisher, it.id, it.title, it.description, it.categoryId,
-                it.url, it.image, it.timestamp, it.viewsCount, it.downloadsCount,
-                it.lovesCount, it.editorsChoice
+                it.publisher,
+                it.id,
+                it.title,
+                it.description,
+                it.categoryId,
+                it.url,
+                it.image,
+                it.timestamp,
+                it.viewsCount,
+                it.downloadsCount,
+                it.lovesCount,
+                it.editorsChoice
             )
             list.add(legacyBook)
         }
-        
+
         binding.toolbar.number.text = MessageFormat.format("( {0} )", list.size)
         adapter!!.notifyDataSetChanged()
-        
+
         if (list.isNotEmpty()) {
             binding.recyclerView.visibility = View.VISIBLE
             binding.emptyText.visibility = View.GONE
@@ -144,19 +168,9 @@ class MyBooksActivity : AppCompatActivity() {
         }
     }
 
-    override fun onBackPressed() {
-        if (DATA.searchStatus) {
-            binding.toolbar.toolbar.visibility = View.VISIBLE
-            binding.toolbar.toolbarSearch.visibility = View.GONE
-            DATA.searchStatus = false
-            binding.toolbar.textSearch.setText(DATA.EMPTY)
-        } else super.onBackPressed()
-    }
 
     override fun onResume() {
         super.onResume()
         viewModel.loadBooks(type, DATA.FirebaseUserUid)
     }
 }
-
-

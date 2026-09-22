@@ -69,7 +69,7 @@ class BookEditActivity : AppCompatActivity() {
         dialog = Dialogs.createProgressDialog(context, getString(R.string.please_wait))
 
         binding.toolbar.nameSpace.setText(R.string.edit_book)
-        binding.toolbar.back.setOnClickListener { onBackPressed() }
+        binding.toolbar.back.setOnClickListener { onBackPressedDispatcher.onBackPressed() }
 
         binding.image.setOnClickListener { pickImageGallery() }
         binding.category.setOnClickListener { categoryDialog() }

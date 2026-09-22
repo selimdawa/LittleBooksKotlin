@@ -212,5 +212,3 @@ class UserRepository @Inject constructor(
         val favoritesCount: Int
     )
 }
-
-

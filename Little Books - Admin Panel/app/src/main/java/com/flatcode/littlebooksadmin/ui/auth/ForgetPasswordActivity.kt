@@ -37,7 +37,7 @@ class ForgetPasswordActivity : AppCompatActivity() {
         dialog = Dialogs.createProgressDialog(context, getString(R.string.please_wait))
 
         binding.go.setOnClickListener { validateDate() }
-        binding.login.setOnClickListener { onBackPressed() }
+        binding.login.setOnClickListener { onBackPressedDispatcher.onBackPressed() }
     }
 
     private var email = ""

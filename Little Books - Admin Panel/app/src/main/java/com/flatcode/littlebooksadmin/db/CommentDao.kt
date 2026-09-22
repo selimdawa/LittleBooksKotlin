@@ -15,5 +15,3 @@ interface CommentDao {
     @Query("DELETE FROM comments WHERE bookId = :bookId")
     suspend fun clearCommentsForBook(bookId: String)
 }
-
-
