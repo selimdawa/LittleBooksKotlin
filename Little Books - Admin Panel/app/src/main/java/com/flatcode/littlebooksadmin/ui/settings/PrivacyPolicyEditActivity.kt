@@ -9,8 +9,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.flatcode.littlebooksadmin.R
-import com.flatcode.littlebooksadmin.utils.DATA
 import com.flatcode.littlebooksadmin.databinding.ActivityPrivacyPolicyEditBinding
+import com.flatcode.littlebooksadmin.utils.DATA
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
@@ -57,7 +57,9 @@ class PrivacyPolicyEditActivity : AppCompatActivity() {
         ref.updateChildren(hashMap).addOnSuccessListener {
             Toast.makeText(context, R.string.privacy_policy_updated, Toast.LENGTH_SHORT).show()
         }.addOnFailureListener { e: Exception ->
-            Toast.makeText(context, getString(R.string.error_message, e.message), Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                context, getString(R.string.error_message, e.message), Toast.LENGTH_SHORT
+            ).show()
         }
     }
 
@@ -74,4 +76,3 @@ class PrivacyPolicyEditActivity : AppCompatActivity() {
         })
     }
 }
-

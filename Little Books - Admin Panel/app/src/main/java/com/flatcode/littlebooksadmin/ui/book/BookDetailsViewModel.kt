@@ -16,8 +16,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class BookDetailsViewModel @Inject constructor(
-    private val bookRepository: BookRepository,
-    private val userRepository: UserRepository
+    private val bookRepository: BookRepository, private val userRepository: UserRepository
 ) : ViewModel() {
 
     private val _book = MutableStateFlow<Resource<Book>>(Resource.Loading())
@@ -35,14 +34,14 @@ class BookDetailsViewModel @Inject constructor(
     fun loadBookDetails(bookId: String) {
         viewModelScope.launch {
             bookRepository.incrementViews(bookId)
-            
+
             val result = bookRepository.getBookById(bookId)
             _book.value = result
-            
+
             if (result is Resource.Success) {
                 result.data?.publisher?.let { loadPublisher(it) }
             }
-            
+
             bookRepository.getComments(bookId).collect {
                 _comments.value = it
             }

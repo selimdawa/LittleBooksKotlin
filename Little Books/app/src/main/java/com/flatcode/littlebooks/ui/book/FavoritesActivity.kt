@@ -14,9 +14,8 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.viewbinding.ViewBinding
-import com.flatcode.littlebooks.model.Book
-import com.flatcode.littlebooks.utils.DATA
 import com.flatcode.littlebooks.databinding.ActivityFavoritesBinding
+import com.flatcode.littlebooks.utils.DATA
 import com.flatcode.littlebooks.utils.Resource
 import com.flatcode.littlebooks.viewmodel.BookViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -27,9 +26,9 @@ class FavoritesActivity : AppCompatActivity() {
 
     private var binding: ActivityFavoritesBinding? = null
     var context: Context = this@FavoritesActivity
-    
+
     private var adapter: StaggeredBookAdapter? = null
-    
+
     private val viewModel: BookViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -51,7 +50,7 @@ class FavoritesActivity : AppCompatActivity() {
         adapter = StaggeredBookAdapter()
         binding.recyclerView.adapter = adapter
 
-        binding.back.setOnClickListener { onBackPressed() }
+        binding.back.setOnClickListener { onBackPressedDispatcher.onBackPressed() }
 
         observeViewModel()
     }
@@ -59,7 +58,7 @@ class FavoritesActivity : AppCompatActivity() {
     private fun observeViewModel() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.favorites.collect { resource ->
+                viewModel.filteredFavorites.collect { resource ->
                     val binding = binding ?: return@collect
                     when (resource) {
                         is Resource.Success -> {
@@ -74,11 +73,13 @@ class FavoritesActivity : AppCompatActivity() {
                                 binding.recyclerView.visibility = View.VISIBLE
                             }
                         }
+
                         is Resource.Error -> {
                             binding.bar.visibility = View.GONE
                             binding.empty.visibility = View.VISIBLE
                             binding.recyclerView.visibility = View.GONE
                         }
+
                         is Resource.Loading -> {
                             binding.bar.visibility = View.VISIBLE
                         }

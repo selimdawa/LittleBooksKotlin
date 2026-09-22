@@ -1,5 +1,6 @@
 package com.flatcode.littlebooksadmin.ui.main
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
 import android.os.Handler
@@ -15,6 +16,7 @@ import com.flatcode.littlebooksadmin.ui.auth.LoginActivity
 import com.flatcode.littlebooksadmin.ui.auth.AuthViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
+@SuppressLint("CustomSplashScreen")
 @AndroidEntryPoint
 class SplashActivity : AppCompatActivity() {
 

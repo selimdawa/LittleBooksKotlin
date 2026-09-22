@@ -3,7 +3,7 @@ package com.flatcode.littlebooks.ui.book
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
-import com.flatcode.littlebooks.base.BaseListAdapter
+import com.flatcode.littlebooks.ui.BaseListAdapter
 import com.flatcode.littlebooks.databinding.ItemCommentBinding
 import com.flatcode.littlebooks.model.Comment
 import com.flatcode.littlebooks.model.User

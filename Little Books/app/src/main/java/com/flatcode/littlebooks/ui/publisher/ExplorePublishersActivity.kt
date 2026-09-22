@@ -6,6 +6,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -15,15 +16,14 @@ import androidx.core.view.updateLayoutParams
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import com.flatcode.littlebooks.model.User
 import com.flatcode.littlebooks.R
-import com.flatcode.littlebooks.utils.DATA
-import com.flatcode.littlebooks.utils.loadBannerAd
 import com.flatcode.littlebooks.databinding.ActivityPageStaggeredBinding
+import com.flatcode.littlebooks.ui.profile.ProfileActivity
+import com.flatcode.littlebooks.utils.DATA
 import com.flatcode.littlebooks.utils.Resource
+import com.flatcode.littlebooks.utils.loadBannerAd
 import com.flatcode.littlebooks.utils.openActivity
 import com.flatcode.littlebooks.viewmodel.ProfileViewModel
-import com.flatcode.littlebooks.ui.profile.ProfileActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import java.text.MessageFormat
@@ -53,8 +53,8 @@ class ExplorePublishersActivity : AppCompatActivity() {
         }
 
         binding!!.toolbar.nameSpace.setText(R.string.explore_publishers)
-        binding!!.toolbar.back.setOnClickListener { onBackPressed() }
-        binding!!.toolbar.close.setOnClickListener { onBackPressed() }
+        binding!!.toolbar.back.setOnClickListener { onBackPressedDispatcher.onBackPressed() }
+        binding!!.toolbar.close.setOnClickListener { onBackPressedDispatcher.onBackPressed() }
         binding!!.adView.loadBannerAd(context, DATA.BANNER_SMART_EXPLORE_PUBLISHERS)
 
         binding!!.toolbar.search.setOnClickListener {
@@ -62,6 +62,20 @@ class ExplorePublishersActivity : AppCompatActivity() {
             binding!!.toolbar.toolbarSearch.visibility = View.VISIBLE
             DATA.searchStatus = true
         }
+
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (DATA.searchStatus) {
+                    binding!!.toolbar.toolbar.visibility = View.VISIBLE
+                    binding!!.toolbar.toolbarSearch.visibility = View.GONE
+                    DATA.searchStatus = false
+                    binding!!.toolbar.textSearch.setText(DATA.EMPTY)
+                } else {
+                    isEnabled = false
+                    onBackPressedDispatcher.onBackPressed()
+                }
+            }
+        })
         binding!!.toolbar.textSearch.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
@@ -71,14 +85,11 @@ class ExplorePublishersActivity : AppCompatActivity() {
             override fun afterTextChanged(s: Editable) {}
         })
 
-        adapter = PublisherAdapter(
-            onItemClick = { item ->
-                context.openActivity<ProfileActivity>(false, DATA.PROFILE_ID to item.id)
-            },
-            onFollowClick = { item, isFollowing ->
-                viewModel.followUser(DATA.FirebaseUserUid, item.id, !isFollowing)
-            }
-        )
+        adapter = PublisherAdapter(onItemClick = { item ->
+            context.openActivity<ProfileActivity>(clear = false, DATA.PROFILE_ID to item.id)
+        }, onFollowClick = { item, isFollowing ->
+            viewModel.followUser(DATA.FirebaseUserUid, item.id, !isFollowing)
+        })
         binding!!.recyclerView.adapter = adapter
 
         observeViewModel()
@@ -92,7 +103,8 @@ class ExplorePublishersActivity : AppCompatActivity() {
                         is Resource.Success -> {
                             binding!!.progress.visibility = View.GONE
                             val data = resource.data ?: emptyList()
-                            binding!!.toolbar.number.text = MessageFormat.format("( {0} )", data.size)
+                            binding!!.toolbar.number.text =
+                                MessageFormat.format("( {0} )", data.size)
                             adapter!!.submitList(data)
                             if (data.isNotEmpty()) {
                                 binding!!.recyclerView.visibility = View.VISIBLE
@@ -102,11 +114,13 @@ class ExplorePublishersActivity : AppCompatActivity() {
                                 binding!!.emptyText.visibility = View.VISIBLE
                             }
                         }
+
                         is Resource.Error -> {
                             binding!!.progress.visibility = View.GONE
                             binding!!.recyclerView.visibility = View.GONE
                             binding!!.emptyText.visibility = View.VISIBLE
                         }
+
                         is Resource.Loading -> {
                             binding!!.progress.visibility = View.VISIBLE
                         }
@@ -116,20 +130,8 @@ class ExplorePublishersActivity : AppCompatActivity() {
         }
     }
 
-    override fun onBackPressed() {
-        if (DATA.searchStatus) {
-            binding!!.toolbar.toolbar.visibility = View.VISIBLE
-            binding!!.toolbar.toolbarSearch.visibility = View.GONE
-            DATA.searchStatus = false
-            binding!!.toolbar.textSearch.setText(DATA.EMPTY)
-        } else super.onBackPressed()
-    }
-
     override fun onResume() {
         super.onResume()
         viewModel.loadExplorePublishers(DATA.FirebaseUserUid)
     }
 }
-
-
-

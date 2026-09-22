@@ -1,8 +1,8 @@
 package com.flatcode.littlebooks.repository
 
+import com.flatcode.littlebooks.db.CategoryDao
 import com.flatcode.littlebooks.model.Category
 import com.flatcode.littlebooks.utils.DATA
-import com.flatcode.littlebooks.db.CategoryDao
 import com.flatcode.littlebooks.utils.Resource
 import com.google.firebase.database.FirebaseDatabase
 import kotlinx.coroutines.flow.first
@@ -12,8 +12,7 @@ import javax.inject.Singleton
 
 @Singleton
 class CategoryRepository @Inject constructor(
-    private val db: FirebaseDatabase,
-    private val categoryDao: CategoryDao
+    private val db: FirebaseDatabase, private val categoryDao: CategoryDao
 ) {
     suspend fun getCategories(): Resource<List<Category>> {
         return try {
@@ -31,5 +30,3 @@ class CategoryRepository @Inject constructor(
         }
     }
 }
-
-

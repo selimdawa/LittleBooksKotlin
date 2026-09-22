@@ -3,7 +3,7 @@ package com.flatcode.littlebooks.ui.category
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
-import com.flatcode.littlebooks.base.BaseListAdapter
+import com.flatcode.littlebooks.ui.BaseListAdapter
 import com.flatcode.littlebooks.databinding.ItemCategoryBinding
 import com.flatcode.littlebooks.model.Category
 import com.flatcode.littlebooks.utils.loadImage

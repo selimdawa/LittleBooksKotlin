@@ -14,13 +14,13 @@ import androidx.core.view.updateLayoutParams
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import com.flatcode.littlebooks.utils.DATA
+import com.flatcode.littlebooks.R
 import com.flatcode.littlebooks.databinding.ActivityBookViewBinding
+import com.flatcode.littlebooks.utils.DATA
 import com.flatcode.littlebooks.utils.Resource
 import com.flatcode.littlebooks.viewmodel.BookViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
-import java.text.MessageFormat
 
 @AndroidEntryPoint
 class BookViewActivity : AppCompatActivity() {
@@ -50,7 +50,7 @@ class BookViewActivity : AppCompatActivity() {
         bookId = intent.getStringExtra(DATA.BOOK_ID)
 
         binding!!.toolbar.numberPage.visibility = View.VISIBLE
-        binding!!.toolbar.back.setOnClickListener { onBackPressed() }
+        binding!!.toolbar.back.setOnClickListener { onBackPressedDispatcher.onBackPressed() }
 
         observeViewModel()
         loadBookDetails()
@@ -79,23 +79,25 @@ class BookViewActivity : AppCompatActivity() {
                                     .onPageChange { page: Int, pageCount: Int ->
                                         val correctPage = page + 1
                                         binding!!.toolbar.numberPage.text =
-                                            MessageFormat.format("{0}/{1}", correctPage, pageCount)
+                                            getString(R.string.page_format, correctPage, pageCount)
                                     }.onError { t: Throwable ->
                                         Toast.makeText(
                                             context, DATA.EMPTY + t.message, Toast.LENGTH_SHORT
                                         ).show()
-                                    }
-                                    .onPageError { page: Int, t: Throwable ->
+                                    }.onPageError { page: Int, t: Throwable ->
                                         Toast.makeText(
-                                            context, "Error on page " + page + DATA.SPACE +
-                                                    t.message, Toast.LENGTH_SHORT
+                                            context,
+                                            "Error on page " + page + DATA.SPACE + t.message,
+                                            Toast.LENGTH_SHORT
                                         ).show()
                                     }.load()
                             }
+
                             is Resource.Error -> {
                                 binding!!.progressBar.visibility = View.GONE
                                 Toast.makeText(context, resource.message, Toast.LENGTH_SHORT).show()
                             }
+
                             is Resource.Loading -> {
                                 binding!!.progressBar.visibility = View.VISIBLE
                             }
@@ -106,6 +108,3 @@ class BookViewActivity : AppCompatActivity() {
         }
     }
 }
-
-
-

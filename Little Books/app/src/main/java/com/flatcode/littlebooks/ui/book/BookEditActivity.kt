@@ -70,7 +70,7 @@ class BookEditActivity : AppCompatActivity() {
             .create()
 
         binding!!.toolbar.nameSpace.setText(R.string.edit_book)
-        binding!!.toolbar.back.setOnClickListener { onBackPressed() }
+        binding!!.toolbar.back.setOnClickListener { onBackPressedDispatcher.onBackPressed() }
         binding!!.image.setOnClickListener { pickImageGallery() }
         binding!!.category.setOnClickListener { categoryDialog() }
         binding!!.toolbar.ok.setOnClickListener { validateData() }
@@ -93,7 +93,7 @@ class BookEditActivity : AppCompatActivity() {
                             categoryId.clear()
                             resource.data?.forEach {
                                 categoryTitle.add(it.category ?: "")
-                                categoryId.add(it.id ?: "")
+                                categoryId.add(it.id)
                             }
                         }
                     }
@@ -138,8 +138,8 @@ class BookEditActivity : AppCompatActivity() {
     private var description = DATA.EMPTY
 
     private fun validateData() {
-        title = binding!!.titleEt.text.toString().trim { it <= ' ' }
-        description = binding!!.descriptionEt.text.toString().trim { it <= ' ' }
+        title = binding!!.titleEt.text.toString().trim()
+        description = binding!!.descriptionEt.text.toString().trim()
         if (TextUtils.isEmpty(title)) {
             Toast.makeText(context, "Enter Title...", Toast.LENGTH_SHORT).show()
         } else if (TextUtils.isEmpty(description)) {
@@ -162,7 +162,7 @@ class BookEditActivity : AppCompatActivity() {
         lifecycleScope.launch {
             bookViewModel.updateBook(bookId!!, hashMap)
             if (imageUri != null) {
-                bookViewModel.uploadBookImage(DATA.FirebaseUserUid, imageUri!!, context)
+                bookViewModel.uploadBookImage(imageUri!!)
             } else {
                 dialog!!.dismiss()
                 Toast.makeText(context, "Book info updated...", Toast.LENGTH_SHORT).show()

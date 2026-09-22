@@ -1,5 +1,6 @@
 package com.flatcode.littlebooks.ui.splash
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
 import android.os.Handler
@@ -7,22 +8,22 @@ import android.os.Looper
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import com.flatcode.littlebooks.databinding.ActivitySplashBinding
 import com.flatcode.littlebooks.ui.auth.AuthActivity
 import com.flatcode.littlebooks.ui.main.MainActivity
 import com.flatcode.littlebooks.utils.openActivity
-import com.flatcode.littlebooks.databinding.ActivitySplashBinding
 import com.flatcode.littlebooks.viewmodel.AuthViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
+@SuppressLint("CustomSplashScreen")
 @AndroidEntryPoint
 class SplashActivity : AppCompatActivity() {
 
     private var binding: ActivitySplashBinding? = null
     var context: Context = this@SplashActivity
     private val viewModel: AuthViewModel by viewModels()
-    
-    var time_per_second = 2
-    var time_final = time_per_millis * time_per_second
+
+    var timeFinal = 2000
 
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
@@ -31,7 +32,7 @@ class SplashActivity : AppCompatActivity() {
         val view = binding!!.root
         setContentView(view)
 
-        Handler(Looper.getMainLooper()).postDelayed({ checkUser() }, time_final.toLong())
+        Handler(Looper.getMainLooper()).postDelayed({ checkUser() }, timeFinal.toLong())
     }
 
     private fun checkUser() {
@@ -42,11 +43,4 @@ class SplashActivity : AppCompatActivity() {
         }
         finish()
     }
-
-    companion object {
-        const val time_per_millis = 1000
-    }
 }
-
-
-

@@ -89,9 +89,9 @@ class CategoriesAdapter : ListAdapter<Category, CategoriesAdapter.ViewHolder>(Ca
                 return results
             }
 
-            @Suppress("UNCHECKED_CAST")
             override fun publishResults(constraint: CharSequence?, results: FilterResults) {
-                submitFilteredList(results.values as? List<Category>)
+                val list = results.values as? List<*>
+                submitFilteredList(list?.filterIsInstance<Category>())
             }
         }.also { filter = it }
     }

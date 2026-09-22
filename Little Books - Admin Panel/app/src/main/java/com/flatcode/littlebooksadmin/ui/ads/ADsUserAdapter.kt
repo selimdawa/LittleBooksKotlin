@@ -14,7 +14,6 @@ import com.flatcode.littlebooksadmin.model.User
 import com.flatcode.littlebooksadmin.utils.DATA
 import com.flatcode.littlebooksadmin.utils.loadImage
 import com.flatcode.littlebooksadmin.utils.openActivity
-import java.text.MessageFormat
 
 class ADsUserAdapter(val isUser: Boolean) :
     ListAdapter<User, ADsUserAdapter.ViewHolder>(UserDiffCallback()), Filterable {
@@ -58,12 +57,10 @@ class ADsUserAdapter(val isUser: Boolean) :
             holder.binding.username.text = username
         }
 
-        val first = position
-        val finalCount = itemCount - first
         holder.binding.time.text = formattedDate
-        holder.binding.rank.text = MessageFormat.format("{0}", finalCount)
-        holder.binding.numberADsLoad.text = MessageFormat.format("{0}{1}", DATA.EMPTY, adLoaded)
-        holder.binding.numberADsClick.text = MessageFormat.format("{0}{1}", DATA.EMPTY, adClicked)
+        holder.binding.rank.text = (itemCount - position).toString()
+        holder.binding.numberADsLoad.text = adLoaded
+        holder.binding.numberADsClick.text = adClicked
 
         holder.binding.item.setOnClickListener {
             context.openActivity<AdsInfoActivity>(extras = arrayOf(DATA.PROFILE_ID to userId))
@@ -77,7 +74,7 @@ class ADsUserAdapter(val isUser: Boolean) :
                     var query = constraint
                     val results = FilterResults()
                     val filterList = unfilteredList
-                    if (query != null && query.isNotEmpty()) {
+                    if (!query.isNullOrEmpty()) {
                         query = query.toString().uppercase()
                         val filteredModels = ArrayList<User?>()
                         for (item in filterList) {
@@ -94,9 +91,9 @@ class ADsUserAdapter(val isUser: Boolean) :
                     return results
                 }
 
-                @Suppress("UNCHECKED_CAST")
                 override fun publishResults(constraint: CharSequence?, results: FilterResults) {
-                    submitFilteredList(results.values as? List<User?>)
+                    val list = results.values as? List<*>
+                    submitFilteredList(list?.filterIsInstance<User>())
                 }
             }
         }

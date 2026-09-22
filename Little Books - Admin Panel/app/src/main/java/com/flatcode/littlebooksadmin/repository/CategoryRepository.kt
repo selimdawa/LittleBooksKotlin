@@ -4,9 +4,9 @@ import android.net.Uri
 import com.cloudinary.android.MediaManager
 import com.cloudinary.android.callback.ErrorInfo
 import com.cloudinary.android.callback.UploadCallback
-import com.flatcode.littlebooksadmin.utils.DATA
 import com.flatcode.littlebooksadmin.db.CategoryDao
 import com.flatcode.littlebooksadmin.model.Category
+import com.flatcode.littlebooksadmin.utils.DATA
 import com.flatcode.littlebooksadmin.utils.Resource
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -26,32 +26,32 @@ import kotlin.coroutines.resume
 
 @Singleton
 class CategoryRepository @Inject constructor(
-    private val db: FirebaseDatabase,
-    private val categoryDao: CategoryDao
+    private val db: FirebaseDatabase, private val categoryDao: CategoryDao
 ) {
 
-    fun getCategories(orderBy: String = DATA.CATEGORY): Flow<Resource<List<Category>>> = callbackFlow {
-        trySend(Resource.Loading())
-        val ref = db.getReference(DATA.CATEGORIES).orderByChild(orderBy)
-        val listener = ref.addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                val categories = mutableListOf<Category>()
-                for (data in snapshot.children) {
-                    val category = data.getValue(Category::class.java)
-                    category?.let { categories.add(it) }
+    fun getCategories(orderBy: String = DATA.CATEGORY): Flow<Resource<List<Category>>> =
+        callbackFlow {
+            trySend(Resource.Loading())
+            val ref = db.getReference(DATA.CATEGORIES).orderByChild(orderBy)
+            val listener = ref.addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    val categories = mutableListOf<Category>()
+                    for (data in snapshot.children) {
+                        val category = data.getValue(Category::class.java)
+                        category?.let { categories.add(it) }
+                    }
+                    this@callbackFlow.launch {
+                        categoryDao.insertCategories(categories)
+                    }
+                    trySend(Resource.Success(categories.reversed()))
                 }
-                this@callbackFlow.launch {
-                    categoryDao.insertCategories(categories)
-                }
-                trySend(Resource.Success(categories.reversed()))
-            }
 
-            override fun onCancelled(error: DatabaseError) {
-                trySend(Resource.Error(error.message))
-            }
-        })
-        awaitClose { ref.removeEventListener(listener) }
-    }
+                override fun onCancelled(error: DatabaseError) {
+                    trySend(Resource.Error(error.message))
+                }
+            })
+            awaitClose { ref.removeEventListener(listener) }
+        }
 
     suspend fun addCategory(name: String, imageUri: Uri?): Resource<Unit> =
         suspendCancellableCoroutine { continuation ->
@@ -80,12 +80,14 @@ class CategoryRepository @Inject constructor(
                     }
                 }
             } else {
-                MediaManager.get().upload(imageUri)
-                    .option("folder", "CategoryImages/")
-                    .option("public_id", id)
-                    .callback(object : UploadCallback {
+                MediaManager.get().upload(imageUri).option("folder", "CategoryImages/")
+                    .option("public_id", id).callback(object : UploadCallback {
                         override fun onStart(requestId: String?) {}
-                        override fun onProgress(requestId: String?, bytes: Long, totalBytes: Long) {}
+                        override fun onProgress(
+                            requestId: String?, bytes: Long, totalBytes: Long
+                        ) {
+                        }
+
                         override fun onSuccess(requestId: String?, resultData: Map<*, *>?) {
                             val downloadUrl = resultData?.get("secure_url") as? String
                             CoroutineScope(Dispatchers.IO).launch {
@@ -101,28 +103,27 @@ class CategoryRepository @Inject constructor(
                                     categoryDao.insertCategory(category)
                                     continuation.resume(Resource.Success(Unit))
                                 } catch (e: Exception) {
-                                    continuation.resume(Resource.Error(e.message ?: "Database error"))
+                                    continuation.resume(
+                                        Resource.Error(
+                                            e.message ?: "Database error"
+                                        )
+                                    )
                                 }
                             }
                         }
 
                         override fun onError(requestId: String?, error: ErrorInfo?) {
-                            continuation.resume(Resource.Error(error?.description ?: "Upload failed"))
+                            continuation.resume(
+                                Resource.Error(
+                                    error?.description ?: "Upload failed"
+                                )
+                            )
                         }
 
                         override fun onReschedule(requestId: String?, error: ErrorInfo?) {}
                     }).dispatch()
             }
         }
-
-    suspend fun deleteCategory(id: String): Resource<Unit> {
-        return try {
-            db.getReference(DATA.CATEGORIES).child(id).removeValue().await()
-            Resource.Success(Unit)
-        } catch (e: Exception) {
-            Resource.Error(e.message ?: "Unknown error")
-        }
-    }
 }
 
 

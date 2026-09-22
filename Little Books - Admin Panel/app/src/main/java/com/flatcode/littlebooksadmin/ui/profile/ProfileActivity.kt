@@ -4,8 +4,8 @@ import android.content.Context
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
-import androidx.activity.viewModels
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -13,14 +13,13 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.flatcode.littlebooksadmin.R
-import com.flatcode.littlebooksadmin.utils.DATA
-import com.flatcode.littlebooksadmin.utils.*
-import com.flatcode.littlebooksadmin.utils.Resource
 import com.flatcode.littlebooksadmin.databinding.ActivityProfileBinding
-import com.flatcode.littlebooksadmin.ui.profile.ProfileViewModel
+import com.flatcode.littlebooksadmin.utils.DATA
+import com.flatcode.littlebooksadmin.utils.Resource
+import com.flatcode.littlebooksadmin.utils.loadImage
+import com.flatcode.littlebooksadmin.utils.openActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
-import java.text.MessageFormat
 
 @AndroidEntryPoint
 class ProfileActivity : AppCompatActivity() {
@@ -28,7 +27,7 @@ class ProfileActivity : AppCompatActivity() {
     private lateinit var binding: ActivityProfileBinding
     private val context: Context = this@ProfileActivity
     private var profileId: String? = null
-    
+
     private val viewModel: ProfileViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -47,7 +46,7 @@ class ProfileActivity : AppCompatActivity() {
 
         initUI()
         observeViewModel()
-        
+
         profileId?.let { viewModel.loadProfile(it) }
     }
 
@@ -77,13 +76,16 @@ class ProfileActivity : AppCompatActivity() {
                 launch {
                     viewModel.user.collect { resource ->
                         when (resource) {
-                            is Resource.Loading -> { }
+                            is Resource.Loading -> {}
                             is Resource.Success -> {
                                 resource.data?.let { user ->
                                     binding.username.text = user.username
-                                    binding.profile.loadImage(isUser = true, url = user.profileImage ?: DATA.BASIC)
+                                    binding.profile.loadImage(
+                                        isUser = true, url = user.profileImage ?: DATA.BASIC
+                                    )
                                 }
                             }
+
                             is Resource.Error -> {
                                 Toast.makeText(context, resource.message, Toast.LENGTH_SHORT).show()
                             }
@@ -93,7 +95,7 @@ class ProfileActivity : AppCompatActivity() {
                 launch {
                     viewModel.stats.collect { resource ->
                         when (resource) {
-                            is Resource.Loading -> { }
+                            is Resource.Loading -> {}
                             is Resource.Success -> {
                                 resource.data?.let { stats ->
                                     binding.numberBooks.text = stats.booksCount.toString()
@@ -102,6 +104,7 @@ class ProfileActivity : AppCompatActivity() {
                                     binding.numberFavorites.text = stats.favoritesCount.toString()
                                 }
                             }
+
                             is Resource.Error -> {
                                 Toast.makeText(context, resource.message, Toast.LENGTH_SHORT).show()
                             }

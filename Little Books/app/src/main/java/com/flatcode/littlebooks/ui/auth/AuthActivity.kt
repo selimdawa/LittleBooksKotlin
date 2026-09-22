@@ -23,7 +23,7 @@ class AuthActivity : AppCompatActivity() {
         val view = binding!!.root
         setContentView(view)
 
-        ViewCompat.setOnApplyWindowInsetsListener(view) { v, insets ->
+        ViewCompat.setOnApplyWindowInsetsListener(view) { _, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             binding!!.skipBtn.updateLayoutParams<ViewGroup.MarginLayoutParams> {
                 bottomMargin = systemBars.bottom + 20 // Original padding was 20sp? Wait, RelativeLayout padding is 20sp.

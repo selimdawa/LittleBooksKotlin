@@ -33,7 +33,7 @@ class TopPublisherAdapter(val isUser: Boolean) :
         super.submitList(list?.filterNotNull() ?: emptyList())
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, VT: Int): ViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val binding = ItemTopPublisherBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return ViewHolder(binding)
     }
@@ -44,7 +44,7 @@ class TopPublisherAdapter(val isUser: Boolean) :
 
         val item = getItem(position)
         val context = holder.itemView.context
-        val userId = item.id ?: ""
+        val userId = item.id
         val username = item.username.orEmpty()
         val profileImage = item.profileImage.orEmpty()
         val numberBooks = item.booksCount.toString()
@@ -70,7 +70,7 @@ class TopPublisherAdapter(val isUser: Boolean) :
                 var query = constraint
                 val results = FilterResults()
                 val filterList = unfilteredList
-                if (query != null && query.isNotEmpty()) {
+                if (!query.isNullOrEmpty()) {
                     query = query.toString().uppercase()
                     val filteredModels = ArrayList<User?>()
                     for (item in filterList) {
@@ -87,9 +87,10 @@ class TopPublisherAdapter(val isUser: Boolean) :
                 return results
             }
 
-            @Suppress("UNCHECKED_CAST")
             override fun publishResults(constraint: CharSequence?, results: FilterResults) {
-                submitFilteredList(results.values as? List<User?>)
+                val list = results.values as? List<*>
+                @Suppress("UNCHECKED_CAST")
+                submitFilteredList(list as? List<User>)
             }
         }.also { filter = it }
     }

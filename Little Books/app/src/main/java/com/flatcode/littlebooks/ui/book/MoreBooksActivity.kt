@@ -6,6 +6,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -16,16 +17,15 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.RecyclerView
-import com.flatcode.littlebooks.model.Book
-import com.flatcode.littlebooks.utils.DATA
-import com.flatcode.littlebooks.utils.loadBannerAd
+import com.flatcode.littlebooks.R
 import com.flatcode.littlebooks.databinding.ActivityPageLinearBinding
+import com.flatcode.littlebooks.utils.DATA
 import com.flatcode.littlebooks.utils.Resource
+import com.flatcode.littlebooks.utils.loadBannerAd
 import com.flatcode.littlebooks.utils.openActivity
 import com.flatcode.littlebooks.viewmodel.BookViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
-import java.text.MessageFormat
 
 @AndroidEntryPoint
 class MoreBooksActivity : AppCompatActivity() {
@@ -62,8 +62,8 @@ class MoreBooksActivity : AppCompatActivity() {
         isReverse = intent.getStringExtra(DATA.SHOW_MORE_BOOLEAN)
 
         binding!!.toolbar.nameSpace.text = name
-        binding!!.toolbar.close.setOnClickListener { onBackPressed() }
-        binding!!.toolbar.back.setOnClickListener { onBackPressed() }
+        binding!!.toolbar.close.setOnClickListener { onBackPressedDispatcher.onBackPressed() }
+        binding!!.toolbar.back.setOnClickListener { onBackPressedDispatcher.onBackPressed() }
         binding!!.adView.loadBannerAd(context, DATA.BANNER_SMART_MORE_BOOKS)
 
         if (isReverse == "true") {
@@ -76,6 +76,20 @@ class MoreBooksActivity : AppCompatActivity() {
             binding!!.toolbar.toolbarSearch.visibility = View.VISIBLE
             DATA.searchStatus = true
         }
+
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (DATA.searchStatus) {
+                    binding!!.toolbar.toolbar.visibility = View.VISIBLE
+                    binding!!.toolbar.toolbarSearch.visibility = View.GONE
+                    DATA.searchStatus = false
+                    binding!!.toolbar.textSearch.setText(DATA.EMPTY)
+                } else {
+                    isEnabled = false
+                    onBackPressedDispatcher.onBackPressed()
+                }
+            }
+        })
         binding!!.toolbar.textSearch.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
@@ -85,8 +99,8 @@ class MoreBooksActivity : AppCompatActivity() {
             override fun afterTextChanged(s: Editable) {}
         })
 
-        adapter = LinearBookAdapter(false) { item ->
-            context.openActivity<BookDetailsActivity>(false, DATA.BOOK_ID to item.id)
+        adapter = LinearBookAdapter(isUser = false) { item ->
+            context.openActivity<BookDetailsActivity>(clear = false, DATA.BOOK_ID to item.id)
         }
         recyclerView!!.adapter = adapter
 
@@ -101,7 +115,8 @@ class MoreBooksActivity : AppCompatActivity() {
                         is Resource.Success -> {
                             binding!!.progress.visibility = View.GONE
                             val data = resource.data ?: emptyList()
-                            binding!!.toolbar.number.text = MessageFormat.format("( {0} )", data.size)
+                            binding!!.toolbar.number.text =
+                                getString(R.string.count_format, data.size)
                             adapter!!.submitList(data)
                             if (data.isNotEmpty()) {
                                 recyclerView!!.visibility = View.VISIBLE
@@ -111,11 +126,13 @@ class MoreBooksActivity : AppCompatActivity() {
                                 binding!!.emptyText.visibility = View.VISIBLE
                             }
                         }
+
                         is Resource.Error -> {
                             binding!!.progress.visibility = View.GONE
                             recyclerView!!.visibility = View.GONE
                             binding!!.emptyText.visibility = View.VISIBLE
                         }
+
                         is Resource.Loading -> {
                             binding!!.progress.visibility = View.VISIBLE
                         }
@@ -125,20 +142,8 @@ class MoreBooksActivity : AppCompatActivity() {
         }
     }
 
-    override fun onBackPressed() {
-        if (DATA.searchStatus) {
-            binding!!.toolbar.toolbar.visibility = View.VISIBLE
-            binding!!.toolbar.toolbarSearch.visibility = View.GONE
-            DATA.searchStatus = false
-            binding!!.toolbar.textSearch.setText(DATA.EMPTY)
-        } else super.onBackPressed()
-    }
-
     override fun onResume() {
         super.onResume()
         type?.let { viewModel.loadBooksBy(it) }
     }
 }
-
-
-

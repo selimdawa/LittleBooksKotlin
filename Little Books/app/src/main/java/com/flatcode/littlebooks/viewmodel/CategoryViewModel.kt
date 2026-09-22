@@ -30,5 +30,3 @@ class CategoryViewModel @Inject constructor(
         }
     }
 }
-
-

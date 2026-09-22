@@ -46,9 +46,9 @@ class MainBookAdapter(
             binding.line.visibility = if (isViews || isLoves || isDownloads) View.VISIBLE else View.GONE
 
             binding.image.loadImage(false, item.image)
-            binding.views.text = DATA.EMPTY + item.viewsCount
-            binding.downloads.text = DATA.EMPTY + item.downloadsCount
-            binding.loves.text = DATA.EMPTY + item.lovesCount
+            binding.views.text = item.viewsCount.toString()
+            binding.downloads.text = item.downloadsCount.toString()
+            binding.loves.text = item.lovesCount.toString()
             binding.name.text = item.title
 
             binding.favorites.isFavorite(item.id, DATA.FirebaseUserUid)
@@ -58,7 +58,7 @@ class MainBookAdapter(
             }
 
             itemView.setOnClickListener {
-                context.openActivity<BookDetailsActivity>(false, DATA.BOOK_ID to bookId)
+                context.openActivity<BookDetailsActivity>(clear = false, DATA.BOOK_ID to bookId)
             }
         }
     }

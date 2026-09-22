@@ -1,8 +1,6 @@
 package com.flatcode.littlebooksadmin.ui.book
 
 import android.Manifest
-import androidx.appcompat.app.AlertDialog
-import com.flatcode.littlebooksadmin.utils.Dialogs
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -11,11 +9,12 @@ import android.os.Build
 import android.os.Bundle
 import android.text.TextUtils
 import android.widget.Toast
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.activity.viewModels
-import androidx.activity.enableEdgeToEdge
-import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
@@ -24,12 +23,9 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.flatcode.littlebooksadmin.R
-import com.flatcode.littlebooksadmin.utils.DATA
-import com.flatcode.littlebooksadmin.model.Category
-import com.flatcode.littlebooksadmin.utils.Resource
-import com.flatcode.littlebooksadmin.utils.*
 import com.flatcode.littlebooksadmin.databinding.ActivityBookEditBinding
-import com.flatcode.littlebooksadmin.ui.book.BookEditViewModel
+import com.flatcode.littlebooksadmin.model.Category
+import com.flatcode.littlebooksadmin.utils.*
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -42,7 +38,7 @@ class BookEditActivity : AppCompatActivity() {
     private var imageUri: Uri? = null
     private var dialog: AlertDialog? = null
     private var categoriesList: List<Category> = emptyList()
-    
+
     private val viewModel: BookEditViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -61,7 +57,7 @@ class BookEditActivity : AppCompatActivity() {
 
         initUI()
         observeViewModel()
-        
+
         bookId?.let { viewModel.loadBook(it) }
     }
 
@@ -82,20 +78,23 @@ class BookEditActivity : AppCompatActivity() {
                 launch {
                     viewModel.book.collect { resource ->
                         when (resource) {
-                            is Resource.Loading -> { }
+                            is Resource.Loading -> {}
                             is Resource.Success -> {
                                 resource.data?.let { book ->
                                     binding.titleEt.setText(book.title)
                                     binding.descriptionEt.setText(book.description)
-                                    selectedId = book.categoryId ?: DATA.EMPTY
-                                    binding.image.loadImage(isUser = false, url = book.image ?: DATA.BASIC)
-                                    
+                                    selectedId = book.categoryId.orEmpty()
+                                    binding.image.loadImage(
+                                        isUser = false, url = book.image ?: DATA.BASIC
+                                    )
+
                                     // Set category name
                                     categoriesList.find { it.id == selectedId }?.let {
                                         binding.category.text = it.category
                                     }
                                 }
                             }
+
                             is Resource.Error -> {
                                 Toast.makeText(context, resource.message, Toast.LENGTH_SHORT).show()
                             }
@@ -105,7 +104,7 @@ class BookEditActivity : AppCompatActivity() {
                 launch {
                     viewModel.categories.collect { resource ->
                         when (resource) {
-                            is Resource.Loading -> { }
+                            is Resource.Loading -> {}
                             is Resource.Success -> {
                                 categoriesList = resource.data ?: emptyList()
                                 // Re-set category name if book was already loaded
@@ -113,7 +112,8 @@ class BookEditActivity : AppCompatActivity() {
                                     binding.category.text = it.category
                                 }
                             }
-                            is Resource.Error -> { }
+
+                            is Resource.Error -> {}
                         }
                     }
                 }
@@ -121,22 +121,29 @@ class BookEditActivity : AppCompatActivity() {
                     viewModel.updateState.collect { resource ->
                         when (resource) {
                             is Resource.Loading -> {
-                                dialog = Dialogs.createProgressDialog(context, getString(R.string.updating_book_info))
+                                dialog = Dialogs.createProgressDialog(
+                                    context, getString(R.string.updating_book_info)
+                                )
                                 dialog!!.show()
                             }
+
                             is Resource.Success -> {
                                 if (imageUri == null) {
                                     dialog!!.dismiss()
-                                    Toast.makeText(context, R.string.book_info_updated, Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(
+                                        context, R.string.book_info_updated, Toast.LENGTH_SHORT
+                                    ).show()
                                     finish()
                                 } else {
                                     // Handle image upload if needed, or if it's already triggered by ViewModel
                                 }
                             }
+
                             is Resource.Error -> {
                                 dialog!!.dismiss()
                                 Toast.makeText(context, resource.message, Toast.LENGTH_SHORT).show()
                             }
+
                             null -> {}
                         }
                     }
@@ -150,7 +157,7 @@ class BookEditActivity : AppCompatActivity() {
     private fun validateData() {
         val title = binding.titleEt.text.toString().trim()
         val description = binding.descriptionEt.text.toString().trim()
-        
+
         if (TextUtils.isEmpty(title)) {
             Toast.makeText(context, R.string.enter_title, Toast.LENGTH_SHORT).show()
         } else if (TextUtils.isEmpty(description)) {
@@ -160,8 +167,7 @@ class BookEditActivity : AppCompatActivity() {
         } else {
             bookId?.let {
                 viewModel.updateBook(
-                    it, title, description, selectedId,
-                    imageUri
+                    it, title, description, selectedId, imageUri
                 )
             }
         }
@@ -169,13 +175,13 @@ class BookEditActivity : AppCompatActivity() {
 
     private fun categoryDialog() {
         if (categoriesList.isEmpty()) return
-        
-        val categoriesArray = categoriesList.map { it.category }.toTypedArray()
-        
+
+        val categoriesArray = categoriesList.map { it.category.orEmpty() }.toTypedArray()
+
         val builder = AlertDialog.Builder(context)
         builder.setTitle(R.string.choose_category)
             .setItems(categoriesArray) { _, which ->
-                selectedId = categoriesList[which].id ?: DATA.EMPTY
+                selectedId = categoriesList[which].id
                 binding.category.text = categoriesList[which].category
             }.show()
     }
@@ -211,7 +217,10 @@ class BookEditActivity : AppCompatActivity() {
             Manifest.permission.READ_EXTERNAL_STORAGE
         }
 
-        if (ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(
+                context, permission
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
             launchGallery()
         } else {
             requestPermissionLauncher.launch(permission)

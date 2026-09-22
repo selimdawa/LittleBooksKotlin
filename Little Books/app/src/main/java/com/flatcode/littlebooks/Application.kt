@@ -6,7 +6,6 @@ import com.flatcode.littlebooks.utils.DATA
 import dagger.hilt.android.HiltAndroidApp
 import io.selimdawa.multicolors.MultiColorManager
 import timber.log.Timber
-import com.flatcode.littlebooks.BuildConfig
 
 @HiltAndroidApp
 class Application : Application() {

@@ -1,6 +1,5 @@
 package com.flatcode.littlebooks.ui.book
 
-import androidx.appcompat.app.AlertDialog
 import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -8,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -21,9 +21,9 @@ import com.flatcode.littlebooks.databinding.DialogCommentAddBinding
 import com.flatcode.littlebooks.model.Comment
 import com.flatcode.littlebooks.utils.DATA
 import com.flatcode.littlebooks.utils.Resource
+import com.flatcode.littlebooks.utils.loadCategory
 import com.flatcode.littlebooks.utils.loadImage
 import com.flatcode.littlebooks.utils.loadImageBlur
-import com.flatcode.littlebooks.utils.loadCategory
 import com.flatcode.littlebooks.utils.loadPdfInfo
 import com.flatcode.littlebooks.utils.openActivity
 import com.flatcode.littlebooks.viewmodel.BookViewModel
@@ -59,18 +59,16 @@ class BookDetailsActivity : AppCompatActivity() {
 
         bookId = intent.getStringExtra(DATA.BOOK_ID)
 
-        progressDialog = AlertDialog.Builder(this)
-            .setTitle("Please wait")
-            .setCancelable(false)
-            .create()
+        progressDialog =
+            AlertDialog.Builder(this).setTitle("Please wait").setCancelable(false).create()
 
-        binding!!.toolbar.back.setOnClickListener { onBackPressed() }
+        binding!!.toolbar.back.setOnClickListener { onBackPressedDispatcher.onBackPressed() }
         binding!!.favorite.setOnClickListener {
             val isFavorite = binding!!.favorite.tag == "added"
             viewModel.toggleFavorite(DATA.FirebaseUserUid, bookId!!, !isFavorite)
         }
         binding!!.read.setOnClickListener {
-            context.openActivity<BookViewActivity>(false, DATA.BOOK_ID to bookId)
+            context.openActivity<BookViewActivity>(clear = false, DATA.BOOK_ID to bookId)
         }
         binding!!.addComment.setOnClickListener { addCommentDialog() }
 
@@ -92,17 +90,17 @@ class BookDetailsActivity : AppCompatActivity() {
                     viewModel.bookDetails.collect { resource ->
                         when (resource) {
                             is Resource.Success -> {
-                                val book = resource.data
-                                binding!!.toolbar.nameSpace.text = book?.title
-                                binding!!.title.text = book?.title
-                                binding!!.description.text = book?.description
-                                binding!!.views.text = DATA.EMPTY + book?.viewsCount
-                                binding!!.downloads.text = DATA.EMPTY + book?.downloadsCount
+                                val book = resource.data ?: return@collect
+                                binding!!.toolbar.nameSpace.text = book.title
+                                binding!!.title.text = book.title
+                                binding!!.description.text = book.description
+                                binding!!.views.text = book.viewsCount.toString()
+                                binding!!.downloads.text = book.downloadsCount.toString()
                                 // binding!!.pages.text = DATA.EMPTY + book?.pagesCount // layout doesn't have pages count text view?
-                                binding!!.category.loadCategory(DATA.EMPTY + book?.categoryId)
-                                binding!!.image.loadImage(false, book?.url)
-                                binding!!.cover.loadImageBlur(false, DATA.EMPTY + book?.url, 50)
-                                binding!!.size.loadPdfInfo(DATA.EMPTY + book?.url)
+                                binding!!.category.loadCategory(book.categoryId ?: "")
+                                binding!!.image.loadImage(false, book.url)
+                                binding!!.cover.loadImageBlur(false, book.url ?: "", 50)
+                                binding!!.size.loadPdfInfo(book.url)
                             }
 
                             is Resource.Error -> {

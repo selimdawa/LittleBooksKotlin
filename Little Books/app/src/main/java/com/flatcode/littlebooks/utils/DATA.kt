@@ -1,3 +1,5 @@
+@file:Suppress("SpellCheckingInspection")
+
 package com.flatcode.littlebooks.utils
 
 import com.google.firebase.auth.FirebaseAuth
@@ -32,7 +34,6 @@ object DATA {
     var CATEGORY = "category"
     var DESCRIPTION = "description"
     var TITLE = "title"
-    var NULL = "null"
     var FAVORITES = "Favorites"
     var VIEWS_COUNT = "viewsCount"
     var DOWNLOADS_COUNT = "downloadsCount"
@@ -45,12 +46,7 @@ object DATA {
     var AD_LOAD = "adLoad"
 
     //Others
-    var DOT = "."
     var CURRENT_VERSION = 1
-    var ZERO = 0
-    var SPLASH_TIME = 2000
-    var ITEM_DOUBLE = 20
-    var MAX_BYTES_PDF = 50000000 // Here Max Size PDF 50MB
     var ORDER_MAIN = 2 // Here Max Item Show
     var MIN_SQUARE = 500
     var searchStatus = false
@@ -60,7 +56,6 @@ object DATA {
     var PROFILE_ID = "profileId"
     var SHOW_MORE_NAME = "showMoreName"
     var SHOW_MORE_BOOLEAN = "showMoreBoolean"
-    var COLOR_OPTION = "color_option"
     var BOOK_ID = "bookId"
     var CATEGORY_ID = "categoryId"
     var CATEGORY_NAME = "categoryName"
@@ -76,11 +71,9 @@ object DATA {
     var AD_S = "ADs"
     var BANNER_SMART_HOME = "BannerSmartHome"
     var BANNER_SMART_HOME_2 = "BannerSmartHome2"
-    var INTERSTITIAL_MAIN = "InterstitialMain"
     var BANNER_SMART_FOLLOWERS_BOOKS = "BannerSmartFollowersBooks"
     var BANNER_SMART_CATEGORY_BOOKS = "BannerSmartCategoryBooks"
     var BANNER_SMART_EXPLORE_PUBLISHERS = "BannerSmartExplorePublishers"
-    var BANNER_SMART_FAVORITES = "BannerSmartFavorites"
     var BANNER_SMART_FOLLOWERS = "BannerSmartFollowers"
     var BANNER_SMART_FOLLOWING = "BannerSmartFollowing"
     var BANNER_SMART_MORE_BOOKS = "BannerSmartMoreBooks"

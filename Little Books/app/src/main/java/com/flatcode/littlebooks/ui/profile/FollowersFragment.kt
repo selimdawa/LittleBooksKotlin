@@ -9,14 +9,13 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import com.flatcode.littlebooks.ui.book.LinearBookAdapter
+import com.flatcode.littlebooks.databinding.FragmentFollowersBinding
 import com.flatcode.littlebooks.ui.book.BookDetailsActivity
-import com.flatcode.littlebooks.model.Book
+import com.flatcode.littlebooks.ui.book.LinearBookAdapter
 import com.flatcode.littlebooks.utils.DATA
+import com.flatcode.littlebooks.utils.Resource
 import com.flatcode.littlebooks.utils.loadBannerAd
 import com.flatcode.littlebooks.utils.openActivity
-import com.flatcode.littlebooks.databinding.FragmentFollowersBinding
-import com.flatcode.littlebooks.utils.Resource
 import com.flatcode.littlebooks.viewmodel.FollowViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -31,13 +30,13 @@ class FollowersFragment : Fragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentFollowersBinding.inflate(inflater, container, false)
 
-        binding!!.adView.loadBannerAd(context!!, DATA.BANNER_SMART_FOLLOWERS_BOOKS)
+        binding!!.adView.loadBannerAd(requireContext(), DATA.BANNER_SMART_FOLLOWERS_BOOKS)
 
-        adapter = LinearBookAdapter(false) { item ->
-            context?.openActivity<BookDetailsActivity>(false, DATA.BOOK_ID to item.id)
+        adapter = LinearBookAdapter(isUser = false) { item ->
+            context?.openActivity<BookDetailsActivity>(clear = false, DATA.BOOK_ID to item.id)
         }
         binding!!.recyclerView.adapter = adapter
 
@@ -80,11 +79,13 @@ class FollowersFragment : Fragment() {
                                 binding!!.emptyText.visibility = View.VISIBLE
                             }
                         }
+
                         is Resource.Error -> {
                             binding!!.progress.visibility = View.GONE
                             binding!!.recyclerView.visibility = View.GONE
                             binding!!.emptyText.visibility = View.VISIBLE
                         }
+
                         is Resource.Loading -> {
                             binding!!.progress.visibility = View.VISIBLE
                         }

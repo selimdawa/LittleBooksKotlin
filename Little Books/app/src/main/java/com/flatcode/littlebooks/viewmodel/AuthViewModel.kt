@@ -45,18 +45,6 @@ class AuthViewModel @Inject constructor(
             _forgetPasswordStatus.value = repository.forgetPassword(email)
         }
     }
-    
-    fun logout() {
-        repository.logout()
-    }
-    
-    fun resetStatus() {
-        _loginStatus.value = null
-        _registerStatus.value = null
-        _forgetPasswordStatus.value = null
-    }
 
     fun getCurrentUser() = repository.getCurrentUser()
 }
-
-

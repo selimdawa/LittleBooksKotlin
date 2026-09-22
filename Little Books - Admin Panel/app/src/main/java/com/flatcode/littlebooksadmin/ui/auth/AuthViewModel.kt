@@ -18,20 +18,10 @@ class AuthViewModel @Inject constructor(
     private val _loginState = MutableStateFlow<Resource<Unit>?>(null)
     val loginState: StateFlow<Resource<Unit>?> = _loginState
 
-    private val _resetPasswordState = MutableStateFlow<Resource<Unit>?>(null)
-    val resetPasswordState: StateFlow<Resource<Unit>?> = _resetPasswordState
-
     fun login(email: String, password: String) {
         viewModelScope.launch {
             _loginState.value = Resource.Loading()
             _loginState.value = repository.login(email, password)
-        }
-    }
-
-    fun resetPassword(email: String) {
-        viewModelScope.launch {
-            _resetPasswordState.value = Resource.Loading()
-            _resetPasswordState.value = repository.resetPassword(email)
         }
     }
 

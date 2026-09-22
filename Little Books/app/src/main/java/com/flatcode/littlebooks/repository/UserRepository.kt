@@ -1,10 +1,9 @@
 package com.flatcode.littlebooks.repository
 
-import android.content.Context
 import android.net.Uri
+import com.flatcode.littlebooks.db.UserDao
 import com.flatcode.littlebooks.model.User
 import com.flatcode.littlebooks.utils.DATA
-import com.flatcode.littlebooks.db.UserDao
 import com.flatcode.littlebooks.utils.Resource
 import com.flatcode.littlebooks.utils.cloudinaryUpload
 import com.google.firebase.database.FirebaseDatabase
@@ -15,8 +14,7 @@ import javax.inject.Singleton
 
 @Singleton
 class UserRepository @Inject constructor(
-    private val db: FirebaseDatabase,
-    private val userDao: UserDao
+    private val db: FirebaseDatabase, private val userDao: UserDao
 ) {
     suspend fun getUserInfo(userId: String): Resource<User> {
         return try {
@@ -65,19 +63,25 @@ class UserRepository @Inject constructor(
 
     suspend fun checkFollowing(currentUserId: String, targetUserId: String): Resource<Boolean> {
         return try {
-            val snapshot = db.getReference(DATA.FOLLOW)
-                .child(currentUserId).child(DATA.FOLLOWING).child(targetUserId).get().await()
+            val snapshot = db.getReference(DATA.FOLLOW).child(currentUserId).child(DATA.FOLLOWING)
+                .child(targetUserId).get().await()
             Resource.Success(snapshot.exists())
         } catch (e: Exception) {
             Resource.Error(e.message ?: "An unknown error occurred")
         }
     }
 
-    suspend fun followUser(currentUserId: String, targetUserId: String, follow: Boolean): Resource<Unit> {
+    suspend fun followUser(
+        currentUserId: String, targetUserId: String, follow: Boolean
+    ): Resource<Unit> {
         return try {
-            val followingRef = db.getReference(DATA.FOLLOW).child(currentUserId).child(DATA.FOLLOWING).child(targetUserId)
-            val followersRef = db.getReference(DATA.FOLLOW).child(targetUserId).child(DATA.FOLLOWERS).child(currentUserId)
-            
+            val followingRef =
+                db.getReference(DATA.FOLLOW).child(currentUserId).child(DATA.FOLLOWING)
+                    .child(targetUserId)
+            val followersRef =
+                db.getReference(DATA.FOLLOW).child(targetUserId).child(DATA.FOLLOWERS)
+                    .child(currentUserId)
+
             if (follow) {
                 followingRef.setValue(true).await()
                 followersRef.setValue(true).await()
@@ -93,12 +97,13 @@ class UserRepository @Inject constructor(
 
     suspend fun getFollowersOrFollowing(userId: String, type: String): Resource<List<User>> {
         return try {
-            val followSnapshot = db.getReference(DATA.FOLLOW).child(userId).child(type).get().await()
+            val followSnapshot =
+                db.getReference(DATA.FOLLOW).child(userId).child(type).get().await()
             val userList = mutableListOf<User>()
             for (data in followSnapshot.children) {
                 val followUserId = data.key ?: continue
                 val userSnapshot = db.getReference(DATA.USERS).child(followUserId).get().await()
-                userSnapshot.getValue(User::class.java)?.let { 
+                userSnapshot.getValue(User::class.java)?.let {
                     userList.add(it)
                     userDao.insertUser(it)
                 }
@@ -142,7 +147,7 @@ class UserRepository @Inject constructor(
         }
     }
 
-    suspend fun uploadProfileImage(userId: String, imageUri: Uri, context: Context): Resource<String> {
+    suspend fun uploadProfileImage(imageUri: Uri): Resource<String> {
         return cloudinaryUpload(imageUri)
     }
 }

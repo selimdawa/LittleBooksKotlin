@@ -39,11 +39,7 @@ class BookAddViewModel @Inject constructor(
     }
 
     fun uploadBook(
-        uri: Uri,
-        title: String,
-        description: String,
-        categoryId: String,
-        imageUri: Uri?
+        uri: Uri, title: String, description: String, categoryId: String, imageUri: Uri?
     ) {
         viewModelScope.launch {
             _uploadState.value = Resource.Loading()

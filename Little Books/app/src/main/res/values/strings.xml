@@ -42,7 +42,7 @@
     <string name="my_books">My Books</string>
     <string name="privacy_policy">Privacy Policy</string>
     <string name="publishers_books">Publisher Books</string>
-    <string name="ok">Ok</string>
+    <string name="ok">OK</string>
     <string name="choose_book">Choose Book</string>
     <string name="add_new_book">Add new book</string>
     <string name="edit_book">Edit Book</string>
@@ -68,4 +68,9 @@
     <string name="back">Back</string>
     <string name="close">Close</string>
     <string name="crop_image">Crop Image</string>
+    <string name="pdf_book">PDF Book</string>
+    <string name="count_format">( %1$d )</string>
+    <string name="page_format">%1$d/%2$d</string>
+    <string name="followers_count_format">%1$d Followers</string>
+    <string name="following_count_format">%1$d Following</string>
 </resources>

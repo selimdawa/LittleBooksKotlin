@@ -8,8 +8,7 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 @Entity(tableName = "users")
 data class User(
-    @PrimaryKey
-    var id: String = "",
+    @PrimaryKey var id: String = "",
     var username: String? = null,
     var profileImage: String? = null,
     var email: String? = null,
@@ -19,5 +18,3 @@ data class User(
     var adLoad: Int = 0,
     var adClick: Int = 0
 ) : Parcelable
-
-

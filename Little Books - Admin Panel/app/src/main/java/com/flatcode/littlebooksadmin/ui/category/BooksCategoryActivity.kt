@@ -7,36 +7,34 @@ import android.text.TextWatcher
 import android.view.View
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
-import androidx.activity.viewModels
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import com.flatcode.littlebooksadmin.ui.book.StaggeredBookAdapter
+import com.flatcode.littlebooksadmin.databinding.ActivityPageStaggeredSwitchBinding
 import com.flatcode.littlebooksadmin.model.Book
 import com.flatcode.littlebooksadmin.R
+import com.flatcode.littlebooksadmin.ui.book.BooksViewModel
+import com.flatcode.littlebooksadmin.ui.book.StaggeredBookAdapter
 import com.flatcode.littlebooksadmin.utils.DATA
 import com.flatcode.littlebooksadmin.utils.Resource
-import com.flatcode.littlebooksadmin.databinding.ActivityPageStaggeredSwitchBinding
-import com.flatcode.littlebooksadmin.ui.book.BooksViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
-import java.text.MessageFormat
 
 @AndroidEntryPoint
 class BooksCategoryActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityPageStaggeredSwitchBinding
     private val context: Context = this@BooksCategoryActivity
-    private var list: ArrayList<Book?> = arrayListOf()
     private var adapter: StaggeredBookAdapter? = null
     private var categoryId: String? = null
     private var categoryName: String? = null
     private var type: String = DATA.TIMESTAMP
-    
+
     private val viewModel: BooksViewModel by viewModels()
 
     private val onBackPressedCallback = object : OnBackPressedCallback(true) {
@@ -72,7 +70,7 @@ class BooksCategoryActivity : AppCompatActivity() {
 
         initUI()
         observeViewModel()
-        
+
         categoryId?.let { viewModel.loadBooksByCategory(it, type) }
     }
 
@@ -86,14 +84,16 @@ class BooksCategoryActivity : AppCompatActivity() {
             binding.toolbar.toolbarSearch.visibility = View.VISIBLE
             DATA.searchStatus = true
         }
-        
+
         binding.toolbar.textSearch.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 try {
-                    adapter!!.filter.filter(s)
-                } catch (e: Exception) { }
+                    adapter?.filter?.filter(s)
+                } catch (_: Exception) {
+                }
             }
+
             override fun afterTextChanged(s: Editable?) {}
         })
 
@@ -130,11 +130,13 @@ class BooksCategoryActivity : AppCompatActivity() {
                         is Resource.Loading -> {
                             binding.progress.visibility = View.VISIBLE
                         }
+
                         is Resource.Success -> {
                             binding.progress.visibility = View.GONE
                             val books = resource.data ?: emptyList()
                             updateList(books)
                         }
+
                         is Resource.Error -> {
                             binding.progress.visibility = View.GONE
                             Toast.makeText(context, resource.message, Toast.LENGTH_SHORT).show()
@@ -146,20 +148,10 @@ class BooksCategoryActivity : AppCompatActivity() {
     }
 
     private fun updateList(books: List<Book>) {
-        list.clear()
-        books.forEach {
-            val legacyBook = Book(
-                it.publisher, it.id, it.title, it.description, it.categoryId,
-                it.url, it.image, it.timestamp, it.viewsCount, it.downloadsCount,
-                it.lovesCount, it.editorsChoice
-            )
-            list.add(legacyBook)
-        }
-        
-        binding.toolbar.number.text = MessageFormat.format("( {0} )", list.size)
-        adapter!!.notifyDataSetChanged()
-        
-        if (list.isNotEmpty()) {
+        binding.toolbar.number.text = getString(R.string.number_placeholder, books.size)
+        adapter?.submitUnfilteredList(books)
+
+        if (books.isNotEmpty()) {
             binding.recyclerView.visibility = View.VISIBLE
             binding.emptyText.visibility = View.GONE
         } else {

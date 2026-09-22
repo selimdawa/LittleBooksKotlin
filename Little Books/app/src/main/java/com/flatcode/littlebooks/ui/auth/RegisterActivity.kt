@@ -40,7 +40,7 @@ class RegisterActivity : AppCompatActivity() {
         val view = binding!!.root
         setContentView(view)
 
-        ViewCompat.setOnApplyWindowInsetsListener(view) { v, insets ->
+        ViewCompat.setOnApplyWindowInsetsListener(view) { _, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             binding!!.toolbarRl.updateLayoutParams<ViewGroup.MarginLayoutParams> {
                 topMargin = systemBars.top + 30 // Original margin was 30sp
@@ -96,10 +96,10 @@ class RegisterActivity : AppCompatActivity() {
     private var email = ""
     private var password = ""
     private fun validateData() {
-        name = binding!!.nameEt.text.toString().trim { it <= ' ' }
-        email = binding!!.emailEt.text.toString().trim { it <= ' ' }
-        password = binding!!.passwordEt.text.toString().trim { it <= ' ' }
-        val cPassword = binding!!.cPasswordEt.text.toString().trim { it <= ' ' }
+        name = binding!!.nameEt.text.toString().trim()
+        email = binding!!.emailEt.text.toString().trim()
+        password = binding!!.passwordEt.text.toString().trim()
+        val cPassword = binding!!.cPasswordEt.text.toString().trim()
 
         if (TextUtils.isEmpty(name)) {
             Toast.makeText(context, "Enter you name...", Toast.LENGTH_SHORT).show()

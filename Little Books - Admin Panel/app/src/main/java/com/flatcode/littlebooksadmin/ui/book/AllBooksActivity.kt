@@ -15,16 +15,13 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import com.flatcode.littlebooksadmin.ui.book.StaggeredBookAdapter
 import com.flatcode.littlebooksadmin.model.Book
 import com.flatcode.littlebooksadmin.R
 import com.flatcode.littlebooksadmin.utils.DATA
 import com.flatcode.littlebooksadmin.utils.Resource
 import com.flatcode.littlebooksadmin.databinding.ActivityPageStaggeredSwitchBinding
-import com.flatcode.littlebooksadmin.ui.book.BooksViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
-import java.text.MessageFormat
 
 @AndroidEntryPoint
 class AllBooksActivity : AppCompatActivity() {
@@ -79,8 +76,8 @@ class AllBooksActivity : AppCompatActivity() {
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
                 try {
-                    adapter!!.filter.filter(s)
-                } catch (e: Exception) { }
+                    adapter?.filter?.filter(s)
+                } catch (_: Exception) { }
             }
             override fun afterTextChanged(s: Editable) {}
         })
@@ -134,7 +131,7 @@ class AllBooksActivity : AppCompatActivity() {
     }
 
     private fun updateList(books: List<Book>) {
-        binding.toolbar.number.text = MessageFormat.format("( {0} )", books.size)
+        binding.toolbar.number.text = getString(R.string.number_placeholder, books.size)
         adapter?.submitUnfilteredList(books)
 
         if (books.isNotEmpty()) {

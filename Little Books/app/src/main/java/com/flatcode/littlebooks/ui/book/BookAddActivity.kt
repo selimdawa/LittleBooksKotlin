@@ -14,7 +14,6 @@ import androidx.activity.result.contract.ActivityResultContracts.StartActivityFo
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import com.flatcode.littlebooks.utils.PermissionUtils
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updateLayoutParams
@@ -22,8 +21,9 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.flatcode.littlebooks.R
-import com.flatcode.littlebooks.utils.DATA
 import com.flatcode.littlebooks.databinding.ActivityBookAddBinding
+import com.flatcode.littlebooks.utils.DATA
+import com.flatcode.littlebooks.utils.PermissionUtils
 import com.flatcode.littlebooks.utils.Resource
 import com.flatcode.littlebooks.viewmodel.BookViewModel
 import com.flatcode.littlebooks.viewmodel.CategoryViewModel
@@ -60,13 +60,11 @@ class BookAddActivity : AppCompatActivity() {
             insets
         }
 
-        dialog = AlertDialog.Builder(context)
-            .setTitle("Please wait...")
-            .setCancelable(false)
-            .create()
+        dialog =
+            AlertDialog.Builder(context).setTitle("Please wait...").setCancelable(false).create()
 
         binding!!.toolbar.nameSpace.setText(R.string.add_new_book)
-        binding!!.toolbar.back.setOnClickListener { onBackPressed() }
+        binding!!.toolbar.back.setOnClickListener { onBackPressedDispatcher.onBackPressed() }
         binding!!.image.setOnClickListener { pickImageGallery() }
         binding!!.chooseBook.setOnClickListener { bookPickIntent() }
         binding!!.category.setOnClickListener { categoryPickDialog() }
@@ -85,7 +83,7 @@ class BookAddActivity : AppCompatActivity() {
                             idList.clear()
                             resource.data?.forEach {
                                 titleList.add(it.category ?: "")
-                                idList.add(it.id ?: "")
+                                idList.add(it.id)
                             }
                         }
                     }
@@ -115,7 +113,7 @@ class BookAddActivity : AppCompatActivity() {
                     bookViewModel.addBookStatus.collect { resource ->
                         when (resource) {
                             is Resource.Success -> {
-                                uploadImage(resource.data!!)
+                                uploadImage()
                             }
 
                             is Resource.Error -> {
@@ -136,7 +134,7 @@ class BookAddActivity : AppCompatActivity() {
                     bookViewModel.uploadImageStatus.collect { resource ->
                         when (resource) {
                             is Resource.Success -> {
-                                updateImageBook(resource.data!!)
+                                updateImageBook()
                             }
 
                             is Resource.Error -> {
@@ -160,8 +158,8 @@ class BookAddActivity : AppCompatActivity() {
     private var title = DATA.EMPTY
     private var description = DATA.EMPTY
     private fun validateData() {
-        title = binding!!.titleEt.text.toString().trim { it <= ' ' }
-        description = binding!!.descriptionEt.text.toString().trim { it <= ' ' }
+        title = binding!!.titleEt.text.toString().trim()
+        description = binding!!.descriptionEt.text.toString().trim()
 
         if (TextUtils.isEmpty(title)) {
             Toast.makeText(context, "Enter Title...", Toast.LENGTH_SHORT).show()
@@ -174,7 +172,7 @@ class BookAddActivity : AppCompatActivity() {
         } else if (imageUri == null) {
             Toast.makeText(context, "Pick Image...", Toast.LENGTH_SHORT).show()
         } else {
-            bookViewModel.uploadBookFile(DATA.FirebaseUserUid, uri!!, context)
+            bookViewModel.uploadBookFile(uri!!)
         }
     }
 
@@ -197,17 +195,12 @@ class BookAddActivity : AppCompatActivity() {
         bookViewModel.addBook(hashMap)
     }
 
-    private fun uploadImage(bookId: String) {
-        bookViewModel.uploadBookImage(DATA.FirebaseUserUid, imageUri!!, context)
-        // Store bookId somewhere to update it later, or pass it to uploadBookImage
-        // For simplicity, let's assume we update the last added book or pass ID
+    private fun uploadImage() {
+        bookViewModel.uploadBookImage(imageUri!!)
     }
 
-    private fun updateImageBook(imageUrl: String) {
-        // This is a bit tricky with the current flow. 
-        // Ideally addBook should be called AFTER all files are uploaded.
-        // Or updateBook should be called with the bookId.
-        // Let's just finish for now or implement a better orchestration.
+    private fun updateImageBook() {
+        bookViewModel.resetActionStatus()
         Toast.makeText(context, "Successfully uploaded...", Toast.LENGTH_SHORT).show()
         finish()
     }
@@ -218,8 +211,7 @@ class BookAddActivity : AppCompatActivity() {
     private fun categoryPickDialog() {
         val categories = titleList.toTypedArray()
         val builder = AlertDialog.Builder(context)
-        builder.setTitle("Pick Category")
-            .setItems(categories) { _, which ->
+        builder.setTitle("Pick Category").setItems(categories) { _, which ->
                 selectedTitle = titleList[which]
                 selectedId = idList[which]
                 binding!!.category.text = selectedTitle

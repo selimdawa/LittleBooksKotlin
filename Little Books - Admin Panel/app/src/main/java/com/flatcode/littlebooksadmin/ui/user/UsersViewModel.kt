@@ -2,9 +2,9 @@ package com.flatcode.littlebooksadmin.ui.user
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.flatcode.littlebooksadmin.utils.DATA
 import com.flatcode.littlebooksadmin.model.User
 import com.flatcode.littlebooksadmin.repository.UserRepository
+import com.flatcode.littlebooksadmin.utils.DATA
 import com.flatcode.littlebooksadmin.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow

@@ -22,7 +22,6 @@ import com.flatcode.littlebooksadmin.utils.DATA
 import com.flatcode.littlebooksadmin.utils.Resource
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
-import java.text.MessageFormat
 
 @AndroidEntryPoint
 class MyBooksActivity : AppCompatActivity() {
@@ -78,8 +77,8 @@ class MyBooksActivity : AppCompatActivity() {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 try {
-                    adapter!!.filter.filter(s)
-                } catch (e: Exception) {
+                    adapter?.filter?.filter(s)
+                } catch (_: Exception) {
                 }
             }
 
@@ -136,28 +135,12 @@ class MyBooksActivity : AppCompatActivity() {
         }
     }
 
-    private fun updateList(books: List<com.flatcode.littlebooksadmin.model.Book>) {
+    private fun updateList(books: List<Book>) {
         list.clear()
-        books.forEach {
-            val legacyBook = Book(
-                it.publisher,
-                it.id,
-                it.title,
-                it.description,
-                it.categoryId,
-                it.url,
-                it.image,
-                it.timestamp,
-                it.viewsCount,
-                it.downloadsCount,
-                it.lovesCount,
-                it.editorsChoice
-            )
-            list.add(legacyBook)
-        }
+        list.addAll(books)
 
-        binding.toolbar.number.text = MessageFormat.format("( {0} )", list.size)
-        adapter!!.notifyDataSetChanged()
+        binding.toolbar.number.text = getString(R.string.number_placeholder, list.size)
+        adapter?.submitUnfilteredList(books)
 
         if (list.isNotEmpty()) {
             binding.recyclerView.visibility = View.VISIBLE
@@ -167,7 +150,6 @@ class MyBooksActivity : AppCompatActivity() {
             binding.emptyText.visibility = View.VISIBLE
         }
     }
-
 
     override fun onResume() {
         super.onResume()

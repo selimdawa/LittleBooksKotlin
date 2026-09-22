@@ -1,6 +1,5 @@
 package com.flatcode.littlebooks.ui.auth
 
-import androidx.appcompat.app.AlertDialog
 import android.content.Context
 import android.os.Bundle
 import android.text.TextUtils
@@ -9,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -16,10 +16,10 @@ import androidx.core.view.updateLayoutParams
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import com.flatcode.littlebooks.ui.main.MainActivity
-import com.flatcode.littlebooks.utils.openActivity
 import com.flatcode.littlebooks.databinding.ActivityLoginBinding
+import com.flatcode.littlebooks.ui.main.MainActivity
 import com.flatcode.littlebooks.utils.Resource
+import com.flatcode.littlebooks.utils.openActivity
 import com.flatcode.littlebooks.viewmodel.AuthViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -40,7 +40,7 @@ class LoginActivity : AppCompatActivity() {
         val view = binding!!.root
         setContentView(view)
 
-        ViewCompat.setOnApplyWindowInsetsListener(view) { v, insets ->
+        ViewCompat.setOnApplyWindowInsetsListener(view) { _, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             binding!!.toolbarRl.updateLayoutParams<ViewGroup.MarginLayoutParams> {
                 topMargin = systemBars.top + 20 // Original margin was 20sp
@@ -73,14 +73,17 @@ class LoginActivity : AppCompatActivity() {
                             context.openActivity<MainActivity>(true)
                             finish()
                         }
+
                         is Resource.Error -> {
                             dialog!!.dismiss()
                             Toast.makeText(context, resource.message, Toast.LENGTH_SHORT).show()
                         }
+
                         is Resource.Loading -> {
                             dialog!!.setMessage("Logging In...")
                             dialog!!.show()
                         }
+
                         null -> {}
                     }
                 }
@@ -91,8 +94,8 @@ class LoginActivity : AppCompatActivity() {
     private var email = ""
     private var password = ""
     private fun validateDate() {
-        email = binding!!.emailEt.text.toString().trim { it <= ' ' }
-        password = binding!!.passwordEt.text.toString().trim { it <= ' ' }
+        email = binding!!.emailEt.text.toString().trim()
+        password = binding!!.passwordEt.text.toString().trim()
 
         if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             Toast.makeText(context, "Invalid email pattern...!", Toast.LENGTH_SHORT).show()
@@ -103,6 +106,3 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 }
-
-
-

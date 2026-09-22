@@ -8,7 +8,7 @@ class Converters {
         return value?.let {
             try {
                 Class.forName(it)
-            } catch (e: ClassNotFoundException) {
+            } catch (_: ClassNotFoundException) {
                 null
             }
         }
@@ -19,5 +19,3 @@ class Converters {
         return clazz?.name
     }
 }
-
-

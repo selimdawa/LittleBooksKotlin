@@ -2,9 +2,9 @@ package com.flatcode.littlebooksadmin.ui.book
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.flatcode.littlebooksadmin.utils.DATA
 import com.flatcode.littlebooksadmin.model.Book
 import com.flatcode.littlebooksadmin.repository.BookRepository
+import com.flatcode.littlebooksadmin.utils.DATA
 import com.flatcode.littlebooksadmin.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -62,12 +62,6 @@ class BooksViewModel @Inject constructor(
                     _books.value = resource
                 }
             }
-        }
-    }
-    
-    fun removeFromEditorsChoice(bookId: String) {
-        viewModelScope.launch {
-            repository.updateEditorsChoice(bookId, 0)
         }
     }
 }

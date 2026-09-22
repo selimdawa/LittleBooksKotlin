@@ -3,13 +3,10 @@ package com.flatcode.littlebooksadmin
 import android.app.Application
 import android.text.format.DateFormat
 import com.cloudinary.android.MediaManager
-import com.flatcode.littlebooksadmin.BuildConfig
 import com.flatcode.littlebooksadmin.utils.DATA
 import dagger.hilt.android.HiltAndroidApp
 import io.selimdawa.multicolors.MultiColorManager
 import timber.log.Timber
-import java.util.Calendar
-import java.util.Locale
 
 @HiltAndroidApp
 class Application : Application() {
@@ -31,9 +28,7 @@ class Application : Application() {
 
     companion object {
         fun formatTimestamp(timestamp: Long): String {
-            val cal = Calendar.getInstance(Locale.ENGLISH)
-            cal.timeInMillis = timestamp
-            return DateFormat.format("dd/MM/yyyy", cal).toString()
+            return DateFormat.format("dd/MM/yyyy", timestamp).toString()
         }
     }
 }

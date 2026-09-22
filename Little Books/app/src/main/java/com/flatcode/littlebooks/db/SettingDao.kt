@@ -1,6 +1,9 @@
 package com.flatcode.littlebooks.db
 
-import androidx.room.*
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
 import com.flatcode.littlebooks.model.Setting
 import kotlinx.coroutines.flow.Flow
 
@@ -15,5 +18,3 @@ interface SettingDao {
     @Query("DELETE FROM settings")
     suspend fun deleteAllSettings()
 }
-
-

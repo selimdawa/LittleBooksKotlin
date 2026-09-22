@@ -11,23 +11,29 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import com.flatcode.littlebooksadmin.R
+import com.flatcode.littlebooksadmin.databinding.FragmentDashboardBinding
+import com.flatcode.littlebooksadmin.model.Main
+import com.flatcode.littlebooksadmin.repository.MainRepository
 import com.flatcode.littlebooksadmin.ui.ads.ADsActivity
 import com.flatcode.littlebooksadmin.ui.ads.SliderShowActivity
-import com.flatcode.littlebooksadmin.ui.book.*
+import com.flatcode.littlebooksadmin.ui.book.AllBooksActivity
+import com.flatcode.littlebooksadmin.ui.book.BookAddActivity
+import com.flatcode.littlebooksadmin.ui.book.EditorsChoiceActivity
+import com.flatcode.littlebooksadmin.ui.book.FavoritesActivity
+import com.flatcode.littlebooksadmin.ui.book.MyBooksActivity
 import com.flatcode.littlebooksadmin.ui.category.CategoriesActivity
 import com.flatcode.littlebooksadmin.ui.category.CategoryAddActivity
 import com.flatcode.littlebooksadmin.ui.profile.ProfileActivity
 import com.flatcode.littlebooksadmin.ui.settings.PrivacyPolicyActivity
-import com.flatcode.littlebooksadmin.ui.user.*
-import com.flatcode.littlebooksadmin.ui.main.MainAdapter
-import com.flatcode.littlebooksadmin.R
+import com.flatcode.littlebooksadmin.ui.user.FollowersActivity
+import com.flatcode.littlebooksadmin.ui.user.FollowingActivity
+import com.flatcode.littlebooksadmin.ui.user.TopPublishersActivity
+import com.flatcode.littlebooksadmin.ui.user.UsersActivity
 import com.flatcode.littlebooksadmin.utils.DATA
-import com.flatcode.littlebooksadmin.model.Main
-import com.flatcode.littlebooksadmin.repository.MainRepository
 import com.flatcode.littlebooksadmin.utils.Resource
-import com.flatcode.littlebooksadmin.utils.*
-import com.flatcode.littlebooksadmin.databinding.FragmentDashboardBinding
-import com.flatcode.littlebooksadmin.ui.main.MainViewModel
+import com.flatcode.littlebooksadmin.utils.loadImage
+import com.flatcode.littlebooksadmin.utils.openActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -36,7 +42,7 @@ class DashboardFragment : Fragment() {
 
     private var _binding: FragmentDashboardBinding? = null
     private val binding get() = _binding!!
-    
+
     private var list: MutableList<Main> = mutableListOf()
     private var adapter: MainAdapter? = null
     private lateinit var mContext: Context
@@ -79,14 +85,19 @@ class DashboardFragment : Fragment() {
                 launch {
                     viewModel.user.collect { resource ->
                         when (resource) {
-                            is Resource.Loading -> { }
+                            is Resource.Loading -> {}
                             is Resource.Success -> {
                                 resource.data?.let { user ->
-                                    binding.toolbar.image.loadImage(isUser = true, url = user.profileImage ?: DATA.BASIC)
+                                    binding.toolbar.image.loadImage(
+                                        isUser = true,
+                                        url = user.profileImage ?: DATA.BASIC
+                                    )
                                 }
                             }
+
                             is Resource.Error -> {
-                                Toast.makeText(mContext, resource.message, Toast.LENGTH_SHORT).show()
+                                Toast.makeText(mContext, resource.message, Toast.LENGTH_SHORT)
+                                    .show()
                             }
                         }
                     }
@@ -98,14 +109,17 @@ class DashboardFragment : Fragment() {
                                 binding.bar.visibility = View.VISIBLE
                                 binding.recyclerView.visibility = View.GONE
                             }
+
                             is Resource.Success -> {
                                 resource.data?.let { stats ->
                                     updateDashboard(stats)
                                 }
                             }
+
                             is Resource.Error -> {
                                 binding.bar.visibility = View.GONE
-                                Toast.makeText(mContext, resource.message, Toast.LENGTH_SHORT).show()
+                                Toast.makeText(mContext, resource.message, Toast.LENGTH_SHORT)
+                                    .show()
                             }
                         }
                     }
@@ -116,21 +130,119 @@ class DashboardFragment : Fragment() {
 
     private fun updateDashboard(stats: MainRepository.DashboardStats) {
         list.clear()
-        list.add(Main(R.drawable.ic_person, mContext.getString(R.string.users), stats.users, UsersActivity::class.java))
-        list.add(Main(R.drawable.ic_add, mContext.getString(R.string.add_new_book), 0, BookAddActivity::class.java))
-        list.add(Main(R.drawable.ic_book_white, mContext.getString(R.string.my_books), stats.myBooks, MyBooksActivity::class.java))
-        list.add(Main(R.drawable.ic_books, mContext.getString(R.string.all_books), stats.allBooks, AllBooksActivity::class.java))
-        list.add(Main(R.drawable.ic_rank, mContext.getString(R.string.top_publishers), stats.publishers, TopPublishersActivity::class.java))
-        list.add(Main(R.drawable.ic_users, mContext.getString(R.string.editors_choice), stats.editorsChoice, EditorsChoiceActivity::class.java))
-        list.add(Main(R.drawable.ic_add_category, mContext.getString(R.string.add_new_category), 0, CategoryAddActivity::class.java))
-        list.add(Main(R.drawable.ic_category_gray, mContext.getString(R.string.categories), stats.categories, CategoriesActivity::class.java))
-        list.add(Main(R.drawable.ic_slider, mContext.getString(R.string.slider_show), stats.sliderShow, SliderShowActivity::class.java))
-        list.add(Main(R.drawable.ic_followers, mContext.getString(R.string.followers), stats.followers, FollowersActivity::class.java))
-        list.add(Main(R.drawable.ic_following, mContext.getString(R.string.following), stats.following, FollowingActivity::class.java))
-        list.add(Main(R.drawable.ic_star_selected, mContext.getString(R.string.favorites), stats.favorites, FavoritesActivity::class.java))
-        list.add(Main(R.drawable.ic_ads, mContext.getString(R.string.ads), stats.ads, ADsActivity::class.java))
-        list.add(Main(R.drawable.ic_privacy_policy, mContext.getString(R.string.privacy_policy), 0, PrivacyPolicyActivity::class.java))
-        
+        list.add(
+            Main(
+                R.drawable.ic_person,
+                mContext.getString(R.string.users),
+                stats.users,
+                UsersActivity::class.java
+            )
+        )
+        list.add(
+            Main(
+                R.drawable.ic_add,
+                mContext.getString(R.string.add_new_book),
+                0,
+                BookAddActivity::class.java
+            )
+        )
+        list.add(
+            Main(
+                R.drawable.ic_book_white,
+                mContext.getString(R.string.my_books),
+                stats.myBooks,
+                MyBooksActivity::class.java
+            )
+        )
+        list.add(
+            Main(
+                R.drawable.ic_books,
+                mContext.getString(R.string.all_books),
+                stats.allBooks,
+                AllBooksActivity::class.java
+            )
+        )
+        list.add(
+            Main(
+                R.drawable.ic_rank,
+                mContext.getString(R.string.top_publishers),
+                stats.publishers,
+                TopPublishersActivity::class.java
+            )
+        )
+        list.add(
+            Main(
+                R.drawable.ic_users,
+                mContext.getString(R.string.editors_choice),
+                stats.editorsChoice,
+                EditorsChoiceActivity::class.java
+            )
+        )
+        list.add(
+            Main(
+                R.drawable.ic_add_category,
+                mContext.getString(R.string.add_new_category),
+                0,
+                CategoryAddActivity::class.java
+            )
+        )
+        list.add(
+            Main(
+                R.drawable.ic_category_gray,
+                mContext.getString(R.string.categories),
+                stats.categories,
+                CategoriesActivity::class.java
+            )
+        )
+        list.add(
+            Main(
+                R.drawable.ic_slider,
+                mContext.getString(R.string.slider_show),
+                stats.sliderShow,
+                SliderShowActivity::class.java
+            )
+        )
+        list.add(
+            Main(
+                R.drawable.ic_followers,
+                mContext.getString(R.string.followers),
+                stats.followers,
+                FollowersActivity::class.java
+            )
+        )
+        list.add(
+            Main(
+                R.drawable.ic_following,
+                mContext.getString(R.string.following),
+                stats.following,
+                FollowingActivity::class.java
+            )
+        )
+        list.add(
+            Main(
+                R.drawable.ic_star_selected,
+                mContext.getString(R.string.favorites),
+                stats.favorites,
+                FavoritesActivity::class.java
+            )
+        )
+        list.add(
+            Main(
+                R.drawable.ic_ads,
+                mContext.getString(R.string.ads),
+                stats.ads,
+                ADsActivity::class.java
+            )
+        )
+        list.add(
+            Main(
+                R.drawable.ic_privacy_policy,
+                mContext.getString(R.string.privacy_policy),
+                0,
+                PrivacyPolicyActivity::class.java
+            )
+        )
+
         adapter?.submitList(ArrayList(list))
         binding.bar.visibility = View.GONE
         binding.recyclerView.visibility = View.VISIBLE

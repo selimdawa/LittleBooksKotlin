@@ -9,8 +9,6 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import com.flatcode.littlebooks.ui.category.CategoryMainAdapter
-import com.flatcode.littlebooks.model.Category
 import com.flatcode.littlebooks.databinding.FragmentCategoriesBinding
 import com.flatcode.littlebooks.utils.Resource
 import com.flatcode.littlebooks.viewmodel.CategoryViewModel
@@ -22,12 +20,12 @@ class CategoriesFragment : Fragment() {
 
     private var binding: FragmentCategoriesBinding? = null
     private val viewModel: CategoryViewModel by viewModels()
-    
+
     private var adapter: CategoryMainAdapter? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentCategoriesBinding.inflate(inflater, container, false)
 
         adapter = CategoryMainAdapter()
@@ -45,12 +43,14 @@ class CategoriesFragment : Fragment() {
                     when (resource) {
                         is Resource.Success -> {
                             binding!!.bar.visibility = View.GONE
-                            adapter?.submitList(resource.data as List<Category>)
+                            adapter?.submitList(resource.data ?: emptyList())
                         }
+
                         is Resource.Error -> {
                             binding!!.bar.visibility = View.GONE
                             // Handle error
                         }
+
                         is Resource.Loading -> {
                             binding!!.bar.visibility = View.VISIBLE
                         }

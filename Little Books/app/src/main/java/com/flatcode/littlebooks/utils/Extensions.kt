@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
+import androidx.core.net.toUri
 import android.text.format.DateFormat
 import android.widget.ImageView
 import android.widget.TextView
@@ -22,8 +23,8 @@ import com.google.android.gms.ads.AdListener
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdView
 import com.google.android.gms.ads.MobileAds
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
@@ -69,15 +70,14 @@ fun Context.shareApp() {
 }
 
 fun Context.rateApp() {
-    val uri = Uri.parse("market://details?id=" + this.packageName)
-    val goToMarket = Intent(Intent.ACTION_VIEW, uri)
+    val goToMarket = Intent(Intent.ACTION_VIEW, "market://details?id=$packageName".toUri())
     try {
         this.startActivity(goToMarket)
     } catch (_: ActivityNotFoundException) {
         this.startActivity(
             Intent(
                 Intent.ACTION_VIEW,
-                Uri.parse("http://play.google.com/store/apps/details?id=" + this.packageName)
+                "http://play.google.com/store/apps/details?id=$packageName".toUri()
             )
         )
     }
@@ -85,8 +85,7 @@ fun Context.rateApp() {
 
 suspend fun cloudinaryUpload(uri: Uri): Resource<String> =
     suspendCancellableCoroutine { continuation ->
-        MediaManager.get().upload(uri)
-            .option("upload_preset", DATA.CLOUDINARY_UPLOAD_PRESET)
+        MediaManager.get().upload(uri).option("upload_preset", DATA.CLOUDINARY_UPLOAD_PRESET)
             .callback(object : UploadCallback {
                 override fun onStart(requestId: String) {}
                 override fun onProgress(requestId: String, bytes: Long, totalBytes: Long) {}
@@ -131,9 +130,8 @@ fun ImageView.loadImageBlur(isUser: Boolean, url: String, level: Int) {
 
 fun TextView.loadPdfInfo(pdfUrl: String?) {
     pdfUrl ?: return
-    text = "PDF Book"
-    @Suppress("DEPRECATION")
-    GlobalScope.launch(Dispatchers.IO) {
+    text = context.getString(R.string.pdf_book)
+    CoroutineScope(Dispatchers.IO).launch {
         try {
             val url = URL(pdfUrl)
             val connection = url.openConnection() as HttpURLConnection

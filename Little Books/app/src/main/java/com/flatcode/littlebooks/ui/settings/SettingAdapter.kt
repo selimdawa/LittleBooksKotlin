@@ -4,9 +4,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
-import com.flatcode.littlebooks.base.BaseListAdapter
 import com.flatcode.littlebooks.databinding.ItemSettingBinding
 import com.flatcode.littlebooks.model.Setting
+import com.flatcode.littlebooks.ui.BaseListAdapter
 import com.flatcode.littlebooks.utils.DATA
 import java.text.MessageFormat
 

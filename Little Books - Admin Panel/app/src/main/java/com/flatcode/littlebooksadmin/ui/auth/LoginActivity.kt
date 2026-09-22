@@ -58,7 +58,9 @@ class LoginActivity : AppCompatActivity() {
                 viewModel.loginState.collect { resource ->
                     when (resource) {
                         is Resource.Loading -> {
-                            dialog = Dialogs.createProgressDialog(context, getString(R.string.logging_in))
+                            dialog = Dialogs.createProgressDialog(
+                                context, getString(R.string.logging_in)
+                            )
                             dialog!!.show()
                         }
 

@@ -1,7 +1,6 @@
 package com.flatcode.littlebooksadmin.ui.book
 
 import android.Manifest
-import com.flatcode.littlebooksadmin.utils.Dialogs
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
@@ -10,28 +9,35 @@ import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.Toast
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import com.flatcode.littlebooksadmin.ui.book.CommentAdapter
 import com.flatcode.littlebooksadmin.Application
-import com.flatcode.littlebooksadmin.model.Comment
 import com.flatcode.littlebooksadmin.R
-import com.flatcode.littlebooksadmin.utils.DATA
-import com.flatcode.littlebooksadmin.utils.Resource
-import com.flatcode.littlebooksadmin.utils.*
 import com.flatcode.littlebooksadmin.databinding.ActivityBookDetailsBinding
 import com.flatcode.littlebooksadmin.databinding.DialogCommentAddBinding
-import com.flatcode.littlebooksadmin.ui.book.BookDetailsViewModel
 import com.flatcode.littlebooksadmin.ui.profile.ProfileActivity
+import com.flatcode.littlebooksadmin.utils.DATA
+import com.flatcode.littlebooksadmin.utils.Dialogs
+import com.flatcode.littlebooksadmin.utils.Resource
+import com.flatcode.littlebooksadmin.utils.checkFavorite
+import com.flatcode.littlebooksadmin.utils.checkLove
+import com.flatcode.littlebooksadmin.utils.downloadBook
+import com.flatcode.littlebooksadmin.utils.isFavorite
+import com.flatcode.littlebooksadmin.utils.isLoves
+import com.flatcode.littlebooksadmin.utils.loadCategory
+import com.flatcode.littlebooksadmin.utils.loadImage
+import com.flatcode.littlebooksadmin.utils.loadPdfInfo
+import com.flatcode.littlebooksadmin.utils.nrLoves
+import com.flatcode.littlebooksadmin.utils.openActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -45,7 +51,7 @@ class BookDetailsActivity : AppCompatActivity() {
     private var bookUrl: String? = null
     private var dialog: AlertDialog? = null
     private var adapter: CommentAdapter? = null
-    
+
     private val viewModel: BookDetailsViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -64,7 +70,7 @@ class BookDetailsActivity : AppCompatActivity() {
 
         initUI()
         observeViewModel()
-        
+
         bookId?.let { viewModel.loadBookDetails(it) }
     }
 
@@ -87,8 +93,7 @@ class BookDetailsActivity : AppCompatActivity() {
         binding.download.setOnClickListener {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                 context.downloadBook(
-                    DATA.EMPTY + bookId,
-                    DATA.EMPTY + bookTitle, DATA.EMPTY + bookUrl
+                    DATA.EMPTY + bookId, DATA.EMPTY + bookTitle, DATA.EMPTY + bookUrl
                 )
             } else {
                 if (ContextCompat.checkSelfPermission(
@@ -96,8 +101,7 @@ class BookDetailsActivity : AppCompatActivity() {
                     ) == PackageManager.PERMISSION_GRANTED
                 ) {
                     context.downloadBook(
-                        DATA.EMPTY + bookId,
-                        DATA.EMPTY + bookTitle, DATA.EMPTY + bookUrl
+                        DATA.EMPTY + bookId, DATA.EMPTY + bookTitle, DATA.EMPTY + bookUrl
                     )
                 } else {
                     resultPermissionLauncher.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
@@ -111,7 +115,7 @@ class BookDetailsActivity : AppCompatActivity() {
                 addCommentDialog()
             }
         }
-        
+
         binding.love.isLoves(bookId)
         binding.loves.nrLoves(bookId)
         binding.favorite.isFavorite(bookId, DATA.FirebaseUserUid)
@@ -123,19 +127,23 @@ class BookDetailsActivity : AppCompatActivity() {
                 launch {
                     viewModel.book.collect { resource ->
                         when (resource) {
-                            is Resource.Loading -> { }
+                            is Resource.Loading -> {}
                             is Resource.Success -> {
                                 resource.data?.let { book ->
                                     bookTitle = book.title
                                     bookUrl = book.url
                                     binding.download.visibility = View.VISIBLE
-                                    
+
                                     val date: String = Application.formatTimestamp(book.timestamp)
                                     binding.category.loadCategory(book.categoryId)
                                     binding.size.loadPdfInfo(book.url)
-                                    
-                                    binding.image.loadImage(isUser = false, url = book.image ?: DATA.BASIC)
-                                    binding.cover.loadImage(isUser = false, url = book.image ?: DATA.BASIC)
+
+                                    binding.image.loadImage(
+                                        isUser = false, url = book.image ?: DATA.BASIC
+                                    )
+                                    binding.cover.loadImage(
+                                        isUser = false, url = book.image ?: DATA.BASIC
+                                    )
                                     binding.title.text = book.title
                                     binding.description.text = book.description
                                     binding.views.text = book.viewsCount.toString()
@@ -143,6 +151,7 @@ class BookDetailsActivity : AppCompatActivity() {
                                     binding.date.text = date
                                 }
                             }
+
                             is Resource.Error -> {
                                 Toast.makeText(context, resource.message, Toast.LENGTH_SHORT).show()
                             }
@@ -152,28 +161,32 @@ class BookDetailsActivity : AppCompatActivity() {
                 launch {
                     viewModel.publisher.collect { resource ->
                         when (resource) {
-                            is Resource.Loading -> { }
+                            is Resource.Loading -> {}
                             is Resource.Success -> {
                                 resource.data?.let { user ->
                                     binding.publisherName.text = user.username
-                                    binding.publisherImage.loadImage(isUser = true, url = user.profileImage ?: DATA.BASIC)
+                                    binding.publisherImage.loadImage(
+                                        isUser = true, url = user.profileImage ?: DATA.BASIC
+                                    )
                                     binding.userInfo.setOnClickListener {
                                         context.openActivity<ProfileActivity>(extras = arrayOf(DATA.PROFILE_ID to user.id))
                                     }
                                 }
                             }
-                            is Resource.Error -> { }
+
+                            is Resource.Error -> {}
                         }
                     }
                 }
                 launch {
                     viewModel.comments.collect { resource ->
                         when (resource) {
-                            is Resource.Loading -> { }
+                            is Resource.Loading -> {}
                             is Resource.Success -> {
                                 updateComments(resource.data ?: emptyList())
                             }
-                            is Resource.Error -> { }
+
+                            is Resource.Error -> {}
                         }
                     }
                 }
@@ -181,18 +194,24 @@ class BookDetailsActivity : AppCompatActivity() {
                     viewModel.addCommentState.collect { resource ->
                         when (resource) {
                             is Resource.Loading -> {
-                                dialog = Dialogs.createProgressDialog(context, getString(R.string.adding_comment))
+                                dialog = Dialogs.createProgressDialog(
+                                    context, getString(R.string.adding_comment)
+                                )
                                 dialog!!.show()
                             }
+
                             is Resource.Success -> {
                                 dialog!!.dismiss()
-                                Toast.makeText(context, R.string.comment_added, Toast.LENGTH_SHORT).show()
+                                Toast.makeText(context, R.string.comment_added, Toast.LENGTH_SHORT)
+                                    .show()
                             }
+
                             is Resource.Error -> {
                                 dialog!!.dismiss()
                                 Toast.makeText(context, resource.message, Toast.LENGTH_SHORT).show()
                             }
-                            null -> { }
+
+                            null -> {}
                         }
                     }
                 }
@@ -227,8 +246,7 @@ class BookDetailsActivity : AppCompatActivity() {
         registerForActivityResult(RequestPermission()) { isGranted: Boolean ->
             if (isGranted) {
                 context.downloadBook(
-                    DATA.EMPTY + bookId,
-                    DATA.EMPTY + bookTitle, DATA.EMPTY + bookUrl
+                    DATA.EMPTY + bookId, DATA.EMPTY + bookTitle, DATA.EMPTY + bookUrl
                 )
             } else {
                 Toast.makeText(context, R.string.permission_denied, Toast.LENGTH_SHORT).show()

@@ -5,7 +5,7 @@ import android.app.Dialog
 import android.content.Context
 import android.content.DialogInterface
 import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
+import androidx.core.graphics.drawable.toDrawable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.Window
@@ -76,9 +76,9 @@ object Dialogs {
                 } else if (which == 1) {
                     dialogOptionDelete(
                         context = context,
-                        publisher = DATA.EMPTY + publisher,
-                        bookId = DATA.EMPTY + bookId,
-                        bookTitle = DATA.EMPTY + bookTitle,
+                        publisher = publisher.orEmpty(),
+                        bookId = bookId,
+                        bookTitle = bookTitle.orEmpty(),
                         isCategory = false,
                         isEditorsChoice = false,
                         categoryId = null,
@@ -103,13 +103,13 @@ object Dialogs {
                 } else if (which == 1) {
                     dialogOptionDelete(
                         context = context,
-                        publisher = DATA.EMPTY + publisher,
+                        publisher = publisher.orEmpty(),
                         bookId = null,
                         bookTitle = null,
                         isCategory = true,
                         isEditorsChoice = false,
-                        categoryId = DATA.EMPTY + id,
-                        categoryName = DATA.EMPTY + name
+                        categoryId = id,
+                        categoryName = name.orEmpty()
                     )
                 }
             }.show()
@@ -124,7 +124,7 @@ object Dialogs {
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
         dialog.setContentView(R.layout.dialog_logout)
         dialog.setCancelable(true)
-        dialog.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        dialog.window!!.setBackgroundDrawable(Color.TRANSPARENT.toDrawable())
         val lp = WindowManager.LayoutParams()
         lp.copyFrom(dialog.window!!.attributes)
         lp.width = WindowManager.LayoutParams.WRAP_CONTENT

@@ -20,7 +20,6 @@ import com.google.firebase.database.ValueEventListener
 import java.io.FileOutputStream
 import java.net.HttpURLConnection
 import java.net.URL
-import java.text.MessageFormat
 import java.util.concurrent.Executors
 
 inline fun <reified T : Activity> Context.openActivity(
@@ -48,7 +47,7 @@ inline fun <reified T : Activity> Context.openActivity(
     startActivity(intent)
 }
 
-fun TextView.loadPdfInfo(pdfUrl: String?) {
+fun TextView.loadPdfInfo() {
     // Cloudinary metadata is not easily accessible from client without Admin API
     // Setting a placeholder or empty for now
     this.text = "N/A"
@@ -58,7 +57,7 @@ fun TextView.loadCategory(categoryId: String?) {
     val ref = FirebaseDatabase.getInstance().getReference(DATA.CATEGORIES)
     ref.child(categoryId!!).addListenerForSingleValueEvent(object : ValueEventListener {
         override fun onDataChange(snapshot: DataSnapshot) {
-            val category = DATA.EMPTY + snapshot.child(DATA.CATEGORY).value
+            val category = snapshot.child(DATA.CATEGORY).value?.toString().orEmpty()
             this@loadCategory.text = category
         }
 
@@ -215,7 +214,9 @@ fun TextView.nrLoves(bookId: String?) {
     val reference = FirebaseDatabase.getInstance().reference.child(DATA.LOVES).child(bookId!!)
     reference.addValueEventListener(object : ValueEventListener {
         override fun onDataChange(dataSnapshot: DataSnapshot) {
-            this@nrLoves.text = MessageFormat.format(" {0} ", dataSnapshot.childrenCount)
+            this@nrLoves.text = context.getString(
+                R.string.number_placeholder_no_parentheses, dataSnapshot.childrenCount
+            )
         }
 
         override fun onCancelled(error: DatabaseError) {}

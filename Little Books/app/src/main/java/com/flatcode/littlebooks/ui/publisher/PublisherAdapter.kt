@@ -7,9 +7,9 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import com.flatcode.littlebooks.R
-import com.flatcode.littlebooks.base.BaseListAdapter
 import com.flatcode.littlebooks.databinding.ItemPublisherBinding
 import com.flatcode.littlebooks.model.User
+import com.flatcode.littlebooks.ui.BaseListAdapter
 import com.flatcode.littlebooks.utils.DATA
 import com.flatcode.littlebooks.utils.loadImage
 import com.google.firebase.database.DataSnapshot
@@ -19,8 +19,7 @@ import com.google.firebase.database.ValueEventListener
 import java.text.MessageFormat
 
 class PublisherAdapter(
-    private val onItemClick: (User) -> Unit,
-    private val onFollowClick: (User, Boolean) -> Unit
+    private val onItemClick: (User) -> Unit, private val onFollowClick: (User, Boolean) -> Unit
 ) : BaseListAdapter<User, ItemPublisherBinding>(DiffCallback) {
 
     override fun inflateBinding(inflater: LayoutInflater, parent: ViewGroup): ItemPublisherBinding {
@@ -52,8 +51,9 @@ class PublisherAdapter(
     }
 
     private fun isFollowing(add: ImageView, userId: String) {
-        val reference = FirebaseDatabase.getInstance().reference.child(DATA.FOLLOW)
-            .child(DATA.FirebaseUserUid).child(DATA.FOLLOWING)
+        val reference =
+            FirebaseDatabase.getInstance().reference.child(DATA.FOLLOW).child(DATA.FirebaseUserUid)
+                .child(DATA.FOLLOWING)
         reference.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 if (dataSnapshot.child(userId).exists()) {
@@ -64,17 +64,19 @@ class PublisherAdapter(
                     add.tag = "add"
                 }
             }
+
             override fun onCancelled(databaseError: DatabaseError) {}
         })
     }
 
     private fun nrFollowers(numberConnected: TextView, userId: String) {
-        val reference = FirebaseDatabase.getInstance().reference.child(DATA.FOLLOW)
-            .child(userId).child(DATA.FOLLOWERS)
+        val reference = FirebaseDatabase.getInstance().reference.child(DATA.FOLLOW).child(userId)
+            .child(DATA.FOLLOWERS)
         reference.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 numberConnected.text = MessageFormat.format("{0}", dataSnapshot.childrenCount)
             }
+
             override fun onCancelled(databaseError: DatabaseError) {}
         })
     }
@@ -86,6 +88,7 @@ class PublisherAdapter(
                 val number = DATA.EMPTY + dataSnapshot.child(DATA.BOOKS_COUNT).value
                 numberConnected.text = number
             }
+
             override fun onCancelled(databaseError: DatabaseError) {}
         })
     }

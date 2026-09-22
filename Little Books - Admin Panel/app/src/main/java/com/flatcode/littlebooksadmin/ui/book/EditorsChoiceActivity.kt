@@ -3,21 +3,18 @@ package com.flatcode.littlebooksadmin.ui.book
 import android.content.Context
 import android.os.Bundle
 import android.widget.Toast
-import androidx.activity.viewModels
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import com.flatcode.littlebooksadmin.ui.book.EditorsChoiceAdapter
-import com.flatcode.littlebooksadmin.model.Book
-import com.flatcode.littlebooksadmin.model.EditorsChoice
 import com.flatcode.littlebooksadmin.R
-import com.flatcode.littlebooksadmin.utils.Resource
 import com.flatcode.littlebooksadmin.databinding.ActivityEditorsChoiceBinding
-import com.flatcode.littlebooksadmin.ui.book.BooksViewModel
+import com.flatcode.littlebooksadmin.model.EditorsChoice
+import com.flatcode.littlebooksadmin.utils.Resource
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -29,7 +26,7 @@ class EditorsChoiceActivity : AppCompatActivity() {
     private var list: ArrayList<EditorsChoice> = arrayListOf()
     private var adapter: EditorsChoiceAdapter? = null
     private val editorsChoice = EditorsChoice()
-    
+
     private val viewModel: BooksViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -61,10 +58,11 @@ class EditorsChoiceActivity : AppCompatActivity() {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.books.collect { resource ->
                     when (resource) {
-                        is Resource.Loading -> { }
+                        is Resource.Loading -> {}
                         is Resource.Success -> {
                             updateList()
                         }
+
                         is Resource.Error -> {
                             Toast.makeText(context, resource.message, Toast.LENGTH_SHORT).show()
                         }
@@ -76,7 +74,7 @@ class EditorsChoiceActivity : AppCompatActivity() {
 
     private fun updateList() {
         list.clear()
-        for (i in 0..49) {
+        repeat(50) {
             list.add(editorsChoice)
         }
         adapter!!.submitList(ArrayList(list))

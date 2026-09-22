@@ -11,8 +11,7 @@ import javax.inject.Singleton
 
 @Singleton
 class AuthRepository @Inject constructor(
-    private val auth: FirebaseAuth,
-    private val db: FirebaseDatabase
+    private val auth: FirebaseAuth, private val db: FirebaseDatabase
 ) {
     suspend fun login(email: String, password: String): Resource<AuthResult> {
         return try {
@@ -55,11 +54,5 @@ class AuthRepository @Inject constructor(
         }
     }
 
-    fun logout() {
-        auth.signOut()
-    }
-
     fun getCurrentUser() = auth.currentUser
 }
-
-

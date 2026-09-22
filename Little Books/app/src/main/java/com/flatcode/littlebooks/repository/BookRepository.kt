@@ -1,17 +1,15 @@
 package com.flatcode.littlebooks.repository
 
-import android.content.Context
 import android.net.Uri
+import com.flatcode.littlebooks.db.BookDao
+import com.flatcode.littlebooks.db.CommentDao
 import com.flatcode.littlebooks.model.Book
 import com.flatcode.littlebooks.model.Comment
 import com.flatcode.littlebooks.utils.DATA
-import com.flatcode.littlebooks.db.BookDao
-import com.flatcode.littlebooks.db.CommentDao
 import com.flatcode.littlebooks.utils.Resource
 import com.flatcode.littlebooks.utils.cloudinaryUpload
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.Query
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.tasks.await
 import java.net.URL
@@ -24,10 +22,6 @@ class BookRepository @Inject constructor(
     private val bookDao: BookDao,
     private val commentDao: CommentDao
 ) {
-    // Room operations
-    fun getAllBooksLocal(): Flow<List<Book>> = bookDao.getAllBooks()
-
-    suspend fun getBookByIdLocal(id: String): Book? = bookDao.getBookById(id)
 
     suspend fun syncBooksFromRemote(orderBy: String = "", limit: Int = 0): Resource<Unit> {
         return try {
@@ -79,7 +73,8 @@ class BookRepository @Inject constructor(
 
     suspend fun getEditorsChoiceBooks(): Resource<List<Book>> {
         return try {
-            val snapshot = db.getReference(DATA.BOOKS).orderByChild(DATA.EDITORS_CHOICE).get().await()
+            val snapshot =
+                db.getReference(DATA.BOOKS).orderByChild(DATA.EDITORS_CHOICE).get().await()
             val list = mutableListOf<Book>()
             for (data in snapshot.children) {
                 val item = data.getValue(Book::class.java)
@@ -135,7 +130,9 @@ class BookRepository @Inject constructor(
         }
     }
 
-    suspend fun toggleFavorite(userId: String, bookId: String, isFavorite: Boolean): Resource<Unit> {
+    suspend fun toggleFavorite(
+        userId: String, bookId: String, isFavorite: Boolean
+    ): Resource<Unit> {
         return try {
             val ref = db.getReference(DATA.FAVORITES).child(userId).child(bookId)
             if (isFavorite) ref.setValue(true).await()
@@ -162,7 +159,7 @@ class BookRepository @Inject constructor(
             for (data in favSnapshot.children) {
                 val bookId = data.key ?: continue
                 val bookSnapshot = db.getReference(DATA.BOOKS).child(bookId).get().await()
-                bookSnapshot.getValue(Book::class.java)?.let { 
+                bookSnapshot.getValue(Book::class.java)?.let {
                     bookList.add(it)
                     bookDao.insertBook(it)
                 }
@@ -178,7 +175,7 @@ class BookRepository @Inject constructor(
             val snapshot = db.getReference(DATA.COMMENTS).child(bookId).get().await()
             val list = mutableListOf<Comment>()
             for (data in snapshot.children) {
-                data.getValue(Comment::class.java)?.let { 
+                data.getValue(Comment::class.java)?.let {
                     list.add(it)
                     commentDao.insertComment(it)
                 }
@@ -189,7 +186,9 @@ class BookRepository @Inject constructor(
         }
     }
 
-    suspend fun getBooksFromFollowedPublishers(followedIds: List<String>, orderBy: String): Resource<List<Book>> {
+    suspend fun getBooksFromFollowedPublishers(
+        followedIds: List<String>, orderBy: String
+    ): Resource<List<Book>> {
         return try {
             val snapshot = db.getReference(DATA.BOOKS).orderByChild(orderBy).get().await()
             val list = mutableListOf<Book>()
@@ -206,11 +205,11 @@ class BookRepository @Inject constructor(
         }
     }
 
-    suspend fun uploadBookFile(userId: String, bookUri: Uri, context: Context): Resource<String> {
+    suspend fun uploadBookFile(bookUri: Uri): Resource<String> {
         return cloudinaryUpload(bookUri)
     }
 
-    suspend fun uploadBookImage(userId: String, imageUri: Uri, context: Context): Resource<String> {
+    suspend fun uploadBookImage(imageUri: Uri): Resource<String> {
         return cloudinaryUpload(imageUri)
     }
 
@@ -271,21 +270,10 @@ class BookRepository @Inject constructor(
         }
     }
 
-    suspend fun getBookFile(pdfUrl: String): Resource<ByteArray> {
+    fun getBookFile(pdfUrl: String): Resource<ByteArray> {
         return try {
             val bytes = URL(pdfUrl).readBytes()
             Resource.Success(bytes)
-        } catch (e: Exception) {
-            Resource.Error(e.message ?: "An unknown error occurred")
-        }
-    }
-
-    suspend fun deleteBook(bookId: String, bookUrl: String): Resource<Unit> {
-        return try {
-            db.getReference(DATA.BOOKS).child(bookId).removeValue().await()
-            val book = bookDao.getBookById(bookId)
-            if (book != null) bookDao.deleteBook(book)
-            Resource.Success(Unit)
         } catch (e: Exception) {
             Resource.Error(e.message ?: "An unknown error occurred")
         }
@@ -297,7 +285,7 @@ class BookRepository @Inject constructor(
             val currentCount = ref.get().await().getValue(Int::class.java) ?: 0
             val newCount = currentCount + 1
             ref.setValue(newCount).await()
-            
+
             val book = bookDao.getBookById(bookId)
             book?.let {
                 it.viewsCount = newCount

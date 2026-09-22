@@ -78,7 +78,7 @@ class PublisherAdapter : ListAdapter<User, PublisherAdapter.ViewHolder>(UserDiff
             override fun performFiltering(constraint: CharSequence?): FilterResults {
                 var charSequence = constraint
                 val results = FilterResults()
-                if (charSequence != null && charSequence.isNotEmpty()) {
+                if (!charSequence.isNullOrEmpty()) {
                     charSequence = charSequence.toString().uppercase()
                     val filteredModels = ArrayList<User>()
                     for (item in unfilteredList) {
@@ -96,12 +96,13 @@ class PublisherAdapter : ListAdapter<User, PublisherAdapter.ViewHolder>(UserDiff
             }
 
             override fun publishResults(constraint: CharSequence?, results: FilterResults) {
-                submitFilteredList(results.values as? List<User>)
+                val list = results.values as? List<*>
+                submitFilteredList(list?.filterIsInstance<User>())
             }
         }.also { filter = it }
     }
 
-    inner class ViewHolder(val binding: ItemPublisherBinding) : RecyclerView.ViewHolder(binding.root)
+    class ViewHolder(val binding: ItemPublisherBinding) : RecyclerView.ViewHolder(binding.root)
 
     private fun isFollowing(add: ImageView, userId: String) {
         val reference = FirebaseDatabase.getInstance().reference

@@ -1,4 +1,4 @@
-package com.flatcode.littlebooks.base
+package com.flatcode.littlebooks.ui
 
 import android.view.LayoutInflater
 import android.view.ViewGroup

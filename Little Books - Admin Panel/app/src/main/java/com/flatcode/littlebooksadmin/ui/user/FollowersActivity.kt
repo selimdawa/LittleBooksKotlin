@@ -15,16 +15,13 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import com.flatcode.littlebooksadmin.ui.user.PublisherAdapter
 import com.flatcode.littlebooksadmin.model.User
 import com.flatcode.littlebooksadmin.R
 import com.flatcode.littlebooksadmin.utils.DATA
 import com.flatcode.littlebooksadmin.utils.Resource
 import com.flatcode.littlebooksadmin.databinding.ActivityPageStaggeredBinding
-import com.flatcode.littlebooksadmin.ui.user.UsersViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
-import java.text.MessageFormat
 
 @AndroidEntryPoint
 class FollowersActivity : AppCompatActivity() {
@@ -83,7 +80,7 @@ class FollowersActivity : AppCompatActivity() {
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
                 try {
                     adapter!!.filter.filter(s)
-                } catch (e: Exception) { }
+                } catch (_: Exception) { }
             }
             override fun afterTextChanged(s: Editable) {}
         })
@@ -116,7 +113,7 @@ class FollowersActivity : AppCompatActivity() {
     }
 
     private fun updateList(users: List<User>) {
-        binding.toolbar.number.text = MessageFormat.format("( {0} )", users.size)
+        binding.toolbar.number.text = getString(R.string.number_placeholder, users.size)
         adapter?.submitUnfilteredList(users)
         
         if (users.isNotEmpty()) {

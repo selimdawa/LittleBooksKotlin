@@ -5,7 +5,7 @@ import android.content.Context
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
+import androidx.activity.addCallback
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -21,20 +21,18 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.navOptions
 import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.setupWithNavController
 import com.flatcode.littlebooks.R
+import com.flatcode.littlebooks.databinding.ActivityMainBinding
+import com.flatcode.littlebooks.ui.profile.ProfileActivity
 import com.flatcode.littlebooks.utils.DATA
+import com.flatcode.littlebooks.utils.Resource
 import com.flatcode.littlebooks.utils.closeApp
 import com.flatcode.littlebooks.utils.loadImage
 import com.flatcode.littlebooks.utils.openActivity
-import com.flatcode.littlebooks.databinding.ActivityMainBinding
-import com.flatcode.littlebooks.ui.profile.ProfileActivity
-import com.flatcode.littlebooks.utils.Resource
 import com.flatcode.littlebooks.viewmodel.MainViewModel
 import com.google.android.gms.ads.MobileAds
-import io.selimdawa.bubblebottom.BubbleBottomNavigation
-import io.selimdawa.bubblebottom.Model
 import dagger.hilt.android.AndroidEntryPoint
+import io.selimdawa.bubblebottom.Model
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -44,7 +42,6 @@ class MainActivity : AppCompatActivity() {
     private var binding: ActivityMainBinding? = null
     var activity: Activity? = null
     var context: Context = also { activity = it }
-    var bottomNavigation: BubbleBottomNavigation? = null
     private lateinit var navController: NavController
     private lateinit var appBarConfiguration: AppBarConfiguration
 
@@ -58,7 +55,7 @@ class MainActivity : AppCompatActivity() {
         val view = binding!!.root
         setContentView(view)
 
-        ViewCompat.setOnApplyWindowInsetsListener(view) { v, insets ->
+        ViewCompat.setOnApplyWindowInsetsListener(view) { _, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             binding!!.toolbar.card.updateLayoutParams<ViewGroup.MarginLayoutParams> {
                 topMargin = systemBars.top
@@ -145,10 +142,16 @@ class MainActivity : AppCompatActivity() {
 
         MobileAds.initialize(applicationContext) { }
         binding!!.toolbar.image.setOnClickListener {
-            context.openActivity<ProfileActivity>(false, DATA.PROFILE_ID to DATA.FirebaseUserUid)
+            context.openActivity<ProfileActivity>(
+                clear = false, DATA.PROFILE_ID to DATA.FirebaseUserUid
+            )
         }
         loadUserInfo()
         observeViewModel()
+
+        onBackPressedDispatcher.addCallback(this) {
+            context.closeApp(activity)
+        }
     }
 
     private fun observeViewModel() {
@@ -175,11 +178,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun loadUserInfo() {
-        DATA.FirebaseUserUid?.let { viewModel.getUserInfo(it) }
-    }
-
-    override fun onBackPressed() {
-        super.onBackPressed()
-        context.closeApp(activity)
+        viewModel.getUserInfo(DATA.FirebaseUserUid)
     }
 }

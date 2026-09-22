@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.flatcode.littlebooksadmin.databinding.ItemInfoAdsBinding
 import com.flatcode.littlebooksadmin.model.ADs
 
-class ADsInfoAdapter(private val isUser: Boolean) :
+class ADsInfoAdapter :
     ListAdapter<ADs, ADsInfoAdapter.ViewHolder>(ADsDiffCallback()), Filterable {
 
     var unfilteredList: List<ADs> = emptyList()
@@ -52,7 +52,7 @@ class ADsInfoAdapter(private val isUser: Boolean) :
                 var query = constraint
                 val results = FilterResults()
                 val filterList = unfilteredList
-                if (query != null && query.isNotEmpty()) {
+                if (!query.isNullOrEmpty()) {
                     query = query.toString().uppercase()
                     val filteredModels = ArrayList<ADs>()
                     for (i in filterList.indices) {
@@ -70,7 +70,8 @@ class ADsInfoAdapter(private val isUser: Boolean) :
             }
 
             override fun publishResults(constraint: CharSequence?, results: FilterResults) {
-                submitFilteredList(results.values as? List<ADs>)
+                val list = results.values as? List<*>
+                submitFilteredList(list?.filterIsInstance<ADs>())
             }
         }.also { filter = it }
     }

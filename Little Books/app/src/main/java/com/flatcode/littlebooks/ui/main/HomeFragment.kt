@@ -9,17 +9,14 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.recyclerview.widget.RecyclerView
+import com.flatcode.littlebooks.databinding.FragmentHomeBinding
 import com.flatcode.littlebooks.ui.book.BooksCategoryActivity
 import com.flatcode.littlebooks.ui.book.MoreBooksActivity
 import com.flatcode.littlebooks.ui.category.CategoryAdapter
-import com.flatcode.littlebooks.model.Book
-import com.flatcode.littlebooks.model.Category
 import com.flatcode.littlebooks.utils.DATA
+import com.flatcode.littlebooks.utils.Resource
 import com.flatcode.littlebooks.utils.loadBannerAdTwo
 import com.flatcode.littlebooks.utils.openActivity
-import com.flatcode.littlebooks.databinding.FragmentHomeBinding
-import com.flatcode.littlebooks.utils.Resource
 import com.flatcode.littlebooks.viewmodel.HomeViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -42,15 +39,15 @@ class HomeFragment : Fragment() {
 
     private var newBooksAdapter: MainBookAdapter? = null
 
-    private val B_one = false
-    private val B_two = true
-    private val B_three = true
-    private val B_four = true
-    private val B_five = true
+    private val bOne = false
+    private val bTwo = true
+    private val bThree = true
+    private val bFour = true
+    private val bFive = true
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentHomeBinding.inflate(inflater, container, false)
 
         setupUI()
@@ -61,66 +58,71 @@ class HomeFragment : Fragment() {
 
     private fun setupUI() {
         context?.loadBannerAdTwo(
-            binding!!.adView, DATA.BANNER_SMART_HOME,
-            binding!!.adView2, DATA.BANNER_SMART_HOME_2
+            binding!!.adView, DATA.BANNER_SMART_HOME, binding!!.adView2, DATA.BANNER_SMART_HOME_2
         )
 
         binding!!.showMore.setOnClickListener {
             context?.openActivity<MoreBooksActivity>(
-                false, DATA.SHOW_MORE_TYPE to DATA.EDITORS_CHOICE,
+                clear = false,
+                DATA.SHOW_MORE_TYPE to DATA.EDITORS_CHOICE,
                 DATA.SHOW_MORE_NAME to binding!!.name.text.toString(),
-                DATA.SHOW_MORE_BOOLEAN to (DATA.EMPTY + B_one)
+                DATA.SHOW_MORE_BOOLEAN to (DATA.EMPTY + bOne)
             )
         }
         binding!!.showMore2.setOnClickListener {
             context?.openActivity<MoreBooksActivity>(
-                false, DATA.SHOW_MORE_TYPE to DATA.VIEWS_COUNT,
+                clear = false,
+                DATA.SHOW_MORE_TYPE to DATA.VIEWS_COUNT,
                 DATA.SHOW_MORE_NAME to binding!!.mostViews.text.toString(),
-                DATA.SHOW_MORE_BOOLEAN to (DATA.EMPTY + B_two)
+                DATA.SHOW_MORE_BOOLEAN to (DATA.EMPTY + bTwo)
             )
         }
         binding!!.showMore3.setOnClickListener {
             context?.openActivity<MoreBooksActivity>(
-                false, DATA.SHOW_MORE_TYPE to DATA.LOVES_COUNT,
+                clear = false,
+                DATA.SHOW_MORE_TYPE to DATA.LOVES_COUNT,
                 DATA.SHOW_MORE_NAME to binding!!.name3.text.toString(),
-                DATA.SHOW_MORE_BOOLEAN to (DATA.EMPTY + B_three)
+                DATA.SHOW_MORE_BOOLEAN to (DATA.EMPTY + bThree)
             )
         }
         binding!!.showMore4.setOnClickListener {
             context?.openActivity<MoreBooksActivity>(
-                false, DATA.SHOW_MORE_TYPE to DATA.DOWNLOADS_COUNT,
+                clear = false,
+                DATA.SHOW_MORE_TYPE to DATA.DOWNLOADS_COUNT,
                 DATA.SHOW_MORE_NAME to binding!!.name4.text.toString(),
-                DATA.SHOW_MORE_BOOLEAN to (DATA.EMPTY + B_four)
+                DATA.SHOW_MORE_BOOLEAN to (DATA.EMPTY + bFour)
             )
         }
         binding!!.showMore5.setOnClickListener {
             context?.openActivity<MoreBooksActivity>(
-                false, DATA.SHOW_MORE_TYPE to DATA.TIMESTAMP,
+                clear = false,
+                DATA.SHOW_MORE_TYPE to DATA.TIMESTAMP,
                 DATA.SHOW_MORE_NAME to binding!!.name5.text.toString(),
-                DATA.SHOW_MORE_BOOLEAN to (DATA.EMPTY + B_five)
+                DATA.SHOW_MORE_BOOLEAN to (DATA.EMPTY + bFive)
             )
         }
 
         categoryAdapter = CategoryAdapter { item ->
             context?.openActivity<BooksCategoryActivity>(
-                false, DATA.CATEGORY_ID to item.id, DATA.CATEGORY_NAME to item.category
+                clear = false, DATA.CATEGORY_ID to item.id, DATA.CATEGORY_NAME to item.category
             )
         }
         binding!!.recyclerCategory.adapter = categoryAdapter
 
-        editorsChoiceAdapter = MainBookAdapter(true, false, true)
+        editorsChoiceAdapter = MainBookAdapter(isDownloads = true, isLoves = false, isViews = true)
         binding!!.recyclerView.adapter = editorsChoiceAdapter
 
-        mostViewedAdapter = MainBookAdapter(false, true, false)
+        mostViewedAdapter = MainBookAdapter(isDownloads = false, isLoves = true, isViews = false)
         binding!!.recyclerView2.adapter = mostViewedAdapter
 
-        mostLovedAdapter = MainBookAdapter(false, false, true)
+        mostLovedAdapter = MainBookAdapter(isDownloads = false, isLoves = false, isViews = true)
         binding!!.recyclerView3.adapter = mostLovedAdapter
 
-        mostDownloadedAdapter = MainBookAdapter(true, false, false)
+        mostDownloadedAdapter =
+            MainBookAdapter(isDownloads = true, isLoves = false, isViews = false)
         binding!!.recyclerView4.adapter = mostDownloadedAdapter
 
-        newBooksAdapter = MainBookAdapter(false, true, true)
+        newBooksAdapter = MainBookAdapter(isDownloads = false, isLoves = true, isViews = true)
         binding!!.recyclerView5.adapter = newBooksAdapter
     }
 
@@ -130,38 +132,72 @@ class HomeFragment : Fragment() {
                 launch {
                     viewModel.sliderImages.collect { resource ->
                         if (resource is Resource.Success) {
-                            binding!!.imageSlider.setSliderAdapter(ImageSliderAdapter(resource.data ?: emptyList()))
+                            binding!!.imageSlider.setSliderAdapter(
+                                ImageSliderAdapter(
+                                    resource.data ?: emptyList()
+                                )
+                            )
                         }
                     }
                 }
                 launch {
                     viewModel.categories.collect { resource ->
-                        handleResource(resource, categoryAdapter)
+                        handleResource(resource, { categoryAdapter?.submitList(it) })
                     }
                 }
                 launch {
                     viewModel.editorsChoiceBooks.collect { resource ->
-                        handleResource(resource, editorsChoiceAdapter, binding!!.bar, binding!!.recyclerView, binding!!.empty)
+                        handleResource(
+                            resource,
+                            { editorsChoiceAdapter?.submitList(it) },
+                            binding!!.bar,
+                            binding!!.recyclerView,
+                            binding!!.empty
+                        )
                     }
                 }
                 launch {
                     viewModel.mostViewedBooks.collect { resource ->
-                        handleResource(resource, mostViewedAdapter, binding!!.bar2, binding!!.recyclerView2, binding!!.empty2)
+                        handleResource(
+                            resource,
+                            { mostViewedAdapter?.submitList(it) },
+                            binding!!.bar2,
+                            binding!!.recyclerView2,
+                            binding!!.empty2
+                        )
                     }
                 }
                 launch {
                     viewModel.mostLovedBooks.collect { resource ->
-                        handleResource(resource, mostLovedAdapter, binding!!.bar3, binding!!.recyclerView3, binding!!.empty3)
+                        handleResource(
+                            resource,
+                            { mostLovedAdapter?.submitList(it) },
+                            binding!!.bar3,
+                            binding!!.recyclerView3,
+                            binding!!.empty3
+                        )
                     }
                 }
                 launch {
                     viewModel.mostDownloadedBooks.collect { resource ->
-                        handleResource(resource, mostDownloadedAdapter, binding!!.bar4, binding!!.recyclerView4, binding!!.empty4)
+                        handleResource(
+                            resource,
+                            { mostDownloadedAdapter?.submitList(it) },
+                            binding!!.bar4,
+                            binding!!.recyclerView4,
+                            binding!!.empty4
+                        )
                     }
                 }
                 launch {
                     viewModel.newBooks.collect { resource ->
-                        handleResource(resource, newBooksAdapter, binding!!.bar5, binding!!.recyclerView5, binding!!.empty5)
+                        handleResource(
+                            resource,
+                            { newBooksAdapter?.submitList(it) },
+                            binding!!.bar5,
+                            binding!!.recyclerView5,
+                            binding!!.empty5
+                        )
                     }
                 }
             }
@@ -170,7 +206,7 @@ class HomeFragment : Fragment() {
 
     private fun <T> handleResource(
         resource: Resource<List<T>>,
-        adapter: RecyclerView.Adapter<*>?,
+        submitList: (List<T>) -> Unit,
         bar: View? = null,
         recyclerView: View? = null,
         empty: View? = null
@@ -178,10 +214,7 @@ class HomeFragment : Fragment() {
         when (resource) {
             is Resource.Success -> {
                 val data = resource.data ?: emptyList()
-                when (adapter) {
-                    is CategoryAdapter -> adapter.submitList(data as List<Category>)
-                    is MainBookAdapter -> adapter.submitList(data as List<Book>)
-                }
+                submitList(data)
                 bar?.visibility = View.GONE
                 if (data.isNotEmpty()) {
                     recyclerView?.visibility = View.VISIBLE
@@ -191,11 +224,13 @@ class HomeFragment : Fragment() {
                     empty?.visibility = View.VISIBLE
                 }
             }
+
             is Resource.Error -> {
                 bar?.visibility = View.GONE
                 recyclerView?.visibility = View.GONE
                 empty?.visibility = View.VISIBLE
             }
+
             is Resource.Loading -> {
                 bar?.visibility = View.VISIBLE
             }

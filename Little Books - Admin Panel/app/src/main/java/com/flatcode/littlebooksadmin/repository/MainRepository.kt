@@ -1,8 +1,8 @@
 package com.flatcode.littlebooksadmin.repository
 
-import com.flatcode.littlebooksadmin.utils.DATA
 import com.flatcode.littlebooksadmin.model.Book
 import com.flatcode.littlebooksadmin.model.User
+import com.flatcode.littlebooksadmin.utils.DATA
 import com.flatcode.littlebooksadmin.utils.Resource
 import com.google.firebase.database.FirebaseDatabase
 import kotlinx.coroutines.tasks.await
@@ -27,7 +27,7 @@ class MainRepository @Inject constructor(
     suspend fun getDashboardStats(): Resource<DashboardStats> {
         return try {
             val userId = DATA.FirebaseUserUid
-            
+
             val usersSnapshot = db.getReference(DATA.USERS).get().await()
             var usersCount = 0
             var publishersCount = 0
@@ -62,15 +62,28 @@ class MainRepository @Inject constructor(
             }
 
             val sliderCount = db.getReference(DATA.SLIDER_SHOW).get().await().childrenCount.toInt()
-            val followersCount = db.getReference(DATA.FOLLOW).child(userId).child(DATA.FOLLOWERS).get().await().childrenCount.toInt()
-            val followingCount = db.getReference(DATA.FOLLOW).child(userId).child(DATA.FOLLOWING).get().await().childrenCount.toInt()
-            val favoritesCount = db.getReference(DATA.FAVORITES).child(userId).get().await().childrenCount.toInt()
+            val followersCount =
+                db.getReference(DATA.FOLLOW).child(userId).child(DATA.FOLLOWERS).get()
+                    .await().childrenCount.toInt()
+            val followingCount =
+                db.getReference(DATA.FOLLOW).child(userId).child(DATA.FOLLOWING).get()
+                    .await().childrenCount.toInt()
+            val favoritesCount =
+                db.getReference(DATA.FAVORITES).child(userId).get().await().childrenCount.toInt()
 
             Resource.Success(
                 DashboardStats(
-                    usersCount, publishersCount, myBooksCount, allBooksCount,
-                    sliderCount, followersCount, followingCount, favoritesCount,
-                    adsUsersCount, editorsChoiceCount, myCategoriesCount
+                    usersCount,
+                    publishersCount,
+                    myBooksCount,
+                    allBooksCount,
+                    sliderCount,
+                    followersCount,
+                    followingCount,
+                    favoritesCount,
+                    adsUsersCount,
+                    editorsChoiceCount,
+                    myCategoriesCount
                 )
             )
         } catch (e: Exception) {
@@ -79,10 +92,16 @@ class MainRepository @Inject constructor(
     }
 
     data class DashboardStats(
-        val users: Int, val publishers: Int, val myBooks: Int, val allBooks: Int,
-        val sliderShow: Int, val followers: Int, val following: Int, val favorites: Int,
-        val ads: Int, val editorsChoice: Int, val categories: Int
+        val users: Int,
+        val publishers: Int,
+        val myBooks: Int,
+        val allBooks: Int,
+        val sliderShow: Int,
+        val followers: Int,
+        val following: Int,
+        val favorites: Int,
+        val ads: Int,
+        val editorsChoice: Int,
+        val categories: Int
     )
 }
-
-

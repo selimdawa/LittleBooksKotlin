@@ -4,7 +4,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
-import com.flatcode.littlebooks.base.BaseListAdapter
+import com.flatcode.littlebooks.ui.BaseListAdapter
 import com.flatcode.littlebooks.databinding.ItemBookLinearBinding
 import com.flatcode.littlebooks.model.Book
 import com.flatcode.littlebooks.utils.DATA
@@ -37,9 +37,9 @@ class LinearBookAdapter(
         binding.description.visibility = if (item.description.isNullOrEmpty()) View.GONE else View.VISIBLE
         binding.description.text = item.description
 
-        binding.numberViews.text = DATA.EMPTY + item.viewsCount
-        binding.numberLoves.text = DATA.EMPTY + item.lovesCount
-        binding.numberDownloads.text = DATA.EMPTY + item.downloadsCount
+        binding.numberViews.text = item.viewsCount.toString()
+        binding.numberLoves.text = item.lovesCount.toString()
+        binding.numberDownloads.text = item.downloadsCount.toString()
 
         binding.favorites.isFavorite(item.id, DATA.FirebaseUserUid)
         binding.loves.isLoves(item.id)

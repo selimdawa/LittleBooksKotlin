@@ -5,12 +5,12 @@ import android.app.Dialog
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
-import android.net.Uri
 import android.view.LayoutInflater
 import android.view.Window
 import android.view.WindowManager
 import androidx.appcompat.app.AlertDialog
+import androidx.core.graphics.drawable.toDrawable
+import androidx.core.net.toUri
 import androidx.viewbinding.ViewBinding
 import com.flatcode.littlebooks.R
 import com.flatcode.littlebooks.databinding.DialogAboutAppBinding
@@ -26,7 +26,7 @@ private fun Context.showCustomDialog(binding: ViewBinding, setup: (Dialog) -> Un
         requestWindowFeature(Window.FEATURE_NO_TITLE)
         setContentView(binding.root)
         setCancelable(true)
-        window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        window?.setBackgroundDrawable(Color.TRANSPARENT.toDrawable())
         val lp = WindowManager.LayoutParams().apply {
             copyFrom(window?.attributes)
             width = WindowManager.LayoutParams.WRAP_CONTENT
@@ -61,14 +61,14 @@ fun Context.dialogAboutApp() {
     val binding = DialogAboutAppBinding.inflate(LayoutInflater.from(this))
     showCustomDialog(binding) {
         binding.website.setOnClickListener {
-            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(DATA.WEB_SITE)))
+            startActivity(Intent(Intent.ACTION_VIEW, DATA.WEB_SITE.toUri()))
         }
         binding.facebook.setOnClickListener {
             val fbUri = try {
                 packageManager.getPackageInfo("com.facebook.katana", 0)
-                Uri.parse("fb://profile/${DATA.FB_ID}")
+                "fb://profile/${DATA.FB_ID}".toUri()
             } catch (_: Exception) {
-                Uri.parse("https://www.facebook.com/${DATA.FB_ID}")
+                "https://www.facebook.com/${DATA.FB_ID}".toUri()
             }
             startActivity(Intent(Intent.ACTION_VIEW, fbUri))
         }

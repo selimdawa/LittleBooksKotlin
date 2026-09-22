@@ -1,24 +1,25 @@
 package com.flatcode.littlebooksadmin.ui.book
 
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Filter
 import android.widget.Filterable
-import android.widget.ImageButton
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.TextView
-import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.flatcode.littlebooksadmin.databinding.ItemBookStaggeredBinding
 import com.flatcode.littlebooksadmin.model.Book
 import com.flatcode.littlebooksadmin.utils.DATA
-import com.flatcode.littlebooksadmin.utils.*
-import com.flatcode.littlebooksadmin.databinding.ItemBookStaggeredBinding
+import com.flatcode.littlebooksadmin.utils.Dialogs
+import com.flatcode.littlebooksadmin.utils.checkFavorite
+import com.flatcode.littlebooksadmin.utils.checkLove
+import com.flatcode.littlebooksadmin.utils.isFavorite
+import com.flatcode.littlebooksadmin.utils.isLoves
+import com.flatcode.littlebooksadmin.utils.loadImage
+import com.flatcode.littlebooksadmin.utils.openActivity
 
-class StaggeredBookAdapter : ListAdapter<Book, StaggeredBookAdapter.ViewHolder>(BookDiffCallback()), Filterable {
+class StaggeredBookAdapter : ListAdapter<Book, StaggeredBookAdapter.ViewHolder>(BookDiffCallback()),
+    Filterable {
 
     var unfilteredList: List<Book> = emptyList()
         private set
@@ -35,7 +36,8 @@ class StaggeredBookAdapter : ListAdapter<Book, StaggeredBookAdapter.ViewHolder>(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val binding = ItemBookStaggeredBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        val binding =
+            ItemBookStaggeredBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return ViewHolder(binding)
     }
 
@@ -79,7 +81,7 @@ class StaggeredBookAdapter : ListAdapter<Book, StaggeredBookAdapter.ViewHolder>(
                     var query = constraint
                     val results = FilterResults()
                     val filterList = unfilteredList
-                    if (query != null && query.isNotEmpty()) {
+                    if (!query.isNullOrEmpty()) {
                         query = query.toString().uppercase()
                         val filteredModels = ArrayList<Book>()
                         for (item in filterList) {
@@ -96,19 +98,17 @@ class StaggeredBookAdapter : ListAdapter<Book, StaggeredBookAdapter.ViewHolder>(
                     return results
                 }
 
-                @Suppress("UNCHECKED_CAST")
                 override fun publishResults(constraint: CharSequence?, results: FilterResults) {
-                    submitFilteredList(results.values as? List<Book>)
+                    val list = results.values as? List<*>
+                    @Suppress("UNCHECKED_CAST") submitFilteredList(list as? List<Book>)
                 }
             }
         }
         return filter!!
     }
 
-    inner class ViewHolder(val binding: ItemBookStaggeredBinding) : RecyclerView.ViewHolder(binding.root) {
+    class ViewHolder(val binding: ItemBookStaggeredBinding) :
+        RecyclerView.ViewHolder(binding.root) {
         val item = binding.item
     }
 }
-
-
-

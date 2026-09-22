@@ -23,7 +23,6 @@ import com.flatcode.littlebooksadmin.utils.DATA
 import com.flatcode.littlebooksadmin.utils.Resource
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
-import java.text.MessageFormat
 
 @AndroidEntryPoint
 class EditorsChoiceAddActivity : AppCompatActivity() {
@@ -87,8 +86,8 @@ class EditorsChoiceAddActivity : AppCompatActivity() {
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
                 try {
-                    adapter!!.filter.filter(s)
-                } catch (e: Exception) {
+                    adapter?.filter?.filter(s)
+                } catch (_: Exception) {
                 }
             }
 
@@ -144,7 +143,7 @@ class EditorsChoiceAddActivity : AppCompatActivity() {
     }
 
     private fun updateList(books: List<Book>) {
-        binding.toolbar.number.text = MessageFormat.format("( {0} )", books.size)
+        binding.toolbar.number.text = getString(R.string.number_placeholder, books.size)
         adapter?.submitUnfilteredList(books)
 
         if (books.isNotEmpty()) {
@@ -155,5 +154,4 @@ class EditorsChoiceAddActivity : AppCompatActivity() {
             binding.emptyText.visibility = View.VISIBLE
         }
     }
-
 }

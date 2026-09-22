@@ -1,8 +1,6 @@
 package com.flatcode.littlebooksadmin.ui.book
 
 import android.Manifest
-import android.app.Activity
-import com.flatcode.littlebooksadmin.utils.Dialogs
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -12,8 +10,6 @@ import android.os.Bundle
 import android.text.TextUtils
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.result.ActivityResult
-import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
@@ -27,6 +23,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.flatcode.littlebooksadmin.R
 import com.flatcode.littlebooksadmin.databinding.ActivityBookAddBinding
 import com.flatcode.littlebooksadmin.model.Category
+import com.flatcode.littlebooksadmin.utils.Dialogs
 import com.flatcode.littlebooksadmin.utils.Resource
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -42,6 +39,27 @@ class BookAddActivity : AppCompatActivity() {
     private var dialog: AlertDialog? = null
 
     private val viewModel: BookAddViewModel by viewModels()
+
+    private val bookPickerLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == RESULT_OK) {
+                uri = result.data?.data
+                binding.book.setBackgroundResource(R.color.green)
+                binding.choose.setText(R.string.ok)
+            } else {
+                binding.book.setBackgroundResource(R.color.red)
+                binding.choose.setText(R.string.choose_book)
+                Toast.makeText(context, R.string.cancelled_picking_book, Toast.LENGTH_SHORT).show()
+            }
+        }
+
+    private val galleryActivityResultLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == RESULT_OK) {
+                imageUri = result.data?.data
+                binding.image.setImageURI(imageUri)
+            }
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,7 +81,7 @@ class BookAddActivity : AppCompatActivity() {
         dialog = Dialogs.createProgressDialog(context, getString(R.string.please_wait))
 
         binding.toolbar.nameSpace.setText(R.string.add_new_book)
-        binding.toolbar.back.setOnClickListener { onBackPressed() }
+        binding.toolbar.back.setOnClickListener { finish() }
 
         binding.image.setOnClickListener { pickImageGallery() }
         binding.chooseBook.setOnClickListener { bookPickIntent() }
@@ -77,9 +95,7 @@ class BookAddActivity : AppCompatActivity() {
                 launch {
                     viewModel.categories.collect { resource ->
                         when (resource) {
-                            is Resource.Loading -> { /* Show some loading for categories if needed */
-                            }
-
+                            is Resource.Loading -> {}
                             is Resource.Success -> {
                                 categoriesList = resource.data ?: emptyList()
                             }
@@ -94,7 +110,9 @@ class BookAddActivity : AppCompatActivity() {
                     viewModel.uploadState.collect { resource ->
                         when (resource) {
                             is Resource.Loading -> {
-                                dialog = Dialogs.createProgressDialog(context, getString(R.string.uploading_book))
+                                dialog = Dialogs.createProgressDialog(
+                                    context, getString(R.string.uploading_book)
+                                )
                                 dialog!!.show()
                             }
 
@@ -118,7 +136,9 @@ class BookAddActivity : AppCompatActivity() {
                     viewModel.imageUploadState.collect { resource ->
                         when (resource) {
                             is Resource.Loading -> {
-                                dialog = Dialogs.createProgressDialog(context, getString(R.string.updating_image_book))
+                                dialog = Dialogs.createProgressDialog(
+                                    context, getString(R.string.updating_image_book)
+                                )
                                 dialog!!.show()
                             }
 
@@ -155,9 +175,7 @@ class BookAddActivity : AppCompatActivity() {
         } else if (uri == null) {
             Toast.makeText(context, R.string.pick_book, Toast.LENGTH_SHORT).show()
         } else {
-            viewModel.uploadBook(
-                uri!!, title, description, selectedId ?: "", imageUri
-            )
+            viewModel.uploadBook(uri!!, title, description, selectedId ?: "", imageUri)
         }
     }
 
@@ -174,42 +192,17 @@ class BookAddActivity : AppCompatActivity() {
 
         val builder = AlertDialog.Builder(context)
         builder.setTitle(R.string.pick_category).setItems(categories) { _, which ->
-                selectedTitle = categoriesList[which].category
-                selectedId = categoriesList[which].id
-                binding.category.text = selectedTitle
-            }.show()
+            selectedTitle = categoriesList[which].category
+            selectedId = categoriesList[which].id
+            binding.category.text = selectedTitle
+        }.show()
     }
 
     private fun bookPickIntent() {
         val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
         intent.addCategory(Intent.CATEGORY_OPENABLE)
         intent.type = "application/pdf"
-        startActivityForResult(intent, BOOK_PICK_CODE)
-    }
-
-    private val galleryActivityResultLauncher: ActivityResultLauncher<Intent> =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
-            if (result.resultCode == RESULT_OK) {
-                val data = result.data!!
-                imageUri = data.data
-                binding.image.setImageURI(imageUri)
-            }
-        }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode == Activity.RESULT_OK) {
-            if (requestCode == BOOK_PICK_CODE) {
-                assert(data != null)
-                uri = data!!.data
-                binding.book.setBackgroundResource(R.color.green)
-                binding.choose.setText(R.string.ok)
-            }
-        } else {
-            binding.book.setBackgroundResource(R.color.red)
-            binding.choose.setText(R.string.choose_book)
-            Toast.makeText(context, R.string.cancelled_picking_book, Toast.LENGTH_SHORT).show()
-        }
+        bookPickerLauncher.launch(intent)
     }
 
     private val requestPermissionLauncher =
@@ -234,14 +227,13 @@ class BookAddActivity : AppCompatActivity() {
             Manifest.permission.READ_EXTERNAL_STORAGE
         }
 
-        if (ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(
+                context, permission
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
             launchGallery()
         } else {
             requestPermissionLauncher.launch(permission)
         }
-    }
-
-    companion object {
-        private const val BOOK_PICK_CODE = 1000
     }
 }

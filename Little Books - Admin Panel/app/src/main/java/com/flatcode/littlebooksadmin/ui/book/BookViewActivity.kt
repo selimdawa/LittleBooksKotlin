@@ -22,7 +22,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.net.HttpURLConnection
 import java.net.URL
-import java.text.MessageFormat
 
 @AndroidEntryPoint
 class BookViewActivity : AppCompatActivity() {
@@ -109,8 +108,7 @@ class BookViewActivity : AppCompatActivity() {
                     binding.pdfView.fromBytes(bytes).swipeHorizontal(false)
                         .onPageChange { page: Int, pageCount: Int ->
                             val correctPage = page + 1
-                            binding.toolbar.numberPage.text =
-                                MessageFormat.format("{0}/{1}", correctPage, pageCount)
+                            binding.toolbar.numberPage.text = getString(R.string.pages_count_placeholder, correctPage, pageCount)
                         }.onError { t: Throwable ->
                             Toast.makeText(
                                 context,

@@ -1,6 +1,5 @@
 package com.flatcode.littlebooks.viewmodel
 
-import android.content.Context
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -19,12 +18,10 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
-    private val userRepository: UserRepository,
-    private val bookRepository: BookRepository
+    private val userRepository: UserRepository, private val bookRepository: BookRepository
 ) : ViewModel() {
 
     private val _searchQuery = MutableStateFlow("")
-    val searchQuery: StateFlow<String> = _searchQuery
 
     private val _user = MutableStateFlow<Resource<User>>(Resource.Loading())
     val user: StateFlow<Resource<User>> = _user
@@ -48,27 +45,32 @@ class ProfileViewModel @Inject constructor(
     val explorePublishersCount: StateFlow<Resource<Int>> = _explorePublishersCount
 
     private val _explorePublishers = MutableStateFlow<Resource<List<User>>>(Resource.Loading())
-    val explorePublishers: StateFlow<Resource<List<User>>> = _explorePublishers
 
     private val _uploadStatus = MutableStateFlow<Resource<String>?>(null)
     val uploadStatus: StateFlow<Resource<String>?> = _uploadStatus
 
-    val filteredExplorePublishers: StateFlow<Resource<List<User>>> = combine(_explorePublishers, _searchQuery) { resource, query ->
-        if (resource is Resource.Success && query.isNotEmpty()) {
-            val filtered = resource.data?.filter {
-                it.username?.contains(query, ignoreCase = true) == true
+    val filteredExplorePublishers: StateFlow<Resource<List<User>>> =
+        combine(_explorePublishers, _searchQuery) { resource, query ->
+            if (resource is Resource.Success && query.isNotEmpty()) {
+                val filtered = resource.data?.filter {
+                    it.username?.contains(query, ignoreCase = true) == true
+                }
+                Resource.Success(filtered ?: emptyList())
+            } else {
+                resource
             }
-            Resource.Success(filtered ?: emptyList())
-        } else {
-            resource
-        }
-    }.stateIn(viewModelScope, SharingStarted.Lazily, Resource.Loading())
+        }.stateIn(viewModelScope, SharingStarted.Lazily, Resource.Loading())
 
     fun setSearchQuery(query: String) {
         _searchQuery.value = query
     }
 
-    fun loadProfileData(profileId: String, currentUserId: String, followTypeFollowers: String, followTypeFollowing: String) {
+    fun loadProfileData(
+        profileId: String,
+        currentUserId: String,
+        followTypeFollowers: String,
+        followTypeFollowing: String
+    ) {
         viewModelScope.launch {
             _user.value = userRepository.getUserInfo(profileId)
             _booksCount.value = bookRepository.getBooksCountByPublisher(profileId)
@@ -95,7 +97,7 @@ class ProfileViewModel @Inject constructor(
             }
         }
     }
-    
+
     fun updateUserInfo(userId: String, hashMap: Map<String, Any>) {
         viewModelScope.launch {
             userRepository.updateUserInfo(userId, hashMap)
@@ -103,12 +105,10 @@ class ProfileViewModel @Inject constructor(
         }
     }
 
-    fun uploadProfileImage(userId: String, imageUri: Uri, context: Context) {
+    fun uploadProfileImage(imageUri: Uri) {
         viewModelScope.launch {
             _uploadStatus.value = Resource.Loading()
-            _uploadStatus.value = userRepository.uploadProfileImage(userId, imageUri, context)
+            _uploadStatus.value = userRepository.uploadProfileImage(imageUri)
         }
     }
 }
-
-

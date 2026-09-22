@@ -32,12 +32,12 @@ class ProfileViewModel @Inject constructor(
     fun loadProfile(profileId: String) {
         viewModelScope.launch {
             _user.value = repository.getUserById(profileId)
-            
+
             repository.getProfileStats(profileId).collect {
                 _stats.value = it
             }
         }
-        
+
         viewModelScope.launch {
             repository.isFollowing(profileId).collect {
                 _isFollowing.value = it
@@ -58,5 +58,3 @@ class ProfileViewModel @Inject constructor(
         }
     }
 }
-
-

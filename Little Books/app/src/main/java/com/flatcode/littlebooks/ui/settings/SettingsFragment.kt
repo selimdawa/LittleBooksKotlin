@@ -42,7 +42,7 @@ class SettingsFragment : Fragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentSettingsBinding.inflate(inflater, container, false)
 
         adapter = SettingAdapter { item ->
@@ -59,7 +59,9 @@ class SettingsFragment : Fragment() {
         binding!!.recyclerView.adapter = adapter
 
         binding!!.toolbar.item.setOnClickListener {
-            context?.openActivity<ProfileActivity>(false, DATA.PROFILE_ID to DATA.FirebaseUserUid)
+            context?.openActivity<ProfileActivity>(
+                clear = false, DATA.PROFILE_ID to DATA.FirebaseUserUid
+            )
         }
 
         observeViewModel()
@@ -165,9 +167,7 @@ class SettingsFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        DATA.FirebaseUserUid?.let {
-            viewModel.loadProfileData(it, it, DATA.FOLLOWERS, DATA.FOLLOWING)
-        }
+        viewModel.loadProfileData(DATA.FirebaseUserUid, DATA.FirebaseUserUid, DATA.FOLLOWERS, DATA.FOLLOWING)
     }
 
     override fun onDestroyView() {

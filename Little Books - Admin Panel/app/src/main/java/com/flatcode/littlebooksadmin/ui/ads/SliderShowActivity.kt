@@ -1,35 +1,32 @@
 package com.flatcode.littlebooksadmin.ui.ads
 
-import android.Manifest
 import android.app.Activity
-import androidx.appcompat.app.AlertDialog
-import com.flatcode.littlebooksadmin.utils.Dialogs
 import android.content.Context
-import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import com.cloudinary.android.MediaManager
-import com.cloudinary.android.callback.ErrorInfo
-import com.cloudinary.android.callback.UploadCallback
-import com.flatcode.littlebooksadmin.R
-import com.flatcode.littlebooksadmin.utils.DATA
-import com.flatcode.littlebooksadmin.utils.loadImage
-import com.flatcode.littlebooksadmin.databinding.ActivitySliderShowBinding
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
 import com.canhub.cropper.CropImageContract
 import com.canhub.cropper.CropImageContractOptions
 import com.canhub.cropper.CropImageOptions
 import com.canhub.cropper.CropImageView
-import java.text.MessageFormat
+import com.cloudinary.android.MediaManager
+import com.cloudinary.android.callback.ErrorInfo
+import com.cloudinary.android.callback.UploadCallback
+import com.flatcode.littlebooksadmin.R
+import com.flatcode.littlebooksadmin.databinding.ActivitySliderShowBinding
+import com.flatcode.littlebooksadmin.utils.DATA
+import com.flatcode.littlebooksadmin.utils.Dialogs
+import com.flatcode.littlebooksadmin.utils.loadImage
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 
 class SliderShowActivity : AppCompatActivity() {
 
@@ -38,17 +35,19 @@ class SliderShowActivity : AppCompatActivity() {
     private val context: Context = also { activity = it }
     private var imageUri: Uri? = null
     private var dialog: AlertDialog? = null
-    private var IMAGE_NUMBER = 0
+    private var imageNumber = 0
     private var item = 0
 
     private val cropImage = registerForActivityResult(CropImageContract()) { result ->
         if (result.isSuccessful) {
             imageUri = result.uriContent
-            uploadImage(DATA.EMPTY + IMAGE_NUMBER)
+            uploadImage(DATA.EMPTY + imageNumber)
         } else {
             val exception = result.error
             exception?.let {
-                Toast.makeText(context, getString(R.string.error_message, it.message), Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    context, getString(R.string.error_message, it.message), Toast.LENGTH_SHORT
+                ).show()
             }
         }
     }
@@ -56,8 +55,7 @@ class SliderShowActivity : AppCompatActivity() {
     private fun startCrop() {
         cropImage.launch(
             CropImageContractOptions(
-                uri = null,
-                cropImageOptions = CropImageOptions(
+                uri = null, cropImageOptions = CropImageOptions(
                     guidelines = CropImageView.Guidelines.ON,
                     aspectRatioX = 16,
                     aspectRatioY = 9,
@@ -88,83 +86,83 @@ class SliderShowActivity : AppCompatActivity() {
         dialog = Dialogs.createProgressDialog(context, getString(R.string.please_wait))
 
         binding.addOne.setOnClickListener {
-            IMAGE_NUMBER = 1
+            imageNumber = 1
             startCrop()
         }
         binding.addTwo.setOnClickListener {
-            IMAGE_NUMBER = 2
+            imageNumber = 2
             startCrop()
         }
         binding.addThree.setOnClickListener {
-            IMAGE_NUMBER = 3
+            imageNumber = 3
             startCrop()
         }
         binding.addFour.setOnClickListener {
-            IMAGE_NUMBER = 4
+            imageNumber = 4
             startCrop()
         }
         binding.addFive.setOnClickListener {
-            IMAGE_NUMBER = 5
+            imageNumber = 5
             startCrop()
         }
         binding.addSix.setOnClickListener {
-            IMAGE_NUMBER = 6
+            imageNumber = 6
             startCrop()
         }
         binding.addSeven.setOnClickListener {
-            IMAGE_NUMBER = 7
+            imageNumber = 7
             startCrop()
         }
         binding.addEight.setOnClickListener {
-            IMAGE_NUMBER = 8
+            imageNumber = 8
             startCrop()
         }
         binding.addNine.setOnClickListener {
-            IMAGE_NUMBER = 9
+            imageNumber = 9
             startCrop()
         }
         binding.addTeen.setOnClickListener {
-            IMAGE_NUMBER = 10
+            imageNumber = 10
             startCrop()
         }
         binding.addEleven.setOnClickListener {
-            IMAGE_NUMBER = 11
+            imageNumber = 11
             startCrop()
         }
         binding.addTwelfth.setOnClickListener {
-            IMAGE_NUMBER = 12
+            imageNumber = 12
             startCrop()
         }
         binding.addThirteen.setOnClickListener {
-            IMAGE_NUMBER = 13
+            imageNumber = 13
             startCrop()
         }
         binding.addFourteenth.setOnClickListener {
-            IMAGE_NUMBER = 14
+            imageNumber = 14
             startCrop()
         }
         binding.addFifteenth.setOnClickListener {
-            IMAGE_NUMBER = 15
+            imageNumber = 15
             startCrop()
         }
         binding.addSixteen.setOnClickListener {
-            IMAGE_NUMBER = 16
+            imageNumber = 16
             startCrop()
         }
         binding.addSeventeen.setOnClickListener {
-            IMAGE_NUMBER = 17
+            imageNumber = 17
             startCrop()
         }
         binding.addEighteen.setOnClickListener {
-            IMAGE_NUMBER = 18
+            imageNumber = 18
             startCrop()
         }
         binding.addNineteen.setOnClickListener {
-            IMAGE_NUMBER = 19
+            imageNumber = 19
             startCrop()
         }
         binding.addTwenty.setOnClickListener {
-            IMAGE_NUMBER = 20
+            imageNumber = 20
             startCrop()
         }
     }
@@ -175,8 +173,7 @@ class SliderShowActivity : AppCompatActivity() {
             reference.addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
                     item = dataSnapshot.childrenCount.toInt()
-                    binding.toolbar.nameSpace.text =
-                        MessageFormat.format("Slider Show ( {0} )", item)
+                    binding.toolbar.nameSpace.text = getString(R.string.slider_show_count, item)
                     if (item >= 0) {
                         binding.linearOne.visibility = View.VISIBLE
                     } else {
@@ -284,7 +281,7 @@ class SliderShowActivity : AppCompatActivity() {
             })
         }
 
-    private fun SliderShow() {
+    private fun sliderShow() {
         val reference = FirebaseDatabase.getInstance().getReference(DATA.SLIDER_SHOW)
         reference.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
@@ -338,10 +335,8 @@ class SliderShowActivity : AppCompatActivity() {
     private fun uploadImage(name: String) {
         dialog = Dialogs.createProgressDialog(context, getString(R.string.posting_photo))
         dialog!!.show()
-        MediaManager.get().upload(imageUri)
-            .option("folder", "Images/SliderShow/")
-            .option("public_id", name)
-            .callback(object : UploadCallback {
+        MediaManager.get().upload(imageUri).option("folder", "Images/SliderShow/")
+            .option("public_id", name).callback(object : UploadCallback {
                 override fun onStart(requestId: String?) {}
                 override fun onProgress(requestId: String?, bytes: Long, totalBytes: Long) {}
                 override fun onSuccess(requestId: String?, resultData: Map<*, *>?) {
@@ -351,7 +346,11 @@ class SliderShowActivity : AppCompatActivity() {
 
                 override fun onError(requestId: String?, error: ErrorInfo?) {
                     dialog!!.dismiss()
-                    Toast.makeText(context, getString(R.string.error_message, error?.description), Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        context,
+                        getString(R.string.error_message, error?.description),
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
 
                 override fun onReschedule(requestId: String?, error: ErrorInfo?) {}
@@ -371,19 +370,21 @@ class SliderShowActivity : AppCompatActivity() {
             Toast.makeText(context, R.string.photo_posted, Toast.LENGTH_SHORT).show()
         }.addOnFailureListener { e: Exception ->
             dialog!!.dismiss()
-            Toast.makeText(context, getString(R.string.error_message, e.message), Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                context, getString(R.string.error_message, e.message), Toast.LENGTH_SHORT
+            ).show()
         }
     }
 
     override fun onResume() {
         nrSliderShow
-        SliderShow()
+        sliderShow()
         super.onResume()
     }
 
     override fun onRestart() {
         nrSliderShow
-        SliderShow()
+        sliderShow()
         super.onRestart()
     }
 }

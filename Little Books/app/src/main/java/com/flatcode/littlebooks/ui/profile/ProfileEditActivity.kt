@@ -75,7 +75,7 @@ class ProfileEditActivity : AppCompatActivity() {
             .create()
 
         binding!!.toolbar.nameSpace.setText(R.string.edit_profile)
-        binding!!.toolbar.back.setOnClickListener { onBackPressed() }
+        binding!!.toolbar.back.setOnClickListener { onBackPressedDispatcher.onBackPressed() }
         binding!!.image.setOnClickListener { startCrop() }
         binding!!.go.setOnClickListener { validateData() }
 
@@ -115,9 +115,7 @@ class ProfileEditActivity : AppCompatActivity() {
     }
 
     private fun loadUserInfo() {
-        DATA.FirebaseUserUid?.let {
-            viewModel.loadProfileData(it, it, DATA.FOLLOWERS, DATA.FOLLOWING)
-        }
+        viewModel.loadProfileData(DATA.FirebaseUserUid, DATA.FirebaseUserUid, DATA.FOLLOWERS, DATA.FOLLOWING)
     }
 
     private fun observeViewModel() {
@@ -156,14 +154,14 @@ class ProfileEditActivity : AppCompatActivity() {
 
     private var username = DATA.EMPTY
     private fun validateData() {
-        username = binding!!.nameEt.text.toString().trim { it <= ' ' }
+        username = binding!!.nameEt.text.toString().trim()
         if (TextUtils.isEmpty(username)) {
             Toast.makeText(context, "Enter name...", Toast.LENGTH_SHORT).show()
         } else {
             if (imageUri == null) {
                 updateProfile(null)
             } else {
-                viewModel.uploadProfileImage(DATA.FirebaseUserUid, imageUri!!, context)
+                viewModel.uploadProfileImage(imageUri!!)
             }
         }
     }

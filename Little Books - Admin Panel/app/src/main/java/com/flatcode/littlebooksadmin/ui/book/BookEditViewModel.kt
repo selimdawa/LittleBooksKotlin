@@ -45,16 +45,20 @@ class BookEditViewModel @Inject constructor(
         }
     }
 
-    fun updateBook(bookId: String, title: String, description: String, categoryId: String, imageUri: Uri? = null) {
+    fun updateBook(
+        bookId: String,
+        title: String,
+        description: String,
+        categoryId: String,
+        imageUri: Uri? = null
+    ) {
         viewModelScope.launch {
             _updateState.value = Resource.Loading()
             val updates = mapOf(
-                "title" to title,
-                "description" to description,
-                "categoryId" to categoryId
+                "title" to title, "description" to description, "categoryId" to categoryId
             )
             val result = repository.updateBook(bookId, updates)
-            
+
             if (result is Resource.Success && imageUri != null) {
                 val imageResult = repository.uploadBookImage(bookId, imageUri)
                 _updateState.value = imageResult

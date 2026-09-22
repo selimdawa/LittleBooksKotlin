@@ -1,9 +1,9 @@
 package com.flatcode.littlebooksadmin.model
 
-import java.io.Serializable
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
 
+@Parcelize
 data class ADs(
-    var name: String? = null,
-    var adsLoadedCount: Int = 0,
-    var adsClickedCount: Int = 0
-) : Serializable
+    var name: String? = null, var adsLoadedCount: Int = 0, var adsClickedCount: Int = 0
+) : Parcelable

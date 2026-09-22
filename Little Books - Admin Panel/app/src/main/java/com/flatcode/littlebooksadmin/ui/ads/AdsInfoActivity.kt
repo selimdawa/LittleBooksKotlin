@@ -54,7 +54,7 @@ class AdsInfoActivity : AppCompatActivity() {
         binding.toolbar.nameSpace.setText(R.string.info_ads)
         binding.toolbar.back.setOnClickListener { onBackPressedDispatcher.onBackPressed() }
 
-        adapter = ADsInfoAdapter(true)
+        adapter = ADsInfoAdapter()
         binding.recyclerView.adapter = adapter
     }
 
@@ -110,5 +110,4 @@ class AdsInfoActivity : AppCompatActivity() {
             }
         }
     }
-
 }

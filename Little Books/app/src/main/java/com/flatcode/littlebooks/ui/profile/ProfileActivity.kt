@@ -15,15 +15,14 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.flatcode.littlebooks.R
+import com.flatcode.littlebooks.databinding.ActivityProfileBinding
 import com.flatcode.littlebooks.utils.DATA
+import com.flatcode.littlebooks.utils.Resource
 import com.flatcode.littlebooks.utils.loadImage
 import com.flatcode.littlebooks.utils.openActivity
-import com.flatcode.littlebooks.databinding.ActivityProfileBinding
-import com.flatcode.littlebooks.utils.Resource
 import com.flatcode.littlebooks.viewmodel.ProfileViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
-import java.text.MessageFormat
 
 @AndroidEntryPoint
 class ProfileActivity : AppCompatActivity() {
@@ -67,7 +66,9 @@ class ProfileActivity : AppCompatActivity() {
             binding!!.follow.visibility = View.VISIBLE
             binding!!.editOrInfo.setImageResource(R.drawable.ic_books)
             binding!!.editOrInfo.setOnClickListener {
-                context.openActivity<ProfileInfoActivity>(false, DATA.PROFILE_ID to profileId)
+                context.openActivity<ProfileInfoActivity>(
+                    clear = false, DATA.PROFILE_ID to profileId
+                )
             }
         }
 
@@ -75,7 +76,7 @@ class ProfileActivity : AppCompatActivity() {
             val isCurrentlyFollowing = binding!!.follow.tag == "added"
             viewModel.followUser(DATA.FirebaseUserUid, profileId!!, !isCurrentlyFollowing)
         }
-        binding!!.back.setOnClickListener { onBackPressed() }
+        binding!!.back.setOnClickListener { onBackPressedDispatcher.onBackPressed() }
     }
 
     private fun observeViewModel() {
@@ -93,28 +94,28 @@ class ProfileActivity : AppCompatActivity() {
                 launch {
                     viewModel.booksCount.collect { resource ->
                         if (resource is Resource.Success) {
-                            binding!!.numberBooks.text = MessageFormat.format("{0}", resource.data)
+                            binding!!.numberBooks.text = resource.data.toString()
                         }
                     }
                 }
                 launch {
                     viewModel.followersCount.collect { resource ->
                         if (resource is Resource.Success) {
-                            binding!!.numberFollowers.text = MessageFormat.format("{0}", resource.data)
+                            binding!!.numberFollowers.text = resource.data.toString()
                         }
                     }
                 }
                 launch {
                     viewModel.followingCount.collect { resource ->
                         if (resource is Resource.Success) {
-                            binding!!.numberFollowing.text = MessageFormat.format("{0}", resource.data)
+                            binding!!.numberFollowing.text = resource.data.toString()
                         }
                     }
                 }
                 launch {
                     viewModel.favoritesCount.collect { resource ->
                         if (resource is Resource.Success) {
-                            binding!!.numberFavorites.text = MessageFormat.format("{0}", resource.data)
+                            binding!!.numberFavorites.text = resource.data.toString()
                         }
                     }
                 }

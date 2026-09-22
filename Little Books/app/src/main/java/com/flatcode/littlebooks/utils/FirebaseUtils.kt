@@ -20,11 +20,9 @@ fun Context.deleteBook(
     bookId: String?,
     bookTitle: String,
 ) {
-    val dialog = AlertDialog.Builder(this)
-        .setTitle("Please wait")
-        .setMessage("Deleting $bookTitle ...")
-        .setCancelable(false)
-        .show()
+    val dialog =
+        AlertDialog.Builder(this).setTitle("Please wait").setMessage("Deleting $bookTitle ...")
+            .setCancelable(false).show()
     FirebaseDatabase.getInstance().getReference(DATA.BOOKS).child(bookId!!).removeValue()
         .addOnSuccessListener {
             dialog.dismiss()

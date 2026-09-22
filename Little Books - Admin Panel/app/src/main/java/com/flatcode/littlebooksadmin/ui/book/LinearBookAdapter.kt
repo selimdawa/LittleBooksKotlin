@@ -83,7 +83,7 @@ class LinearBookAdapter(private val isUser: Boolean) :
                 var query = constraint
                 val results = FilterResults()
                 val filterList = unfilteredList
-                if (query != null && query.isNotEmpty()) {
+                if (!query.isNullOrEmpty()) {
                     query = query.toString().uppercase()
                     val filteredModels = ArrayList<Book>()
                     for (item in filterList) {
@@ -100,14 +100,14 @@ class LinearBookAdapter(private val isUser: Boolean) :
                 return results
             }
 
-            @Suppress("UNCHECKED_CAST")
             override fun publishResults(constraint: CharSequence?, results: FilterResults) {
-                submitFilteredList(results.values as? List<Book>)
+                val list = results.values as? List<*>
+                submitFilteredList(list?.filterIsInstance<Book>())
             }
         }.also { filter = it }
     }
 
-    inner class ViewHolder(val binding: ItemBookLinearBinding) : RecyclerView.ViewHolder(binding.root)
+    class ViewHolder(val binding: ItemBookLinearBinding) : RecyclerView.ViewHolder(binding.root)
 }
 
 

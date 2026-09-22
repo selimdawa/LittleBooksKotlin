@@ -7,33 +7,28 @@ import android.text.TextWatcher
 import android.view.View
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
-import androidx.activity.viewModels
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import com.flatcode.littlebooksadmin.ui.user.TopPublisherAdapter
-import com.flatcode.littlebooksadmin.model.User
 import com.flatcode.littlebooksadmin.R
+import com.flatcode.littlebooksadmin.databinding.ActivityPageStaggeredBinding
 import com.flatcode.littlebooksadmin.utils.DATA
 import com.flatcode.littlebooksadmin.utils.Resource
-import com.flatcode.littlebooksadmin.databinding.ActivityPageStaggeredBinding
-import com.flatcode.littlebooksadmin.ui.user.UsersViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
-import java.text.MessageFormat
 
 @AndroidEntryPoint
 class TopPublishersActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityPageStaggeredBinding
     private val context: Context = this@TopPublishersActivity
-    private var list: ArrayList<User?> = arrayListOf()
     private var adapter: TopPublisherAdapter? = null
-    
+
     private val viewModel: UsersViewModel by viewModels()
 
     private val onBackPressedCallback = object : OnBackPressedCallback(true) {
@@ -78,14 +73,16 @@ class TopPublishersActivity : AppCompatActivity() {
             binding.toolbar.toolbarSearch.visibility = View.VISIBLE
             DATA.searchStatus = true
         }
-        
+
         binding.toolbar.textSearch.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
                 try {
-                    adapter!!.filter.filter(s)
-                } catch (e: Exception) { }
+                    adapter?.filter?.filter(s)
+                } catch (_: Exception) {
+                }
             }
+
             override fun afterTextChanged(s: Editable) {}
         })
 
@@ -101,10 +98,12 @@ class TopPublishersActivity : AppCompatActivity() {
                         is Resource.Loading -> {
                             binding.progress.visibility = View.VISIBLE
                         }
+
                         is Resource.Success -> {
                             binding.progress.visibility = View.GONE
                             updateList(resource.data ?: emptyList())
                         }
+
                         is Resource.Error -> {
                             binding.progress.visibility = View.GONE
                             Toast.makeText(context, resource.message, Toast.LENGTH_SHORT).show()
@@ -116,19 +115,11 @@ class TopPublishersActivity : AppCompatActivity() {
     }
 
     private fun updateList(users: List<com.flatcode.littlebooksadmin.model.User>) {
-        list.clear()
-        users.filter { it.booksCount >= 1 }.forEach {
-            val legacyUser = User(
-                it.id, it.username, it.profileImage, it.email, it.timestamp,
-                it.version, it.booksCount, it.adLoad, it.adClick
-            )
-            list.add(legacyUser)
-        }
-        
-        binding.toolbar.number.text = MessageFormat.format("( {0} )", list.size)
-        adapter!!.submitUnfilteredList(list)
-        
-        if (list.isNotEmpty()) {
+        val filteredUsers = users.filter { it.booksCount >= 1 }
+        binding.toolbar.number.text = getString(R.string.number_placeholder, filteredUsers.size)
+        adapter?.submitUnfilteredList(filteredUsers)
+
+        if (filteredUsers.isNotEmpty()) {
             binding.recyclerView.visibility = View.VISIBLE
             binding.emptyText.visibility = View.GONE
         } else {
@@ -136,7 +127,6 @@ class TopPublishersActivity : AppCompatActivity() {
             binding.emptyText.visibility = View.VISIBLE
         }
     }
-
 
 
     override fun onResume() {

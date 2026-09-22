@@ -4,9 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.flatcode.littlebooks.model.Book
 import com.flatcode.littlebooks.model.User
-import com.flatcode.littlebooks.utils.DATA
 import com.flatcode.littlebooks.repository.BookRepository
 import com.flatcode.littlebooks.repository.UserRepository
+import com.flatcode.littlebooks.utils.DATA
 import com.flatcode.littlebooks.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,29 +19,27 @@ import javax.inject.Inject
 
 @HiltViewModel
 class FollowViewModel @Inject constructor(
-    private val userRepository: UserRepository,
-    private val bookRepository: BookRepository
+    private val userRepository: UserRepository, private val bookRepository: BookRepository
 ) : ViewModel() {
 
     private val _searchQuery = MutableStateFlow("")
-    val searchQuery: StateFlow<String> = _searchQuery
 
     private val _usersList = MutableStateFlow<Resource<List<User>>>(Resource.Loading())
-    val usersList: StateFlow<Resource<List<User>>> = _usersList
 
     private val _booksFromFollowed = MutableStateFlow<Resource<List<Book>>>(Resource.Loading())
     val booksFromFollowed: StateFlow<Resource<List<Book>>> = _booksFromFollowed
 
-    val filteredUsersList: StateFlow<Resource<List<User>>> = combine(_usersList, _searchQuery) { resource, query ->
-        if (resource is Resource.Success && query.isNotEmpty()) {
-            val filtered = resource.data?.filter {
-                it.username?.contains(query, ignoreCase = true) == true
+    val filteredUsersList: StateFlow<Resource<List<User>>> =
+        combine(_usersList, _searchQuery) { resource, query ->
+            if (resource is Resource.Success && query.isNotEmpty()) {
+                val filtered = resource.data?.filter {
+                    it.username?.contains(query, ignoreCase = true) == true
+                }
+                Resource.Success(filtered ?: emptyList())
+            } else {
+                resource
             }
-            Resource.Success(filtered ?: emptyList())
-        } else {
-            resource
-        }
-    }.stateIn(viewModelScope, SharingStarted.Lazily, Resource.Loading())
+        }.stateIn(viewModelScope, SharingStarted.Lazily, Resource.Loading())
 
     fun setSearchQuery(query: String) {
         _searchQuery.value = query
@@ -59,14 +57,16 @@ class FollowViewModel @Inject constructor(
             _booksFromFollowed.value = Resource.Loading()
             val followResult = userRepository.getFollowersOrFollowing(userId, DATA.FOLLOWING)
             if (followResult is Resource.Success) {
-                val followedIds = followResult.data?.mapNotNull { it.id } ?: emptyList()
+                val followedIds = followResult.data?.map { it.id } ?: emptyList()
                 if (followedIds.isNotEmpty()) {
-                    _booksFromFollowed.value = bookRepository.getBooksFromFollowedPublishers(followedIds, orderBy)
+                    _booksFromFollowed.value =
+                        bookRepository.getBooksFromFollowedPublishers(followedIds, orderBy)
                 } else {
                     _booksFromFollowed.value = Resource.Success(emptyList())
                 }
             } else if (followResult is Resource.Error) {
-                _booksFromFollowed.value = Resource.Error(followResult.message ?: "Error loading followed users")
+                _booksFromFollowed.value =
+                    Resource.Error(followResult.message ?: "Error loading followed users")
             }
         }
     }

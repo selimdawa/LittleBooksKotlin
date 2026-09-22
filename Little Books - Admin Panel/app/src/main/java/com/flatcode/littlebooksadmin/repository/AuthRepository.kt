@@ -20,16 +20,5 @@ class AuthRepository @Inject constructor(
         }
     }
 
-    suspend fun resetPassword(email: String): Resource<Unit> {
-        return try {
-            auth.sendPasswordResetEmail(email).await()
-            Resource.Success(Unit)
-        } catch (e: Exception) {
-            Resource.Error(e.message ?: "Password reset failed")
-        }
-    }
-
     fun isUserLoggedIn(): Boolean = auth.currentUser != null
 }
-
-

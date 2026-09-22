@@ -1,17 +1,17 @@
 package com.flatcode.littlebooksadmin.ui.auth
 
-import androidx.appcompat.app.AlertDialog
-import com.flatcode.littlebooksadmin.utils.Dialogs
 import android.content.Context
 import android.os.Bundle
 import android.util.Patterns
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.flatcode.littlebooksadmin.R
 import com.flatcode.littlebooksadmin.databinding.ActivityForgetPasswordBinding
+import com.flatcode.littlebooksadmin.utils.Dialogs
 import com.google.firebase.auth.FirebaseAuth
 
 class ForgetPasswordActivity : AppCompatActivity() {
@@ -53,7 +53,9 @@ class ForgetPasswordActivity : AppCompatActivity() {
     }
 
     private fun recoverPassword() {
-        dialog = Dialogs.createProgressDialog(context, getString(R.string.sending_password_recovery, email))
+        dialog = Dialogs.createProgressDialog(
+            context, getString(R.string.sending_password_recovery, email)
+        )
         dialog!!.show()
         auth!!.sendPasswordResetEmail(email).addOnCompleteListener {
             dialog!!.dismiss()

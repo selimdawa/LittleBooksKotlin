@@ -1,33 +1,30 @@
 package com.flatcode.littlebooksadmin.ui.profile
 
-import android.Manifest
 import android.app.Activity
-import androidx.appcompat.app.AlertDialog
-import com.flatcode.littlebooksadmin.utils.Dialogs
 import android.content.Context
-import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.text.TextUtils
 import android.widget.Toast
-import androidx.activity.viewModels
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import com.flatcode.littlebooksadmin.R
-import com.flatcode.littlebooksadmin.utils.DATA
-import com.flatcode.littlebooksadmin.utils.*
-import com.flatcode.littlebooksadmin.utils.Resource
-import com.flatcode.littlebooksadmin.databinding.ActivityProfileEditBinding
-import com.flatcode.littlebooksadmin.ui.profile.ProfileViewModel
 import com.canhub.cropper.CropImageContract
 import com.canhub.cropper.CropImageContractOptions
 import com.canhub.cropper.CropImageOptions
 import com.canhub.cropper.CropImageView
+import com.flatcode.littlebooksadmin.R
+import com.flatcode.littlebooksadmin.databinding.ActivityProfileEditBinding
+import com.flatcode.littlebooksadmin.utils.DATA
+import com.flatcode.littlebooksadmin.utils.Dialogs
+import com.flatcode.littlebooksadmin.utils.Resource
+import com.flatcode.littlebooksadmin.utils.loadImage
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -39,7 +36,7 @@ class ProfileEditActivity : AppCompatActivity() {
     private val context: Context = also { activity = it as Activity }
     private var imageUri: Uri? = null
     private var dialog: AlertDialog? = null
-    
+
     private val viewModel: ProfileViewModel by viewModels()
 
     private val cropImage = registerForActivityResult(CropImageContract()) { result ->
@@ -49,7 +46,9 @@ class ProfileEditActivity : AppCompatActivity() {
         } else {
             val exception = result.error
             exception?.let {
-                Toast.makeText(context, getString(R.string.error_message, it.message), Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    context, getString(R.string.error_message, it.message), Toast.LENGTH_SHORT
+                ).show()
             }
         }
     }
@@ -57,8 +56,7 @@ class ProfileEditActivity : AppCompatActivity() {
     private fun startCrop() {
         cropImage.launch(
             CropImageContractOptions(
-                uri = null,
-                cropImageOptions = CropImageOptions(
+                uri = null, cropImageOptions = CropImageOptions(
                     guidelines = CropImageView.Guidelines.ON,
                     aspectRatioX = 1,
                     aspectRatioY = 1,
@@ -85,7 +83,7 @@ class ProfileEditActivity : AppCompatActivity() {
 
         initUI()
         observeViewModel()
-        
+
         viewModel.loadProfile(DATA.FirebaseUserUid)
     }
 
@@ -105,13 +103,16 @@ class ProfileEditActivity : AppCompatActivity() {
                 launch {
                     viewModel.user.collect { resource ->
                         when (resource) {
-                            is Resource.Loading -> { }
+                            is Resource.Loading -> {}
                             is Resource.Success -> {
                                 resource.data?.let { user ->
                                     binding.nameEt.setText(user.username)
-                                    binding.profileImage.loadImage(isUser = true, url = user.profileImage ?: DATA.BASIC)
+                                    binding.profileImage.loadImage(
+                                        isUser = true, url = user.profileImage ?: DATA.BASIC
+                                    )
                                 }
                             }
+
                             is Resource.Error -> {
                                 Toast.makeText(context, resource.message, Toast.LENGTH_SHORT).show()
                             }
@@ -122,18 +123,25 @@ class ProfileEditActivity : AppCompatActivity() {
                     viewModel.updateState.collect { resource ->
                         when (resource) {
                             is Resource.Loading -> {
-                                dialog = Dialogs.createProgressDialog(context, getString(R.string.updating_user_profile))
+                                dialog = Dialogs.createProgressDialog(
+                                    context, getString(R.string.updating_user_profile)
+                                )
                                 dialog!!.show()
                             }
+
                             is Resource.Success -> {
                                 dialog!!.dismiss()
-                                Toast.makeText(context, R.string.profile_updated, Toast.LENGTH_SHORT).show()
+                                Toast.makeText(
+                                    context, R.string.profile_updated, Toast.LENGTH_SHORT
+                                ).show()
                                 finish()
                             }
+
                             is Resource.Error -> {
                                 dialog!!.dismiss()
                                 Toast.makeText(context, resource.message, Toast.LENGTH_SHORT).show()
                             }
+
                             null -> {}
                         }
                     }
@@ -148,8 +156,7 @@ class ProfileEditActivity : AppCompatActivity() {
             Toast.makeText(context, R.string.enter_name, Toast.LENGTH_SHORT).show()
         } else {
             viewModel.updateProfile(
-                username,
-                imageUri
+                username, imageUri
             )
         }
     }

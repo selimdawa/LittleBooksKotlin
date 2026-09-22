@@ -30,7 +30,7 @@ class StaggeredBookAdapter : ListAdapter<Book, StaggeredBookAdapter.ViewHolder>(
         }
     }
 
-    inner class ViewHolder(private val binding: ItemBookStaggeredBinding) :
+    class ViewHolder(private val binding: ItemBookStaggeredBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(item: Book) {
@@ -42,8 +42,8 @@ class StaggeredBookAdapter : ListAdapter<Book, StaggeredBookAdapter.ViewHolder>(
             binding.title.visibility = if (item.title.isNullOrEmpty()) View.GONE else View.VISIBLE
             binding.title.text = item.title
 
-            binding.numberLoves.text = DATA.EMPTY + item.lovesCount
-            binding.numberDownloads.text = DATA.EMPTY + item.downloadsCount
+            binding.numberLoves.text = item.lovesCount.toString()
+            binding.numberDownloads.text = item.downloadsCount.toString()
 
             binding.favorites.isFavorite(bookId, DATA.FirebaseUserUid)
             binding.loves.isLoves(bookId)
@@ -52,7 +52,7 @@ class StaggeredBookAdapter : ListAdapter<Book, StaggeredBookAdapter.ViewHolder>(
             binding.loves.setOnClickListener { binding.loves.checkLove(bookId) }
 
             binding.item.setOnClickListener {
-                context.openActivity<BookDetailsActivity>(false, DATA.BOOK_ID to bookId)
+                context.openActivity<BookDetailsActivity>(clear = false, DATA.BOOK_ID to bookId)
             }
         }
     }

@@ -4,9 +4,9 @@ import android.net.Uri
 import com.cloudinary.android.MediaManager
 import com.cloudinary.android.callback.ErrorInfo
 import com.cloudinary.android.callback.UploadCallback
-import com.flatcode.littlebooksadmin.utils.DATA
 import com.flatcode.littlebooksadmin.model.Book
 import com.flatcode.littlebooksadmin.model.User
+import com.flatcode.littlebooksadmin.utils.DATA
 import com.flatcode.littlebooksadmin.utils.Resource
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -61,8 +61,7 @@ class UserRepository @Inject constructor(
 
     fun getProfileStats(userId: String): Flow<Resource<ProfileStats>> = callbackFlow {
         trySend(Resource.Loading())
-        val ref = db.reference
-        
+
         val listener = object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 try {
@@ -73,11 +72,20 @@ class UserRepository @Inject constructor(
                         if (book?.publisher == userId) userBooksCount++
                     }
 
-                    val followersCount = snapshot.child(DATA.FOLLOW).child(userId).child(DATA.FOLLOWERS).childrenCount.toInt()
-                    val followingCount = snapshot.child(DATA.FOLLOW).child(userId).child(DATA.FOLLOWING).childrenCount.toInt()
-                    val favoritesCount = snapshot.child(DATA.FAVORITES).child(userId).childrenCount.toInt()
+                    val followersCount = snapshot.child(DATA.FOLLOW).child(userId)
+                        .child(DATA.FOLLOWERS).childrenCount.toInt()
+                    val followingCount = snapshot.child(DATA.FOLLOW).child(userId)
+                        .child(DATA.FOLLOWING).childrenCount.toInt()
+                    val favoritesCount =
+                        snapshot.child(DATA.FAVORITES).child(userId).childrenCount.toInt()
 
-                    trySend(Resource.Success(ProfileStats(userBooksCount, followersCount, followingCount, favoritesCount)))
+                    trySend(
+                        Resource.Success(
+                            ProfileStats(
+                                userBooksCount, followersCount, followingCount, favoritesCount
+                            )
+                        )
+                    )
                 } catch (e: Exception) {
                     trySend(Resource.Error(e.message ?: "Stats error"))
                 }
@@ -87,17 +95,19 @@ class UserRepository @Inject constructor(
                 trySend(Resource.Error(error.message))
             }
         }
-        
+
         db.reference.addValueEventListener(listener)
         awaitClose { db.reference.removeEventListener(listener) }
     }
 
     fun isFollowing(userId: String): Flow<Boolean> = callbackFlow {
-        val ref = db.getReference(DATA.FOLLOW).child(DATA.FirebaseUserUid).child(DATA.FOLLOWING).child(userId)
+        val ref = db.getReference(DATA.FOLLOW).child(DATA.FirebaseUserUid).child(DATA.FOLLOWING)
+            .child(userId)
         val listener = ref.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 trySend(snapshot.exists())
             }
+
             override fun onCancelled(error: DatabaseError) {}
         })
         awaitClose { ref.removeEventListener(listener) }
@@ -106,9 +116,11 @@ class UserRepository @Inject constructor(
     suspend fun toggleFollow(userId: String, isFollowing: Boolean): Resource<Unit> {
         return try {
             val myId = DATA.FirebaseUserUid
-            val followingRef = db.getReference(DATA.FOLLOW).child(myId).child(DATA.FOLLOWING).child(userId)
-            val followersRef = db.getReference(DATA.FOLLOW).child(userId).child(DATA.FOLLOWERS).child(myId)
-            
+            val followingRef =
+                db.getReference(DATA.FOLLOW).child(myId).child(DATA.FOLLOWING).child(userId)
+            val followersRef =
+                db.getReference(DATA.FOLLOW).child(userId).child(DATA.FOLLOWERS).child(myId)
+
             if (isFollowing) {
                 followingRef.removeValue().await()
                 followersRef.removeValue().await()
@@ -128,12 +140,14 @@ class UserRepository @Inject constructor(
             val updates = mutableMapOf<String, Any>(DATA.USER_NAME to username)
 
             if (imageUri != null) {
-                MediaManager.get().upload(imageUri)
-                    .option("folder", "Images/Profile/")
-                    .option("public_id", myId)
-                    .callback(object : UploadCallback {
+                MediaManager.get().upload(imageUri).option("folder", "Images/Profile/")
+                    .option("public_id", myId).callback(object : UploadCallback {
                         override fun onStart(requestId: String?) {}
-                        override fun onProgress(requestId: String?, bytes: Long, totalBytes: Long) {}
+                        override fun onProgress(
+                            requestId: String?, bytes: Long, totalBytes: Long
+                        ) {
+                        }
+
                         override fun onSuccess(requestId: String?, resultData: Map<*, *>?) {
                             val downloadUrl = resultData?.get("secure_url") as? String
                             if (downloadUrl != null) {
@@ -145,13 +159,21 @@ class UserRepository @Inject constructor(
                                         .await()
                                     continuation.resume(Resource.Success(Unit))
                                 } catch (e: Exception) {
-                                    continuation.resume(Resource.Error(e.message ?: "Update failed"))
+                                    continuation.resume(
+                                        Resource.Error(
+                                            e.message ?: "Update failed"
+                                        )
+                                    )
                                 }
                             }
                         }
 
                         override fun onError(requestId: String?, error: ErrorInfo?) {
-                            continuation.resume(Resource.Error(error?.description ?: "Upload failed"))
+                            continuation.resume(
+                                Resource.Error(
+                                    error?.description ?: "Upload failed"
+                                )
+                            )
                         }
 
                         override fun onReschedule(requestId: String?, error: ErrorInfo?) {}

@@ -1,6 +1,5 @@
 package com.flatcode.littlebooks.ui.auth
 
-import androidx.appcompat.app.AlertDialog
 import android.content.Context
 import android.os.Bundle
 import android.util.Patterns
@@ -8,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -15,9 +15,9 @@ import androidx.core.view.updateLayoutParams
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import com.flatcode.littlebooks.utils.openActivity
 import com.flatcode.littlebooks.databinding.ActivityForgetPasswordBinding
 import com.flatcode.littlebooks.utils.Resource
+import com.flatcode.littlebooks.utils.openActivity
 import com.flatcode.littlebooks.viewmodel.AuthViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -78,14 +78,17 @@ class ForgetPasswordActivity : AppCompatActivity() {
                                 context, "Instructions to reset password sent", Toast.LENGTH_SHORT
                             ).show()
                         }
+
                         is Resource.Error -> {
                             dialog!!.dismiss()
                             Toast.makeText(context, resource.message, Toast.LENGTH_SHORT).show()
                         }
+
                         is Resource.Loading -> {
                             dialog!!.setMessage("Sending password recovery instructions...")
                             dialog!!.show()
                         }
+
                         null -> {}
                     }
                 }
@@ -95,7 +98,7 @@ class ForgetPasswordActivity : AppCompatActivity() {
 
     private var email = ""
     private fun validateDate() {
-        email = binding!!.emailEt.text.toString().trim { it <= ' ' }
+        email = binding!!.emailEt.text.toString().trim()
         if (email.isEmpty()) {
             Toast.makeText(context, "Enter email...!", Toast.LENGTH_SHORT).show()
         } else if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
@@ -105,6 +108,3 @@ class ForgetPasswordActivity : AppCompatActivity() {
         }
     }
 }
-
-
-
