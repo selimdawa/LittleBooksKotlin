@@ -53,7 +53,7 @@ class EditorsChoiceBookAdapter(
         val nrLoves = item.lovesCount.toString()
         val nrDownloads = item.downloadsCount.toString()
 
-        holder.binding.image.loadWithGlide(false, image)
+        holder.binding.image.loadImage(isUser = false, url = image)
 
         if (item.title.isNullOrEmpty()) {
             holder.binding.title.visibility = View.GONE
@@ -75,10 +75,10 @@ class EditorsChoiceBookAdapter(
 
         holder.binding.add.setOnClickListener {
             if (oldBookId != null) {
-                context.addToEditorsChoice(activity, bookId, number)
-                context.addToEditorsChoice(activity, oldBookId, 0)
+                Dialogs.addToEditorsChoice(context, activity, bookId, number)
+                Dialogs.addToEditorsChoice(context, activity, oldBookId, 0)
             } else {
-                context.addToEditorsChoice(activity, bookId, number)
+                Dialogs.addToEditorsChoice(context, activity, bookId, number)
             }
         }
 
@@ -96,4 +96,6 @@ class EditorsChoiceBookAdapter(
 
     inner class ViewHolder(val binding: ItemEditorsChoiceBinding) : RecyclerView.ViewHolder(binding.root)
 }
+
+
 

@@ -1,7 +1,7 @@
 package com.flatcode.littlebooksadmin.ui.book
 
 import android.Manifest
-import android.app.ProgressDialog
+import com.flatcode.littlebooksadmin.utils.Dialogs
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
@@ -43,7 +43,7 @@ class BookDetailsActivity : AppCompatActivity() {
     private var bookId: String? = null
     private var bookTitle: String? = null
     private var bookUrl: String? = null
-    private var dialog: ProgressDialog? = null
+    private var dialog: AlertDialog? = null
     private var adapter: CommentAdapter? = null
     
     private val viewModel: BookDetailsViewModel by viewModels()
@@ -71,9 +71,7 @@ class BookDetailsActivity : AppCompatActivity() {
     private fun initUI() {
         binding.toolbar.nameSpace.setText(R.string.details_books)
         binding.download.visibility = View.GONE
-        dialog = ProgressDialog(context)
-        dialog!!.setTitle(R.string.please_wait)
-        dialog!!.setCanceledOnTouchOutside(false)
+        dialog = Dialogs.createProgressDialog(context, getString(R.string.please_wait))
 
         adapter = CommentAdapter()
         binding.recyclerView.adapter = adapter
@@ -136,8 +134,8 @@ class BookDetailsActivity : AppCompatActivity() {
                                     binding.category.loadCategory(book.categoryId)
                                     binding.size.loadPdfInfo(book.url)
                                     
-                                    binding.image.loadWithGlide(false, book.image ?: DATA.BASIC)
-                                    binding.cover.loadWithGlide(false, book.image ?: DATA.BASIC)
+                                    binding.image.loadImage(isUser = false, url = book.image ?: DATA.BASIC)
+                                    binding.cover.loadImage(isUser = false, url = book.image ?: DATA.BASIC)
                                     binding.title.text = book.title
                                     binding.description.text = book.description
                                     binding.views.text = book.viewsCount.toString()
@@ -158,7 +156,7 @@ class BookDetailsActivity : AppCompatActivity() {
                             is Resource.Success -> {
                                 resource.data?.let { user ->
                                     binding.publisherName.text = user.username
-                                    binding.publisherImage.loadWithGlide(true, user.profileImage ?: DATA.BASIC)
+                                    binding.publisherImage.loadImage(isUser = true, url = user.profileImage ?: DATA.BASIC)
                                     binding.userInfo.setOnClickListener {
                                         context.openActivity<ProfileActivity>(extras = arrayOf(DATA.PROFILE_ID to user.id))
                                     }
@@ -183,7 +181,7 @@ class BookDetailsActivity : AppCompatActivity() {
                     viewModel.addCommentState.collect { resource ->
                         when (resource) {
                             is Resource.Loading -> {
-                                dialog!!.setMessage(getString(R.string.adding_comment))
+                                dialog = Dialogs.createProgressDialog(context, getString(R.string.adding_comment))
                                 dialog!!.show()
                             }
                             is Resource.Success -> {
@@ -237,5 +235,7 @@ class BookDetailsActivity : AppCompatActivity() {
             }
         }
 }
+
+
 
 

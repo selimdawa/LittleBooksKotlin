@@ -2,7 +2,7 @@ package com.flatcode.littlebooksadmin.ui.book
 
 import android.Manifest
 import androidx.appcompat.app.AlertDialog
-import android.app.ProgressDialog
+import com.flatcode.littlebooksadmin.utils.Dialogs
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -40,7 +40,7 @@ class BookEditActivity : AppCompatActivity() {
     private val context: Context = this@BookEditActivity
     private var bookId: String? = null
     private var imageUri: Uri? = null
-    private var dialog: ProgressDialog? = null
+    private var dialog: AlertDialog? = null
     private var categoriesList: List<Category> = emptyList()
     
     private val viewModel: BookEditViewModel by viewModels()
@@ -66,9 +66,7 @@ class BookEditActivity : AppCompatActivity() {
     }
 
     private fun initUI() {
-        dialog = ProgressDialog(context)
-        dialog!!.setTitle(R.string.please_wait)
-        dialog!!.setCanceledOnTouchOutside(false)
+        dialog = Dialogs.createProgressDialog(context, getString(R.string.please_wait))
 
         binding.toolbar.nameSpace.setText(R.string.edit_book)
         binding.toolbar.back.setOnClickListener { onBackPressed() }
@@ -90,7 +88,7 @@ class BookEditActivity : AppCompatActivity() {
                                     binding.titleEt.setText(book.title)
                                     binding.descriptionEt.setText(book.description)
                                     selectedId = book.categoryId ?: DATA.EMPTY
-                                    binding.image.loadWithGlide(false, book.image ?: DATA.BASIC)
+                                    binding.image.loadImage(isUser = false, url = book.image ?: DATA.BASIC)
                                     
                                     // Set category name
                                     categoriesList.find { it.id == selectedId }?.let {
@@ -123,7 +121,7 @@ class BookEditActivity : AppCompatActivity() {
                     viewModel.updateState.collect { resource ->
                         when (resource) {
                             is Resource.Loading -> {
-                                dialog!!.setMessage(getString(R.string.updating_book_info))
+                                dialog = Dialogs.createProgressDialog(context, getString(R.string.updating_book_info))
                                 dialog!!.show()
                             }
                             is Resource.Success -> {
@@ -220,5 +218,7 @@ class BookEditActivity : AppCompatActivity() {
         }
     }
 }
+
+
 
 

@@ -6,7 +6,7 @@ import androidx.recyclerview.widget.DiffUtil
 import com.flatcode.littlebooks.base.BaseListAdapter
 import com.flatcode.littlebooks.databinding.ItemCategoryBinding
 import com.flatcode.littlebooks.model.Category
-import com.flatcode.littlebooks.utils.glide
+import com.flatcode.littlebooks.utils.loadImage
 
 class CategoryAdapter(
     private val onItemClick: (Category) -> Unit
@@ -17,7 +17,7 @@ class CategoryAdapter(
     }
 
     override fun bind(binding: ItemCategoryBinding, item: Category, position: Int) {
-        binding.image.glide(false, item.image)
+        binding.image.loadImage(false, item.image)
         binding.root.setOnClickListener { onItemClick(item) }
     }
 

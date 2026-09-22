@@ -13,7 +13,7 @@ import com.flatcode.littlebooks.ui.book.LinearBookAdapter
 import com.flatcode.littlebooks.ui.book.BookDetailsActivity
 import com.flatcode.littlebooks.model.Book
 import com.flatcode.littlebooks.utils.DATA
-import com.flatcode.littlebooks.utils.bannerAd
+import com.flatcode.littlebooks.utils.loadBannerAd
 import com.flatcode.littlebooks.utils.openActivity
 import com.flatcode.littlebooks.databinding.FragmentFollowersBinding
 import com.flatcode.littlebooks.utils.Resource
@@ -34,7 +34,7 @@ class FollowersFragment : Fragment() {
     ): View? {
         binding = FragmentFollowersBinding.inflate(inflater, container, false)
 
-        binding!!.adView.bannerAd(context!!, DATA.BANNER_SMART_FOLLOWERS_BOOKS)
+        binding!!.adView.loadBannerAd(context!!, DATA.BANNER_SMART_FOLLOWERS_BOOKS)
 
         adapter = LinearBookAdapter(false) { item ->
             context?.openActivity<BookDetailsActivity>(false, DATA.BOOK_ID to item.id)

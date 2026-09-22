@@ -9,7 +9,7 @@ import com.flatcode.littlebooks.model.Comment
 import com.flatcode.littlebooks.model.User
 import com.flatcode.littlebooks.utils.DATA
 import com.flatcode.littlebooks.utils.formatTimestamp
-import com.flatcode.littlebooks.utils.glide
+import com.flatcode.littlebooks.utils.loadImage
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
@@ -40,7 +40,7 @@ class CommentAdapter(
                 override fun onDataChange(snapshot: DataSnapshot) {
                     val user = snapshot.getValue(User::class.java)
                     user?.let {
-                        binding.profile.glide(true, it.profileImage)
+                        binding.profile.loadImage(true, it.profileImage)
                         binding.name.text = it.username
                     }
                 }

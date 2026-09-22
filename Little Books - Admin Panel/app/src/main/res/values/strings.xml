@@ -97,6 +97,7 @@
     <string name="ads">AD\'s</string>
     <string name="please_wait">Please wait...</string>
     <string name="error_message">Error! %1$s</string>
+    <string name="error_occurred">An error occurred. Please try again.</string>
     <string name="invalid_email">Invalid email pattern...!</string>
     <string name="enter_email">Enter email...!</string>
     <string name="enter_password">Enter password...!</string>

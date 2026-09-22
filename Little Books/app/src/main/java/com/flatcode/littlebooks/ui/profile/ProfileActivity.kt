@@ -16,7 +16,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.flatcode.littlebooks.R
 import com.flatcode.littlebooks.utils.DATA
-import com.flatcode.littlebooks.utils.glide
+import com.flatcode.littlebooks.utils.loadImage
 import com.flatcode.littlebooks.utils.openActivity
 import com.flatcode.littlebooks.databinding.ActivityProfileBinding
 import com.flatcode.littlebooks.utils.Resource
@@ -86,7 +86,7 @@ class ProfileActivity : AppCompatActivity() {
                         if (resource is Resource.Success) {
                             val user = resource.data
                             binding!!.username.text = user?.username
-                            binding!!.profile.glide(true, user?.profileImage)
+                            binding!!.profile.loadImage(true, user?.profileImage)
                         }
                     }
                 }

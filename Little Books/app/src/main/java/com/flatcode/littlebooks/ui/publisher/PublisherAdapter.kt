@@ -14,7 +14,7 @@ import com.flatcode.littlebooks.databinding.ItemPublisherBinding
 import com.flatcode.littlebooks.filter.PublisherFilter
 import com.flatcode.littlebooks.model.User
 import com.flatcode.littlebooks.utils.DATA
-import com.flatcode.littlebooks.utils.glide
+import com.flatcode.littlebooks.utils.loadImage
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
@@ -37,7 +37,7 @@ class PublisherAdapter(
         val username = item.username ?: ""
         val profileImage = item.profileImage ?: ""
 
-        binding.imageProfile.glide(true, profileImage)
+        binding.imageProfile.loadImage(true, profileImage)
 
         binding.username.visibility = if (username.isEmpty()) View.GONE else View.VISIBLE
         binding.username.text = username

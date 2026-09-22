@@ -1,6 +1,6 @@
 package com.flatcode.littlebooks.ui.auth
 
-import android.app.ProgressDialog
+import androidx.appcompat.app.AlertDialog
 import android.content.Context
 import android.os.Bundle
 import android.text.TextUtils
@@ -29,7 +29,7 @@ class RegisterActivity : AppCompatActivity() {
 
     private var binding: ActivityRegisterBinding? = null
     var context: Context = this@RegisterActivity
-    private var dialog: ProgressDialog? = null
+    private var dialog: AlertDialog? = null
 
     private val viewModel: AuthViewModel by viewModels()
 
@@ -51,9 +51,10 @@ class RegisterActivity : AppCompatActivity() {
             insets
         }
 
-        dialog = ProgressDialog(this)
-        dialog!!.setTitle("Please wait...")
-        dialog!!.setCanceledOnTouchOutside(false)
+        dialog = AlertDialog.Builder(this)
+            .setTitle("Please wait...")
+            .setCancelable(false)
+            .create()
 
         binding!!.login.setOnClickListener {
             context.openActivity<LoginActivity>()

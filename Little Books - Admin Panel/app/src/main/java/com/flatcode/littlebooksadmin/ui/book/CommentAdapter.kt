@@ -14,7 +14,7 @@ import com.flatcode.littlebooksadmin.databinding.ItemCommentBinding
 import com.flatcode.littlebooksadmin.model.Comment
 import com.flatcode.littlebooksadmin.model.User
 import com.flatcode.littlebooksadmin.utils.DATA
-import com.flatcode.littlebooksadmin.utils.loadWithGlide
+import com.flatcode.littlebooksadmin.utils.loadImage
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
@@ -77,7 +77,7 @@ class CommentAdapter : ListAdapter<Comment, CommentAdapter.ViewHolder>(CommentDi
                     val item = snapshot.child(publisher).getValue(User::class.java)!!
                     val username = item.username
                     val profileImage = item.profileImage
-                    holder.binding.profile.loadWithGlide(true, profileImage!!)
+                    holder.binding.profile.loadImage(isUser = true, url = profileImage!!)
                     holder.binding.name.text = username
                 }
             }
@@ -96,3 +96,4 @@ class CommentDiffCallback : DiffUtil.ItemCallback<Comment>() {
         return oldItem == newItem
     }
 }
+

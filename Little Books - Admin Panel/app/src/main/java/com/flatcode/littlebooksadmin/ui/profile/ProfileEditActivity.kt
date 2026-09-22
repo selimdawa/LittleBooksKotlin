@@ -2,7 +2,8 @@ package com.flatcode.littlebooksadmin.ui.profile
 
 import android.Manifest
 import android.app.Activity
-import android.app.ProgressDialog
+import androidx.appcompat.app.AlertDialog
+import com.flatcode.littlebooksadmin.utils.Dialogs
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -37,7 +38,7 @@ class ProfileEditActivity : AppCompatActivity() {
     private var activity: Activity? = null
     private val context: Context = also { activity = it as Activity }
     private var imageUri: Uri? = null
-    private var dialog: ProgressDialog? = null
+    private var dialog: AlertDialog? = null
     
     private val viewModel: ProfileViewModel by viewModels()
 
@@ -89,9 +90,7 @@ class ProfileEditActivity : AppCompatActivity() {
     }
 
     private fun initUI() {
-        dialog = ProgressDialog(context)
-        dialog!!.setTitle(R.string.please_wait)
-        dialog!!.setCanceledOnTouchOutside(false)
+        dialog = Dialogs.createProgressDialog(context, getString(R.string.please_wait))
 
         binding.toolbar.nameSpace.setText(R.string.edit_profile)
         binding.toolbar.back.setOnClickListener { onBackPressed() }
@@ -110,7 +109,7 @@ class ProfileEditActivity : AppCompatActivity() {
                             is Resource.Success -> {
                                 resource.data?.let { user ->
                                     binding.nameEt.setText(user.username)
-                                    binding.profileImage.loadWithGlide(true, user.profileImage ?: DATA.BASIC)
+                                    binding.profileImage.loadImage(isUser = true, url = user.profileImage ?: DATA.BASIC)
                                 }
                             }
                             is Resource.Error -> {
@@ -123,7 +122,7 @@ class ProfileEditActivity : AppCompatActivity() {
                     viewModel.updateState.collect { resource ->
                         when (resource) {
                             is Resource.Loading -> {
-                                dialog!!.setMessage(getString(R.string.updating_user_profile))
+                                dialog = Dialogs.createProgressDialog(context, getString(R.string.updating_user_profile))
                                 dialog!!.show()
                             }
                             is Resource.Success -> {
@@ -155,5 +154,7 @@ class ProfileEditActivity : AppCompatActivity() {
         }
     }
 }
+
+
 
 

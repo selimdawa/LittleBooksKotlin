@@ -24,7 +24,7 @@ import com.flatcode.littlebooks.utils.DATA
 import com.flatcode.littlebooks.utils.Resource
 import com.flatcode.littlebooks.utils.dialogAboutApp
 import com.flatcode.littlebooks.utils.dialogLogout
-import com.flatcode.littlebooks.utils.glide
+import com.flatcode.littlebooks.utils.loadImage
 import com.flatcode.littlebooks.utils.openActivity
 import com.flatcode.littlebooks.utils.rateApp
 import com.flatcode.littlebooks.utils.shareApp
@@ -74,7 +74,7 @@ class SettingsFragment : Fragment() {
                     viewModel.user.collect { resource ->
                         if (resource is Resource.Success) {
                             val user = resource.data
-                            binding!!.toolbar.imageProfile.glide(true, user?.profileImage)
+                            binding!!.toolbar.imageProfile.loadImage(true, user?.profileImage)
                             binding!!.toolbar.username.text = user?.username
                             binding!!.toolbar.email.text = user?.email
                         }

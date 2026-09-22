@@ -1,12 +1,12 @@
 package com.flatcode.littlebooksadmin.ui.auth
 
-import android.app.ProgressDialog
 import android.content.Context
 import android.os.Bundle
 import android.util.Patterns
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -16,6 +16,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.flatcode.littlebooksadmin.R
 import com.flatcode.littlebooksadmin.databinding.ActivityLoginBinding
 import com.flatcode.littlebooksadmin.ui.main.MainActivity
+import com.flatcode.littlebooksadmin.utils.Dialogs
 import com.flatcode.littlebooksadmin.utils.Resource
 import com.flatcode.littlebooksadmin.utils.openActivity
 import dagger.hilt.android.AndroidEntryPoint
@@ -26,7 +27,7 @@ class LoginActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityLoginBinding
     private val context: Context = this@LoginActivity
-    private var dialog: ProgressDialog? = null
+    private var dialog: AlertDialog? = null
 
     private val viewModel: AuthViewModel by viewModels()
 
@@ -47,10 +48,6 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun initUI() {
-        dialog = ProgressDialog(this)
-        dialog!!.setTitle(R.string.please_wait)
-        dialog!!.setCanceledOnTouchOutside(false)
-
         binding.forget.setOnClickListener { context.openActivity<ForgetPasswordActivity>() }
         binding.loginBtn.setOnClickListener { validateData() }
     }
@@ -61,7 +58,7 @@ class LoginActivity : AppCompatActivity() {
                 viewModel.loginState.collect { resource ->
                     when (resource) {
                         is Resource.Loading -> {
-                            dialog!!.setMessage(getString(R.string.logging_in))
+                            dialog = Dialogs.createProgressDialog(context, getString(R.string.logging_in))
                             dialog!!.show()
                         }
 

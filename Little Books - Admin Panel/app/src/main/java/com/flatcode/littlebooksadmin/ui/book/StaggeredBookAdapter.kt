@@ -49,7 +49,7 @@ class StaggeredBookAdapter : ListAdapter<Book, StaggeredBookAdapter.ViewHolder>(
         val nrLoves = item.lovesCount.toString()
         val nrDownloads = item.downloadsCount.toString()
 
-        holder.binding.image.loadWithGlide(false, image)
+        holder.binding.image.loadImage(isUser = false, url = image)
 
         if (item.title.isNullOrEmpty()) {
             holder.binding.title.visibility = View.GONE
@@ -66,7 +66,7 @@ class StaggeredBookAdapter : ListAdapter<Book, StaggeredBookAdapter.ViewHolder>(
 
         holder.binding.favorites.setOnClickListener { holder.binding.favorites.checkFavorite(bookId) }
         holder.binding.loves.setOnClickListener { holder.binding.loves.checkLove(bookId) }
-        holder.binding.more.setOnClickListener { context.moreOptionDialog(item) }
+        holder.binding.more.setOnClickListener { Dialogs.moreOptionDialog(context, item) }
 
         holder.item.setOnClickListener {
             context.openActivity<BookDetailsActivity>(extras = arrayOf(DATA.BOOK_ID to bookId))
@@ -84,4 +84,6 @@ class StaggeredBookAdapter : ListAdapter<Book, StaggeredBookAdapter.ViewHolder>(
         val item = binding.item
     }
 }
+
+
 

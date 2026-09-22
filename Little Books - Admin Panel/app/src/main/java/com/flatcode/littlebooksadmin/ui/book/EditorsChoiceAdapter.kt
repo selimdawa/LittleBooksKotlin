@@ -10,8 +10,8 @@ import com.flatcode.littlebooksadmin.databinding.ItemBookEditorsChoiceBinding
 import com.flatcode.littlebooksadmin.model.Book
 import com.flatcode.littlebooksadmin.model.EditorsChoice
 import com.flatcode.littlebooksadmin.utils.DATA
-import com.flatcode.littlebooksadmin.utils.dialogOptionDelete
-import com.flatcode.littlebooksadmin.utils.loadWithGlide
+import com.flatcode.littlebooksadmin.utils.Dialogs
+import com.flatcode.littlebooksadmin.utils.loadImage
 import com.flatcode.littlebooksadmin.utils.openActivity
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -63,19 +63,26 @@ class EditorsChoiceAdapter :
                         holder.binding.numberViews.text = item.viewsCount.toString()
                         holder.binding.numberLoves.text = item.lovesCount.toString()
                         holder.binding.numberDownloads.text = item.downloadsCount.toString()
-                        holder.binding.image.loadWithGlide(false, item.image ?: "")
+                        holder.binding.image.loadImage(isUser = false, url = item.image ?: "")
 
                         holder.binding.addCard.visibility = View.GONE
                         holder.binding.detailsCard.visibility = View.VISIBLE
                         holder.binding.remove.visibility = View.VISIBLE
                         holder.binding.change.visibility = View.VISIBLE
-                        
+
                         holder.binding.detailsCard.setOnClickListener {
                             context.openActivity<BookDetailsActivity>(extras = arrayOf(DATA.BOOK_ID to id))
                         }
                         holder.binding.remove.setOnClickListener {
-                            context.dialogOptionDelete(
-                                null, id, null, null, false, true, null, null
+                            Dialogs.dialogOptionDelete(
+                                context = context,
+                                publisher = null,
+                                bookId = id,
+                                bookTitle = null,
+                                isCategory = false,
+                                isEditorsChoice = true,
+                                categoryId = null,
+                                categoryName = null
                             )
                         }
                         holder.binding.change.setOnClickListener {
@@ -107,3 +114,4 @@ class EditorsChoiceDiffCallback : DiffUtil.ItemCallback<EditorsChoice>() {
         return true // Contents are identical for placeholders
     }
 }
+

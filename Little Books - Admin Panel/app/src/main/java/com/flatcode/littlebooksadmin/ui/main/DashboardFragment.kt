@@ -82,7 +82,7 @@ class DashboardFragment : Fragment() {
                             is Resource.Loading -> { }
                             is Resource.Success -> {
                                 resource.data?.let { user ->
-                                    binding.toolbar.image.loadWithGlide(true, user.profileImage ?: DATA.BASIC)
+                                    binding.toolbar.image.loadImage(isUser = true, url = user.profileImage ?: DATA.BASIC)
                                 }
                             }
                             is Resource.Error -> {
@@ -146,4 +146,6 @@ class DashboardFragment : Fragment() {
         _binding = null
     }
 }
+
+
 

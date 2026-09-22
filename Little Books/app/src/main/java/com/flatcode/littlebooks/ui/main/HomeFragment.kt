@@ -16,7 +16,7 @@ import com.flatcode.littlebooks.ui.category.CategoryAdapter
 import com.flatcode.littlebooks.model.Book
 import com.flatcode.littlebooks.model.Category
 import com.flatcode.littlebooks.utils.DATA
-import com.flatcode.littlebooks.utils.bannerAdTwo
+import com.flatcode.littlebooks.utils.loadBannerAdTwo
 import com.flatcode.littlebooks.utils.openActivity
 import com.flatcode.littlebooks.databinding.FragmentHomeBinding
 import com.flatcode.littlebooks.utils.Resource
@@ -60,7 +60,7 @@ class HomeFragment : Fragment() {
     }
 
     private fun setupUI() {
-        context?.bannerAdTwo(
+        context?.loadBannerAdTwo(
             binding!!.adView, DATA.BANNER_SMART_HOME,
             binding!!.adView2, DATA.BANNER_SMART_HOME_2
         )

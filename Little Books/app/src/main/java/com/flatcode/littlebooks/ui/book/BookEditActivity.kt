@@ -1,7 +1,6 @@
 package com.flatcode.littlebooks.ui.book
 
-import android.app.AlertDialog
-import android.app.ProgressDialog
+import androidx.appcompat.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -23,7 +22,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.flatcode.littlebooks.R
 import com.flatcode.littlebooks.utils.DATA
-import com.flatcode.littlebooks.utils.glide
+import com.flatcode.littlebooks.utils.loadImage
 import com.flatcode.littlebooks.utils.loadCategory
 import com.flatcode.littlebooks.databinding.ActivityBookEditBinding
 import com.flatcode.littlebooks.utils.Resource
@@ -39,7 +38,7 @@ class BookEditActivity : AppCompatActivity() {
     var context: Context = this@BookEditActivity
     private var bookId: String? = null
     private var imageUri: Uri? = null
-    private var dialog: ProgressDialog? = null
+    private var dialog: AlertDialog? = null
     
     private var categoryTitle = ArrayList<String>()
     private var categoryId = ArrayList<String>()
@@ -63,9 +62,11 @@ class BookEditActivity : AppCompatActivity() {
         }
 
         bookId = intent.getStringExtra(DATA.BOOK_ID)
-        dialog = ProgressDialog(context)
-        dialog!!.setTitle("Please wait...")
-        dialog!!.setCanceledOnTouchOutside(false)
+        dialog = AlertDialog.Builder(context)
+            .setTitle("Please wait")
+            .setMessage("...")
+            .setCancelable(false)
+            .create()
 
         binding!!.toolbar.nameSpace.setText(R.string.edit_book)
         binding!!.toolbar.back.setOnClickListener { onBackPressed() }
@@ -102,7 +103,7 @@ class BookEditActivity : AppCompatActivity() {
                             val book = resource.data
                             binding!!.titleEt.setText(book?.title)
                             binding!!.descriptionEt.setText(book?.description)
-                            binding!!.image.glide(false, book?.image)
+                            binding!!.image.loadImage(false, book?.image)
                             selectedId = book?.categoryId ?: ""
                             binding!!.category.loadCategory(selectedId)
                         }

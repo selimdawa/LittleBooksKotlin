@@ -14,7 +14,7 @@ import com.flatcode.littlebooks.model.Book
 import com.flatcode.littlebooks.ui.book.BookDetailsActivity
 import com.flatcode.littlebooks.utils.DATA
 import com.flatcode.littlebooks.utils.checkFavorite
-import com.flatcode.littlebooks.utils.glide
+import com.flatcode.littlebooks.utils.loadImage
 import com.flatcode.littlebooks.utils.openActivity
 import com.flatcode.littlebooks.utils.isFavorite
 
@@ -67,7 +67,7 @@ class MainBookAdapter(
             binding.linearViews.visibility = if (isViews) View.VISIBLE else View.GONE
             binding.line.visibility = if (isViews || isLoves || isDownloads) View.VISIBLE else View.GONE
 
-            binding.image.glide(false, item.image)
+            binding.image.loadImage(false, item.image)
             binding.views.text = DATA.EMPTY + item.viewsCount
             binding.downloads.text = DATA.EMPTY + item.downloadsCount
             binding.loves.text = DATA.EMPTY + item.lovesCount

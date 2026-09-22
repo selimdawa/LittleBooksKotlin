@@ -13,7 +13,7 @@ import com.flatcode.littlebooksadmin.databinding.ItemAdsUserBinding
 import com.flatcode.littlebooksadmin.filter.ADsUserFilter
 import com.flatcode.littlebooksadmin.model.User
 import com.flatcode.littlebooksadmin.utils.DATA
-import com.flatcode.littlebooksadmin.utils.loadWithGlide
+import com.flatcode.littlebooksadmin.utils.loadImage
 import com.flatcode.littlebooksadmin.utils.openActivity
 import java.text.MessageFormat
 
@@ -50,7 +50,7 @@ class ADsUserAdapter(val isUser: Boolean) :
         val adClicked = DATA.EMPTY + item.adClick
         val formattedDate: String = Application.formatTimestamp(timestamp.toLong())
 
-        holder.binding.profileImage.loadWithGlide(true, profileImage)
+        holder.binding.profileImage.loadImage(isUser = true, url = profileImage)
 
         if (username == DATA.EMPTY) {
             holder.binding.username.visibility = View.GONE
@@ -90,3 +90,4 @@ class UserDiffCallback : DiffUtil.ItemCallback<User>() {
         return oldItem == newItem
     }
 }
+

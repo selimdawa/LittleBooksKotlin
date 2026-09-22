@@ -14,7 +14,7 @@ import com.flatcode.littlebooks.model.Book
 import com.flatcode.littlebooks.utils.DATA
 import com.flatcode.littlebooks.utils.checkFavorite
 import com.flatcode.littlebooks.utils.checkLove
-import com.flatcode.littlebooks.utils.glide
+import com.flatcode.littlebooks.utils.loadImage
 import com.flatcode.littlebooks.utils.isFavorite
 import com.flatcode.littlebooks.utils.isLoves
 import com.flatcode.littlebooks.utils.openActivity
@@ -60,7 +60,7 @@ class StaggeredBookAdapter : ListAdapter<Book, StaggeredBookAdapter.ViewHolder>(
             val context = itemView.context
             val bookId = DATA.EMPTY + item.id
 
-            binding.image.glide(false, item.image)
+            binding.image.loadImage(false, item.image)
 
             binding.title.visibility = if (item.title.isNullOrEmpty()) View.GONE else View.VISIBLE
             binding.title.text = item.title

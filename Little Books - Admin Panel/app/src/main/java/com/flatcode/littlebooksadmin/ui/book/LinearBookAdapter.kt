@@ -48,7 +48,7 @@ class LinearBookAdapter(private val isUser: Boolean) :
 
         holder.binding.more.visibility = if (isUser) View.VISIBLE else View.GONE
 
-        holder.binding.image.loadWithGlide(false, image)
+        holder.binding.image.loadImage(isUser = false, url = image)
 
         holder.binding.title.visibility = if (item.title.isNullOrEmpty()) View.GONE else View.VISIBLE
         if (!item.title.isNullOrEmpty()) {
@@ -71,7 +71,7 @@ class LinearBookAdapter(private val isUser: Boolean) :
         }
         holder.binding.loves.setOnClickListener { holder.binding.loves.checkLove(bookId) }
         holder.binding.more.setOnClickListener {
-            context.moreOptionDialog(item)
+            Dialogs.moreOptionDialog(context, item)
         }
         holder.binding.item.setOnClickListener {
             context.openActivity<BookDetailsActivity>(extras = arrayOf(DATA.BOOK_ID to item.id))
@@ -84,4 +84,6 @@ class LinearBookAdapter(private val isUser: Boolean) :
 
     inner class ViewHolder(val binding: ItemBookLinearBinding) : RecyclerView.ViewHolder(binding.root)
 }
+
+
 

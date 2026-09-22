@@ -25,7 +25,7 @@ import androidx.navigation.ui.setupWithNavController
 import com.flatcode.littlebooks.R
 import com.flatcode.littlebooks.utils.DATA
 import com.flatcode.littlebooks.utils.closeApp
-import com.flatcode.littlebooks.utils.glide
+import com.flatcode.littlebooks.utils.loadImage
 import com.flatcode.littlebooks.utils.openActivity
 import com.flatcode.littlebooks.databinding.ActivityMainBinding
 import com.flatcode.littlebooks.ui.profile.ProfileActivity
@@ -158,7 +158,7 @@ class MainActivity : AppCompatActivity() {
                     when (resource) {
                         is Resource.Success -> {
                             val user = resource.data
-                            binding!!.toolbar.image.glide(true, user?.profileImage)
+                            binding!!.toolbar.image.loadImage(true, user?.profileImage)
                         }
 
                         is Resource.Error -> {

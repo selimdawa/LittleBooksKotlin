@@ -2,7 +2,8 @@ package com.flatcode.littlebooksadmin.ui.category
 
 import android.Manifest
 import android.app.Activity
-import android.app.ProgressDialog
+import androidx.appcompat.app.AlertDialog
+import com.flatcode.littlebooksadmin.utils.Dialogs
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -37,7 +38,7 @@ class CategoryEditActivity : AppCompatActivity() {
     var context: Context = also { activity = it }
     var categoryId: String? = null
     private var imageUri: Uri? = null
-    private var dialog: ProgressDialog? = null
+    private var dialog: AlertDialog? = null
 
     private val cropImage = registerForActivityResult(CropImageContract()) { result ->
         if (result.isSuccessful) {
@@ -82,9 +83,7 @@ class CategoryEditActivity : AppCompatActivity() {
 
         categoryId = intent.getStringExtra(DATA.CATEGORY_ID)
 
-        dialog = ProgressDialog(context)
-        dialog!!.setTitle(R.string.please_wait)
-        dialog!!.setCanceledOnTouchOutside(false)
+        dialog = Dialogs.createProgressDialog(context, getString(R.string.please_wait))
         loadCategoryInfo()
 
         binding.toolbar.nameSpace.setText(R.string.edit_category)
@@ -109,7 +108,7 @@ class CategoryEditActivity : AppCompatActivity() {
     }
 
     private fun uploadImage() {
-        dialog!!.setMessage(getString(R.string.updating_category))
+        dialog = Dialogs.createProgressDialog(context, getString(R.string.updating_category))
         dialog!!.show()
         MediaManager.get().upload(imageUri)
             .option("folder", "Images/Category/")
@@ -134,7 +133,7 @@ class CategoryEditActivity : AppCompatActivity() {
     }
 
     private fun updateCategory(imageUrl: String?) {
-        dialog!!.setMessage(getString(R.string.updating_category_image))
+        dialog = Dialogs.createProgressDialog(context, getString(R.string.updating_category_image))
         dialog!!.show()
         val hashMap = HashMap<String?, Any>()
         hashMap[DATA.CATEGORY] = DATA.EMPTY + name
@@ -161,7 +160,7 @@ class CategoryEditActivity : AppCompatActivity() {
                 val item = snapshot.getValue(Category::class.java)!!
                 val name = item.category
                 val image = item.image
-                binding.image.loadWithGlide(true, image!!)
+                binding.image.loadImage(isUser = true, url = image!!)
                 binding.categoryEt.setText(name)
             }
 
@@ -169,4 +168,6 @@ class CategoryEditActivity : AppCompatActivity() {
         })
     }
 }
+
+
 

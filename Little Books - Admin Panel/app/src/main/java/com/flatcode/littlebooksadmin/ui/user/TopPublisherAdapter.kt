@@ -14,7 +14,7 @@ import com.flatcode.littlebooksadmin.filter.TopPublisherFilter
 import com.flatcode.littlebooksadmin.model.User
 import com.flatcode.littlebooksadmin.ui.profile.ProfileActivity
 import com.flatcode.littlebooksadmin.utils.DATA
-import com.flatcode.littlebooksadmin.utils.loadWithGlide
+import com.flatcode.littlebooksadmin.utils.loadImage
 import com.flatcode.littlebooksadmin.utils.openActivity
 
 class TopPublisherAdapter(val isUser: Boolean) :
@@ -50,7 +50,7 @@ class TopPublisherAdapter(val isUser: Boolean) :
         val profileImage = item.profileImage.orEmpty()
         val numberBooks = item.booksCount.toString()
 
-        holder.binding.imageProfile.loadWithGlide(false, profileImage)
+        holder.binding.imageProfile.loadImage(isUser = false, url = profileImage)
 
         holder.binding.username.visibility = if (username.isEmpty()) View.GONE else View.VISIBLE
         if (username.isNotEmpty()) {
@@ -81,3 +81,5 @@ class TopPublisherDiffCallback : DiffUtil.ItemCallback<User>() {
         return oldItem == newItem
     }
 }
+
+

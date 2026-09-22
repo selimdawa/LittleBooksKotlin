@@ -1,6 +1,6 @@
 package com.flatcode.littlebooks.ui.auth
 
-import android.app.ProgressDialog
+import androidx.appcompat.app.AlertDialog
 import android.content.Context
 import android.os.Bundle
 import android.util.Patterns
@@ -27,7 +27,7 @@ class ForgetPasswordActivity : AppCompatActivity() {
 
     private var binding: ActivityForgetPasswordBinding? = null
     private val context: Context = this@ForgetPasswordActivity
-    private var dialog: ProgressDialog? = null
+    private var dialog: AlertDialog? = null
 
     private val viewModel: AuthViewModel by viewModels()
 
@@ -49,9 +49,10 @@ class ForgetPasswordActivity : AppCompatActivity() {
             insets
         }
 
-        dialog = ProgressDialog(this)
-        dialog!!.setTitle("Please wait...")
-        dialog!!.setCanceledOnTouchOutside(false)
+        dialog = AlertDialog.Builder(this)
+            .setTitle("Please wait...")
+            .setCancelable(false)
+            .create()
 
         binding!!.noAccount.setOnClickListener {
             context.openActivity<RegisterActivity>()

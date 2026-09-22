@@ -1,66 +1,38 @@
 package com.flatcode.littlebooks.utils
 
 import android.app.Activity
-import android.app.Dialog
-import android.app.ProgressDialog
 import android.content.ActivityNotFoundException
-import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.net.Uri
-import android.os.Environment
-import android.view.LayoutInflater
-import android.view.Window
-import android.view.WindowManager
-import android.webkit.MimeTypeMap
+import android.text.format.DateFormat
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
 import androidx.core.graphics.createBitmap
 import androidx.core.graphics.scale
-import androidx.viewbinding.ViewBinding
 import coil.load
 import coil.size.Size
 import coil.transform.Transformation
+import com.cloudinary.android.MediaManager
+import com.cloudinary.android.callback.ErrorInfo
+import com.cloudinary.android.callback.UploadCallback
 import com.flatcode.littlebooks.R
-import com.flatcode.littlebooks.databinding.DialogAboutAppBinding
-import com.flatcode.littlebooks.databinding.DialogCloseAppBinding
-import com.flatcode.littlebooks.databinding.DialogLogoutBinding
-import com.flatcode.littlebooks.model.ADs
-import com.flatcode.littlebooks.model.Book
-import com.flatcode.littlebooks.ui.auth.AuthActivity
-import com.flatcode.littlebooks.ui.book.BookEditActivity
 import com.google.android.gms.ads.AdListener
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdView
 import com.google.android.gms.ads.MobileAds
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
-import com.canhub.cropper.CropImage
-import com.canhub.cropper.CropImageView
-import com.cloudinary.android.MediaManager
-import com.cloudinary.android.callback.ErrorInfo
-import com.cloudinary.android.callback.UploadCallback
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
-import kotlinx.coroutines.launch
-import kotlin.coroutines.resume
-import java.io.File
-import java.io.FileOutputStream
 import java.io.Serializable
 import java.net.HttpURLConnection
 import java.net.URL
-import java.text.MessageFormat
+import java.util.Calendar
+import java.util.Locale
+import kotlin.coroutines.resume
 
 inline fun <reified T : Activity> Context.openActivity(
     clear: Boolean = false, vararg extras: Pair<String, Any?>
@@ -85,92 +57,6 @@ fun Context.openActivity(
     startActivity(intent)
 }
 
-private fun Context.showCustomDialog(binding: ViewBinding, setup: (Dialog) -> Unit) {
-    Dialog(this).apply {
-        requestWindowFeature(Window.FEATURE_NO_TITLE)
-        setContentView(binding.root)
-        setCancelable(true)
-        window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-        val lp = WindowManager.LayoutParams().apply {
-            copyFrom(window?.attributes)
-            width = WindowManager.LayoutParams.WRAP_CONTENT
-            height = WindowManager.LayoutParams.WRAP_CONTENT
-        }
-        setup(this)
-        show()
-        window?.attributes = lp
-    }
-}
-
-fun Context.deleteBook(
-    dialogDelete: Dialog,
-    publisher: String?,
-    bookId: String?,
-    bookUrl: String?,
-    bookTitle: String,
-) {
-    val dialog = ProgressDialog(this).apply {
-        setTitle("Please wait")
-        setMessage("Deleting $bookTitle ...")
-        show()
-    }
-    FirebaseDatabase.getInstance().getReference(DATA.BOOKS).child(bookId!!).removeValue()
-        .addOnSuccessListener {
-            dialog.dismiss()
-            Toast.makeText(this, "Books Deleted Successfully...", Toast.LENGTH_SHORT).show()
-            dialogDelete.dismiss()
-            incrementItemRemoveCount(DATA.USERS, publisher, DATA.BOOKS_COUNT)
-        }.addOnFailureListener { e ->
-            dialog.dismiss()
-            Toast.makeText(this, e.message, Toast.LENGTH_SHORT).show()
-        }
-}
-
-fun Context.downloadBook(bookId: String, bookTitle: String, bookUrl: String?) {
-    val nameWithExtension = "$bookTitle.pdf"
-    val progressDialog = ProgressDialog(this).apply {
-        setTitle("Please wait")
-        setMessage("Downloading $nameWithExtension...")
-        setCanceledOnTouchOutside(false)
-        show()
-    }
-
-    @Suppress("DEPRECATION")
-    GlobalScope.launch(Dispatchers.IO) {
-        try {
-            val bytes = URL(bookUrl!!).readBytes()
-            withContext(Dispatchers.Main) {
-                saveDownloadedBook(this@downloadBook, progressDialog, bytes, nameWithExtension, bookId)
-                incrementItemCount(DATA.BOOKS, bookId, DATA.DOWNLOADS_COUNT)
-            }
-        } catch (e: Exception) {
-            withContext(Dispatchers.Main) {
-                progressDialog.dismiss()
-                Toast.makeText(this@downloadBook, "Failed to download due to ${e.message}", Toast.LENGTH_SHORT).show()
-            }
-        }
-    }
-}
-
-fun Context.closeApp(a: Activity?) {
-    val binding = DialogCloseAppBinding.inflate(LayoutInflater.from(this))
-    showCustomDialog(binding) { dialog ->
-        binding.yes.setOnClickListener { a?.finish() }
-        binding.no.setOnClickListener { dialog.cancel() }
-    }
-}
-
-fun Context.dialogLogout() {
-    val binding = DialogLogoutBinding.inflate(LayoutInflater.from(this))
-    showCustomDialog(binding) { dialog ->
-        binding.yes.setOnClickListener {
-            FirebaseAuth.getInstance().signOut()
-            openActivity<AuthActivity>(true)
-        }
-        binding.no.setOnClickListener { dialog.cancel() }
-    }
-}
-
 fun Context.shareApp() {
     val shareIntent = Intent(Intent.ACTION_SEND)
     shareIntent.type = "text/plain"
@@ -187,53 +73,13 @@ fun Context.rateApp() {
     val goToMarket = Intent(Intent.ACTION_VIEW, uri)
     try {
         this.startActivity(goToMarket)
-    } catch (e: ActivityNotFoundException) {
+    } catch (_: ActivityNotFoundException) {
         this.startActivity(
             Intent(
                 Intent.ACTION_VIEW,
                 Uri.parse("http://play.google.com/store/apps/details?id=" + this.packageName)
             )
         )
-    }
-}
-
-fun Context.dialogAboutApp() {
-    val binding = DialogAboutAppBinding.inflate(LayoutInflater.from(this))
-    showCustomDialog(binding) {
-        binding.website.setOnClickListener {
-            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(DATA.WEB_SITE)))
-        }
-        binding.facebook.setOnClickListener {
-            val fbUri = try {
-                packageManager.getPackageInfo("com.facebook.katana", 0)
-                Uri.parse("fb://profile/${DATA.FB_ID}")
-            } catch (e: Exception) {
-                Uri.parse("https://www.facebook.com/${DATA.FB_ID}")
-            }
-            startActivity(Intent(Intent.ACTION_VIEW, fbUri))
-        }
-    }
-}
-
-fun Context.moreOptionDialog(item: Book?) {
-    item ?: return
-    val options = arrayOf("Edit", "Delete")
-    AlertDialog.Builder(this).setTitle("Choose Options").setItems(options) { _, which ->
-        if (which == 0) openActivity<BookEditActivity>(false, DATA.BOOK_ID to item.id)
-        else if (which == 1) dialogOptionDelete(item.publisher, item.id, item.url, item.title!!)
-    }.show()
-}
-
-fun Context.dialogOptionDelete(
-    publisher: String?, bookId: String?, bookUrl: String?, bookTitle: String,
-) {
-    val binding = DialogLogoutBinding.inflate(LayoutInflater.from(this))
-    showCustomDialog(binding) { dialog ->
-        binding.title.setText(R.string.do_you_want_to_delete_the_book)
-        binding.yes.setOnClickListener {
-            deleteBook(dialog, publisher, bookId, bookUrl, bookTitle)
-        }
-        binding.no.setOnClickListener { dialog.dismiss() }
     }
 }
 
@@ -257,7 +103,7 @@ suspend fun cloudinaryUpload(uri: Uri): Resource<String> =
             }).dispatch()
     }
 
-fun ImageView.glide(isUser: Boolean, url: String?) {
+fun ImageView.loadImage(isUser: Boolean, url: String?) {
     val placeholder = if (isUser) R.drawable.basic_user else R.drawable.basic_book
     if (url == DATA.BASIC || url == null) {
         setImageResource(placeholder)
@@ -270,7 +116,7 @@ fun ImageView.glide(isUser: Boolean, url: String?) {
     }
 }
 
-fun ImageView.glideBlur(isUser: Boolean, url: String, level: Int) {
+fun ImageView.loadImageBlur(isUser: Boolean, url: String, level: Int) {
     val placeholder = if (isUser) R.drawable.basic_user else R.drawable.basic_book
     if (url == DATA.BASIC) {
         setImageResource(placeholder)
@@ -281,64 +127,6 @@ fun ImageView.glideBlur(isUser: Boolean, url: String, level: Int) {
             transformations(SimpleBlurTransformation(level.toFloat()))
         }
     }
-}
-
-fun ImageView.isFavorite(id: String?, userId: String?) {
-    val reference: DatabaseReference =
-        FirebaseDatabase.getInstance().reference.child(DATA.FAVORITES).child(userId!!)
-    reference.addValueEventListener(object : ValueEventListener {
-        override fun onDataChange(dataSnapshot: DataSnapshot) {
-            if (dataSnapshot.child(id!!).exists()) {
-                this@isFavorite.setImageResource(R.drawable.ic_star_selected)
-                this@isFavorite.tag = "added"
-            } else {
-                this@isFavorite.setImageResource(R.drawable.ic_star_unselected)
-                this@isFavorite.tag = "add"
-            }
-        }
-
-        override fun onCancelled(databaseError: DatabaseError) {}
-    })
-}
-
-fun ImageView.checkFavorite(bookId: String?) {
-    if (this.tag == "add") {
-        FirebaseDatabase.getInstance().getReference(DATA.FAVORITES).child(DATA.FirebaseUserUid)
-            .child(bookId!!).setValue(true)
-    } else {
-        FirebaseDatabase.getInstance().getReference(DATA.FAVORITES).child(DATA.FirebaseUserUid)
-            .child(bookId!!).removeValue()
-    }
-}
-
-fun ImageView.checkLove(bookId: String?) {
-    if (this.tag == "love") {
-        FirebaseDatabase.getInstance().getReference(DATA.LOVES).child(bookId!!)
-            .child(DATA.FirebaseUserUid).setValue(true)
-        incrementItemCount(DATA.BOOKS, bookId, DATA.LOVES_COUNT)
-    } else {
-        FirebaseDatabase.getInstance().getReference(DATA.LOVES).child(bookId!!)
-            .child(DATA.FirebaseUserUid).removeValue()
-        incrementItemRemoveCount(DATA.BOOKS, bookId, DATA.LOVES_COUNT)
-    }
-}
-
-fun ImageView.isLoves(bookId: String?) {
-    val reference: DatabaseReference =
-        FirebaseDatabase.getInstance().reference.child(DATA.LOVES).child(bookId!!)
-    reference.addValueEventListener(object : ValueEventListener {
-        override fun onDataChange(dataSnapshot: DataSnapshot) {
-            if (dataSnapshot.child(DATA.FirebaseUserUid).exists()) {
-                this@isLoves.setImageResource(R.drawable.ic_heart_selected)
-                this@isLoves.tag = "loved"
-            } else {
-                this@isLoves.setImageResource(R.drawable.ic_heart_unselected)
-                this@isLoves.tag = "love"
-            }
-        }
-
-        override fun onCancelled(databaseError: DatabaseError) {}
-    })
 }
 
 fun TextView.loadPdfInfo(pdfUrl: String?) {
@@ -360,54 +148,30 @@ fun TextView.loadPdfInfo(pdfUrl: String?) {
                     else "$bytes bytes"
                 }
             }
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             // ignore
         }
     }
 }
 
-fun TextView.loadCategory(categoryId: String?) {
-    categoryId ?: return
-    FirebaseDatabase.getInstance().getReference(DATA.CATEGORIES).child(categoryId)
-        .addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                text = snapshot.child(DATA.CATEGORY).value.toString()
-            }
-
-            override fun onCancelled(error: DatabaseError) {}
-        })
-}
-
-fun TextView.nrLoves(bookId: String?) {
-    val reference: DatabaseReference =
-        FirebaseDatabase.getInstance().reference.child(DATA.LOVES).child(bookId!!)
-    reference.addValueEventListener(object : ValueEventListener {
-        override fun onDataChange(dataSnapshot: DataSnapshot) {
-            this@nrLoves.text = MessageFormat.format(" {0} ", dataSnapshot.childrenCount)
-        }
-
-        override fun onCancelled(databaseError: DatabaseError) {}
-    })
-}
-
-fun AdView.bannerAd(context: Context, bannerName: String?) {
+fun AdView.loadBannerAd(context: Context, bannerName: String?) {
     MobileAds.initialize(context) { }
     val adRequest = AdRequest.Builder().build()
     this.loadAd(adRequest)
     this.adListener = object : AdListener() {
         override fun onAdLoaded() {
-            AdUserCount(DATA.FirebaseUserUid, DATA.AD_LOAD, 1)
-            AdCount(DATA.FirebaseUserUid, bannerName, DATA.ADS_LOADED_COUNT)
+            adUserCount(DATA.FirebaseUserUid, DATA.AD_LOAD, 1)
+            adCount(DATA.FirebaseUserUid, bannerName, DATA.ADS_LOADED_COUNT)
         }
 
         override fun onAdOpened() {
-            AdUserCount(DATA.FirebaseUserUid, DATA.AD_CLICK, 1)
-            AdCount(DATA.FirebaseUserUid, bannerName, DATA.ADS_CLICKED_COUNT)
+            adUserCount(DATA.FirebaseUserUid, DATA.AD_CLICK, 1)
+            adCount(DATA.FirebaseUserUid, bannerName, DATA.ADS_CLICKED_COUNT)
         }
     }
 }
 
-fun Context.bannerAdTwo(
+fun Context.loadBannerAdTwo(
     adView: AdView,
     bannerName: String?,
     adView2: AdView,
@@ -418,122 +182,29 @@ fun Context.bannerAdTwo(
     adView.loadAd(adRequest)
     adView.adListener = object : AdListener() {
         override fun onAdOpened() {
-            AdUserCount(DATA.FirebaseUserUid, DATA.AD_CLICK, 1)
-            AdCount(DATA.FirebaseUserUid, bannerName, DATA.ADS_CLICKED_COUNT)
+            adUserCount(DATA.FirebaseUserUid, DATA.AD_CLICK, 1)
+            adCount(DATA.FirebaseUserUid, bannerName, DATA.ADS_CLICKED_COUNT)
         }
     }
     adView2.loadAd(adRequest)
     adView2.adListener = object : AdListener() {
         override fun onAdLoaded() {
-            AdUserCount(DATA.FirebaseUserUid, DATA.AD_LOAD, 2)
-            AdCount(DATA.FirebaseUserUid, bannerName, DATA.ADS_LOADED_COUNT)
-            AdCount(DATA.FirebaseUserUid, bannerName2, DATA.ADS_LOADED_COUNT)
+            adUserCount(DATA.FirebaseUserUid, DATA.AD_LOAD, 2)
+            adCount(DATA.FirebaseUserUid, bannerName, DATA.ADS_LOADED_COUNT)
+            adCount(DATA.FirebaseUserUid, bannerName2, DATA.ADS_LOADED_COUNT)
         }
 
         override fun onAdOpened() {
-            AdUserCount(DATA.FirebaseUserUid, DATA.AD_CLICK, 1)
-            AdCount(DATA.FirebaseUserUid, bannerName2, DATA.ADS_CLICKED_COUNT)
+            adUserCount(DATA.FirebaseUserUid, DATA.AD_CLICK, 1)
+            adCount(DATA.FirebaseUserUid, bannerName2, DATA.ADS_CLICKED_COUNT)
         }
     }
-}
-
-fun incrementItemCount(database: String?, id: String?, childDB: String?) =
-    updateItemCount(database, id, childDB, 1)
-
-fun incrementItemRemoveCount(database: String?, id: String?, childDB: String?) =
-    updateItemCount(database, id, childDB, -1)
-
-private fun updateItemCount(database: String?, id: String?, childDB: String?, increment: Int) {
-    if (database == null || id == null || childDB == null) return
-    val ref = FirebaseDatabase.getInstance().getReference(database).child(id)
-    ref.addListenerForSingleValueEvent(object : ValueEventListener {
-        override fun onDataChange(snapshot: DataSnapshot) {
-            val count = snapshot.child(childDB).value.toString().toIntOrNull() ?: 0
-            ref.updateChildren(mapOf(childDB to (count + increment).coerceAtLeast(0)))
-        }
-
-        override fun onCancelled(error: DatabaseError) {}
-    })
-}
-
-private fun saveDownloadedBook(
-    context: Context,
-    progressDialog: ProgressDialog,
-    bytes: ByteArray,
-    nameWithExtension: String,
-    bookId: String,
-) {
-    try {
-        val downloadsFolder: File =
-            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-        downloadsFolder.mkdirs()
-        val filePath = downloadsFolder.path + "/" + nameWithExtension
-        val out = FileOutputStream(filePath)
-        out.write(bytes)
-        out.close()
-        Toast.makeText(context, "Saved to Download Folder", Toast.LENGTH_SHORT).show()
-        progressDialog.dismiss()
-        incrementItemCount(DATA.BOOKS, bookId, DATA.DOWNLOADS_COUNT)
-    } catch (e: Exception) {
-        Toast.makeText(
-            context, "Failed saving to Download Folder due to " + e.message, Toast.LENGTH_SHORT
-        ).show()
-        progressDialog.dismiss()
-    }
-}
-
-fun AdCount(userId: String?, bannerName: String?, key: String?) {
-    if (userId == null || bannerName == null || key == null) return
-    val ref = FirebaseDatabase.getInstance().getReference(DATA.AD_S).child(userId).child(bannerName)
-    ref.addListenerForSingleValueEvent(object : ValueEventListener {
-        override fun onDataChange(snapshot: DataSnapshot) {
-            val count = snapshot.child(key).value.toString().toLongOrNull() ?: 0L
-            ref.updateChildren(mapOf(key to count + 1)).addOnCompleteListener {
-                AdName(DATA.FirebaseUserUid, bannerName)
-            }
-        }
-
-        override fun onCancelled(error: DatabaseError) {}
-    })
-}
-
-fun AdUserCount(userId: String?, key: String?, number: Int) {
-    if (userId == null || key == null) return
-    val ref = FirebaseDatabase.getInstance().getReference(DATA.USERS).child(userId)
-    ref.addListenerForSingleValueEvent(object : ValueEventListener {
-        override fun onDataChange(snapshot: DataSnapshot) {
-            val count = snapshot.child(key).value.toString().toLongOrNull() ?: 0L
-            ref.updateChildren(mapOf(key to count + number))
-        }
-
-        override fun onCancelled(error: DatabaseError) {}
-    })
-}
-
-fun AdName(userId: String?, bannerName: String?) {
-    if (userId == null || bannerName == null) return
-    val ref = FirebaseDatabase.getInstance().getReference(DATA.AD_S).child(userId).child(bannerName)
-    ref.addListenerForSingleValueEvent(object : ValueEventListener {
-        override fun onDataChange(snapshot: DataSnapshot) {
-            if (snapshot.getValue(ADs::class.java)?.name == null) {
-                ref.updateChildren(mapOf(DATA.NAME to bannerName))
-            }
-        }
-
-        override fun onCancelled(error: DatabaseError) {}
-    })
-}
-
-fun Uri.getFileExtension(context: Context): String {
-    val cR: ContentResolver = context.contentResolver
-    val mime: MimeTypeMap = MimeTypeMap.getSingleton()
-    return mime.getExtensionFromMimeType(cR.getType(this))!!
 }
 
 fun Long.formatTimestamp(): String {
-    val calendar = java.util.Calendar.getInstance(java.util.Locale.ENGLISH)
+    val calendar = Calendar.getInstance(Locale.ENGLISH)
     calendar.timeInMillis = this
-    return android.text.format.DateFormat.format("dd/MM/yyyy", calendar).toString()
+    return DateFormat.format("dd/MM/yyyy", calendar).toString()
 }
 
 class SimpleBlurTransformation(private val radius: Float) : Transformation {

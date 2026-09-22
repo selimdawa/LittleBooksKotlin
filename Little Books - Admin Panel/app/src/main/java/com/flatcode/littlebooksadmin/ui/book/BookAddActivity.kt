@@ -2,7 +2,7 @@ package com.flatcode.littlebooksadmin.ui.book
 
 import android.Manifest
 import android.app.Activity
-import android.app.ProgressDialog
+import com.flatcode.littlebooksadmin.utils.Dialogs
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -39,7 +39,7 @@ class BookAddActivity : AppCompatActivity() {
     private var uri: Uri? = null
     private var imageUri: Uri? = null
     private var categoriesList: List<Category> = emptyList()
-    private var dialog: ProgressDialog? = null
+    private var dialog: AlertDialog? = null
 
     private val viewModel: BookAddViewModel by viewModels()
 
@@ -60,9 +60,7 @@ class BookAddActivity : AppCompatActivity() {
     }
 
     private fun initUI() {
-        dialog = ProgressDialog(context)
-        dialog!!.setTitle(R.string.please_wait)
-        dialog!!.setCanceledOnTouchOutside(false)
+        dialog = Dialogs.createProgressDialog(context, getString(R.string.please_wait))
 
         binding.toolbar.nameSpace.setText(R.string.add_new_book)
         binding.toolbar.back.setOnClickListener { onBackPressed() }
@@ -96,7 +94,7 @@ class BookAddActivity : AppCompatActivity() {
                     viewModel.uploadState.collect { resource ->
                         when (resource) {
                             is Resource.Loading -> {
-                                dialog!!.setMessage(getString(R.string.uploading_book))
+                                dialog = Dialogs.createProgressDialog(context, getString(R.string.uploading_book))
                                 dialog!!.show()
                             }
 
@@ -120,7 +118,7 @@ class BookAddActivity : AppCompatActivity() {
                     viewModel.imageUploadState.collect { resource ->
                         when (resource) {
                             is Resource.Loading -> {
-                                dialog!!.setMessage(getString(R.string.updating_image_book))
+                                dialog = Dialogs.createProgressDialog(context, getString(R.string.updating_image_book))
                                 dialog!!.show()
                             }
 

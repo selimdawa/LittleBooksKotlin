@@ -1,6 +1,6 @@
 package com.flatcode.littlebooks.ui.book
 
-import android.app.ProgressDialog
+import androidx.appcompat.app.AlertDialog
 import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -8,7 +8,6 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -22,8 +21,8 @@ import com.flatcode.littlebooks.databinding.DialogCommentAddBinding
 import com.flatcode.littlebooks.model.Comment
 import com.flatcode.littlebooks.utils.DATA
 import com.flatcode.littlebooks.utils.Resource
-import com.flatcode.littlebooks.utils.glide
-import com.flatcode.littlebooks.utils.glideBlur
+import com.flatcode.littlebooks.utils.loadImage
+import com.flatcode.littlebooks.utils.loadImageBlur
 import com.flatcode.littlebooks.utils.loadCategory
 import com.flatcode.littlebooks.utils.loadPdfInfo
 import com.flatcode.littlebooks.utils.openActivity
@@ -41,7 +40,7 @@ class BookDetailsActivity : AppCompatActivity() {
     private var adapterComment: CommentAdapter? = null
 
     private val viewModel: BookViewModel by viewModels()
-    private var progressDialog: ProgressDialog? = null
+    private var progressDialog: AlertDialog? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
@@ -60,9 +59,10 @@ class BookDetailsActivity : AppCompatActivity() {
 
         bookId = intent.getStringExtra(DATA.BOOK_ID)
 
-        progressDialog = ProgressDialog(this)
-        progressDialog!!.setTitle("Please wait")
-        progressDialog!!.setCanceledOnTouchOutside(false)
+        progressDialog = AlertDialog.Builder(this)
+            .setTitle("Please wait")
+            .setCancelable(false)
+            .create()
 
         binding!!.toolbar.back.setOnClickListener { onBackPressed() }
         binding!!.favorite.setOnClickListener {
@@ -100,8 +100,8 @@ class BookDetailsActivity : AppCompatActivity() {
                                 binding!!.downloads.text = DATA.EMPTY + book?.downloadsCount
                                 // binding!!.pages.text = DATA.EMPTY + book?.pagesCount // layout doesn't have pages count text view?
                                 binding!!.category.loadCategory(DATA.EMPTY + book?.categoryId)
-                                binding!!.image.glide(false, book?.url)
-                                binding!!.cover.glideBlur(false, DATA.EMPTY + book?.url, 50)
+                                binding!!.image.loadImage(false, book?.url)
+                                binding!!.cover.loadImageBlur(false, DATA.EMPTY + book?.url, 50)
                                 binding!!.size.loadPdfInfo(DATA.EMPTY + book?.url)
                             }
 

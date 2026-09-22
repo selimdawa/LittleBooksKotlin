@@ -36,7 +36,7 @@ class PublisherAdapter : ListAdapter<User, PublisherAdapter.ViewHolder>(UserDiff
         val id = item.id
         val image = item.profileImage ?: ""
 
-        holder.binding.imageProfile.loadWithGlide(true, image)
+        holder.binding.imageProfile.loadImage(isUser = true, url = image)
 
         holder.binding.username.visibility = if (item.username.isNullOrEmpty()) View.GONE else View.VISIBLE
         if (!item.username.isNullOrEmpty()) {
@@ -132,3 +132,5 @@ class UserDiffCallback : DiffUtil.ItemCallback<User>() {
         return oldItem == newItem
     }
 }
+
+

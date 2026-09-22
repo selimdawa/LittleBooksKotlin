@@ -1,6 +1,7 @@
 package com.flatcode.littlebooksadmin.ui.auth
 
-import android.app.ProgressDialog
+import androidx.appcompat.app.AlertDialog
+import com.flatcode.littlebooksadmin.utils.Dialogs
 import android.content.Context
 import android.os.Bundle
 import android.util.Patterns
@@ -18,7 +19,7 @@ class ForgetPasswordActivity : AppCompatActivity() {
     private lateinit var binding: ActivityForgetPasswordBinding
     private val context: Context = this@ForgetPasswordActivity
     private var auth: FirebaseAuth? = null
-    private var dialog: ProgressDialog? = null
+    private var dialog: AlertDialog? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,9 +34,7 @@ class ForgetPasswordActivity : AppCompatActivity() {
         }
 
         auth = FirebaseAuth.getInstance()
-        dialog = ProgressDialog(this)
-        dialog!!.setTitle(R.string.please_wait)
-        dialog!!.setCanceledOnTouchOutside(false)
+        dialog = Dialogs.createProgressDialog(context, getString(R.string.please_wait))
 
         binding.go.setOnClickListener { validateDate() }
         binding.login.setOnClickListener { onBackPressed() }
@@ -54,7 +53,7 @@ class ForgetPasswordActivity : AppCompatActivity() {
     }
 
     private fun recoverPassword() {
-        dialog!!.setMessage(getString(R.string.sending_password_recovery, email))
+        dialog = Dialogs.createProgressDialog(context, getString(R.string.sending_password_recovery, email))
         dialog!!.show()
         auth!!.sendPasswordResetEmail(email).addOnCompleteListener {
             dialog!!.dismiss()

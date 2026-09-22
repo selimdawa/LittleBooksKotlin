@@ -1,6 +1,5 @@
 package com.flatcode.littlebooks.ui.book
 
-import android.app.ProgressDialog
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -11,10 +10,11 @@ import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
-import com.flatcode.littlebooks.utils.PermissionUtils
+import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import com.flatcode.littlebooks.utils.PermissionUtils
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updateLayoutParams
@@ -37,10 +37,10 @@ class BookAddActivity : AppCompatActivity() {
     var context: Context = this@BookAddActivity
     private var uri: Uri? = null
     private var imageUri: Uri? = null
-    
+
     private var titleList = ArrayList<String>()
     private var idList = ArrayList<String>()
-    private var dialog: ProgressDialog? = null
+    private var dialog: AlertDialog? = null
 
     private val bookViewModel: BookViewModel by viewModels()
     private val categoryViewModel: CategoryViewModel by viewModels()
@@ -60,9 +60,10 @@ class BookAddActivity : AppCompatActivity() {
             insets
         }
 
-        dialog = ProgressDialog(context)
-        dialog!!.setTitle("Please wait...")
-        dialog!!.setCanceledOnTouchOutside(false)
+        dialog = AlertDialog.Builder(context)
+            .setTitle("Please wait...")
+            .setCancelable(false)
+            .create()
 
         binding!!.toolbar.nameSpace.setText(R.string.add_new_book)
         binding!!.toolbar.back.setOnClickListener { onBackPressed() }
@@ -95,14 +96,17 @@ class BookAddActivity : AppCompatActivity() {
                             is Resource.Success -> {
                                 uploadBookInfoDB(resource.data!!)
                             }
+
                             is Resource.Error -> {
                                 dialog!!.dismiss()
                                 Toast.makeText(context, resource.message, Toast.LENGTH_SHORT).show()
                             }
+
                             is Resource.Loading -> {
                                 dialog!!.setMessage("Uploading Book...")
                                 dialog!!.show()
                             }
+
                             null -> {}
                         }
                     }
@@ -113,14 +117,17 @@ class BookAddActivity : AppCompatActivity() {
                             is Resource.Success -> {
                                 uploadImage(resource.data!!)
                             }
+
                             is Resource.Error -> {
                                 dialog!!.dismiss()
                                 Toast.makeText(context, resource.message, Toast.LENGTH_SHORT).show()
                             }
+
                             is Resource.Loading -> {
                                 dialog!!.setMessage("Uploading book info...")
                                 dialog!!.show()
                             }
+
                             null -> {}
                         }
                     }
@@ -131,14 +138,17 @@ class BookAddActivity : AppCompatActivity() {
                             is Resource.Success -> {
                                 updateImageBook(resource.data!!)
                             }
+
                             is Resource.Error -> {
                                 dialog!!.dismiss()
                                 Toast.makeText(context, resource.message, Toast.LENGTH_SHORT).show()
                             }
+
                             is Resource.Loading -> {
                                 dialog!!.setMessage("Updating Image Book...")
                                 dialog!!.show()
                             }
+
                             null -> {}
                         }
                     }
@@ -262,6 +272,3 @@ class BookAddActivity : AppCompatActivity() {
         }
     }
 }
-
-
-

@@ -17,7 +17,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.flatcode.littlebooks.model.Book
 import com.flatcode.littlebooks.utils.DATA
-import com.flatcode.littlebooks.utils.bannerAd
+import com.flatcode.littlebooks.utils.loadBannerAd
 import com.flatcode.littlebooks.databinding.ActivityPageStaggeredSwitchBinding
 import com.flatcode.littlebooks.utils.Resource
 import com.flatcode.littlebooks.viewmodel.BookViewModel
@@ -59,7 +59,7 @@ class BooksCategoryActivity : AppCompatActivity() {
         binding!!.toolbar.nameSpace.text = categoryName
         binding!!.toolbar.back.setOnClickListener { onBackPressed() }
 
-        binding!!.adView.bannerAd(context, DATA.BANNER_SMART_CATEGORY_BOOKS)
+        binding!!.adView.loadBannerAd(context, DATA.BANNER_SMART_CATEGORY_BOOKS)
         binding!!.toolbar.search.setOnClickListener {
             binding!!.toolbar.toolbar.visibility = View.GONE
             binding!!.toolbar.toolbarSearch.visibility = View.VISIBLE

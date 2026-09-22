@@ -14,25 +14,9 @@ object PermissionUtils {
             Manifest.permission.READ_EXTERNAL_STORAGE
         }
 
-    val writePermission: String?
-        get() = if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q) {
-            Manifest.permission.WRITE_EXTERNAL_STORAGE
-        } else {
-            null
-        }
-
     fun checkStoragePermission(context: Context): Boolean {
         return ContextCompat.checkSelfPermission(
-            context,
-            storagePermission
-        ) == PackageManager.PERMISSION_GRANTED
-    }
-
-    fun checkWritePermission(context: Context): Boolean {
-        val permission = writePermission ?: return true
-        return ContextCompat.checkSelfPermission(
-            context,
-            permission
+            context, storagePermission
         ) == PackageManager.PERMISSION_GRANTED
     }
 }

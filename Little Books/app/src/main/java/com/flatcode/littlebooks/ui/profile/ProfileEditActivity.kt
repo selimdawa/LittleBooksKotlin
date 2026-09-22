@@ -1,7 +1,7 @@
 package com.flatcode.littlebooks.ui.profile
 
 import android.app.Activity
-import android.app.ProgressDialog
+import androidx.appcompat.app.AlertDialog
 import android.content.Context
 import android.net.Uri
 import android.os.Bundle
@@ -26,7 +26,7 @@ import com.flatcode.littlebooks.R
 import com.flatcode.littlebooks.databinding.ActivityProfileEditBinding
 import com.flatcode.littlebooks.utils.DATA
 import com.flatcode.littlebooks.utils.Resource
-import com.flatcode.littlebooks.utils.glide
+import com.flatcode.littlebooks.utils.loadImage
 import com.flatcode.littlebooks.viewmodel.ProfileViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -38,7 +38,7 @@ class ProfileEditActivity : AppCompatActivity() {
     var activity: Activity? = null
     var context: Context = also { activity = it }
     private var imageUri: Uri? = null
-    private var dialog: ProgressDialog? = null
+    private var dialog: AlertDialog? = null
 
     private val viewModel: ProfileViewModel by viewModels()
 
@@ -67,9 +67,11 @@ class ProfileEditActivity : AppCompatActivity() {
             insets
         }
 
-        dialog = ProgressDialog(context)
-        dialog!!.setTitle("Please wait...")
-        dialog!!.setCanceledOnTouchOutside(false)
+        dialog = AlertDialog.Builder(context)
+            .setTitle("Please wait")
+            .setMessage("...")
+            .setCancelable(false)
+            .create()
 
         binding!!.toolbar.nameSpace.setText(R.string.edit_profile)
         binding!!.toolbar.back.setOnClickListener { onBackPressed() }
@@ -124,7 +126,7 @@ class ProfileEditActivity : AppCompatActivity() {
                     viewModel.user.collect { resource ->
                         if (resource is Resource.Success) {
                             val user = resource.data
-                            binding!!.image.glide(true, user?.profileImage)
+                            binding!!.image.loadImage(true, user?.profileImage)
                             binding!!.nameEt.setText(user?.username)
                         }
                     }

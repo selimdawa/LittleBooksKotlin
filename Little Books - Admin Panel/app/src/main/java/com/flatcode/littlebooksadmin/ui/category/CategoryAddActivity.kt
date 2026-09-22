@@ -2,7 +2,8 @@ package com.flatcode.littlebooksadmin.ui.category
 
 import android.Manifest
 import android.app.Activity
-import android.app.ProgressDialog
+import androidx.appcompat.app.AlertDialog
+import com.flatcode.littlebooksadmin.utils.Dialogs
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -37,7 +38,7 @@ class CategoryAddActivity : AppCompatActivity() {
     private var activity: Activity? = null
     private var context: Context = also { activity = it }
     private var imageUri: Uri? = null
-    private var dialog: ProgressDialog? = null
+    private var dialog: AlertDialog? = null
     
     private val viewModel: CategoryAddViewModel by viewModels()
 
@@ -87,9 +88,7 @@ class CategoryAddActivity : AppCompatActivity() {
     }
 
     private fun initUI() {
-        dialog = ProgressDialog(context)
-        dialog!!.setTitle(R.string.please_wait)
-        dialog!!.setCanceledOnTouchOutside(false)
+        dialog = Dialogs.createProgressDialog(context, getString(R.string.please_wait))
 
         binding.toolbar.nameSpace.setText(R.string.add_new_category)
         binding.toolbar.back.setOnClickListener { onBackPressed() }
@@ -104,7 +103,7 @@ class CategoryAddActivity : AppCompatActivity() {
                 viewModel.addState.collect { resource ->
                     when (resource) {
                         is Resource.Loading -> {
-                            dialog!!.setMessage(getString(R.string.uploading_category))
+                            dialog = Dialogs.createProgressDialog(context, getString(R.string.uploading_category))
                             dialog!!.show()
                         }
                         is Resource.Success -> {

@@ -2,7 +2,8 @@ package com.flatcode.littlebooksadmin.ui.ads
 
 import android.Manifest
 import android.app.Activity
-import android.app.ProgressDialog
+import androidx.appcompat.app.AlertDialog
+import com.flatcode.littlebooksadmin.utils.Dialogs
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -18,7 +19,7 @@ import com.cloudinary.android.callback.ErrorInfo
 import com.cloudinary.android.callback.UploadCallback
 import com.flatcode.littlebooksadmin.R
 import com.flatcode.littlebooksadmin.utils.DATA
-import com.flatcode.littlebooksadmin.utils.loadWithGlide
+import com.flatcode.littlebooksadmin.utils.loadImage
 import com.flatcode.littlebooksadmin.databinding.ActivitySliderShowBinding
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -36,7 +37,7 @@ class SliderShowActivity : AppCompatActivity() {
     private var activity: Activity? = null
     private val context: Context = also { activity = it }
     private var imageUri: Uri? = null
-    private var dialog: ProgressDialog? = null
+    private var dialog: AlertDialog? = null
     private var IMAGE_NUMBER = 0
     private var item = 0
 
@@ -84,9 +85,7 @@ class SliderShowActivity : AppCompatActivity() {
         binding.toolbar.nameSpace.setText(R.string.slider_show)
         binding.toolbar.back.setOnClickListener { onBackPressed() }
 
-        dialog = ProgressDialog(context)
-        dialog!!.setTitle(R.string.please_wait)
-        dialog!!.setCanceledOnTouchOutside(false)
+        dialog = Dialogs.createProgressDialog(context, getString(R.string.please_wait))
 
         binding.addOne.setOnClickListener {
             IMAGE_NUMBER = 1
@@ -310,26 +309,26 @@ class SliderShowActivity : AppCompatActivity() {
                 val nineteen = DATA.EMPTY + dataSnapshot.child("19").value
                 val twenty = DATA.EMPTY + dataSnapshot.child("20").value
 
-                binding.imageOne.loadWithGlide(false, one)
-                binding.imageTwo.loadWithGlide(false, two)
-                binding.imageThree.loadWithGlide(false, three)
-                binding.imageFour.loadWithGlide(false, four)
-                binding.imageFive.loadWithGlide(false, five)
-                binding.imageSix.loadWithGlide(false, six)
-                binding.imageSeven.loadWithGlide(false, seven)
-                binding.imageEight.loadWithGlide(false, eight)
-                binding.imageNine.loadWithGlide(false, nine)
-                binding.imageTeen.loadWithGlide(false, teen)
-                binding.imageEleven.loadWithGlide(false, eleven)
-                binding.imageTwelfth.loadWithGlide(false, twelfth)
-                binding.imageThirteen.loadWithGlide(false, thirteen)
-                binding.imageFourteenth.loadWithGlide(false, fourteenth)
-                binding.imageFifteenth.loadWithGlide(false, fifteenth)
-                binding.imageSixteen.loadWithGlide(false, sixteen)
-                binding.imageSeventeen.loadWithGlide(false, seventeen)
-                binding.imageEighteen.loadWithGlide(false, eighteen)
-                binding.imageNineteen.loadWithGlide(false, nineteen)
-                binding.imageTwenty.loadWithGlide(false, twenty)
+                binding.imageOne.loadImage(isUser = false, url = one)
+                binding.imageTwo.loadImage(isUser = false, url = two)
+                binding.imageThree.loadImage(isUser = false, url = three)
+                binding.imageFour.loadImage(isUser = false, url = four)
+                binding.imageFive.loadImage(isUser = false, url = five)
+                binding.imageSix.loadImage(isUser = false, url = six)
+                binding.imageSeven.loadImage(isUser = false, url = seven)
+                binding.imageEight.loadImage(isUser = false, url = eight)
+                binding.imageNine.loadImage(isUser = false, url = nine)
+                binding.imageTeen.loadImage(isUser = false, url = teen)
+                binding.imageEleven.loadImage(isUser = false, url = eleven)
+                binding.imageTwelfth.loadImage(isUser = false, url = twelfth)
+                binding.imageThirteen.loadImage(isUser = false, url = thirteen)
+                binding.imageFourteenth.loadImage(isUser = false, url = fourteenth)
+                binding.imageFifteenth.loadImage(isUser = false, url = fifteenth)
+                binding.imageSixteen.loadImage(isUser = false, url = sixteen)
+                binding.imageSeventeen.loadImage(isUser = false, url = seventeen)
+                binding.imageEighteen.loadImage(isUser = false, url = eighteen)
+                binding.imageNineteen.loadImage(isUser = false, url = nineteen)
+                binding.imageTwenty.loadImage(isUser = false, url = twenty)
             }
 
             override fun onCancelled(databaseError: DatabaseError) {}
@@ -337,7 +336,7 @@ class SliderShowActivity : AppCompatActivity() {
     }
 
     private fun uploadImage(name: String) {
-        dialog!!.setMessage(getString(R.string.posting_photo))
+        dialog = Dialogs.createProgressDialog(context, getString(R.string.posting_photo))
         dialog!!.show()
         MediaManager.get().upload(imageUri)
             .option("folder", "Images/SliderShow/")
@@ -360,7 +359,7 @@ class SliderShowActivity : AppCompatActivity() {
     }
 
     private fun updateImage(imageUrl: String, name: String) {
-        dialog!!.setMessage(getString(R.string.posting_photo))
+        dialog = Dialogs.createProgressDialog(context, getString(R.string.posting_photo))
         dialog!!.show()
         val hashMap = HashMap<String, Any>()
         if (imageUri != null) {
@@ -388,4 +387,6 @@ class SliderShowActivity : AppCompatActivity() {
         super.onRestart()
     }
 }
+
+
 

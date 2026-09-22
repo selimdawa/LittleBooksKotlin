@@ -18,7 +18,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.flatcode.littlebooks.model.User
 import com.flatcode.littlebooks.R
 import com.flatcode.littlebooks.utils.DATA
-import com.flatcode.littlebooks.utils.bannerAd
+import com.flatcode.littlebooks.utils.loadBannerAd
 import com.flatcode.littlebooks.databinding.ActivityPageStaggeredBinding
 import com.flatcode.littlebooks.utils.Resource
 import com.flatcode.littlebooks.utils.openActivity
@@ -55,7 +55,7 @@ class ExplorePublishersActivity : AppCompatActivity() {
         binding!!.toolbar.nameSpace.setText(R.string.explore_publishers)
         binding!!.toolbar.back.setOnClickListener { onBackPressed() }
         binding!!.toolbar.close.setOnClickListener { onBackPressed() }
-        binding!!.adView.bannerAd(context, DATA.BANNER_SMART_EXPLORE_PUBLISHERS)
+        binding!!.adView.loadBannerAd(context, DATA.BANNER_SMART_EXPLORE_PUBLISHERS)
 
         binding!!.toolbar.search.setOnClickListener {
             binding!!.toolbar.toolbar.visibility = View.GONE

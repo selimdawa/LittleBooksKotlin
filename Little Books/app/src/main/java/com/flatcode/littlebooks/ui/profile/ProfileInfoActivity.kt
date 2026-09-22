@@ -19,7 +19,7 @@ import com.flatcode.littlebooks.ui.book.StaggeredBookAdapter
 import com.flatcode.littlebooks.model.Book
 import com.flatcode.littlebooks.R
 import com.flatcode.littlebooks.utils.DATA
-import com.flatcode.littlebooks.utils.bannerAd
+import com.flatcode.littlebooks.utils.loadBannerAd
 import com.flatcode.littlebooks.databinding.ActivityPageStaggeredSwitchBinding
 import com.flatcode.littlebooks.utils.Resource
 import com.flatcode.littlebooks.viewmodel.BookViewModel
@@ -58,7 +58,7 @@ class ProfileInfoActivity : AppCompatActivity() {
         binding!!.toolbar.nameSpace.setText(R.string.publishers_books)
         binding!!.toolbar.close.setOnClickListener { onBackPressed() }
         binding!!.toolbar.back.setOnClickListener { onBackPressed() }
-        binding!!.adView.bannerAd(context, DATA.BANNER_SMART_PUBLISHERS_BOOKS)
+        binding!!.adView.loadBannerAd(context, DATA.BANNER_SMART_PUBLISHERS_BOOKS)
 
         binding!!.toolbar.search.setOnClickListener {
             binding!!.toolbar.toolbar.visibility = View.GONE

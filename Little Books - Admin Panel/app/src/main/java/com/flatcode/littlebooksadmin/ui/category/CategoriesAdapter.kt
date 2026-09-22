@@ -14,8 +14,8 @@ import com.flatcode.littlebooksadmin.filter.CategoriesFilter
 import com.flatcode.littlebooksadmin.model.Book
 import com.flatcode.littlebooksadmin.model.Category
 import com.flatcode.littlebooksadmin.utils.DATA
-import com.flatcode.littlebooksadmin.utils.loadWithGlide
-import com.flatcode.littlebooksadmin.utils.moreCategories
+import com.flatcode.littlebooksadmin.utils.Dialogs
+import com.flatcode.littlebooksadmin.utils.loadImage
 import com.flatcode.littlebooksadmin.utils.openActivity
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -50,7 +50,7 @@ class CategoriesAdapter : ListAdapter<Category, CategoriesAdapter.ViewHolder>(Ca
         val name = item.category.orEmpty()
         val image = item.image.orEmpty()
 
-        holder.binding.image.loadWithGlide(false, image)
+        holder.binding.image.loadImage(isUser = false, url = image)
 
         holder.binding.name.visibility = if (item.category.isNullOrEmpty()) View.GONE else View.VISIBLE
         if (!item.category.isNullOrEmpty()) {
@@ -59,7 +59,7 @@ class CategoriesAdapter : ListAdapter<Category, CategoriesAdapter.ViewHolder>(Ca
 
         nrBooks(holder.binding.numberBooks, categoryId)
 
-        holder.binding.more.setOnClickListener { context.moreCategories(item) }
+        holder.binding.more.setOnClickListener { Dialogs.moreCategories(context, item) }
         holder.binding.item.setOnClickListener {
             context.openActivity<BooksCategoryActivity>(
                 extras = arrayOf(DATA.CATEGORY_ID to categoryId, DATA.CATEGORY_NAME to name)
@@ -97,3 +97,4 @@ class CategoryDiffCallback : DiffUtil.ItemCallback<Category>() {
         return oldItem == newItem
     }
 }
+

@@ -81,7 +81,7 @@ class ProfileActivity : AppCompatActivity() {
                             is Resource.Success -> {
                                 resource.data?.let { user ->
                                     binding.username.text = user.username
-                                    binding.profile.loadWithGlide(true, user.profileImage ?: DATA.BASIC)
+                                    binding.profile.loadImage(isUser = true, url = user.profileImage ?: DATA.BASIC)
                                 }
                             }
                             is Resource.Error -> {
@@ -123,5 +123,7 @@ class ProfileActivity : AppCompatActivity() {
         }
     }
 }
+
+
 
 
