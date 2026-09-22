@@ -180,7 +180,7 @@ class HomeFragment : Fragment() {
                 val data = resource.data ?: emptyList()
                 when (adapter) {
                     is CategoryAdapter -> adapter.submitList(data as List<Category>)
-                    is MainBookAdapter -> adapter.submitFullList(data as List<Book>)
+                    is MainBookAdapter -> adapter.submitList(data as List<Book>)
                 }
                 bar?.visibility = View.GONE
                 if (data.isNotEmpty()) {

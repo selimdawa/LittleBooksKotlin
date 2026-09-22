@@ -3,15 +3,12 @@ package com.flatcode.littlebooksadmin.utils
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.graphics.Bitmap
 import android.os.Bundle
 import android.os.Environment
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
-import androidx.core.graphics.createBitmap
-import androidx.core.graphics.scale
 import coil3.load
 import coil3.request.crossfade
 import coil3.request.placeholder
@@ -51,7 +48,7 @@ inline fun <reified T : Activity> Context.openActivity(
     startActivity(intent)
 }
 
-fun TextView.loadPdfInfo() {
+fun TextView.loadPdfInfo(pdfUrl: String?) {
     // Cloudinary metadata is not easily accessible from client without Admin API
     // Setting a placeholder or empty for now
     this.text = "N/A"
@@ -72,7 +69,8 @@ fun TextView.loadCategory(categoryId: String?) {
 fun Context.downloadBook(bookId: String, bookTitle: String, bookUrl: String?) {
     val nameWithExtension = "$bookTitle.pdf"
 
-    val progressDialog = Dialogs.createProgressDialog(this, getString(R.string.downloading_item, nameWithExtension))
+    val progressDialog =
+        Dialogs.createProgressDialog(this, getString(R.string.downloading_item, nameWithExtension))
     progressDialog.show()
 
     val executor = Executors.newSingleThreadExecutor()
@@ -106,9 +104,7 @@ fun Context.downloadBook(bookId: String, bookTitle: String, bookUrl: String?) {
             (this as Activity).runOnUiThread {
                 progressDialog.dismiss()
                 Toast.makeText(
-                    this,
-                    R.string.error_occurred,
-                    Toast.LENGTH_SHORT
+                    this, R.string.error_occurred, Toast.LENGTH_SHORT
                 ).show()
             }
         }
@@ -132,9 +128,7 @@ private fun Context.saveDownloadedBook(
         FirebaseUtils.incrementItemCount(DATA.BOOKS, bookId, DATA.DOWNLOADS_COUNT)
     } catch (_: Exception) {
         Toast.makeText(
-            this,
-            R.string.failed_saving_to_download_folder,
-            Toast.LENGTH_SHORT
+            this, R.string.failed_saving_to_download_folder, Toast.LENGTH_SHORT
         ).show()
         progressDialog.dismiss()
     }

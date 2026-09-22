@@ -3,12 +3,9 @@ package com.flatcode.littlebooks.ui.book
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Filter
-import android.widget.Filterable
 import androidx.recyclerview.widget.DiffUtil
 import com.flatcode.littlebooks.base.BaseListAdapter
 import com.flatcode.littlebooks.databinding.ItemBookLinearBinding
-import com.flatcode.littlebooks.filter.MoreBooksFilter
 import com.flatcode.littlebooks.model.Book
 import com.flatcode.littlebooks.utils.DATA
 import com.flatcode.littlebooks.utils.checkFavorite
@@ -21,10 +18,7 @@ import com.flatcode.littlebooks.utils.moreOptionDialog
 class LinearBookAdapter(
     private val isUser: Boolean,
     private val onItemClick: (Book) -> Unit
-) : BaseListAdapter<Book, ItemBookLinearBinding>(DiffCallback), Filterable {
-
-    var originalList: List<Book> = emptyList()
-    private var filter: MoreBooksFilter? = null
+) : BaseListAdapter<Book, ItemBookLinearBinding>(DiffCallback) {
 
     override fun inflateBinding(inflater: LayoutInflater, parent: ViewGroup): ItemBookLinearBinding {
         return ItemBookLinearBinding.inflate(inflater, parent, false)
@@ -54,22 +48,6 @@ class LinearBookAdapter(
         binding.loves.setOnClickListener { binding.loves.checkLove(bookId) }
         binding.more.setOnClickListener { context.moreOptionDialog(item) }
         binding.root.setOnClickListener { onItemClick(item) }
-    }
-
-    override fun getFilter(): Filter {
-        if (filter == null) {
-            filter = MoreBooksFilter(ArrayList(originalList), this)
-        }
-        return filter!!
-    }
-
-    fun submitFullList(list: List<Book>?) {
-        originalList = list ?: emptyList()
-        submitList(originalList)
-    }
-
-    fun setFilteredList(list: List<Book?>?) {
-        submitList(list?.filterNotNull() ?: emptyList())
     }
 
     companion object {

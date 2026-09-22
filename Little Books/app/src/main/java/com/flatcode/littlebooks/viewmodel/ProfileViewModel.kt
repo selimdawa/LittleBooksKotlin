@@ -10,7 +10,10 @@ import com.flatcode.littlebooks.repository.UserRepository
 import com.flatcode.littlebooks.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -19,6 +22,9 @@ class ProfileViewModel @Inject constructor(
     private val userRepository: UserRepository,
     private val bookRepository: BookRepository
 ) : ViewModel() {
+
+    private val _searchQuery = MutableStateFlow("")
+    val searchQuery: StateFlow<String> = _searchQuery
 
     private val _user = MutableStateFlow<Resource<User>>(Resource.Loading())
     val user: StateFlow<Resource<User>> = _user
@@ -46,6 +52,21 @@ class ProfileViewModel @Inject constructor(
 
     private val _uploadStatus = MutableStateFlow<Resource<String>?>(null)
     val uploadStatus: StateFlow<Resource<String>?> = _uploadStatus
+
+    val filteredExplorePublishers: StateFlow<Resource<List<User>>> = combine(_explorePublishers, _searchQuery) { resource, query ->
+        if (resource is Resource.Success && query.isNotEmpty()) {
+            val filtered = resource.data?.filter {
+                it.username?.contains(query, ignoreCase = true) == true
+            }
+            Resource.Success(filtered ?: emptyList())
+        } else {
+            resource
+        }
+    }.stateIn(viewModelScope, SharingStarted.Lazily, Resource.Loading())
+
+    fun setSearchQuery(query: String) {
+        _searchQuery.value = query
+    }
 
     fun loadProfileData(profileId: String, currentUserId: String, followTypeFollowers: String, followTypeFollowing: String) {
         viewModelScope.launch {

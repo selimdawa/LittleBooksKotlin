@@ -12,7 +12,6 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.flatcode.littlebooksadmin.R
 import com.flatcode.littlebooksadmin.databinding.ItemPublisherBinding
-import com.flatcode.littlebooksadmin.filter.PublisherFilter
 import com.flatcode.littlebooksadmin.model.User
 import com.flatcode.littlebooksadmin.ui.profile.ProfileActivity
 import com.flatcode.littlebooksadmin.utils.*
@@ -24,7 +23,7 @@ import com.google.firebase.database.ValueEventListener
 class PublisherAdapter : ListAdapter<User, PublisherAdapter.ViewHolder>(UserDiffCallback()), Filterable {
 
     var unfilteredList: List<User> = emptyList()
-    private var filter: PublisherFilter? = null
+    private var filter: Filter? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val binding = ItemPublisherBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -75,7 +74,31 @@ class PublisherAdapter : ListAdapter<User, PublisherAdapter.ViewHolder>(UserDiff
     }
 
     override fun getFilter(): Filter {
-        return filter ?: PublisherFilter(this).also { filter = it }
+        return filter ?: object : Filter() {
+            override fun performFiltering(constraint: CharSequence?): FilterResults {
+                var charSequence = constraint
+                val results = FilterResults()
+                if (charSequence != null && charSequence.isNotEmpty()) {
+                    charSequence = charSequence.toString().uppercase()
+                    val filteredModels = ArrayList<User>()
+                    for (item in unfilteredList) {
+                        if (item.username?.uppercase()?.contains(charSequence) == true) {
+                            filteredModels.add(item)
+                        }
+                    }
+                    results.count = filteredModels.size
+                    results.values = filteredModels
+                } else {
+                    results.count = unfilteredList.size
+                    results.values = unfilteredList
+                }
+                return results
+            }
+
+            override fun publishResults(constraint: CharSequence?, results: FilterResults) {
+                submitFilteredList(results.values as? List<User>)
+            }
+        }.also { filter = it }
     }
 
     inner class ViewHolder(val binding: ItemPublisherBinding) : RecyclerView.ViewHolder(binding.root)

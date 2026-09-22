@@ -11,7 +11,10 @@ import com.flatcode.littlebooks.repository.BookRepository
 import com.flatcode.littlebooks.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -19,6 +22,9 @@ import javax.inject.Inject
 class BookViewModel @Inject constructor(
     private val repository: BookRepository
 ) : ViewModel() {
+
+    private val _searchQuery = MutableStateFlow("")
+    val searchQuery: StateFlow<String> = _searchQuery
 
     private val _bookDetails = MutableStateFlow<Resource<Book>>(Resource.Loading())
     val bookDetails: StateFlow<Resource<Book>> = _bookDetails
@@ -55,6 +61,37 @@ class BookViewModel @Inject constructor(
 
     private val _deleteStatus = MutableStateFlow<Resource<Unit>?>(null)
     val deleteStatus: StateFlow<Resource<Unit>?> = _deleteStatus
+
+    val filteredAllBooks: StateFlow<Resource<List<Book>>> = combine(_allBooks, _searchQuery) { resource, query ->
+        filterBooks(resource, query)
+    }.stateIn(viewModelScope, SharingStarted.Lazily, Resource.Loading())
+
+    val filteredBooksByCategory: StateFlow<Resource<List<Book>>> = combine(_booksByCategory, _searchQuery) { resource, query ->
+        filterBooks(resource, query)
+    }.stateIn(viewModelScope, SharingStarted.Lazily, Resource.Loading())
+
+    val filteredBooksByPublisher: StateFlow<Resource<List<Book>>> = combine(_booksByPublisher, _searchQuery) { resource, query ->
+        filterBooks(resource, query)
+    }.stateIn(viewModelScope, SharingStarted.Lazily, Resource.Loading())
+
+    val filteredFavorites: StateFlow<Resource<List<Book>>> = combine(_favorites, _searchQuery) { resource, query ->
+        filterBooks(resource, query)
+    }.stateIn(viewModelScope, SharingStarted.Lazily, Resource.Loading())
+
+    private fun filterBooks(resource: Resource<List<Book>>, query: String): Resource<List<Book>> {
+        return if (resource is Resource.Success && query.isNotEmpty()) {
+            val filtered = resource.data?.filter {
+                it.title?.contains(query, ignoreCase = true) == true
+            }
+            Resource.Success(filtered ?: emptyList())
+        } else {
+            resource
+        }
+    }
+
+    fun setSearchQuery(query: String) {
+        _searchQuery.value = query
+    }
 
     fun loadBookDetails(bookId: String, userId: String) {
         viewModelScope.launch {

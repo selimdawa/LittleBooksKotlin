@@ -71,7 +71,7 @@ class FollowersFragment : Fragment() {
                         is Resource.Success -> {
                             binding!!.progress.visibility = View.GONE
                             val data = resource.data ?: emptyList()
-                            adapter?.submitFullList(data as List<Book>)
+                            adapter?.submitList(data)
                             if (data.isNotEmpty()) {
                                 binding!!.recyclerView.visibility = View.VISIBLE
                                 binding!!.emptyText.visibility = View.GONE

@@ -3,13 +3,10 @@ package com.flatcode.littlebooks.ui.main
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Filter
-import android.widget.Filterable
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.flatcode.littlebooks.databinding.ItemBookMainBinding
-import com.flatcode.littlebooks.filter.PDFMainFilter
 import com.flatcode.littlebooks.model.Book
 import com.flatcode.littlebooks.ui.book.BookDetailsActivity
 import com.flatcode.littlebooks.utils.DATA
@@ -22,10 +19,7 @@ class MainBookAdapter(
     private val isDownloads: Boolean,
     private val isViews: Boolean,
     private val isLoves: Boolean
-) : ListAdapter<Book, MainBookAdapter.ViewHolder>(DiffCallback), Filterable {
-
-    var originalList: List<Book> = emptyList()
-    private var filter: PDFMainFilter? = null
+) : ListAdapter<Book, MainBookAdapter.ViewHolder>(DiffCallback) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val binding = ItemBookMainBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -37,22 +31,6 @@ class MainBookAdapter(
         if (item != null) {
             holder.bind(item)
         }
-    }
-
-    override fun getFilter(): Filter {
-        if (filter == null) {
-            filter = PDFMainFilter(ArrayList(originalList), this)
-        }
-        return filter!!
-    }
-
-    fun submitFullList(list: List<Book>?) {
-        originalList = list ?: emptyList()
-        submitList(originalList)
-    }
-
-    fun setFilteredList(list: List<Book?>?) {
-        submitList(list?.filterNotNull() ?: emptyList())
     }
 
     inner class ViewHolder(private val binding: ItemBookMainBinding) :

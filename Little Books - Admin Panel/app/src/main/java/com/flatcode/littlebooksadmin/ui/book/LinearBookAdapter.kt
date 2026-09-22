@@ -7,7 +7,6 @@ import android.widget.Filter
 import android.widget.Filterable
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.flatcode.littlebooksadmin.filter.MoreBooksFilter
 import com.flatcode.littlebooksadmin.model.Book
 import com.flatcode.littlebooksadmin.utils.DATA
 import com.flatcode.littlebooksadmin.utils.*
@@ -19,7 +18,7 @@ class LinearBookAdapter(private val isUser: Boolean) :
     var unfilteredList: List<Book> = emptyList()
         private set
 
-    private var filter: MoreBooksFilter? = null
+    private var filter: Filter? = null
 
     fun submitUnfilteredList(list: List<Book>?) {
         unfilteredList = list ?: emptyList()
@@ -79,7 +78,33 @@ class LinearBookAdapter(private val isUser: Boolean) :
     }
 
     override fun getFilter(): Filter {
-        return filter ?: MoreBooksFilter(this).also { filter = it }
+        return filter ?: object : Filter() {
+            override fun performFiltering(constraint: CharSequence?): FilterResults {
+                var query = constraint
+                val results = FilterResults()
+                val filterList = unfilteredList
+                if (query != null && query.isNotEmpty()) {
+                    query = query.toString().uppercase()
+                    val filteredModels = ArrayList<Book>()
+                    for (item in filterList) {
+                        if (item.title?.uppercase()?.contains(query) == true) {
+                            filteredModels.add(item)
+                        }
+                    }
+                    results.count = filteredModels.size
+                    results.values = filteredModels
+                } else {
+                    results.count = filterList.size
+                    results.values = filterList
+                }
+                return results
+            }
+
+            @Suppress("UNCHECKED_CAST")
+            override fun publishResults(constraint: CharSequence?, results: FilterResults) {
+                submitFilteredList(results.values as? List<Book>)
+            }
+        }.also { filter = it }
     }
 
     inner class ViewHolder(val binding: ItemBookLinearBinding) : RecyclerView.ViewHolder(binding.root)

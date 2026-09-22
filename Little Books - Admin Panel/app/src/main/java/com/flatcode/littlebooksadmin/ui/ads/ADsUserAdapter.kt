@@ -10,7 +10,6 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.flatcode.littlebooksadmin.Application
 import com.flatcode.littlebooksadmin.databinding.ItemAdsUserBinding
-import com.flatcode.littlebooksadmin.filter.ADsUserFilter
 import com.flatcode.littlebooksadmin.model.User
 import com.flatcode.littlebooksadmin.utils.DATA
 import com.flatcode.littlebooksadmin.utils.loadImage
@@ -23,7 +22,7 @@ class ADsUserAdapter(val isUser: Boolean) :
     var unfilteredList: List<User?> = emptyList()
         private set
 
-    private var filter: ADsUserFilter? = null
+    private var filter: Filter? = null
 
     fun submitUnfilteredList(list: List<User?>?) {
         unfilteredList = list ?: emptyList()
@@ -73,7 +72,33 @@ class ADsUserAdapter(val isUser: Boolean) :
 
     override fun getFilter(): Filter {
         if (filter == null) {
-            filter = ADsUserFilter(this)
+            filter = object : Filter() {
+                override fun performFiltering(constraint: CharSequence?): FilterResults {
+                    var query = constraint
+                    val results = FilterResults()
+                    val filterList = unfilteredList
+                    if (query != null && query.isNotEmpty()) {
+                        query = query.toString().uppercase()
+                        val filteredModels = ArrayList<User?>()
+                        for (item in filterList) {
+                            if (item?.username?.uppercase()?.contains(query) == true) {
+                                filteredModels.add(item)
+                            }
+                        }
+                        results.count = filteredModels.size
+                        results.values = filteredModels
+                    } else {
+                        results.count = filterList.size
+                        results.values = filterList
+                    }
+                    return results
+                }
+
+                @Suppress("UNCHECKED_CAST")
+                override fun publishResults(constraint: CharSequence?, results: FilterResults) {
+                    submitFilteredList(results.values as? List<User?>)
+                }
+            }
         }
         return filter!!
     }

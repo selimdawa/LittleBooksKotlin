@@ -13,7 +13,6 @@ import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.flatcode.littlebooksadmin.filter.EditorsChoiceBookFilter
 import com.flatcode.littlebooksadmin.model.Book
 import com.flatcode.littlebooksadmin.utils.DATA
 import com.flatcode.littlebooksadmin.utils.*
@@ -26,7 +25,7 @@ class EditorsChoiceBookAdapter(
     var unfilteredList: List<Book> = emptyList()
         private set
 
-    private var filter: EditorsChoiceBookFilter? = null
+    private var filter: Filter? = null
 
     fun submitUnfilteredList(list: List<Book>?) {
         unfilteredList = list ?: emptyList()
@@ -89,7 +88,33 @@ class EditorsChoiceBookAdapter(
 
     override fun getFilter(): Filter {
         if (filter == null) {
-            filter = EditorsChoiceBookFilter(this)
+            filter = object : Filter() {
+                override fun performFiltering(constraint: CharSequence?): FilterResults {
+                    var query = constraint
+                    val results = FilterResults()
+                    val filterList = unfilteredList
+                    if (query != null && query.isNotEmpty()) {
+                        query = query.toString().uppercase()
+                        val filteredModels = ArrayList<Book>()
+                        for (item in filterList) {
+                            if (item.title?.uppercase()?.contains(query) == true) {
+                                filteredModels.add(item)
+                            }
+                        }
+                        results.count = filteredModels.size
+                        results.values = filteredModels
+                    } else {
+                        results.count = filterList.size
+                        results.values = filterList
+                    }
+                    return results
+                }
+
+                @Suppress("UNCHECKED_CAST")
+                override fun publishResults(constraint: CharSequence?, results: FilterResults) {
+                    submitFilteredList(results.values as? List<Book>)
+                }
+            }
         }
         return filter!!
     }

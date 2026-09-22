@@ -65,11 +65,7 @@ class FollowingActivity : AppCompatActivity() {
         binding!!.toolbar.textSearch.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-                try {
-                    adapter!!.filter.filter(s)
-                } catch (e: Exception) {
-                    //None
-                }
+                viewModel.setSearchQuery(s.toString())
             }
 
             override fun afterTextChanged(s: Editable) {}
@@ -80,7 +76,7 @@ class FollowingActivity : AppCompatActivity() {
                 context.openActivity<ProfileActivity>(false, DATA.PROFILE_ID to user.id)
             },
             onFollowClick = { user, isFollowing ->
-                // ViewModel logic for follow/unfollow
+                viewModel.followUser(DATA.FirebaseUserUid, user.id, !isFollowing)
             }
         )
         binding!!.recyclerView.adapter = adapter
@@ -91,13 +87,13 @@ class FollowingActivity : AppCompatActivity() {
     private fun observeViewModel() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.usersList.collect { resource ->
+                viewModel.filteredUsersList.collect { resource ->
                     when (resource) {
                         is Resource.Success -> {
                             binding!!.progress.visibility = View.GONE
                             val data = resource.data ?: emptyList()
                             binding!!.toolbar.number.text = MessageFormat.format("( {0} )", data.size)
-                            adapter!!.submitFullList(data as List<User>)
+                            adapter!!.submitList(data)
                             if (data.isNotEmpty()) {
                                 binding!!.recyclerView.visibility = View.VISIBLE
                                 binding!!.emptyText.visibility = View.GONE

@@ -65,7 +65,7 @@ class FavoritesActivity : AppCompatActivity() {
                         is Resource.Success -> {
                             binding.bar.visibility = View.GONE
                             val data = resource.data ?: emptyList()
-                            adapter?.submitFullList(data as List<Book>)
+                            adapter?.submitList(data)
                             if (data.isEmpty()) {
                                 binding.empty.visibility = View.VISIBLE
                                 binding.recyclerView.visibility = View.GONE

@@ -70,11 +70,7 @@ class BooksCategoryActivity : AppCompatActivity() {
         binding!!.toolbar.textSearch.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-                try {
-                    adapter!!.filter.filter(s)
-                } catch (e: Exception) {
-                    //None
-                }
+                viewModel.setSearchQuery(s.toString())
             }
 
             override fun afterTextChanged(s: Editable) {}
@@ -114,7 +110,7 @@ class BooksCategoryActivity : AppCompatActivity() {
     private fun observeViewModel() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.booksByCategory.collect { resource ->
+                viewModel.filteredBooksByCategory.collect { resource ->
                     when (resource) {
                         is Resource.Success -> {
                             binding!!.progress.visibility = View.GONE
@@ -123,11 +119,11 @@ class BooksCategoryActivity : AppCompatActivity() {
                             if (data.isNotEmpty()) {
                                 binding!!.recyclerView.visibility = View.VISIBLE
                                 binding!!.emptyText.visibility = View.GONE
-                                adapter!!.submitFullList(data.reversed() as List<Book>)
+                                adapter!!.submitList(data.reversed())
                             } else {
                                 binding!!.recyclerView.visibility = View.GONE
                                 binding!!.emptyText.visibility = View.VISIBLE
-                                adapter!!.submitFullList(emptyList())
+                                adapter!!.submitList(emptyList())
                             }
                         }
                         is Resource.Error -> {

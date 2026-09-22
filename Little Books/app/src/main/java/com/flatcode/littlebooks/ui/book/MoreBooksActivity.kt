@@ -79,11 +79,7 @@ class MoreBooksActivity : AppCompatActivity() {
         binding!!.toolbar.textSearch.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-                try {
-                    adapter!!.filter.filter(s)
-                } catch (e: Exception) {
-                    //None
-                }
+                viewModel.setSearchQuery(s.toString())
             }
 
             override fun afterTextChanged(s: Editable) {}
@@ -100,13 +96,13 @@ class MoreBooksActivity : AppCompatActivity() {
     private fun observeViewModel() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.allBooks.collect { resource ->
+                viewModel.filteredAllBooks.collect { resource ->
                     when (resource) {
                         is Resource.Success -> {
                             binding!!.progress.visibility = View.GONE
                             val data = resource.data ?: emptyList()
                             binding!!.toolbar.number.text = MessageFormat.format("( {0} )", data.size)
-                            adapter!!.submitFullList(data as List<Book>)
+                            adapter!!.submitList(data)
                             if (data.isNotEmpty()) {
                                 recyclerView!!.visibility = View.VISIBLE
                                 binding!!.emptyText.visibility = View.GONE

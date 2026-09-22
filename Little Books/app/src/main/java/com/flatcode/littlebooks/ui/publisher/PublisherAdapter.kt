@@ -3,15 +3,12 @@ package com.flatcode.littlebooks.ui.publisher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Filter
-import android.widget.Filterable
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import com.flatcode.littlebooks.R
 import com.flatcode.littlebooks.base.BaseListAdapter
 import com.flatcode.littlebooks.databinding.ItemPublisherBinding
-import com.flatcode.littlebooks.filter.PublisherFilter
 import com.flatcode.littlebooks.model.User
 import com.flatcode.littlebooks.utils.DATA
 import com.flatcode.littlebooks.utils.loadImage
@@ -24,10 +21,7 @@ import java.text.MessageFormat
 class PublisherAdapter(
     private val onItemClick: (User) -> Unit,
     private val onFollowClick: (User, Boolean) -> Unit
-) : BaseListAdapter<User, ItemPublisherBinding>(DiffCallback), Filterable {
-
-    var originalList: List<User> = emptyList()
-    private var filter: PublisherFilter? = null
+) : BaseListAdapter<User, ItemPublisherBinding>(DiffCallback) {
 
     override fun inflateBinding(inflater: LayoutInflater, parent: ViewGroup): ItemPublisherBinding {
         return ItemPublisherBinding.inflate(inflater, parent, false)
@@ -94,22 +88,6 @@ class PublisherAdapter(
             }
             override fun onCancelled(databaseError: DatabaseError) {}
         })
-    }
-
-    override fun getFilter(): Filter {
-        if (filter == null) {
-            filter = PublisherFilter(ArrayList(originalList), this)
-        }
-        return filter!!
-    }
-
-    fun submitFullList(list: List<User>?) {
-        originalList = list ?: emptyList()
-        submitList(originalList)
-    }
-
-    fun setFilteredList(list: List<User?>?) {
-        submitList(list?.filterNotNull() ?: emptyList())
     }
 
     companion object {

@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
 import com.flatcode.littlebooks.utils.PermissionUtils
 import androidx.activity.viewModels
@@ -193,7 +194,7 @@ class BookEditActivity : AppCompatActivity() {
     }
 
     private val galleryActivityResultLauncher =
-        registerForActivityResult(StartActivityForResult()) { result: ActivityResult ->
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
             if (result.resultCode == RESULT_OK) {
                 imageUri = result.data?.data
                 binding!!.image.setImageURI(imageUri)

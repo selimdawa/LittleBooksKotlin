@@ -10,7 +10,6 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.flatcode.littlebooksadmin.R
 import com.flatcode.littlebooksadmin.databinding.ItemTopPublisherBinding
-import com.flatcode.littlebooksadmin.filter.TopPublisherFilter
 import com.flatcode.littlebooksadmin.model.User
 import com.flatcode.littlebooksadmin.ui.profile.ProfileActivity
 import com.flatcode.littlebooksadmin.utils.DATA
@@ -23,7 +22,7 @@ class TopPublisherAdapter(val isUser: Boolean) :
     var unfilteredList: List<User?> = emptyList()
         private set
 
-    private var filter: TopPublisherFilter? = null
+    private var filter: Filter? = null
 
     fun submitUnfilteredList(list: List<User?>?) {
         unfilteredList = list ?: emptyList()
@@ -66,7 +65,33 @@ class TopPublisherAdapter(val isUser: Boolean) :
     }
 
     override fun getFilter(): Filter {
-        return filter ?: TopPublisherFilter(this).also { filter = it }
+        return filter ?: object : Filter() {
+            override fun performFiltering(constraint: CharSequence?): FilterResults {
+                var query = constraint
+                val results = FilterResults()
+                val filterList = unfilteredList
+                if (query != null && query.isNotEmpty()) {
+                    query = query.toString().uppercase()
+                    val filteredModels = ArrayList<User?>()
+                    for (item in filterList) {
+                        if (item?.username?.uppercase()?.contains(query) == true) {
+                            filteredModels.add(item)
+                        }
+                    }
+                    results.count = filteredModels.size
+                    results.values = filteredModels
+                } else {
+                    results.count = filterList.size
+                    results.values = filterList
+                }
+                return results
+            }
+
+            @Suppress("UNCHECKED_CAST")
+            override fun publishResults(constraint: CharSequence?, results: FilterResults) {
+                submitFilteredList(results.values as? List<User?>)
+            }
+        }.also { filter = it }
     }
 
     class ViewHolder(val binding: ItemTopPublisherBinding) : RecyclerView.ViewHolder(binding.root)

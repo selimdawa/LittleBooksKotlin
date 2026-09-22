@@ -3,13 +3,10 @@ package com.flatcode.littlebooks.ui.book
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Filter
-import android.widget.Filterable
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.flatcode.littlebooks.databinding.ItemBookStaggeredBinding
-import com.flatcode.littlebooks.filter.StaggerdFilter
 import com.flatcode.littlebooks.model.Book
 import com.flatcode.littlebooks.utils.DATA
 import com.flatcode.littlebooks.utils.checkFavorite
@@ -19,11 +16,7 @@ import com.flatcode.littlebooks.utils.isFavorite
 import com.flatcode.littlebooks.utils.isLoves
 import com.flatcode.littlebooks.utils.openActivity
 
-class StaggeredBookAdapter : ListAdapter<Book, StaggeredBookAdapter.ViewHolder>(DiffCallback),
-    Filterable {
-
-    var originalList: List<Book> = emptyList()
-    private var filter: StaggerdFilter? = null
+class StaggeredBookAdapter : ListAdapter<Book, StaggeredBookAdapter.ViewHolder>(DiffCallback) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val binding = ItemBookStaggeredBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -35,22 +28,6 @@ class StaggeredBookAdapter : ListAdapter<Book, StaggeredBookAdapter.ViewHolder>(
         if (item != null) {
             holder.bind(item)
         }
-    }
-
-    override fun getFilter(): Filter {
-        if (filter == null) {
-            filter = StaggerdFilter(ArrayList(originalList), this)
-        }
-        return filter!!
-    }
-
-    fun submitFullList(list: List<Book>?) {
-        originalList = list ?: emptyList()
-        submitList(originalList)
-    }
-
-    fun setFilteredList(list: List<Book?>?) {
-        submitList(list?.filterNotNull() ?: emptyList())
     }
 
     inner class ViewHolder(private val binding: ItemBookStaggeredBinding) :

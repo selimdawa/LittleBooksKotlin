@@ -8,7 +8,6 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.flatcode.littlebooksadmin.databinding.ItemInfoAdsBinding
-import com.flatcode.littlebooksadmin.filter.ADsInfoFilter
 import com.flatcode.littlebooksadmin.model.ADs
 
 class ADsInfoAdapter(private val isUser: Boolean) :
@@ -17,7 +16,7 @@ class ADsInfoAdapter(private val isUser: Boolean) :
     var unfilteredList: List<ADs> = emptyList()
         private set
 
-    private var filter: ADsInfoFilter? = null
+    private var filter: Filter? = null
 
     fun submitUnfilteredList(list: List<ADs>?) {
         unfilteredList = list ?: emptyList()
@@ -48,7 +47,32 @@ class ADsInfoAdapter(private val isUser: Boolean) :
     }
 
     override fun getFilter(): Filter {
-        return filter ?: ADsInfoFilter(this).also { filter = it }
+        return filter ?: object : Filter() {
+            override fun performFiltering(constraint: CharSequence?): FilterResults {
+                var query = constraint
+                val results = FilterResults()
+                val filterList = unfilteredList
+                if (query != null && query.isNotEmpty()) {
+                    query = query.toString().uppercase()
+                    val filteredModels = ArrayList<ADs>()
+                    for (i in filterList.indices) {
+                        if (filterList[i].name?.uppercase()?.contains(query) == true) {
+                            filteredModels.add(filterList[i])
+                        }
+                    }
+                    results.count = filteredModels.size
+                    results.values = filteredModels
+                } else {
+                    results.count = filterList.size
+                    results.values = filterList
+                }
+                return results
+            }
+
+            override fun publishResults(constraint: CharSequence?, results: FilterResults) {
+                submitFilteredList(results.values as? List<ADs>)
+            }
+        }.also { filter = it }
     }
 
     class ViewHolder(val binding: ItemInfoAdsBinding) : RecyclerView.ViewHolder(binding.root)
