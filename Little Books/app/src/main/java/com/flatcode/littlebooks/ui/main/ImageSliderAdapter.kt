@@ -2,7 +2,7 @@ package com.flatcode.littlebooks.ui.main
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import coil.load
+import coil3.load
 import com.flatcode.littlebooks.databinding.ItemSliderBinding
 import io.selimdawa.autoimageslider.adapter.SliderViewAdapter
 

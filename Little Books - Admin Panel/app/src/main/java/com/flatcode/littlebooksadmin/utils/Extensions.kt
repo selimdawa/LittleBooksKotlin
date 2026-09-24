@@ -68,9 +68,9 @@ fun TextView.loadCategory(categoryId: String?) {
 fun Context.downloadBook(bookId: String, bookTitle: String, bookUrl: String?) {
     val nameWithExtension = "$bookTitle.pdf"
 
-    val progressDialog =
-        createProgressDialog(getString(R.string.downloading_item, nameWithExtension))
-    progressDialog.show()
+    val progressDialog = AlertDialog.Builder(this).apply {
+        setMessage(getString(R.string.downloading_item, nameWithExtension))
+    }.show()
 
     val executor = Executors.newSingleThreadExecutor()
     executor.execute {

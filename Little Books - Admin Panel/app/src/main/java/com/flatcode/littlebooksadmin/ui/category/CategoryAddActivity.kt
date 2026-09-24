@@ -23,7 +23,6 @@ import com.flatcode.littlebooksadmin.R
 import com.flatcode.littlebooksadmin.databinding.ActivityCategoryAddBinding
 import com.flatcode.littlebooksadmin.utils.DATA
 import com.flatcode.littlebooksadmin.utils.Resource
-import com.flatcode.littlebooksadmin.utils.createProgressDialog
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -85,8 +84,6 @@ class CategoryAddActivity : AppCompatActivity() {
     }
 
     private fun initUI() {
-        dialog = createProgressDialog(getString(R.string.please_wait))
-
         binding.toolbar.nameSpace.setText(R.string.add_new_category)
         binding.toolbar.back.setOnClickListener { onBackPressedDispatcher.onBackPressed() }
 
@@ -100,14 +97,13 @@ class CategoryAddActivity : AppCompatActivity() {
                 viewModel.addState.collect { resource ->
                     when (resource) {
                         is Resource.Loading -> {
-                            dialog = createProgressDialog(
-                                getString(R.string.uploading_category)
-                            )
-                            dialog!!.show()
+                            dialog = AlertDialog.Builder(context).apply {
+                                setMessage(getString(R.string.uploading_category))
+                            }.show()
                         }
 
                         is Resource.Success -> {
-                            dialog!!.dismiss()
+                            dialog?.dismiss()
                             Toast.makeText(
                                 context, R.string.successfully_uploaded, Toast.LENGTH_SHORT
                             ).show()
@@ -115,7 +111,7 @@ class CategoryAddActivity : AppCompatActivity() {
                         }
 
                         is Resource.Error -> {
-                            dialog!!.dismiss()
+                            dialog?.dismiss()
                             Toast.makeText(context, resource.message, Toast.LENGTH_SHORT).show()
                         }
 

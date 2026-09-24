@@ -37,7 +37,6 @@ android {
         targetCompatibility = JavaVersion.VERSION_21
     }
     buildFeatures {
-        dataBinding = true
         viewBinding = true
         buildConfig = true
     }
@@ -53,6 +52,7 @@ dependencies {
     implementation(libs.multicolors)
     //Image
     implementation(libs.coil)                           //Coil Image
+    implementation(libs.coil.network.okhttp)
     api(libs.android.image.cropper)                     //Image Crop
     implementation(libs.autoimageslider)                //Slider Show
     //Firebase

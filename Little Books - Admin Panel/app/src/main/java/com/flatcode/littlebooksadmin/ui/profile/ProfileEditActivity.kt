@@ -22,7 +22,6 @@ import com.canhub.cropper.CropImageView
 import com.flatcode.littlebooksadmin.R
 import com.flatcode.littlebooksadmin.databinding.ActivityProfileEditBinding
 import com.flatcode.littlebooksadmin.utils.DATA
-import com.flatcode.littlebooksadmin.utils.Dialogs
 import com.flatcode.littlebooksadmin.utils.Resource
 import com.flatcode.littlebooksadmin.utils.loadImage
 import dagger.hilt.android.AndroidEntryPoint
@@ -88,8 +87,6 @@ class ProfileEditActivity : AppCompatActivity() {
     }
 
     private fun initUI() {
-        dialog = Dialogs.createProgressDialog(context, getString(R.string.please_wait))
-
         binding.toolbar.nameSpace.setText(R.string.edit_profile)
         binding.toolbar.back.setOnClickListener { onBackPressedDispatcher.onBackPressed() }
 
@@ -123,14 +120,13 @@ class ProfileEditActivity : AppCompatActivity() {
                     viewModel.updateState.collect { resource ->
                         when (resource) {
                             is Resource.Loading -> {
-                                dialog = Dialogs.createProgressDialog(
-                                    context, getString(R.string.updating_user_profile)
-                                )
-                                dialog!!.show()
+                                dialog = AlertDialog.Builder(context).apply {
+                                    setMessage(getString(R.string.updating_user_profile))
+                                }.show()
                             }
 
                             is Resource.Success -> {
-                                dialog!!.dismiss()
+                                dialog?.dismiss()
                                 Toast.makeText(
                                     context, R.string.profile_updated, Toast.LENGTH_SHORT
                                 ).show()
@@ -138,7 +134,7 @@ class ProfileEditActivity : AppCompatActivity() {
                             }
 
                             is Resource.Error -> {
-                                dialog!!.dismiss()
+                                dialog?.dismiss()
                                 Toast.makeText(context, resource.message, Toast.LENGTH_SHORT).show()
                             }
 
@@ -161,7 +157,3 @@ class ProfileEditActivity : AppCompatActivity() {
         }
     }
 }
-
-
-
-

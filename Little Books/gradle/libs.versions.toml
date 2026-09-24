@@ -3,7 +3,7 @@ agp = "9.4.1"
 androidImageCropper = "4.5.0"
 androidPdfViewer = "3.2.0-beta06"
 autoImageSlider = "1.0.1"
-coil = "2.7.0"
+coil = "3.6.3"
 firebaseBom = "34.19.0"
 coreKtx = "1.19.0"
 appcompat = "1.8.0"
@@ -34,7 +34,8 @@ firebase-auth = { module = "com.google.firebase:firebase-auth" }
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
 firebase-database = { module = "com.google.firebase:firebase-database" }
 cloudinary-android = { module = "com.cloudinary:cloudinary-android", version.ref = "cloudinary" }
-coil = { module = "io.coil-kt:coil", version.ref = "coil" }
+coil = { module = "io.coil-kt.coil3:coil-android", version.ref = "coil" }
+coil-network-okhttp = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coil" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 androidx-activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }

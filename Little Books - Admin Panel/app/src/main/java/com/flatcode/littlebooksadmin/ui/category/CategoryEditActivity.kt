@@ -22,7 +22,6 @@ import com.flatcode.littlebooksadmin.R
 import com.flatcode.littlebooksadmin.databinding.ActivityCategoryAddBinding
 import com.flatcode.littlebooksadmin.model.Category
 import com.flatcode.littlebooksadmin.utils.DATA
-import com.flatcode.littlebooksadmin.utils.Dialogs
 import com.flatcode.littlebooksadmin.utils.loadImage
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -82,7 +81,6 @@ class CategoryEditActivity : AppCompatActivity() {
 
         categoryId = intent.getStringExtra(DATA.CATEGORY_ID)
 
-        dialog = Dialogs.createProgressDialog(context, getString(R.string.please_wait))
         loadCategoryInfo()
 
         binding.toolbar.nameSpace.setText(R.string.edit_category)
@@ -107,8 +105,9 @@ class CategoryEditActivity : AppCompatActivity() {
     }
 
     private fun uploadImage() {
-        dialog = Dialogs.createProgressDialog(context, getString(R.string.updating_category))
-        dialog!!.show()
+        dialog = AlertDialog.Builder(context).apply {
+            setMessage(getString(R.string.updating_category))
+        }.show()
         MediaManager.get().upload(imageUri).option("folder", "Images/Category/")
             .option("public_id", categoryId).callback(object : UploadCallback {
                 override fun onStart(requestId: String?) {}
@@ -119,7 +118,7 @@ class CategoryEditActivity : AppCompatActivity() {
                 }
 
                 override fun onError(requestId: String?, error: ErrorInfo?) {
-                    dialog!!.dismiss()
+                    dialog?.dismiss()
                     Toast.makeText(
                         context,
                         "Failed to upload image due to " + error?.description,
@@ -132,8 +131,9 @@ class CategoryEditActivity : AppCompatActivity() {
     }
 
     private fun updateCategory(imageUrl: String?) {
-        dialog = Dialogs.createProgressDialog(context, getString(R.string.updating_category_image))
-        dialog!!.show()
+        dialog = AlertDialog.Builder(context).apply {
+            setMessage(getString(R.string.updating_category_image))
+        }.show()
         val hashMap = HashMap<String?, Any>()
         hashMap[DATA.CATEGORY] = DATA.EMPTY + name
         if (imageUri != null) {
@@ -141,10 +141,10 @@ class CategoryEditActivity : AppCompatActivity() {
         }
         val reference = FirebaseDatabase.getInstance().getReference(DATA.CATEGORIES)
         reference.child(categoryId!!).updateChildren(hashMap).addOnSuccessListener {
-                dialog!!.dismiss()
+                dialog?.dismiss()
                 Toast.makeText(context, R.string.category_updated, Toast.LENGTH_SHORT).show()
             }.addOnFailureListener { e: Exception ->
-                dialog!!.dismiss()
+                dialog?.dismiss()
                 Toast.makeText(
                     context, getString(R.string.error_message, e.message), Toast.LENGTH_SHORT
                 ).show()

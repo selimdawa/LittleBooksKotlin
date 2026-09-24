@@ -1,5 +1,6 @@
 package com.flatcode.littlebooks.ui.settings
 
+import android.app.Activity
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -47,13 +48,12 @@ class SettingsFragment : Fragment() {
 
         adapter = SettingAdapter { item ->
             val id = item.id
-            val to = item.c
             when (id) {
                 "8" -> context?.dialogAboutApp()
                 "9" -> context?.dialogLogout()
                 "10" -> context?.shareApp()
                 "11" -> context?.rateApp()
-                else -> to?.let { context?.openActivity(it) }
+                else -> context?.openActivity<Activity>()
             }
         }
         binding!!.recyclerView.adapter = adapter
@@ -167,7 +167,9 @@ class SettingsFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        viewModel.loadProfileData(DATA.FirebaseUserUid, DATA.FirebaseUserUid, DATA.FOLLOWERS, DATA.FOLLOWING)
+        viewModel.loadProfileData(
+            DATA.FirebaseUserUid, DATA.FirebaseUserUid, DATA.FOLLOWERS, DATA.FOLLOWING
+        )
     }
 
     override fun onDestroyView() {

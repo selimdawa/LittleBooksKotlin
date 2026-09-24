@@ -10,8 +10,8 @@ import com.flatcode.littlebooks.databinding.ItemCategoryMainBinding
 import com.flatcode.littlebooks.model.Category
 import com.flatcode.littlebooks.ui.book.BooksCategoryActivity
 import com.flatcode.littlebooks.utils.DATA
+import com.flatcode.littlebooks.utils.loadBlurImage
 import com.flatcode.littlebooks.utils.loadImage
-import com.flatcode.littlebooks.utils.loadImageBlur
 import com.flatcode.littlebooks.utils.openActivity
 
 class CategoryMainAdapter : ListAdapter<Category, CategoryMainAdapter.ViewHolder>(DiffCallback) {
@@ -38,7 +38,7 @@ class CategoryMainAdapter : ListAdapter<Category, CategoryMainAdapter.ViewHolder
             val image = DATA.EMPTY + item.image
 
             binding.image.loadImage(false, image)
-            binding.imageBlur.loadImageBlur(false, image, 50)
+            binding.imageBlur.loadBlurImage(false, image, 50)
 
             binding.name.visibility = if (name.isEmpty()) View.GONE else View.VISIBLE
             binding.name.text = name

@@ -25,7 +25,9 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.flatcode.littlebooksadmin.R
 import com.flatcode.littlebooksadmin.databinding.ActivityBookEditBinding
 import com.flatcode.littlebooksadmin.model.Category
-import com.flatcode.littlebooksadmin.utils.*
+import com.flatcode.littlebooksadmin.utils.DATA
+import com.flatcode.littlebooksadmin.utils.Resource
+import com.flatcode.littlebooksadmin.utils.loadImage
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -62,8 +64,6 @@ class BookEditActivity : AppCompatActivity() {
     }
 
     private fun initUI() {
-        dialog = createProgressDialog(getString(R.string.please_wait))
-
         binding.toolbar.nameSpace.setText(R.string.edit_book)
         binding.toolbar.back.setOnClickListener { onBackPressedDispatcher.onBackPressed() }
 
@@ -121,15 +121,14 @@ class BookEditActivity : AppCompatActivity() {
                     viewModel.updateState.collect { resource ->
                         when (resource) {
                             is Resource.Loading -> {
-                                dialog = createProgressDialog(
-                                    getString(R.string.updating_book_info)
-                                )
-                                dialog!!.show()
+                                dialog = AlertDialog.Builder(context).apply {
+                                    setMessage(getString(R.string.updating_book_info))
+                                }.show()
                             }
 
                             is Resource.Success -> {
                                 if (imageUri == null) {
-                                    dialog!!.dismiss()
+                                    dialog?.dismiss()
                                     Toast.makeText(
                                         context, R.string.book_info_updated, Toast.LENGTH_SHORT
                                     ).show()
@@ -140,7 +139,7 @@ class BookEditActivity : AppCompatActivity() {
                             }
 
                             is Resource.Error -> {
-                                dialog!!.dismiss()
+                                dialog?.dismiss()
                                 Toast.makeText(context, resource.message, Toast.LENGTH_SHORT).show()
                             }
 
@@ -227,7 +226,3 @@ class BookEditActivity : AppCompatActivity() {
         }
     }
 }
-
-
-
-

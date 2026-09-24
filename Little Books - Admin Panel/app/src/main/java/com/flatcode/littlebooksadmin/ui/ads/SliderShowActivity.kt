@@ -21,7 +21,6 @@ import com.cloudinary.android.callback.UploadCallback
 import com.flatcode.littlebooksadmin.R
 import com.flatcode.littlebooksadmin.databinding.ActivitySliderShowBinding
 import com.flatcode.littlebooksadmin.utils.DATA
-import com.flatcode.littlebooksadmin.utils.createProgressDialog
 import com.flatcode.littlebooksadmin.utils.loadImage
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -82,8 +81,6 @@ class SliderShowActivity : AppCompatActivity() {
 
         binding.toolbar.nameSpace.setText(R.string.slider_show)
         binding.toolbar.back.setOnClickListener { onBackPressedDispatcher.onBackPressed() }
-
-        dialog = createProgressDialog(getString(R.string.please_wait))
 
         binding.addOne.setOnClickListener {
             imageNumber = 1
@@ -333,8 +330,9 @@ class SliderShowActivity : AppCompatActivity() {
     }
 
     private fun uploadImage(name: String) {
-        dialog = createProgressDialog(getString(R.string.posting_photo))
-        dialog!!.show()
+        dialog = AlertDialog.Builder(context).apply {
+            setMessage(getString(R.string.posting_photo))
+        }.show()
         MediaManager.get().upload(imageUri).option("folder", "Images/SliderShow/")
             .option("public_id", name).callback(object : UploadCallback {
                 override fun onStart(requestId: String?) {}
@@ -345,7 +343,7 @@ class SliderShowActivity : AppCompatActivity() {
                 }
 
                 override fun onError(requestId: String?, error: ErrorInfo?) {
-                    dialog!!.dismiss()
+                    dialog?.dismiss()
                     Toast.makeText(
                         context,
                         getString(R.string.error_message, error?.description),
@@ -358,18 +356,19 @@ class SliderShowActivity : AppCompatActivity() {
     }
 
     private fun updateImage(imageUrl: String, name: String) {
-        dialog = createProgressDialog(getString(R.string.posting_photo))
-        dialog!!.show()
+        dialog = AlertDialog.Builder(context).apply {
+            setMessage(getString(R.string.posting_photo))
+        }.show()
         val hashMap = HashMap<String, Any>()
         if (imageUri != null) {
             hashMap[DATA.EMPTY + name] = DATA.EMPTY + imageUrl
         }
         val reference = FirebaseDatabase.getInstance().getReference(DATA.SLIDER_SHOW)
         reference.updateChildren(hashMap).addOnSuccessListener {
-            dialog!!.dismiss()
+            dialog?.dismiss()
             Toast.makeText(context, R.string.photo_posted, Toast.LENGTH_SHORT).show()
         }.addOnFailureListener { e: Exception ->
-            dialog!!.dismiss()
+            dialog?.dismiss()
             Toast.makeText(
                 context, getString(R.string.error_message, e.message), Toast.LENGTH_SHORT
             ).show()
@@ -388,6 +387,3 @@ class SliderShowActivity : AppCompatActivity() {
         super.onRestart()
     }
 }
-
-
-

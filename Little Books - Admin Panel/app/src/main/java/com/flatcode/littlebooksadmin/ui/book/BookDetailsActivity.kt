@@ -24,10 +24,10 @@ import com.flatcode.littlebooksadmin.Application
 import com.flatcode.littlebooksadmin.R
 import com.flatcode.littlebooksadmin.databinding.ActivityBookDetailsBinding
 import com.flatcode.littlebooksadmin.databinding.DialogCommentAddBinding
+import com.flatcode.littlebooksadmin.model.Comment
 import com.flatcode.littlebooksadmin.ui.profile.ProfileActivity
 import com.flatcode.littlebooksadmin.utils.DATA
 import com.flatcode.littlebooksadmin.utils.Resource
-import com.flatcode.littlebooksadmin.utils.createProgressDialog
 import com.flatcode.littlebooksadmin.utils.checkFavorite
 import com.flatcode.littlebooksadmin.utils.checkLove
 import com.flatcode.littlebooksadmin.utils.downloadBook
@@ -77,7 +77,6 @@ class BookDetailsActivity : AppCompatActivity() {
     private fun initUI() {
         binding.toolbar.nameSpace.setText(R.string.details_books)
         binding.download.visibility = View.GONE
-        dialog = createProgressDialog(getString(R.string.please_wait))
 
         adapter = CommentAdapter()
         binding.recyclerView.adapter = adapter
@@ -194,20 +193,19 @@ class BookDetailsActivity : AppCompatActivity() {
                     viewModel.addCommentState.collect { resource ->
                         when (resource) {
                             is Resource.Loading -> {
-                                dialog = createProgressDialog(
-                                    getString(R.string.adding_comment)
-                                )
-                                dialog!!.show()
+                                dialog = AlertDialog.Builder(context).apply {
+                                    setMessage(getString(R.string.adding_comment))
+                                }.show()
                             }
 
                             is Resource.Success -> {
-                                dialog!!.dismiss()
+                                dialog?.dismiss()
                                 Toast.makeText(context, R.string.comment_added, Toast.LENGTH_SHORT)
                                     .show()
                             }
 
                             is Resource.Error -> {
-                                dialog!!.dismiss()
+                                dialog?.dismiss()
                                 Toast.makeText(context, resource.message, Toast.LENGTH_SHORT).show()
                             }
 
@@ -219,7 +217,7 @@ class BookDetailsActivity : AppCompatActivity() {
         }
     }
 
-    private fun updateComments(comments: List<com.flatcode.littlebooksadmin.model.Comment>) {
+    private fun updateComments(comments: List<Comment>) {
         adapter?.submitList(comments)
         binding.textComment.visibility = if (comments.isEmpty()) View.GONE else View.VISIBLE
     }

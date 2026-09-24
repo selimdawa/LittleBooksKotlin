@@ -68,7 +68,6 @@ class MainActivity : AppCompatActivity() {
             supportFragmentManager.findFragmentById(R.id.fragmentContainer) as NavHostFragment
         navController = navHostFragment.navController
 
-        // Navigation UI: Define top-level destinations
         appBarConfiguration = AppBarConfiguration(
             setOf(
                 R.id.homeFragment,
@@ -77,9 +76,6 @@ class MainActivity : AppCompatActivity() {
                 R.id.settingsFragment
             )
         )
-
-        // Sync Toolbar with Navigation (Optional, since you have a custom title setup)
-        // binding!!.toolbar.root.findViewById<MaterialToolbar>(R.id.toolbar_internal).setupWithNavController(navController, appBarConfiguration)
 
         navController.addOnDestinationChangedListener { _, destination, _ ->
             when (destination.id) {
@@ -105,40 +101,7 @@ class MainActivity : AppCompatActivity() {
             }
 
             show(R.id.homeFragment, false)
-        }/* bottomNavigation!!.setOnClickMenuListener { item: NafisBottomNavigation.Model ->
-            when (item.id) {
-                1 -> Toast.makeText(
-                    applicationContext, R.string.settings, Toast.LENGTH_SHORT
-                ).show()
-
-                2 -> Toast.makeText(applicationContext, R.string.home, Toast.LENGTH_SHORT).show()
-                3 -> Toast.makeText(
-                    applicationContext,
-                    R.string.followers_books,
-                    Toast.LENGTH_SHORT
-                ).show()
-
-                4 -> Toast.makeText(applicationContext, R.string.categories, Toast.LENGTH_SHORT)
-                    .show()
-            }
         }
-        bottomNavigation!!.setOnReselectListener { item: NafisBottomNavigation.Model ->
-            when (item.id) {
-                1 -> Toast.makeText(
-                    applicationContext, R.string.settings, Toast.LENGTH_SHORT
-                ).show()
-
-                2 -> Toast.makeText(applicationContext, R.string.home, Toast.LENGTH_SHORT).show()
-                3 -> Toast.makeText(
-                    applicationContext,
-                    R.string.followers_books,
-                    Toast.LENGTH_SHORT
-                ).show()
-
-                4 -> Toast.makeText(applicationContext, R.string.categories, Toast.LENGTH_SHORT)
-                    .show()
-            }
-        } */
 
         MobileAds.initialize(applicationContext) { }
         binding!!.toolbar.image.setOnClickListener {
@@ -150,7 +113,7 @@ class MainActivity : AppCompatActivity() {
         observeViewModel()
 
         onBackPressedDispatcher.addCallback(this) {
-            context.closeApp(activity)
+            closeApp()
         }
     }
 

@@ -6,15 +6,21 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
-import androidx.core.net.toUri
+import android.os.Bundle
 import android.text.format.DateFormat
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.graphics.createBitmap
 import androidx.core.graphics.scale
-import coil.load
-import coil.size.Size
-import coil.transform.Transformation
+import androidx.core.net.toUri
+import coil3.load
+import coil3.request.crossfade
+import coil3.request.error
+import coil3.request.fallback
+import coil3.request.placeholder
+import coil3.request.transformations
+import coil3.size.Size
+import coil3.transform.Transformation
 import com.cloudinary.android.MediaManager
 import com.cloudinary.android.callback.ErrorInfo
 import com.cloudinary.android.callback.UploadCallback
@@ -28,7 +34,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
-import java.io.Serializable
 import java.net.HttpURLConnection
 import java.net.URL
 import java.util.Calendar
@@ -37,22 +42,24 @@ import kotlin.coroutines.resume
 
 inline fun <reified T : Activity> Context.openActivity(
     clear: Boolean = false, vararg extras: Pair<String, Any?>
-) = openActivity(T::class.java, clear, *extras)
-
-fun Context.openActivity(
-    activity: Class<*>, clear: Boolean = false, vararg extras: Pair<String, Any?>
 ) {
-    val intent = Intent(this, activity).apply {
+    val intent = Intent(this, T::class.java).apply {
         if (clear) addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
-        extras.forEach { (k, v) ->
-            when (v) {
-                is String -> putExtra(k, v)
-                is Int -> putExtra(k, v)
-                is Boolean -> putExtra(k, v)
-                is Long -> putExtra(k, v)
-                is Double -> putExtra(k, v)
-                is Serializable -> putExtra(k, v)
+        if (extras.isNotEmpty()) {
+            val bundle = Bundle()
+            extras.forEach { pair ->
+                val key = pair.first
+                when (val value = pair.second) {
+                    is String -> bundle.putString(key, value)
+                    is Int -> bundle.putInt(key, value)
+                    is Boolean -> bundle.putBoolean(key, value)
+                    is Long -> bundle.putLong(key, value)
+                    is Double -> bundle.putDouble(key, value)
+                    is Float -> bundle.putFloat(key, value)
+                    else -> bundle.putString(key, value.toString())
+                }
             }
+            putExtras(bundle)
         }
     }
     startActivity(intent)
@@ -103,27 +110,51 @@ suspend fun cloudinaryUpload(uri: Uri): Resource<String> =
     }
 
 fun ImageView.loadImage(isUser: Boolean, url: String?) {
-    val placeholder = if (isUser) R.drawable.basic_user else R.drawable.basic_book
-    if (url == DATA.BASIC || url == null) {
-        setImageResource(placeholder)
-    } else {
-        load(url) {
-            placeholder(R.color.image_profile)
-            error(placeholder)
-            crossfade(true)
+    try {
+        if (url.isNullOrEmpty() || url == DATA.BASIC) {
+            if (isUser) {
+                this.setImageResource(R.drawable.basic_user)
+            } else {
+                this.setImageResource(R.drawable.basic_book)
+            }
+        } else {
+            this.load(url) {
+                placeholder(R.color.image_profile)
+                error(R.color.image_profile)
+                fallback(R.color.image_profile)
+                crossfade(true)
+            }
+        }
+    } catch (_: Exception) {
+        if (isUser) {
+            this.setImageResource(R.drawable.basic_user)
+        } else {
+            this.setImageResource(R.drawable.basic_book)
         }
     }
 }
 
-fun ImageView.loadImageBlur(isUser: Boolean, url: String, level: Int) {
-    val placeholder = if (isUser) R.drawable.basic_user else R.drawable.basic_book
-    if (url == DATA.BASIC) {
-        setImageResource(placeholder)
-    } else {
-        load(url) {
-            placeholder(R.color.image_profile)
-            error(placeholder)
-            transformations(SimpleBlurTransformation(level.toFloat()))
+fun ImageView.loadBlurImage(isUser: Boolean, url: String?, level: Int) {
+    try {
+        if (url.isNullOrEmpty() || url == DATA.BASIC) {
+            if (isUser) {
+                this.setImageResource(R.drawable.basic_user)
+            } else {
+                this.setImageResource(R.drawable.basic_book)
+            }
+        } else {
+            this.load(url) {
+                placeholder(R.color.image_profile)
+                error(R.color.image_profile)
+                fallback(R.color.image_profile)
+                transformations(SimpleBlurTransformation(level.toFloat()))
+            }
+        }
+    } catch (_: Exception) {
+        if (isUser) {
+            this.setImageResource(R.drawable.basic_user)
+        } else {
+            this.setImageResource(R.drawable.basic_book)
         }
     }
 }
@@ -205,7 +236,7 @@ fun Long.formatTimestamp(): String {
     return DateFormat.format("dd/MM/yyyy", calendar).toString()
 }
 
-class SimpleBlurTransformation(private val radius: Float) : Transformation {
+class SimpleBlurTransformation(private val radius: Float) : Transformation() {
     override val cacheKey: String = "${SimpleBlurTransformation::class.java.name}-$radius"
 
     override suspend fun transform(input: Bitmap, size: Size): Bitmap {

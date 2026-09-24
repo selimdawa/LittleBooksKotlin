@@ -10,7 +10,6 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import com.flatcode.littlebooksadmin.R
 import com.flatcode.littlebooksadmin.databinding.DialogLogoutBinding
-import com.flatcode.littlebooksadmin.databinding.DialogProgressBinding
 import com.flatcode.littlebooksadmin.model.Book
 import com.flatcode.littlebooksadmin.model.Category
 import com.flatcode.littlebooksadmin.ui.book.BookEditActivity
@@ -18,17 +17,12 @@ import com.flatcode.littlebooksadmin.ui.category.CategoryEditActivity
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.firebase.database.FirebaseDatabase
 
-fun Context.createProgressDialog(message: String): AlertDialog {
-    val binding = DialogProgressBinding.inflate(LayoutInflater.from(this))
-    binding.tvMessage.text = message
-    return AlertDialog.Builder(this).setView(binding.root).setCancelable(false).create()
-}
-
 fun Context.deleteBook(
     dialogDelete: Dialog, publisher: String?, bookId: String?, bookTitle: String?
 ) {
-    val dialog = createProgressDialog(getString(R.string.deleting_item, bookTitle))
-    dialog.show()
+    val dialog = AlertDialog.Builder(this).apply {
+        setMessage(getString(R.string.deleting_item, bookTitle))
+    }.show()
 
     val reference = FirebaseDatabase.getInstance().getReference(DATA.BOOKS)
     reference.child(bookId!!).removeValue().addOnSuccessListener {
@@ -44,8 +38,10 @@ fun Context.deleteBook(
 }
 
 fun Context.deleteCategory(dialogDelete: Dialog, id: String?, name: String?) {
-    val dialog = createProgressDialog(getString(R.string.deleting_item, name))
-    dialog.show()
+    val dialog = AlertDialog.Builder(this).apply {
+        setMessage(getString(R.string.deleting_item, name))
+    }.show()
+
     val reference = FirebaseDatabase.getInstance().getReference(DATA.CATEGORIES)
     reference.child(id!!).removeValue().addOnSuccessListener {
         dialog.dismiss()
@@ -66,20 +62,20 @@ fun Context.moreOptionDialog(item: Book?) {
 
     val builder = AlertDialog.Builder(this)
     builder.setTitle(R.string.choose_options).setItems(options) { _: DialogInterface?, which: Int ->
-            if (which == 0) {
-                openActivity<BookEditActivity>(extras = arrayOf(DATA.BOOK_ID to bookId))
-            } else if (which == 1) {
-                dialogOptionDelete(
-                    publisher = publisher.orEmpty(),
-                    bookId = bookId,
-                    bookTitle = bookTitle.orEmpty(),
-                    isCategory = false,
-                    isEditorsChoice = false,
-                    categoryId = null,
-                    categoryName = null
-                )
-            }
-        }.show()
+        if (which == 0) {
+            openActivity<BookEditActivity>(extras = arrayOf(DATA.BOOK_ID to bookId))
+        } else if (which == 1) {
+            dialogOptionDelete(
+                publisher = publisher.orEmpty(),
+                bookId = bookId,
+                bookTitle = bookTitle.orEmpty(),
+                isCategory = false,
+                isEditorsChoice = false,
+                categoryId = null,
+                categoryName = null
+            )
+        }
+    }.show()
 }
 
 fun Context.moreCategories(item: Category) {
@@ -91,20 +87,20 @@ fun Context.moreCategories(item: Category) {
 
     val builder = AlertDialog.Builder(this)
     builder.setTitle(R.string.choose_options).setItems(options) { _: DialogInterface?, which: Int ->
-            if (which == 0) {
-                openActivity<CategoryEditActivity>(extras = arrayOf(DATA.CATEGORY_ID to id))
-            } else if (which == 1) {
-                dialogOptionDelete(
-                    publisher = publisher.orEmpty(),
-                    bookId = null,
-                    bookTitle = null,
-                    isCategory = true,
-                    isEditorsChoice = false,
-                    categoryId = id,
-                    categoryName = name.orEmpty()
-                )
-            }
-        }.show()
+        if (which == 0) {
+            openActivity<CategoryEditActivity>(extras = arrayOf(DATA.CATEGORY_ID to id))
+        } else if (which == 1) {
+            dialogOptionDelete(
+                publisher = publisher.orEmpty(),
+                bookId = null,
+                bookTitle = null,
+                isCategory = true,
+                isEditorsChoice = false,
+                categoryId = id,
+                categoryName = name.orEmpty()
+            )
+        }
+    }.show()
 }
 
 fun Context.dialogOptionDelete(
@@ -142,8 +138,10 @@ fun Context.dialogOptionDelete(
 }
 
 fun Context.dialogUpdateEditorChoice(dialogDelete: Dialog, bookId: String?) {
-    val dialog = createProgressDialog(getString(R.string.updating_editors_choice))
-    dialog.show()
+    val dialog = AlertDialog.Builder(this).apply {
+        setMessage(getString(R.string.updating_editors_choice))
+    }.show()
+
     val hashMap = HashMap<String?, Any>()
     hashMap[DATA.EDITORS_CHOICE] = 0
     val reference = FirebaseDatabase.getInstance().getReference(DATA.BOOKS)
@@ -159,8 +157,10 @@ fun Context.dialogUpdateEditorChoice(dialogDelete: Dialog, bookId: String?) {
 }
 
 fun Context.addToEditorsChoice(activity: Activity?, bookId: String?, number: Int) {
-    val dialog = createProgressDialog(getString(R.string.updating_editors_choice))
-    dialog.show()
+    val dialog = AlertDialog.Builder(this).apply {
+        setMessage(getString(R.string.updating_editors_choice))
+    }.show()
+
     val hashMap = HashMap<String?, Any>()
     hashMap[DATA.EDITORS_CHOICE] = number
     val reference = FirebaseDatabase.getInstance().getReference(DATA.BOOKS)

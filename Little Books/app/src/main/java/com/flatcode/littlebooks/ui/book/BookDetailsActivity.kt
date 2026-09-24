@@ -23,7 +23,7 @@ import com.flatcode.littlebooks.utils.DATA
 import com.flatcode.littlebooks.utils.Resource
 import com.flatcode.littlebooks.utils.loadCategory
 import com.flatcode.littlebooks.utils.loadImage
-import com.flatcode.littlebooks.utils.loadImageBlur
+import com.flatcode.littlebooks.utils.loadBlurImage
 import com.flatcode.littlebooks.utils.loadPdfInfo
 import com.flatcode.littlebooks.utils.openActivity
 import com.flatcode.littlebooks.viewmodel.BookViewModel
@@ -99,7 +99,7 @@ class BookDetailsActivity : AppCompatActivity() {
                                 // binding!!.pages.text = DATA.EMPTY + book?.pagesCount // layout doesn't have pages count text view?
                                 binding!!.category.loadCategory(book.categoryId ?: "")
                                 binding!!.image.loadImage(false, book.url)
-                                binding!!.cover.loadImageBlur(false, book.url ?: "", 50)
+                                binding!!.cover.loadBlurImage(false, book.url ?: "", 50)
                                 binding!!.size.loadPdfInfo(book.url)
                             }
 

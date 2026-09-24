@@ -24,7 +24,6 @@ import com.flatcode.littlebooksadmin.R
 import com.flatcode.littlebooksadmin.databinding.ActivityBookAddBinding
 import com.flatcode.littlebooksadmin.model.Category
 import com.flatcode.littlebooksadmin.utils.Resource
-import com.flatcode.littlebooksadmin.utils.createProgressDialog
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -78,8 +77,6 @@ class BookAddActivity : AppCompatActivity() {
     }
 
     private fun initUI() {
-        dialog = createProgressDialog(getString(R.string.please_wait))
-
         binding.toolbar.nameSpace.setText(R.string.add_new_book)
         binding.toolbar.back.setOnClickListener { finish() }
 
@@ -110,21 +107,20 @@ class BookAddActivity : AppCompatActivity() {
                     viewModel.uploadState.collect { resource ->
                         when (resource) {
                             is Resource.Loading -> {
-                                dialog = createProgressDialog(
-                                    getString(R.string.uploading_book)
-                                )
-                                dialog!!.show()
+                                dialog = AlertDialog.Builder(context).apply {
+                                    setMessage(getString(R.string.uploading_book))
+                                }.show()
                             }
 
                             is Resource.Success -> {
-                                dialog!!.dismiss()
+                                dialog?.dismiss()
                                 Toast.makeText(
                                     context, R.string.successfully_uploaded, Toast.LENGTH_SHORT
                                 ).show()
                             }
 
                             is Resource.Error -> {
-                                dialog!!.dismiss()
+                                dialog?.dismiss()
                                 Toast.makeText(context, resource.message, Toast.LENGTH_SHORT).show()
                             }
 
@@ -136,21 +132,20 @@ class BookAddActivity : AppCompatActivity() {
                     viewModel.imageUploadState.collect { resource ->
                         when (resource) {
                             is Resource.Loading -> {
-                                dialog = createProgressDialog(
-                                    getString(R.string.updating_image_book)
-                                )
-                                dialog!!.show()
+                                dialog = AlertDialog.Builder(context).apply {
+                                    setMessage(getString(R.string.updating_image_book))
+                                }.show()
                             }
 
                             is Resource.Success -> {
-                                dialog!!.dismiss()
+                                dialog?.dismiss()
                                 Toast.makeText(context, R.string.image_updated, Toast.LENGTH_SHORT)
                                     .show()
                                 finish()
                             }
 
                             is Resource.Error -> {
-                                dialog!!.dismiss()
+                                dialog?.dismiss()
                                 Toast.makeText(context, resource.message, Toast.LENGTH_SHORT).show()
                             }
 

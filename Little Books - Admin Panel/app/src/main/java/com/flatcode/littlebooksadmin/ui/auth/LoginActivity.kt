@@ -17,7 +17,6 @@ import com.flatcode.littlebooksadmin.R
 import com.flatcode.littlebooksadmin.databinding.ActivityLoginBinding
 import com.flatcode.littlebooksadmin.ui.main.MainActivity
 import com.flatcode.littlebooksadmin.utils.Resource
-import com.flatcode.littlebooksadmin.utils.createProgressDialog
 import com.flatcode.littlebooksadmin.utils.openActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -58,19 +57,18 @@ class LoginActivity : AppCompatActivity() {
                 viewModel.loginState.collect { resource ->
                     when (resource) {
                         is Resource.Loading -> {
-                            dialog = createProgressDialog(
-                                getString(R.string.logging_in)
-                            )
-                            dialog!!.show()
+                            dialog = AlertDialog.Builder(context).apply {
+                                setMessage(getString(R.string.logging_in))
+                            }.show()
                         }
 
                         is Resource.Success -> {
-                            dialog!!.dismiss()
+                            dialog?.dismiss()
                             context.openActivity<MainActivity>(clear = true)
                         }
 
                         is Resource.Error -> {
-                            dialog!!.dismiss()
+                            dialog?.dismiss()
                             Toast.makeText(context, resource.message, Toast.LENGTH_SHORT).show()
                         }
 
