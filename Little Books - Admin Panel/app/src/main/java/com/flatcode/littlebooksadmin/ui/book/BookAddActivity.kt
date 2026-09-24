@@ -23,8 +23,8 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.flatcode.littlebooksadmin.R
 import com.flatcode.littlebooksadmin.databinding.ActivityBookAddBinding
 import com.flatcode.littlebooksadmin.model.Category
-import com.flatcode.littlebooksadmin.utils.Dialogs
 import com.flatcode.littlebooksadmin.utils.Resource
+import com.flatcode.littlebooksadmin.utils.createProgressDialog
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -78,7 +78,7 @@ class BookAddActivity : AppCompatActivity() {
     }
 
     private fun initUI() {
-        dialog = Dialogs.createProgressDialog(context, getString(R.string.please_wait))
+        dialog = createProgressDialog(getString(R.string.please_wait))
 
         binding.toolbar.nameSpace.setText(R.string.add_new_book)
         binding.toolbar.back.setOnClickListener { finish() }
@@ -110,8 +110,8 @@ class BookAddActivity : AppCompatActivity() {
                     viewModel.uploadState.collect { resource ->
                         when (resource) {
                             is Resource.Loading -> {
-                                dialog = Dialogs.createProgressDialog(
-                                    context, getString(R.string.uploading_book)
+                                dialog = createProgressDialog(
+                                    getString(R.string.uploading_book)
                                 )
                                 dialog!!.show()
                             }
@@ -136,8 +136,8 @@ class BookAddActivity : AppCompatActivity() {
                     viewModel.imageUploadState.collect { resource ->
                         when (resource) {
                             is Resource.Loading -> {
-                                dialog = Dialogs.createProgressDialog(
-                                    context, getString(R.string.updating_image_book)
+                                dialog = createProgressDialog(
+                                    getString(R.string.updating_image_book)
                                 )
                                 dialog!!.show()
                             }

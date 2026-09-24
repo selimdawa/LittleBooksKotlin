@@ -1,4 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="spacing_30">30dp</dimen>
+    <dimen name="spacing_8">8dp</dimen>
+    <dimen name="card_corner_radius_medium">10dp</dimen>
+    <dimen name="dialog_width">300dp</dimen>
+    <dimen name="divider_height">1dp</dimen>
+
+    <!-- SP Dimensions (as used in original layouts) -->
+    <dimen name="spacing_5_sp">5sp</dimen>
+    <dimen name="spacing_15_sp">15sp</dimen>
+
+    <!-- Text Sizes -->
+    <dimen name="text_size_18">18sp</dimen>
 </resources>

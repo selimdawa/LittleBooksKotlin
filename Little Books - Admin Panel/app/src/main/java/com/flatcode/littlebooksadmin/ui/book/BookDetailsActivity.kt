@@ -26,8 +26,8 @@ import com.flatcode.littlebooksadmin.databinding.ActivityBookDetailsBinding
 import com.flatcode.littlebooksadmin.databinding.DialogCommentAddBinding
 import com.flatcode.littlebooksadmin.ui.profile.ProfileActivity
 import com.flatcode.littlebooksadmin.utils.DATA
-import com.flatcode.littlebooksadmin.utils.Dialogs
 import com.flatcode.littlebooksadmin.utils.Resource
+import com.flatcode.littlebooksadmin.utils.createProgressDialog
 import com.flatcode.littlebooksadmin.utils.checkFavorite
 import com.flatcode.littlebooksadmin.utils.checkLove
 import com.flatcode.littlebooksadmin.utils.downloadBook
@@ -77,7 +77,7 @@ class BookDetailsActivity : AppCompatActivity() {
     private fun initUI() {
         binding.toolbar.nameSpace.setText(R.string.details_books)
         binding.download.visibility = View.GONE
-        dialog = Dialogs.createProgressDialog(context, getString(R.string.please_wait))
+        dialog = createProgressDialog(getString(R.string.please_wait))
 
         adapter = CommentAdapter()
         binding.recyclerView.adapter = adapter
@@ -194,8 +194,8 @@ class BookDetailsActivity : AppCompatActivity() {
                     viewModel.addCommentState.collect { resource ->
                         when (resource) {
                             is Resource.Loading -> {
-                                dialog = Dialogs.createProgressDialog(
-                                    context, getString(R.string.adding_comment)
+                                dialog = createProgressDialog(
+                                    getString(R.string.adding_comment)
                                 )
                                 dialog!!.show()
                             }

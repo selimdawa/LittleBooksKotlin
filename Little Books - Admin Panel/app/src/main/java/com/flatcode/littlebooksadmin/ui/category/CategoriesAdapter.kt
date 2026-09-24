@@ -13,8 +13,8 @@ import com.flatcode.littlebooksadmin.databinding.ItemCategoriesBinding
 import com.flatcode.littlebooksadmin.model.Book
 import com.flatcode.littlebooksadmin.model.Category
 import com.flatcode.littlebooksadmin.utils.DATA
-import com.flatcode.littlebooksadmin.utils.Dialogs
 import com.flatcode.littlebooksadmin.utils.loadImage
+import com.flatcode.littlebooksadmin.utils.moreCategories
 import com.flatcode.littlebooksadmin.utils.openActivity
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -58,7 +58,7 @@ class CategoriesAdapter : ListAdapter<Category, CategoriesAdapter.ViewHolder>(Ca
 
         nrBooks(holder.binding.numberBooks, categoryId)
 
-        holder.binding.more.setOnClickListener { Dialogs.moreCategories(context, item) }
+        holder.binding.more.setOnClickListener { context.moreCategories(item) }
         holder.binding.item.setOnClickListener {
             context.openActivity<BooksCategoryActivity>(
                 extras = arrayOf(DATA.CATEGORY_ID to categoryId, DATA.CATEGORY_NAME to name)

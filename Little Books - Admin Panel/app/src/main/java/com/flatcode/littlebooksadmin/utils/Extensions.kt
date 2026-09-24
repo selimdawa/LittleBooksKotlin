@@ -69,7 +69,7 @@ fun Context.downloadBook(bookId: String, bookTitle: String, bookUrl: String?) {
     val nameWithExtension = "$bookTitle.pdf"
 
     val progressDialog =
-        Dialogs.createProgressDialog(this, getString(R.string.downloading_item, nameWithExtension))
+        createProgressDialog(getString(R.string.downloading_item, nameWithExtension))
     progressDialog.show()
 
     val executor = Executors.newSingleThreadExecutor()

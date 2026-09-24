@@ -62,7 +62,7 @@ class BookEditActivity : AppCompatActivity() {
     }
 
     private fun initUI() {
-        dialog = Dialogs.createProgressDialog(context, getString(R.string.please_wait))
+        dialog = createProgressDialog(getString(R.string.please_wait))
 
         binding.toolbar.nameSpace.setText(R.string.edit_book)
         binding.toolbar.back.setOnClickListener { onBackPressedDispatcher.onBackPressed() }
@@ -121,8 +121,8 @@ class BookEditActivity : AppCompatActivity() {
                     viewModel.updateState.collect { resource ->
                         when (resource) {
                             is Resource.Loading -> {
-                                dialog = Dialogs.createProgressDialog(
-                                    context, getString(R.string.updating_book_info)
+                                dialog = createProgressDialog(
+                                    getString(R.string.updating_book_info)
                                 )
                                 dialog!!.show()
                             }

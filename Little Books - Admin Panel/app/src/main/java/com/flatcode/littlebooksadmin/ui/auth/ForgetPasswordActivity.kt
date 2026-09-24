@@ -11,7 +11,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.flatcode.littlebooksadmin.R
 import com.flatcode.littlebooksadmin.databinding.ActivityForgetPasswordBinding
-import com.flatcode.littlebooksadmin.utils.Dialogs
+import com.flatcode.littlebooksadmin.utils.createProgressDialog
 import com.google.firebase.auth.FirebaseAuth
 
 class ForgetPasswordActivity : AppCompatActivity() {
@@ -34,7 +34,7 @@ class ForgetPasswordActivity : AppCompatActivity() {
         }
 
         auth = FirebaseAuth.getInstance()
-        dialog = Dialogs.createProgressDialog(context, getString(R.string.please_wait))
+        dialog = createProgressDialog(getString(R.string.please_wait))
 
         binding.go.setOnClickListener { validateDate() }
         binding.login.setOnClickListener { onBackPressedDispatcher.onBackPressed() }
@@ -53,8 +53,8 @@ class ForgetPasswordActivity : AppCompatActivity() {
     }
 
     private fun recoverPassword() {
-        dialog = Dialogs.createProgressDialog(
-            context, getString(R.string.sending_password_recovery, email)
+        dialog = createProgressDialog(
+            getString(R.string.sending_password_recovery, email)
         )
         dialog!!.show()
         auth!!.sendPasswordResetEmail(email).addOnCompleteListener {

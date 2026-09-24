@@ -10,12 +10,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.flatcode.littlebooksadmin.databinding.ItemBookStaggeredBinding
 import com.flatcode.littlebooksadmin.model.Book
 import com.flatcode.littlebooksadmin.utils.DATA
-import com.flatcode.littlebooksadmin.utils.Dialogs
 import com.flatcode.littlebooksadmin.utils.checkFavorite
 import com.flatcode.littlebooksadmin.utils.checkLove
 import com.flatcode.littlebooksadmin.utils.isFavorite
 import com.flatcode.littlebooksadmin.utils.isLoves
 import com.flatcode.littlebooksadmin.utils.loadImage
+import com.flatcode.littlebooksadmin.utils.moreOptionDialog
 import com.flatcode.littlebooksadmin.utils.openActivity
 
 class StaggeredBookAdapter : ListAdapter<Book, StaggeredBookAdapter.ViewHolder>(BookDiffCallback()),
@@ -67,7 +67,7 @@ class StaggeredBookAdapter : ListAdapter<Book, StaggeredBookAdapter.ViewHolder>(
 
         holder.binding.favorites.setOnClickListener { holder.binding.favorites.checkFavorite(bookId) }
         holder.binding.loves.setOnClickListener { holder.binding.loves.checkLove(bookId) }
-        holder.binding.more.setOnClickListener { Dialogs.moreOptionDialog(context, item) }
+        holder.binding.more.setOnClickListener { context.moreOptionDialog(item) }
 
         holder.item.setOnClickListener {
             context.openActivity<BookDetailsActivity>(extras = arrayOf(DATA.BOOK_ID to bookId))

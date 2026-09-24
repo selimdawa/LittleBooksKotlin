@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    tools:ignore="all"
     android:id="@+id/card"
     android:layout_width="match_parent"
     android:layout_height="45dp"
@@ -14,7 +12,7 @@
     <com.google.android.material.appbar.MaterialToolbar
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="?mc_bg"
+        android:background="?attr/mc_bg"
         android:visibility="visible">
 
         <LinearLayout
@@ -42,14 +40,17 @@
 
         <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/image"
-            android:layout_width="30sp"
-            android:layout_height="30sp"
+            android:layout_width="32sp"
+            android:layout_height="32sp"
             android:layout_gravity="right"
             android:layout_marginRight="15sp"
-            android:contentDescription="@null"
+            android:importantForAccessibility="no"
+            android:padding="1dp"
+            android:scaleType="centerCrop"
             android:src="@color/image_profile"
             app:shapeAppearanceOverlay="@style/ShapeAppearance.App.Circle"
-            app:tint="@color/white" />
+            app:strokeColor="@color/white"
+            app:strokeWidth="1sp" />
 
     </com.google.android.material.appbar.MaterialToolbar>
 

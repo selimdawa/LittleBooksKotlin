@@ -21,7 +21,7 @@ import com.cloudinary.android.callback.UploadCallback
 import com.flatcode.littlebooksadmin.R
 import com.flatcode.littlebooksadmin.databinding.ActivitySliderShowBinding
 import com.flatcode.littlebooksadmin.utils.DATA
-import com.flatcode.littlebooksadmin.utils.Dialogs
+import com.flatcode.littlebooksadmin.utils.createProgressDialog
 import com.flatcode.littlebooksadmin.utils.loadImage
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -83,7 +83,7 @@ class SliderShowActivity : AppCompatActivity() {
         binding.toolbar.nameSpace.setText(R.string.slider_show)
         binding.toolbar.back.setOnClickListener { onBackPressedDispatcher.onBackPressed() }
 
-        dialog = Dialogs.createProgressDialog(context, getString(R.string.please_wait))
+        dialog = createProgressDialog(getString(R.string.please_wait))
 
         binding.addOne.setOnClickListener {
             imageNumber = 1
@@ -333,7 +333,7 @@ class SliderShowActivity : AppCompatActivity() {
     }
 
     private fun uploadImage(name: String) {
-        dialog = Dialogs.createProgressDialog(context, getString(R.string.posting_photo))
+        dialog = createProgressDialog(getString(R.string.posting_photo))
         dialog!!.show()
         MediaManager.get().upload(imageUri).option("folder", "Images/SliderShow/")
             .option("public_id", name).callback(object : UploadCallback {
@@ -358,7 +358,7 @@ class SliderShowActivity : AppCompatActivity() {
     }
 
     private fun updateImage(imageUrl: String, name: String) {
-        dialog = Dialogs.createProgressDialog(context, getString(R.string.posting_photo))
+        dialog = createProgressDialog(getString(R.string.posting_photo))
         dialog!!.show()
         val hashMap = HashMap<String, Any>()
         if (imageUri != null) {

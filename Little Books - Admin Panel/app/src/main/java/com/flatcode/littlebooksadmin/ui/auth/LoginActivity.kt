@@ -16,8 +16,8 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.flatcode.littlebooksadmin.R
 import com.flatcode.littlebooksadmin.databinding.ActivityLoginBinding
 import com.flatcode.littlebooksadmin.ui.main.MainActivity
-import com.flatcode.littlebooksadmin.utils.Dialogs
 import com.flatcode.littlebooksadmin.utils.Resource
+import com.flatcode.littlebooksadmin.utils.createProgressDialog
 import com.flatcode.littlebooksadmin.utils.openActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -58,8 +58,8 @@ class LoginActivity : AppCompatActivity() {
                 viewModel.loginState.collect { resource ->
                     when (resource) {
                         is Resource.Loading -> {
-                            dialog = Dialogs.createProgressDialog(
-                                context, getString(R.string.logging_in)
+                            dialog = createProgressDialog(
+                                getString(R.string.logging_in)
                             )
                             dialog!!.show()
                         }

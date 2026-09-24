@@ -10,7 +10,7 @@ import com.flatcode.littlebooksadmin.databinding.ItemBookEditorsChoiceBinding
 import com.flatcode.littlebooksadmin.model.Book
 import com.flatcode.littlebooksadmin.model.EditorsChoice
 import com.flatcode.littlebooksadmin.utils.DATA
-import com.flatcode.littlebooksadmin.utils.Dialogs
+import com.flatcode.littlebooksadmin.utils.dialogOptionDelete
 import com.flatcode.littlebooksadmin.utils.loadImage
 import com.flatcode.littlebooksadmin.utils.openActivity
 import com.google.firebase.database.DataSnapshot
@@ -74,8 +74,7 @@ class EditorsChoiceAdapter :
                             context.openActivity<BookDetailsActivity>(extras = arrayOf(DATA.BOOK_ID to id))
                         }
                         holder.binding.remove.setOnClickListener {
-                            Dialogs.dialogOptionDelete(
-                                context = context,
+                            context.dialogOptionDelete(
                                 publisher = null,
                                 bookId = id,
                                 bookTitle = null,

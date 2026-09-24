@@ -70,7 +70,7 @@ class LinearBookAdapter(private val isUser: Boolean) :
         }
         holder.binding.loves.setOnClickListener { holder.binding.loves.checkLove(bookId) }
         holder.binding.more.setOnClickListener {
-            Dialogs.moreOptionDialog(context, item)
+            context.moreOptionDialog(item)
         }
         holder.binding.item.setOnClickListener {
             context.openActivity<BookDetailsActivity>(extras = arrayOf(DATA.BOOK_ID to item.id))

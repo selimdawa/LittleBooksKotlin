@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.flatcode.littlebooksadmin.databinding.ItemEditorsChoiceBinding
 import com.flatcode.littlebooksadmin.model.Book
 import com.flatcode.littlebooksadmin.utils.DATA
-import com.flatcode.littlebooksadmin.utils.Dialogs
+import com.flatcode.littlebooksadmin.utils.addToEditorsChoice
 import com.flatcode.littlebooksadmin.utils.loadImage
 import com.flatcode.littlebooksadmin.utils.openActivity
 
@@ -72,10 +72,10 @@ class EditorsChoiceBookAdapter(
 
         holder.binding.add.setOnClickListener {
             if (oldBookId != null) {
-                Dialogs.addToEditorsChoice(context, activity, bookId, number)
-                Dialogs.addToEditorsChoice(context, activity, oldBookId, 0)
+                context.addToEditorsChoice(activity, bookId, number)
+                context.addToEditorsChoice(activity, oldBookId, 0)
             } else {
-                Dialogs.addToEditorsChoice(context, activity, bookId, number)
+                context.addToEditorsChoice(activity, bookId, number)
             }
         }
 
