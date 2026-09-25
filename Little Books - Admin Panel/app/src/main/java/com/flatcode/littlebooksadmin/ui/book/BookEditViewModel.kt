@@ -1,4 +1,4 @@
-package com.flatcode.littlebooksadmin.ui.book
+﻿package com.flatcode.littlebooksadmin.ui.book
 
 import android.net.Uri
 import androidx.lifecycle.ViewModel
@@ -68,5 +68,3 @@ class BookEditViewModel @Inject constructor(
         }
     }
 }
-
-

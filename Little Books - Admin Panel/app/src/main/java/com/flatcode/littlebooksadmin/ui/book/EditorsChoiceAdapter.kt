@@ -1,4 +1,4 @@
-package com.flatcode.littlebooksadmin.ui.book
+﻿package com.flatcode.littlebooksadmin.ui.book
 
 import android.view.LayoutInflater
 import android.view.View
@@ -113,4 +113,3 @@ class EditorsChoiceDiffCallback : DiffUtil.ItemCallback<EditorsChoice>() {
         return true // Contents are identical for placeholders
     }
 }
-

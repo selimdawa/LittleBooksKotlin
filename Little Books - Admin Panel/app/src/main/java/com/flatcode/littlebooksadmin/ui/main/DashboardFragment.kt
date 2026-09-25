@@ -1,4 +1,4 @@
-package com.flatcode.littlebooksadmin.ui.main
+﻿package com.flatcode.littlebooksadmin.ui.main
 
 import android.content.Context
 import android.os.Bundle
@@ -258,6 +258,3 @@ class DashboardFragment : Fragment() {
         _binding = null
     }
 }
-
-
-

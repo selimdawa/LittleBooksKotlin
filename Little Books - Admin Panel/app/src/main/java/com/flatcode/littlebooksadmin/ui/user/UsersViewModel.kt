@@ -1,4 +1,4 @@
-package com.flatcode.littlebooksadmin.ui.user
+﻿package com.flatcode.littlebooksadmin.ui.user
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -36,5 +36,3 @@ class UsersViewModel @Inject constructor(
         }
     }
 }
-
-

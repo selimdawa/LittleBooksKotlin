@@ -4,7 +4,6 @@ import android.net.Uri
 import com.cloudinary.android.MediaManager
 import com.cloudinary.android.callback.ErrorInfo
 import com.cloudinary.android.callback.UploadCallback
-import com.flatcode.littlebooksadmin.db.CategoryDao
 import com.flatcode.littlebooksadmin.model.Category
 import com.flatcode.littlebooksadmin.utils.DATA
 import com.flatcode.littlebooksadmin.utils.Resource
@@ -26,7 +25,7 @@ import kotlin.coroutines.resume
 
 @Singleton
 class CategoryRepository @Inject constructor(
-    private val db: FirebaseDatabase, private val categoryDao: CategoryDao
+    private val db: FirebaseDatabase
 ) {
 
     fun getCategories(orderBy: String = DATA.CATEGORY): Flow<Resource<List<Category>>> =
@@ -39,9 +38,6 @@ class CategoryRepository @Inject constructor(
                     for (data in snapshot.children) {
                         val category = data.getValue(Category::class.java)
                         category?.let { categories.add(it) }
-                    }
-                    this@callbackFlow.launch {
-                        categoryDao.insertCategories(categories)
                     }
                     trySend(Resource.Success(categories.reversed()))
                 }
@@ -73,7 +69,6 @@ class CategoryRepository @Inject constructor(
                             timestamp = System.currentTimeMillis()
                         )
                         ref.child(id).setValue(category).await()
-                        categoryDao.insertCategory(category)
                         continuation.resume(Resource.Success(Unit))
                     } catch (e: Exception) {
                         continuation.resume(Resource.Error(e.message ?: "Database error"))
@@ -100,7 +95,6 @@ class CategoryRepository @Inject constructor(
                                         timestamp = System.currentTimeMillis()
                                     )
                                     ref.child(id).setValue(category).await()
-                                    categoryDao.insertCategory(category)
                                     continuation.resume(Resource.Success(Unit))
                                 } catch (e: Exception) {
                                     continuation.resume(
@@ -125,5 +119,3 @@ class CategoryRepository @Inject constructor(
             }
         }
 }
-
-

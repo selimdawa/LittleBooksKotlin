@@ -1,4 +1,4 @@
-package com.flatcode.littlebooksadmin.ui.main
+﻿package com.flatcode.littlebooksadmin.ui.main
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -46,5 +46,3 @@ class SplashActivity : BaseActivity() {
         private const val TIME_PER_SECOND = 2
     }
 }
-
-

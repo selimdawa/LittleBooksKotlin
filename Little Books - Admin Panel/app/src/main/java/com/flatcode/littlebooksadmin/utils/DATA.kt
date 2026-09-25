@@ -1,4 +1,4 @@
-@file:Suppress("SpellCheckingInspection")
+﻿@file:Suppress("SpellCheckingInspection")
 
 package com.flatcode.littlebooksadmin.utils
 
@@ -64,4 +64,3 @@ object DATA {
     const val CLOUDINARY_CLOUD_NAME = "j8jsphcf"
     const val CLOUDINARY_UPLOAD_PRESET = "flat_code"
 }
-

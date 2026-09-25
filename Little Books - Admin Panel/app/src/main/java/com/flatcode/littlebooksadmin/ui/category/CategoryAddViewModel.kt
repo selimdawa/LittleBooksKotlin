@@ -1,4 +1,4 @@
-package com.flatcode.littlebooksadmin.ui.category
+﻿package com.flatcode.littlebooksadmin.ui.category
 
 import android.net.Uri
 import androidx.lifecycle.ViewModel
@@ -26,5 +26,3 @@ class CategoryAddViewModel @Inject constructor(
         }
     }
 }
-
-

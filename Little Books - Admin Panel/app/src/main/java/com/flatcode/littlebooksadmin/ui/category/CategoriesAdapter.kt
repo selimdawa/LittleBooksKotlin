@@ -1,4 +1,4 @@
-package com.flatcode.littlebooksadmin.ui.category
+﻿package com.flatcode.littlebooksadmin.ui.category
 
 import android.view.LayoutInflater
 import android.view.View
@@ -122,4 +122,3 @@ class CategoryDiffCallback : DiffUtil.ItemCallback<Category>() {
         return oldItem == newItem
     }
 }
-

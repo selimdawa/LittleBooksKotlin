@@ -68,17 +68,10 @@ dependencies {
     //Hilt
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
-    //Room
-    implementation(libs.room.runtime)
-    ksp(libs.room.compiler)
     //Navigation
     implementation(libs.navigation.fragment.ktx)
     implementation(libs.navigation.ui.ktx)
     //Other
     implementation(libs.android.pdf.viewer)             //PDF View
     implementation(libs.timber)
-}
-
-ksp {
-    arg("room.schemaLocation", "$projectDir/schemas")
 }

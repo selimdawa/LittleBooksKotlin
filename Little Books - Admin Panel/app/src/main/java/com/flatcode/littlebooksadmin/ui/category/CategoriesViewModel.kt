@@ -1,4 +1,4 @@
-package com.flatcode.littlebooksadmin.ui.category
+﻿package com.flatcode.littlebooksadmin.ui.category
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -31,5 +31,3 @@ class CategoriesViewModel @Inject constructor(
         }
     }
 }
-
-

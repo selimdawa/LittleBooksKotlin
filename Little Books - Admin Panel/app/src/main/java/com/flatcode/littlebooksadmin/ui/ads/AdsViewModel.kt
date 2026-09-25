@@ -1,4 +1,4 @@
-package com.flatcode.littlebooksadmin.ui.ads
+﻿package com.flatcode.littlebooksadmin.ui.ads
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -47,5 +47,3 @@ class AdsViewModel @Inject constructor(
         }
     }
 }
-
-

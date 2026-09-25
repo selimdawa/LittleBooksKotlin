@@ -1,4 +1,4 @@
-package com.flatcode.littlebooksadmin.ui.book
+﻿package com.flatcode.littlebooksadmin.ui.book
 
 import android.view.LayoutInflater
 import android.view.View
@@ -109,6 +109,3 @@ class LinearBookAdapter(private val isUser: Boolean) :
 
     class ViewHolder(val binding: ItemBookLinearBinding) : RecyclerView.ViewHolder(binding.root)
 }
-
-
-

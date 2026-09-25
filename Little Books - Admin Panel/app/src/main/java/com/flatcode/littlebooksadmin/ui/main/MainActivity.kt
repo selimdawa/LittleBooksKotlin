@@ -1,4 +1,4 @@
-package com.flatcode.littlebooksadmin.ui.main
+﻿package com.flatcode.littlebooksadmin.ui.main
 
 import android.os.Bundle
 import com.flatcode.littlebooksadmin.utils.BaseActivity
@@ -16,4 +16,3 @@ class MainActivity : BaseActivity() {
         setContentView(binding.root)
     }
 }
-

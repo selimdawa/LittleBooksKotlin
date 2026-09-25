@@ -1,4 +1,4 @@
-package com.flatcode.littlebooksadmin.ui.profile
+﻿package com.flatcode.littlebooksadmin.ui.profile
 
 import android.content.Context
 import android.os.Bundle
@@ -116,7 +116,3 @@ class ProfileActivity : BaseActivity() {
         }
     }
 }
-
-
-
-

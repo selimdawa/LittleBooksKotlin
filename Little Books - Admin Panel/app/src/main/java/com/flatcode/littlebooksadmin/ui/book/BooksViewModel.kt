@@ -1,4 +1,4 @@
-package com.flatcode.littlebooksadmin.ui.book
+﻿package com.flatcode.littlebooksadmin.ui.book
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -65,5 +65,3 @@ class BooksViewModel @Inject constructor(
         }
     }
 }
-
-

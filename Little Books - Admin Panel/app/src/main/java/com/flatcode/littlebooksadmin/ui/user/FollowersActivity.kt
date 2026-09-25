@@ -1,4 +1,4 @@
-package com.flatcode.littlebooksadmin.ui.user
+﻿package com.flatcode.littlebooksadmin.ui.user
 
 import android.content.Context
 import android.os.Bundle
@@ -122,5 +122,3 @@ class FollowersActivity : BaseActivity() {
         viewModel.loadFollow(DATA.FirebaseUserUid, DATA.FOLLOWERS)
     }
 }
-
-

@@ -1,4 +1,4 @@
-package com.flatcode.littlebooksadmin.ui.auth
+﻿package com.flatcode.littlebooksadmin.ui.auth
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -27,5 +27,3 @@ class AuthViewModel @Inject constructor(
 
     fun isUserLoggedIn() = repository.isUserLoggedIn()
 }
-
-

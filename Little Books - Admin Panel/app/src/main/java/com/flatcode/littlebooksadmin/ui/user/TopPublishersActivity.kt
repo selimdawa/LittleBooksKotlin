@@ -1,4 +1,4 @@
-package com.flatcode.littlebooksadmin.ui.user
+﻿package com.flatcode.littlebooksadmin.ui.user
 
 import android.content.Context
 import android.os.Bundle
@@ -124,5 +124,3 @@ class TopPublishersActivity : BaseActivity() {
         viewModel.loadUsers(DATA.BOOKS_COUNT)
     }
 }
-
-

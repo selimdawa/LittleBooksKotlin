@@ -1,4 +1,4 @@
-package com.flatcode.littlebooksadmin.ui.user
+﻿package com.flatcode.littlebooksadmin.ui.user
 
 import android.view.LayoutInflater
 import android.view.View
@@ -107,5 +107,3 @@ class TopPublisherDiffCallback : DiffUtil.ItemCallback<User>() {
         return oldItem == newItem
     }
 }
-
-

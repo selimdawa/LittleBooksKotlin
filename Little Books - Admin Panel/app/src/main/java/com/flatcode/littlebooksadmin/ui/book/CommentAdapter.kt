@@ -1,4 +1,4 @@
-package com.flatcode.littlebooksadmin.ui.book
+﻿package com.flatcode.littlebooksadmin.ui.book
 
 import android.app.AlertDialog
 import android.content.Context
@@ -96,4 +96,3 @@ class CommentDiffCallback : DiffUtil.ItemCallback<Comment>() {
         return oldItem == newItem
     }
 }
-

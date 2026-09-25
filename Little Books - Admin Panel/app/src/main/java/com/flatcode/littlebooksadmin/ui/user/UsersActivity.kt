@@ -1,4 +1,4 @@
-package com.flatcode.littlebooksadmin.ui.user
+﻿package com.flatcode.littlebooksadmin.ui.user
 
 import android.content.Context
 import android.os.Bundle
@@ -146,5 +146,3 @@ class UsersActivity : BaseActivity() {
         viewModel.loadUsers(DATA.USER_NAME)
     }
 }
-
-
