@@ -3,19 +3,14 @@ package com.flatcode.littlebooks.ui.book
 import android.content.Context
 import android.os.Bundle
 import android.view.View
-import android.view.ViewGroup
 import android.widget.Toast
-import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.updateLayoutParams
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.flatcode.littlebooks.R
 import com.flatcode.littlebooks.databinding.ActivityBookViewBinding
+import com.flatcode.littlebooks.utils.BaseActivity
 import com.flatcode.littlebooks.utils.DATA
 import com.flatcode.littlebooks.utils.Resource
 import com.flatcode.littlebooks.viewmodel.BookViewModel
@@ -23,7 +18,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class BookViewActivity : AppCompatActivity() {
+class BookViewActivity : BaseActivity() {
 
     private var binding: ActivityBookViewBinding? = null
     var context: Context = this@BookViewActivity
@@ -32,19 +27,10 @@ class BookViewActivity : AppCompatActivity() {
     private val viewModel: BookViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         binding = ActivityBookViewBinding.inflate(layoutInflater)
         val view = binding!!.root
         setContentView(view)
-
-        ViewCompat.setOnApplyWindowInsetsListener(view) { _, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            binding!!.toolbar.item.updateLayoutParams<ViewGroup.MarginLayoutParams> {
-                topMargin = systemBars.top + 10 // Assuming same toolbar as BookAdd
-            }
-            insets
-        }
 
         val intent = intent
         bookId = intent.getStringExtra(DATA.BOOK_ID)

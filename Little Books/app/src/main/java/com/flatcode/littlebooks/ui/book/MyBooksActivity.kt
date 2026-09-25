@@ -5,19 +5,14 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
-import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
-import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.updateLayoutParams
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.flatcode.littlebooks.R
 import com.flatcode.littlebooks.databinding.ActivityPageLinearSwitchBinding
+import com.flatcode.littlebooks.utils.BaseActivity
 import com.flatcode.littlebooks.utils.DATA
 import com.flatcode.littlebooks.utils.Resource
 import com.flatcode.littlebooks.utils.loadBannerAd
@@ -27,7 +22,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class MyBooksActivity : AppCompatActivity() {
+class MyBooksActivity : BaseActivity() {
 
     private var binding: ActivityPageLinearSwitchBinding? = null
     private val context: Context = this@MyBooksActivity
@@ -37,19 +32,10 @@ class MyBooksActivity : AppCompatActivity() {
     private val viewModel: BookViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         binding = ActivityPageLinearSwitchBinding.inflate(layoutInflater)
         val view = binding!!.root
         setContentView(view)
-
-        ViewCompat.setOnApplyWindowInsetsListener(view) { _, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            binding!!.toolbar.item.updateLayoutParams<ViewGroup.MarginLayoutParams> {
-                topMargin = systemBars.top + 10
-            }
-            insets
-        }
 
         binding!!.toolbar.nameSpace.setText(R.string.my_books)
         binding!!.toolbar.close.setOnClickListener { onBackPressedDispatcher.onBackPressed() }

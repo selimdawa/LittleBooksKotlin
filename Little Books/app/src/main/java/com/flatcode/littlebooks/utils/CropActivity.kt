@@ -4,13 +4,12 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.IntentCompat
 import com.canhub.cropper.CropImageOptions
 import com.canhub.cropper.CropImageView
 import com.flatcode.littlebooks.databinding.ActivityCropBinding
 
-class CropActivity : AppCompatActivity() {
+class CropActivity : BaseActivity() {
 
     private lateinit var binding: ActivityCropBinding
     private var imageUri: Uri? = null

@@ -1,31 +1,26 @@
 package com.flatcode.littlebooks.ui.auth
 
-import androidx.appcompat.app.AlertDialog
 import android.content.Context
 import android.os.Bundle
 import android.text.TextUtils
 import android.util.Patterns
-import android.view.ViewGroup
 import android.widget.Toast
-import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.updateLayoutParams
+import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import com.flatcode.littlebooks.ui.main.MainActivity
-import com.flatcode.littlebooks.utils.openActivity
 import com.flatcode.littlebooks.databinding.ActivityRegisterBinding
+import com.flatcode.littlebooks.ui.main.MainActivity
+import com.flatcode.littlebooks.utils.BaseActivity
 import com.flatcode.littlebooks.utils.Resource
+import com.flatcode.littlebooks.utils.openActivity
 import com.flatcode.littlebooks.viewmodel.AuthViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class RegisterActivity : AppCompatActivity() {
+class RegisterActivity : BaseActivity() {
 
     private var binding: ActivityRegisterBinding? = null
     var context: Context = this@RegisterActivity
@@ -34,22 +29,10 @@ class RegisterActivity : AppCompatActivity() {
     private val viewModel: AuthViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         binding = ActivityRegisterBinding.inflate(layoutInflater)
         val view = binding!!.root
         setContentView(view)
-
-        ViewCompat.setOnApplyWindowInsetsListener(view) { _, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            binding!!.toolbarRl.updateLayoutParams<ViewGroup.MarginLayoutParams> {
-                topMargin = systemBars.top + 30 // Original margin was 30sp
-            }
-            binding!!.go.updateLayoutParams<ViewGroup.MarginLayoutParams> {
-                bottomMargin = systemBars.bottom + 20 // Original margin was 20sp
-            }
-            insets
-        }
 
         dialog = AlertDialog.Builder(this)
             .setTitle("Please wait...")
@@ -116,6 +99,3 @@ class RegisterActivity : AppCompatActivity() {
         }
     }
 }
-
-
-

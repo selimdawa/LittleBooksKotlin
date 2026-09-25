@@ -9,14 +9,10 @@ import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.Toast
-import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -26,6 +22,7 @@ import com.flatcode.littlebooksadmin.databinding.ActivityBookDetailsBinding
 import com.flatcode.littlebooksadmin.databinding.DialogCommentAddBinding
 import com.flatcode.littlebooksadmin.model.Comment
 import com.flatcode.littlebooksadmin.ui.profile.ProfileActivity
+import com.flatcode.littlebooksadmin.utils.BaseActivity
 import com.flatcode.littlebooksadmin.utils.DATA
 import com.flatcode.littlebooksadmin.utils.Resource
 import com.flatcode.littlebooksadmin.utils.checkFavorite
@@ -42,7 +39,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class BookDetailsActivity : AppCompatActivity() {
+class BookDetailsActivity : BaseActivity() {
 
     private lateinit var binding: ActivityBookDetailsBinding
     private val context: Context = this@BookDetailsActivity
@@ -56,15 +53,8 @@ class BookDetailsActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         binding = ActivityBookDetailsBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
 
         bookId = intent.getStringExtra(DATA.BOOK_ID)
 
@@ -135,7 +125,7 @@ class BookDetailsActivity : AppCompatActivity() {
 
                                     val date: String = Application.formatTimestamp(book.timestamp)
                                     binding.category.loadCategory(book.categoryId)
-                                    binding.size.loadPdfInfo(book.url)
+                                    binding.size.loadPdfInfo()
 
                                     binding.image.loadImage(
                                         isUser = false, url = book.image ?: DATA.BASIC
@@ -224,7 +214,7 @@ class BookDetailsActivity : AppCompatActivity() {
 
     private fun addCommentDialog() {
         val commentAddBinding = DialogCommentAddBinding.inflate(LayoutInflater.from(this))
-        val builder = AlertDialog.Builder(this, R.style.CustomDialog)
+        val builder = AlertDialog.Builder(this)
         builder.setView(commentAddBinding.root)
         val alertDialog = builder.create()
         alertDialog.show()

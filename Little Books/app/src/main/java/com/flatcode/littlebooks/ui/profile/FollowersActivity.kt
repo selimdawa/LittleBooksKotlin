@@ -5,20 +5,15 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
-import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
-import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.updateLayoutParams
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.flatcode.littlebooks.R
 import com.flatcode.littlebooks.databinding.ActivityPageStaggeredBinding
 import com.flatcode.littlebooks.ui.publisher.PublisherAdapter
+import com.flatcode.littlebooks.utils.BaseActivity
 import com.flatcode.littlebooks.utils.DATA
 import com.flatcode.littlebooks.utils.Resource
 import com.flatcode.littlebooks.utils.loadBannerAd
@@ -28,7 +23,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class FollowersActivity : AppCompatActivity() {
+class FollowersActivity : BaseActivity() {
 
     private var binding: ActivityPageStaggeredBinding? = null
     private val context: Context = this@FollowersActivity
@@ -37,19 +32,10 @@ class FollowersActivity : AppCompatActivity() {
     private val viewModel: FollowViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         binding = ActivityPageStaggeredBinding.inflate(layoutInflater)
         val view = binding!!.root
         setContentView(view)
-
-        ViewCompat.setOnApplyWindowInsetsListener(view) { _, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            binding!!.toolbar.item.updateLayoutParams<ViewGroup.MarginLayoutParams> {
-                topMargin = systemBars.top + 10 // Original margin 10sp
-            }
-            insets
-        }
 
         binding!!.toolbar.nameSpace.setText(R.string.followers)
         binding!!.toolbar.close.setOnClickListener { onBackPressedDispatcher.onBackPressed() }
