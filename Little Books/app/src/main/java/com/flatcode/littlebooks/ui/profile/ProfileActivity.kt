@@ -3,12 +3,14 @@ package com.flatcode.littlebooks.ui.profile
 import android.content.Context
 import android.os.Bundle
 import android.view.View
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.flatcode.littlebooks.R
 import com.flatcode.littlebooks.databinding.ActivityProfileBinding
+import com.flatcode.littlebooks.ui.main.MainActivity
 import com.flatcode.littlebooks.utils.BaseActivity
 import com.flatcode.littlebooks.utils.DATA
 import com.flatcode.littlebooks.utils.Resource
@@ -34,6 +36,17 @@ class ProfileActivity : BaseActivity() {
         setContentView(view)
 
         profileId = intent.getStringExtra(DATA.PROFILE_ID)
+
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (isTaskRoot) {
+                    openActivity<MainActivity>(clear = true)
+                } else {
+                    isEnabled = false
+                    onBackPressedDispatcher.onBackPressed()
+                }
+            }
+        })
 
         setupUI()
         observeViewModel()

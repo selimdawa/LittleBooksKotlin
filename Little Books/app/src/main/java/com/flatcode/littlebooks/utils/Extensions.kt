@@ -3,6 +3,7 @@ package com.flatcode.littlebooks.utils
 import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.Context
+import android.content.ContextWrapper
 import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
@@ -63,6 +64,15 @@ inline fun <reified T : Activity> Context.openActivity(
         }
     }
     startActivity(intent)
+}
+
+fun Context.findActivity(): Activity? {
+    var ctx = this
+    while (ctx is ContextWrapper) {
+        if (ctx is Activity) return ctx
+        ctx = ctx.baseContext
+    }
+    return null
 }
 
 fun Context.shareApp() {

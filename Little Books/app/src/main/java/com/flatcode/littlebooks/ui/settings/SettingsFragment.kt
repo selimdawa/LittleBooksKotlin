@@ -47,13 +47,12 @@ class SettingsFragment : Fragment() {
         binding = FragmentSettingsBinding.inflate(inflater, container, false)
 
         adapter = SettingAdapter { item ->
-            val id = item.id
-            when (id) {
-                "8" -> context?.dialogAboutApp()
-                "9" -> context?.dialogLogout()
-                "10" -> context?.shareApp()
-                "11" -> context?.rateApp()
-                else -> context?.openActivity<Activity>()
+            when (item.id) {
+                DATA.ABOUT_APP -> context?.dialogAboutApp()
+                DATA.LOGOUT -> context?.dialogLogout()
+                DATA.SHARE_APP -> context?.shareApp()
+                DATA.RATE_APP -> context?.rateApp()
+                else -> item.c?.let { context?.openActivity<Activity>() }
             }
         }
         binding!!.recyclerView.adapter = adapter
@@ -112,12 +111,12 @@ class SettingsFragment : Fragment() {
         val list = mutableListOf<Setting>()
         list.add(
             Setting(
-                "1", "Edit Profile", R.drawable.ic_edit_white, 0, ProfileEditActivity::class.java
+                DATA.EDIT_PROFILE, "Edit Profile", R.drawable.ic_edit_white, 0, ProfileEditActivity::class.java
             )
         )
         list.add(
             Setting(
-                "2",
+                DATA.EXPLORE_PUBLISHERS,
                 "Explore Publishers",
                 R.drawable.ic_search_person,
                 explorePublishers,
@@ -126,36 +125,36 @@ class SettingsFragment : Fragment() {
         )
         list.add(
             Setting(
-                "3", "Followers", R.drawable.ic_followers, followers, FollowersActivity::class.java
+                DATA.FOLLOWERS_ID, "Followers", R.drawable.ic_followers, followers, FollowersActivity::class.java
             )
         )
         list.add(
             Setting(
-                "4", "Following", R.drawable.ic_following, following, FollowingActivity::class.java
+                DATA.FOLLOWING_ID, "Following", R.drawable.ic_following, following, FollowingActivity::class.java
             )
         )
         list.add(
             Setting(
-                "5", "My books", R.drawable.ic_books, myBooks, MyBooksActivity::class.java
+                DATA.MY_BOOKS, "My books", R.drawable.ic_books, myBooks, MyBooksActivity::class.java
             )
         )
-        list.add(Setting("6", "Add book", R.drawable.ic_book_white, 0, BookAddActivity::class.java))
+        list.add(Setting(DATA.ADD_BOOK, "Add book", R.drawable.ic_book_white, 0, BookAddActivity::class.java))
         list.add(
             Setting(
-                "7",
+                DATA.FAVORITES_ID,
                 "Favorites",
                 R.drawable.ic_star_selected,
                 favorites,
                 FavoritesActivity::class.java
             )
         )
-        list.add(Setting("8", "About App", R.drawable.ic_info, 0, null))
-        list.add(Setting("9", "Logout", R.drawable.ic_logout_white, 0, null))
-        list.add(Setting("10", "Share App", R.drawable.ic_share, 0, null))
-        list.add(Setting("11", "Rate APP", R.drawable.ic_heart_selected, 0, null))
+        list.add(Setting(DATA.ABOUT_APP, "About App", R.drawable.ic_info, 0, null))
+        list.add(Setting(DATA.LOGOUT, "Logout", R.drawable.ic_logout_white, 0, null))
+        list.add(Setting(DATA.SHARE_APP, "Share App", R.drawable.ic_share, 0, null))
+        list.add(Setting(DATA.RATE_APP, "Rate APP", R.drawable.ic_heart_selected, 0, null))
         list.add(
             Setting(
-                "12",
+                DATA.PRIVACY_POLICY_ID,
                 "Privacy Policy",
                 R.drawable.ic_privacy_policy,
                 0,

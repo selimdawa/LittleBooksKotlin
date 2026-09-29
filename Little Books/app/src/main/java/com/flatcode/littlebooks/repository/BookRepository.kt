@@ -3,8 +3,12 @@ package com.flatcode.littlebooks.repository
 import android.net.Uri
 import com.flatcode.littlebooks.db.BookDao
 import com.flatcode.littlebooks.db.CommentDao
+import com.flatcode.littlebooks.db.FavoriteDao
+import com.flatcode.littlebooks.db.SliderDao
 import com.flatcode.littlebooks.model.Book
 import com.flatcode.littlebooks.model.Comment
+import com.flatcode.littlebooks.model.FavoriteEntity
+import com.flatcode.littlebooks.model.SliderEntity
 import com.flatcode.littlebooks.utils.DATA
 import com.flatcode.littlebooks.utils.Resource
 import com.flatcode.littlebooks.utils.cloudinaryUpload
@@ -20,8 +24,33 @@ import javax.inject.Singleton
 class BookRepository @Inject constructor(
     private val db: FirebaseDatabase,
     private val bookDao: BookDao,
-    private val commentDao: CommentDao
+    private val commentDao: CommentDao,
+    private val favoriteDao: FavoriteDao,
+    private val sliderDao: SliderDao
 ) {
+
+    suspend fun toggleFavorite(
+        userId: String, bookId: String, isFavorite: Boolean
+    ): Resource<Unit> {
+        return try {
+            val ref = db.getReference(DATA.FAVORITES).child(userId).child(bookId)
+            if (isFavorite) {
+                ref.setValue(true).await()
+                favoriteDao.insertFavorite(FavoriteEntity(userId, bookId))
+            } else {
+                ref.removeValue().await()
+                favoriteDao.deleteFavorite(userId, bookId)
+            }
+            Resource.Success(Unit)
+        } catch (_: Exception) {
+            if (isFavorite) {
+                favoriteDao.insertFavorite(FavoriteEntity(userId, bookId))
+            } else {
+                favoriteDao.deleteFavorite(userId, bookId)
+            }
+            Resource.Success(Unit)
+        }
+    }
 
     suspend fun syncBooksFromRemote(orderBy: String = "", limit: Int = 0): Resource<Unit> {
         return try {
@@ -49,12 +78,22 @@ class BookRepository @Inject constructor(
         return try {
             val snapshot = db.getReference(DATA.SLIDER_SHOW).get().await()
             val list = mutableListOf<String>()
+            val sliderList = mutableListOf<SliderEntity>()
+            var index = 0
             for (data in snapshot.children) {
-                data.value?.toString()?.let { list.add(it) }
+                val url = data.value?.toString()
+                if (!url.isNullOrEmpty()) {
+                    list.add(url)
+                    sliderList.add(SliderEntity(index.toString(), url, index++))
+                }
             }
+            sliderDao.deleteAllSliderImages()
+            sliderDao.insertSliderImages(sliderList)
             Resource.Success(list)
         } catch (e: Exception) {
-            Resource.Error(e.message ?: "An unknown error occurred")
+            val localList = sliderDao.getSliderImages().first().map { it.image }
+            if (localList.isNotEmpty()) Resource.Success(localList)
+            else Resource.Error(e.message ?: "An unknown error occurred")
         }
     }
 
@@ -64,7 +103,6 @@ class BookRepository @Inject constructor(
             val list = bookDao.getAllBooks().first()
             Resource.Success(list)
         } catch (e: Exception) {
-            // Fallback to local if remote fails
             val localList = bookDao.getAllBooks().first()
             if (localList.isNotEmpty()) Resource.Success(localList)
             else Resource.Error(e.message ?: "An unknown error occurred")
@@ -122,21 +160,6 @@ class BookRepository @Inject constructor(
     suspend fun addComment(bookId: String, commentData: Map<String, Any>): Resource<Unit> {
         return try {
             db.getReference(DATA.COMMENTS).child(bookId).push().setValue(commentData).await()
-            // Note: We don't have the comment object here easily without parsing map, 
-            // usually we'd insert into local db after a successful remote add or sync.
-            Resource.Success(Unit)
-        } catch (e: Exception) {
-            Resource.Error(e.message ?: "An unknown error occurred")
-        }
-    }
-
-    suspend fun toggleFavorite(
-        userId: String, bookId: String, isFavorite: Boolean
-    ): Resource<Unit> {
-        return try {
-            val ref = db.getReference(DATA.FAVORITES).child(userId).child(bookId)
-            if (isFavorite) ref.setValue(true).await()
-            else ref.removeValue().await()
             Resource.Success(Unit)
         } catch (e: Exception) {
             Resource.Error(e.message ?: "An unknown error occurred")
@@ -156,17 +179,23 @@ class BookRepository @Inject constructor(
         return try {
             val favSnapshot = db.getReference(DATA.FAVORITES).child(userId).get().await()
             val bookList = mutableListOf<Book>()
+            val favList = mutableListOf<FavoriteEntity>()
             for (data in favSnapshot.children) {
                 val bookId = data.key ?: continue
+                favList.add(FavoriteEntity(userId, bookId))
                 val bookSnapshot = db.getReference(DATA.BOOKS).child(bookId).get().await()
                 bookSnapshot.getValue(Book::class.java)?.let {
                     bookList.add(it)
                     bookDao.insertBook(it)
                 }
             }
+            favoriteDao.deleteAllFavoritesForUser(userId)
+            favoriteDao.insertFavorites(favList)
             Resource.Success(bookList)
         } catch (e: Exception) {
-            Resource.Error(e.message ?: "An unknown error occurred")
+            val localFavorites = favoriteDao.getFavoriteBooks(userId).first()
+            if (localFavorites.isNotEmpty()) Resource.Success(localFavorites)
+            else Resource.Error(e.message ?: "An unknown error occurred")
         }
     }
 
@@ -217,7 +246,6 @@ class BookRepository @Inject constructor(
         return try {
             val id = bookData[DATA.ID] as String
             db.getReference(DATA.BOOKS).child(id).setValue(bookData).await()
-            // We should ideally create a Book object from bookData and insert to Room
             Resource.Success(id)
         } catch (e: Exception) {
             Resource.Error(e.message ?: "An unknown error occurred")
@@ -227,7 +255,6 @@ class BookRepository @Inject constructor(
     suspend fun updateBook(bookId: String, hashMap: Map<String, Any?>): Resource<Unit> {
         return try {
             db.getReference(DATA.BOOKS).child(bookId).updateChildren(hashMap).await()
-            // Fetch updated book and sync to Room
             val snapshot = db.getReference(DATA.BOOKS).child(bookId).get().await()
             snapshot.getValue(Book::class.java)?.let { bookDao.insertBook(it) }
             Resource.Success(Unit)

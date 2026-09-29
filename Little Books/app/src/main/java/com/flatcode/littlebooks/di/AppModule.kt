@@ -7,7 +7,10 @@ import com.flatcode.littlebooks.db.AppDatabase
 import com.flatcode.littlebooks.db.BookDao
 import com.flatcode.littlebooks.db.CategoryDao
 import com.flatcode.littlebooks.db.CommentDao
+import com.flatcode.littlebooks.db.FavoriteDao
+import com.flatcode.littlebooks.db.InterestedDao
 import com.flatcode.littlebooks.db.SettingDao
+import com.flatcode.littlebooks.db.SliderDao
 import com.flatcode.littlebooks.db.UserDao
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
@@ -55,4 +58,13 @@ object AppModule {
 
     @Provides
     fun provideSettingDao(db: AppDatabase): SettingDao = db.settingDao()
+
+    @Provides
+    fun provideFavoriteDao(db: AppDatabase): FavoriteDao = db.favoriteDao()
+
+    @Provides
+    fun provideInterestedDao(db: AppDatabase): InterestedDao = db.interestedDao()
+
+    @Provides
+    fun provideSliderDao(db: AppDatabase): SliderDao = db.sliderDao()
 }

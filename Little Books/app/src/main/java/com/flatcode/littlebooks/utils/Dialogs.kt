@@ -1,6 +1,5 @@
 package com.flatcode.littlebooks.utils
 
-import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
@@ -18,10 +17,10 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.firebase.auth.FirebaseAuth
 
 fun Context.closeApp() {
-    val activity = this as? Activity ?: return
+    val activity = this.findActivity() ?: return
     if (activity.isFinishing || activity.isDestroyed) return
 
-    val dialogBinding = DialogCloseAppBinding.inflate(layoutInflater)
+    val dialogBinding = DialogCloseAppBinding.inflate(activity.layoutInflater)
     val alertDialog = MaterialAlertDialogBuilder(this).setView(dialogBinding.root).create()
 
     alertDialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
@@ -41,10 +40,10 @@ fun Context.closeApp() {
 }
 
 fun Context.dialogLogout() {
-    val activity = this as? Activity ?: return
+    val activity = this.findActivity() ?: return
     if (activity.isFinishing || activity.isDestroyed) return
 
-    val dialogBinding = DialogLogoutBinding.inflate(layoutInflater)
+    val dialogBinding = DialogLogoutBinding.inflate(activity.layoutInflater)
     val alertDialog = MaterialAlertDialogBuilder(this).setView(dialogBinding.root).create()
 
     alertDialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
@@ -66,10 +65,10 @@ fun Context.dialogLogout() {
 }
 
 fun Context.dialogAboutApp() {
-    val activity = this as? Activity ?: return
+    val activity = this.findActivity() ?: return
     if (activity.isFinishing || activity.isDestroyed) return
 
-    val dialogBinding = DialogAboutAppBinding.inflate(layoutInflater)
+    val dialogBinding = DialogAboutAppBinding.inflate(activity.layoutInflater)
     val alertDialog = MaterialAlertDialogBuilder(this).setView(dialogBinding.root).create()
 
     alertDialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
@@ -102,7 +101,7 @@ fun Context.dialogAboutApp() {
 
 fun Context.moreOptionDialog(item: Book?) {
     item ?: return
-    val activity = this as? Activity ?: return
+    val activity = this.findActivity() ?: return
     val options = arrayOf("Edit", "Delete")
     AlertDialog.Builder(this).setTitle("Choose Options").setItems(options) { _, which ->
         if (which == 0) activity.openActivity<BookEditActivity>(false, DATA.BOOK_ID to item.id)
@@ -113,10 +112,10 @@ fun Context.moreOptionDialog(item: Book?) {
 fun Context.dialogOptionDelete(
     publisher: String?, bookId: String?, bookTitle: String,
 ) {
-    val activity = this as? Activity ?: return
+    val activity = this.findActivity() ?: return
     if (activity.isFinishing || activity.isDestroyed) return
 
-    val dialogBinding = DialogLogoutBinding.inflate(layoutInflater)
+    val dialogBinding = DialogLogoutBinding.inflate(activity.layoutInflater)
     val alertDialog = MaterialAlertDialogBuilder(this).setView(dialogBinding.root).create()
 
     alertDialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
