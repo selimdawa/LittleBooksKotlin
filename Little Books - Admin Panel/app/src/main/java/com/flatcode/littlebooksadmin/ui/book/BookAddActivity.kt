@@ -22,6 +22,7 @@ import com.flatcode.littlebooksadmin.R
 import com.flatcode.littlebooksadmin.databinding.ActivityBookAddBinding
 import com.flatcode.littlebooksadmin.model.Category
 import com.flatcode.littlebooksadmin.utils.Resource
+import com.flatcode.littlebooksadmin.utils.isNetworkAvailable
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -160,6 +161,8 @@ class BookAddActivity : BaseActivity() {
             Toast.makeText(context, R.string.pick_category, Toast.LENGTH_SHORT).show()
         } else if (uri == null) {
             Toast.makeText(context, R.string.pick_book, Toast.LENGTH_SHORT).show()
+        } else if (!isNetworkAvailable()) {
+            Toast.makeText(context, getString(R.string.no_internet_connection), Toast.LENGTH_SHORT).show()
         } else {
             viewModel.uploadBook(uri!!, title, description, selectedId ?: "", imageUri)
         }

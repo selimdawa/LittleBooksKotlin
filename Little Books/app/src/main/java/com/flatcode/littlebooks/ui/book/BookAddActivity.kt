@@ -20,6 +20,7 @@ import com.flatcode.littlebooks.utils.BaseActivity
 import com.flatcode.littlebooks.utils.DATA
 import com.flatcode.littlebooks.utils.PermissionUtils
 import com.flatcode.littlebooks.utils.Resource
+import com.flatcode.littlebooks.utils.isNetworkAvailable
 import com.flatcode.littlebooks.viewmodel.BookViewModel
 import com.flatcode.littlebooks.viewmodel.CategoryViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -157,6 +158,8 @@ class BookAddActivity : BaseActivity() {
             Toast.makeText(context, "Pick Book...", Toast.LENGTH_SHORT).show()
         } else if (imageUri == null) {
             Toast.makeText(context, "Pick Image...", Toast.LENGTH_SHORT).show()
+        } else if (!isNetworkAvailable()) {
+            Toast.makeText(context, getString(R.string.no_internet_connection), Toast.LENGTH_SHORT).show()
         } else {
             bookViewModel.uploadBookFile(uri!!)
         }

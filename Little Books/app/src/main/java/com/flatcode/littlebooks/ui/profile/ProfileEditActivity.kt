@@ -22,6 +22,7 @@ import com.flatcode.littlebooks.utils.BaseActivity
 import com.flatcode.littlebooks.utils.DATA
 import com.flatcode.littlebooks.utils.PermissionUtils
 import com.flatcode.littlebooks.utils.Resource
+import com.flatcode.littlebooks.utils.isNetworkAvailable
 import com.flatcode.littlebooks.utils.loadImage
 import com.flatcode.littlebooks.viewmodel.ProfileViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -143,6 +144,8 @@ class ProfileEditActivity : BaseActivity() {
         username = binding!!.nameEt.text.toString().trim()
         if (TextUtils.isEmpty(username)) {
             Toast.makeText(context, "Enter name...", Toast.LENGTH_SHORT).show()
+        } else if (!isNetworkAvailable()) {
+            Toast.makeText(context, getString(R.string.no_internet_connection), Toast.LENGTH_SHORT).show()
         } else {
             if (imageUri == null) {
                 updateProfile(null)

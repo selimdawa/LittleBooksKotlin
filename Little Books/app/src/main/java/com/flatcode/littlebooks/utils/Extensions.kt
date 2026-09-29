@@ -66,6 +66,14 @@ inline fun <reified T : Activity> Context.openActivity(
     startActivity(intent)
 }
 
+fun Context.isNetworkAvailable(): Boolean {
+    val connectivityManager =
+        getSystemService(Context.CONNECTIVITY_SERVICE) as? android.net.ConnectivityManager ?: return false
+    val network = connectivityManager.activeNetwork ?: return false
+    val capabilities = connectivityManager.getNetworkCapabilities(network) ?: return false
+    return capabilities.hasCapability(android.net.NetworkCapabilities.NET_CAPABILITY_INTERNET)
+}
+
 fun Context.findActivity(): Activity? {
     var ctx = this
     while (ctx is ContextWrapper) {
