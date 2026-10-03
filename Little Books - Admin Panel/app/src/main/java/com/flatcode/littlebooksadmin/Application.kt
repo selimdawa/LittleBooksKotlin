@@ -19,10 +19,8 @@ class Application : Application() {
             Timber.plant(Timber.DebugTree())
         }
 
-        val config = mapOf(
-            "cloud_name" to DATA.CLOUDINARY_CLOUD_NAME,
-            "upload_preset" to DATA.CLOUDINARY_UPLOAD_PRESET
-        )
+        val config = HashMap<String, String>()
+        config["cloud_name"] = DATA.CLOUDINARY_CLOUD_NAME
         MediaManager.init(this, config)
     }
 

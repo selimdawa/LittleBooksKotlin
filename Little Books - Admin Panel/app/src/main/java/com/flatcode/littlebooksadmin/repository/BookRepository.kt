@@ -51,8 +51,7 @@ class BookRepository @Inject constructor(
     }
 
     fun getBooks(
-        orderBy: String = DATA.TIMESTAMP,
-        publisherId: String? = null
+        orderBy: String = DATA.TIMESTAMP, publisherId: String? = null
     ): Flow<Resource<List<Book>>> = callbackFlow {
         trySend(Resource.Loading())
         val ref = db.getReference(DATA.BOOKS).orderByChild(orderBy)
@@ -115,10 +114,7 @@ class BookRepository @Inject constructor(
     }
 
     suspend fun uploadBook(
-        uri: Uri,
-        title: String,
-        description: String,
-        categoryId: String
+        uri: Uri, title: String, description: String, categoryId: String
     ): Resource<String> = suspendCancellableCoroutine { continuation ->
         val ref = db.getReference(DATA.BOOKS)
         val id = ref.push().key
@@ -127,9 +123,8 @@ class BookRepository @Inject constructor(
             return@suspendCancellableCoroutine
         }
 
-        MediaManager.get().upload(uri)
-            .option("folder", "PDF/Books/")
-            .option("public_id", id)
+        MediaManager.get().upload(uri).unsigned(DATA.CLOUDINARY_UPLOAD_PRESET)
+            .option("folder", "PDF/Books/").option("public_id", id)
             .callback(object : UploadCallback {
                 override fun onStart(requestId: String?) {}
                 override fun onProgress(requestId: String?, bytes: Long, totalBytes: Long) {}
@@ -181,12 +176,10 @@ class BookRepository @Inject constructor(
     }
 
     suspend fun uploadBookImage(
-        bookId: String,
-        uri: Uri
+        bookId: String, uri: Uri
     ): Resource<Unit> = suspendCancellableCoroutine { continuation ->
-        MediaManager.get().upload(uri)
-            .option("folder", "BookImages/")
-            .option("public_id", bookId)
+        MediaManager.get().upload(uri).unsigned(DATA.CLOUDINARY_UPLOAD_PRESET)
+            .option("folder", "BookImages/").option("public_id", bookId)
             .callback(object : UploadCallback {
                 override fun onStart(requestId: String?) {}
                 override fun onProgress(requestId: String?, bytes: Long, totalBytes: Long) {}
@@ -292,8 +285,7 @@ class BookRepository @Inject constructor(
     }
 
     fun getBooksByCategory(
-        categoryId: String,
-        orderBy: String = DATA.TIMESTAMP
+        categoryId: String, orderBy: String = DATA.TIMESTAMP
     ): Flow<Resource<List<Book>>> = callbackFlow {
         trySend(Resource.Loading())
         val ref = db.getReference(DATA.BOOKS).orderByChild(orderBy)

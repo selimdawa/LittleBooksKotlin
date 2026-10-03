@@ -46,8 +46,17 @@ class UserRepository @Inject constructor(
             override fun onDataChange(snapshot: DataSnapshot) {
                 val users = mutableListOf<User>()
                 for (data in snapshot.children) {
-                    val user = data.getValue(User::class.java)
-                    user?.let { users.add(it) }
+                    try {
+                        val user = data.getValue(User::class.java)
+                        user?.let {
+                            if (it.id.isEmpty()) {
+                                it.id = data.key ?: ""
+                            }
+                            users.add(it)
+                        }
+                    } catch (_: Exception) {
+                        // Skip corrupted user nodes
+                    }
                 }
                 trySend(Resource.Success(users.reversed()))
             }
@@ -140,7 +149,9 @@ class UserRepository @Inject constructor(
             val updates = mutableMapOf<String, Any>(DATA.USER_NAME to username)
 
             if (imageUri != null) {
-                MediaManager.get().upload(imageUri).option("folder", "Images/Profile/")
+                MediaManager.get().upload(imageUri)
+                    .unsigned(DATA.CLOUDINARY_UPLOAD_PRESET)
+                    .option("folder", "Images/Profile/")
                     .option("public_id", myId).callback(object : UploadCallback {
                         override fun onStart(requestId: String?) {}
                         override fun onProgress(
@@ -206,9 +217,17 @@ class UserRepository @Inject constructor(
                     override fun onDataChange(usersSnapshot: DataSnapshot) {
                         val users = mutableListOf<User>()
                         for (data in usersSnapshot.children) {
-                            val user = data.getValue(User::class.java)
-                            if (user != null && followIds.contains(user.id)) {
-                                users.add(user)
+                            try {
+                                val user = data.getValue(User::class.java)
+                                if (user != null) {
+                                    if (user.id.isEmpty()) {
+                                        user.id = data.key ?: ""
+                                    }
+                                    if (followIds.contains(user.id)) {
+                                        users.add(user)
+                                    }
+                                }
+                            } catch (_: Exception) {
                             }
                         }
                         trySend(Resource.Success(users.reversed()))

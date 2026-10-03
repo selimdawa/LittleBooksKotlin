@@ -26,11 +26,17 @@ class AdsRepository @Inject constructor(
             override fun onDataChange(snapshot: DataSnapshot) {
                 val users = mutableListOf<User>()
                 for (data in snapshot.children) {
-                    val user = data.getValue(User::class.java)
-                    user?.let {
-                        if (it.adLoad != 0 || it.adClick != 0) {
-                            users.add(it)
+                    try {
+                        val user = data.getValue(User::class.java)
+                        user?.let {
+                            if (it.id.isEmpty()) {
+                                it.id = data.key ?: ""
+                            }
+                            if (it.adLoad != 0 || it.adClick != 0) {
+                                users.add(it)
+                            }
                         }
+                    } catch (_: Exception) {
                     }
                 }
                 trySend(Resource.Success(users.reversed()))

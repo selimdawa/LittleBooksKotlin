@@ -55,9 +55,7 @@ class DashboardFragment : Fragment() {
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         _binding = FragmentDashboardBinding.inflate(inflater, container, false)
         return binding.root
@@ -89,8 +87,7 @@ class DashboardFragment : Fragment() {
                             is Resource.Success -> {
                                 resource.data?.let { user ->
                                     binding.toolbar.image.loadImage(
-                                        isUser = true,
-                                        url = user.profileImage ?: DATA.BASIC
+                                        isUser = true, url = user.profileImage ?: DATA.BASIC
                                     )
                                 }
                             }

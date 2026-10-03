@@ -21,7 +21,7 @@
     <string name="no">NO</string>
     <string name="yes">YES</string>
     <string name="none_display">There are no items to display</string>
-    <string name="editors_choice">Editors’ Choice</string>
+    <string name="editors_choice">Editor\'s Choice</string>
     <string name="most_views">Most Views</string>
     <string name="most_loves">Most Loves</string>
     <string name="most_downloads">Most Downloads</string>
@@ -122,7 +122,7 @@
     <string name="books_deleted_successfully">Books Deleted Successfully&#8230;</string>
     <string name="category_deleted_successfully">category Deleted Successfully&#8230;</string>
     <string name="saved_to_download_folder">Saved to Download Folder</string>
-    <string name="editors_choice_updated">Editors’ Choice updated&#8230;</string>
+    <string name="editors_choice_updated">Editor\'s Choice updated&#8230;</string>
     <string name="choose_options">Choose Options</string>
     <string name="sending_password_recovery">Sending password recovery to instructions to %1$s</string>
     <string name="instructions_sent">Instructions to reset password sent to %1$s</string>
@@ -143,7 +143,7 @@
     <string name="photo_posted">The photo has been posted</string>
     <string name="deleting_item">Deleting %1$s &#8230;</string>
     <string name="downloading_item">Downloading %1$s&#8230;</string>
-    <string name="updating_editors_choice">Updating Editors’ Choice&#8230;</string>
+    <string name="updating_editors_choice">Updating Editor\'s Choice&#8230;</string>
     <string name="failed_saving_to_download_folder">Failed saving to Download Folder due to %1$s</string>
     <string name="image_updated">Image updated&#8230;</string>
     <string name="delete">Delete</string>

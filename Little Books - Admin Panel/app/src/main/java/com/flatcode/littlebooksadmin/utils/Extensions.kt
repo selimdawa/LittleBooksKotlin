@@ -1,15 +1,20 @@
 package com.flatcode.littlebooksadmin.utils
 
+import android.Manifest
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import coil3.load
 import coil3.request.crossfade
 import coil3.request.error
@@ -59,17 +64,60 @@ fun Context.isNetworkAvailable(): Boolean {
     return capabilities.hasCapability(android.net.NetworkCapabilities.NET_CAPABILITY_INTERNET)
 }
 
-fun Context.startCropActivity(
-    uri: Uri, aspectRatioX: Int = 1, aspectRatioY: Int = 1, isOval: Boolean = false
-): Intent {
-    return Intent(this, CropActivity::class.java).apply {
+fun Context.checkStoragePermission(): Boolean {
+    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        ContextCompat.checkSelfPermission(
+            this, Manifest.permission.READ_MEDIA_IMAGES
+        ) == PackageManager.PERMISSION_GRANTED
+    } else {
+        ContextCompat.checkSelfPermission(
+            this, Manifest.permission.READ_EXTERNAL_STORAGE
+        ) == PackageManager.PERMISSION_GRANTED
+    }
+}
+
+fun Activity.requestStoragePermission(requestCode: Int) {
+    val permissions = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        arrayOf(Manifest.permission.READ_MEDIA_IMAGES)
+    } else {
+        arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)
+    }
+    ActivityCompat.requestPermissions(this, permissions, requestCode)
+}
+
+fun Activity.requestStorage(requestCode: Int, onGranted: () -> Unit) {
+    if (checkStoragePermission()) {
+        onGranted()
+    } else {
+        requestStoragePermission(requestCode)
+    }
+}
+
+fun Activity.pickImage(requestCode: Int) {
+    val intent = Intent(Intent.ACTION_GET_CONTENT).apply {
+        type = "image/*"
+    }
+    startActivityForResult(Intent.createChooser(intent, "Select Picture"), requestCode)
+}
+
+fun Activity.cropImage(
+    uri: Uri,
+    aspectRatioX: Int = 1,
+    aspectRatioY: Int = 1,
+    isOval: Boolean = false,
+    minWidth: Int = DATA.MIX_SQUARE,
+    minHeight: Int = DATA.MIX_SQUARE,
+    requestCode: Int = DATA.MIX_SQUARE
+) {
+    val intent = Intent(this, CropActivity::class.java).apply {
         putExtra("IMAGE_URI", uri)
         putExtra("ASPECT_RATIO_X", aspectRatioX)
         putExtra("ASPECT_RATIO_Y", aspectRatioY)
         putExtra("IS_OVAL", isOval)
-        putExtra("MIN_WIDTH", DATA.MIX_SQUARE)
-        putExtra("MIN_HEIGHT", DATA.MIX_SQUARE)
+        putExtra("MIN_WIDTH", minWidth)
+        putExtra("MIN_HEIGHT", minHeight)
     }
+    startActivityForResult(intent, requestCode)
 }
 
 fun TextView.loadPdfInfo() {

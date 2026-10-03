@@ -1,26 +1,26 @@
 package com.flatcode.littlebooksadmin.ui.profile
 
-import android.app.Activity
-import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.text.TextUtils
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
-import com.flatcode.littlebooksadmin.utils.BaseActivity
+import androidx.core.content.IntentCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import com.canhub.cropper.CropImageContract
-import com.canhub.cropper.CropImageContractOptions
-import com.canhub.cropper.CropImageOptions
-import com.canhub.cropper.CropImageView
 import com.flatcode.littlebooksadmin.R
 import com.flatcode.littlebooksadmin.databinding.ActivityProfileEditBinding
+import com.flatcode.littlebooksadmin.utils.BaseActivity
 import com.flatcode.littlebooksadmin.utils.DATA
 import com.flatcode.littlebooksadmin.utils.Resource
+import com.flatcode.littlebooksadmin.utils.cropImage
 import com.flatcode.littlebooksadmin.utils.loadImage
+import com.flatcode.littlebooksadmin.utils.pickImage
+import com.flatcode.littlebooksadmin.utils.requestStorage
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -28,42 +28,10 @@ import kotlinx.coroutines.launch
 class ProfileEditActivity : BaseActivity() {
 
     private lateinit var binding: ActivityProfileEditBinding
-    private var activity: Activity? = null
-    private val context: Context = also { activity = it as Activity }
     private var imageUri: Uri? = null
     private var dialog: AlertDialog? = null
 
     private val viewModel: ProfileViewModel by viewModels()
-
-    private val cropImage = registerForActivityResult(CropImageContract()) { result ->
-        if (result.isSuccessful) {
-            imageUri = result.uriContent
-            binding.profileImage.setImageURI(imageUri)
-        } else {
-            val exception = result.error
-            exception?.let {
-                Toast.makeText(
-                    context, getString(R.string.error_message, it.message), Toast.LENGTH_SHORT
-                ).show()
-            }
-        }
-    }
-
-    private fun startCrop() {
-        cropImage.launch(
-            CropImageContractOptions(
-                uri = null, cropImageOptions = CropImageOptions(
-                    guidelines = CropImageView.Guidelines.ON,
-                    aspectRatioX = 1,
-                    aspectRatioY = 1,
-                    fixAspectRatio = true,
-                    minCropResultWidth = DATA.MIX_SQUARE,
-                    minCropResultHeight = DATA.MIX_SQUARE,
-                    cropShape = CropImageView.CropShape.RECTANGLE
-                )
-            )
-        )
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -80,7 +48,11 @@ class ProfileEditActivity : BaseActivity() {
         binding.toolbar.nameSpace.setText(R.string.edit_profile)
         binding.toolbar.back.setOnClickListener { onBackPressedDispatcher.onBackPressed() }
 
-        binding.image.setOnClickListener { startCrop() }
+        binding.image.setOnClickListener {
+            requestStorage(DATA.MIX_SQUARE) {
+                pickImage(DATA.MIX_SQUARE)
+            }
+        }
         binding.go.setOnClickListener { validateData() }
     }
 
@@ -94,14 +66,18 @@ class ProfileEditActivity : BaseActivity() {
                             is Resource.Success -> {
                                 resource.data?.let { user ->
                                     binding.nameEt.setText(user.username)
-                                    binding.profileImage.loadImage(
-                                        isUser = true, url = user.profileImage ?: DATA.BASIC
-                                    )
+                                    if (imageUri == null) {
+                                        binding.profileImage.loadImage(
+                                            isUser = true, url = user.profileImage ?: DATA.BASIC
+                                        )
+                                    }
                                 }
                             }
 
                             is Resource.Error -> {
-                                Toast.makeText(context, resource.message, Toast.LENGTH_SHORT).show()
+                                Toast.makeText(
+                                    this@ProfileEditActivity, resource.message, Toast.LENGTH_SHORT
+                                ).show()
                             }
                         }
                     }
@@ -110,7 +86,7 @@ class ProfileEditActivity : BaseActivity() {
                     viewModel.updateState.collect { resource ->
                         when (resource) {
                             is Resource.Loading -> {
-                                dialog = AlertDialog.Builder(context).apply {
+                                dialog = AlertDialog.Builder(this@ProfileEditActivity).apply {
                                     setMessage(getString(R.string.updating_user_profile))
                                 }.show()
                             }
@@ -118,14 +94,18 @@ class ProfileEditActivity : BaseActivity() {
                             is Resource.Success -> {
                                 dialog?.dismiss()
                                 Toast.makeText(
-                                    context, R.string.profile_updated, Toast.LENGTH_SHORT
+                                    this@ProfileEditActivity,
+                                    R.string.profile_updated,
+                                    Toast.LENGTH_SHORT
                                 ).show()
                                 finish()
                             }
 
                             is Resource.Error -> {
                                 dialog?.dismiss()
-                                Toast.makeText(context, resource.message, Toast.LENGTH_SHORT).show()
+                                Toast.makeText(
+                                    this@ProfileEditActivity, resource.message, Toast.LENGTH_SHORT
+                                ).show()
                             }
 
                             null -> {}
@@ -139,11 +119,45 @@ class ProfileEditActivity : BaseActivity() {
     private fun validateData() {
         val username = binding.nameEt.text.toString().trim()
         if (TextUtils.isEmpty(username)) {
-            Toast.makeText(context, R.string.enter_name, Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, R.string.enter_name, Toast.LENGTH_SHORT).show()
         } else {
-            viewModel.updateProfile(
-                username, imageUri
-            )
+            viewModel.updateProfile(username, imageUri)
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int, permissions: Array<out String>, grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            if (requestCode == DATA.MIX_SQUARE) {
+                pickImage(DATA.MIX_SQUARE)
+            }
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == DATA.MIX_SQUARE && resultCode == RESULT_OK && data != null) {
+            val uri = data.data
+            if (uri != null) {
+                cropImage(
+                    uri = uri,
+                    aspectRatioX = 1,
+                    aspectRatioY = 1,
+                    isOval = true,
+                    minWidth = DATA.MIX_SQUARE,
+                    minHeight = DATA.MIX_SQUARE,
+                    requestCode = DATA.MIX_SQUARE
+                )
+            } else {
+                val resultUri =
+                    IntentCompat.getParcelableExtra(data, "CROP_RESULT_URI", Uri::class.java)
+                if (resultUri != null) {
+                    imageUri = resultUri
+                    binding.profileImage.setImageURI(imageUri)
+                }
+            }
         }
     }
 }

@@ -40,6 +40,8 @@ object DATA {
     var USER = "user"
     var ZERO = 0
     var MIX_SQUARE = 500
+    var MIX_BOOK_X = 400
+    var MIX_BOOK_Y = 560
     var MIX_SLIDER_X = 680
     var MIX_SLIDER_Y = 360
     var searchStatus = false

@@ -40,17 +40,17 @@ class ADsUserAdapter(val isUser: Boolean) :
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = getItem(position)
         val context = holder.itemView.context
-        val userId = DATA.EMPTY + item.id
-        val username = DATA.EMPTY + item.username
-        val profileImage = DATA.EMPTY + item.profileImage
-        val timestamp = DATA.EMPTY + item.timestamp
-        val adLoaded = DATA.EMPTY + item.adLoad
-        val adClicked = DATA.EMPTY + item.adClick
-        val formattedDate: String = Application.formatTimestamp(timestamp.toLong())
+        val userId = item.id
+        val username = item.username.orEmpty()
+        val profileImage = item.profileImage.orEmpty()
+        val timestamp = item.timestamp
+        val adLoaded = item.adLoad.toString()
+        val adClicked = item.adClick.toString()
+        val formattedDate: String = Application.formatTimestamp(timestamp)
 
-        holder.binding.profileImage.loadImage(true,profileImage)
+        holder.binding.profileImage.loadImage(true, profileImage)
 
-        if (username == DATA.EMPTY) {
+        if (username.isEmpty()) {
             holder.binding.username.visibility = View.GONE
         } else {
             holder.binding.username.visibility = View.VISIBLE

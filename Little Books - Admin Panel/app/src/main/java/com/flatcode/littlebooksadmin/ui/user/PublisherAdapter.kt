@@ -14,19 +14,23 @@ import com.flatcode.littlebooksadmin.R
 import com.flatcode.littlebooksadmin.databinding.ItemPublisherBinding
 import com.flatcode.littlebooksadmin.model.User
 import com.flatcode.littlebooksadmin.ui.profile.ProfileActivity
-import com.flatcode.littlebooksadmin.utils.*
+import com.flatcode.littlebooksadmin.utils.DATA
+import com.flatcode.littlebooksadmin.utils.loadImage
+import com.flatcode.littlebooksadmin.utils.openActivity
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 
-class PublisherAdapter : ListAdapter<User, PublisherAdapter.ViewHolder>(UserDiffCallback()), Filterable {
+class PublisherAdapter : ListAdapter<User, PublisherAdapter.ViewHolder>(UserDiffCallback()),
+    Filterable {
 
     var unfilteredList: List<User> = emptyList()
     private var filter: Filter? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val binding = ItemPublisherBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        val binding =
+            ItemPublisherBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return ViewHolder(binding)
     }
 
@@ -37,12 +41,14 @@ class PublisherAdapter : ListAdapter<User, PublisherAdapter.ViewHolder>(UserDiff
 
         holder.binding.imageProfile.loadImage(isUser = true, url = image)
 
-        holder.binding.username.visibility = if (item.username.isNullOrEmpty()) View.GONE else View.VISIBLE
+        holder.binding.username.visibility =
+            if (item.username.isNullOrEmpty()) View.GONE else View.VISIBLE
         if (!item.username.isNullOrEmpty()) {
             holder.binding.username.text = item.username
         }
 
-        holder.binding.add.visibility = if (item.id == DATA.FirebaseUserUid) View.GONE else View.VISIBLE
+        holder.binding.add.visibility =
+            if (item.id == DATA.FirebaseUserUid) View.GONE else View.VISIBLE
 
         nrFollowers(holder.binding.numberFollowers, id)
         nrBooks(holder.binding.numberBooks, id)
@@ -105,6 +111,7 @@ class PublisherAdapter : ListAdapter<User, PublisherAdapter.ViewHolder>(UserDiff
     class ViewHolder(val binding: ItemPublisherBinding) : RecyclerView.ViewHolder(binding.root)
 
     private fun isFollowing(add: ImageView, userId: String) {
+        if (userId.isEmpty()) return
         val reference = FirebaseDatabase.getInstance().reference
             .child(DATA.FOLLOW).child(DATA.FirebaseUserUid).child(DATA.FOLLOWING)
         reference.addValueEventListener(object : ValueEventListener {
@@ -123,6 +130,10 @@ class PublisherAdapter : ListAdapter<User, PublisherAdapter.ViewHolder>(UserDiff
     }
 
     private fun nrFollowers(numberConnected: TextView, userId: String) {
+        if (userId.isEmpty()) {
+            numberConnected.text = "0"
+            return
+        }
         val reference = FirebaseDatabase.getInstance().reference.child(DATA.FOLLOW)
             .child(userId).child(DATA.FOLLOWERS)
         reference.addListenerForSingleValueEvent(object : ValueEventListener {
@@ -135,6 +146,10 @@ class PublisherAdapter : ListAdapter<User, PublisherAdapter.ViewHolder>(UserDiff
     }
 
     private fun nrBooks(numberConnected: TextView, userId: String) {
+        if (userId.isEmpty()) {
+            numberConnected.text = "0"
+            return
+        }
         val reference = FirebaseDatabase.getInstance().reference.child(DATA.USERS).child(userId)
         reference.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {

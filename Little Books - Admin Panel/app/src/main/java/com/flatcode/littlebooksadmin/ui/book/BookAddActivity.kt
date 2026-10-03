@@ -1,11 +1,9 @@
 package com.flatcode.littlebooksadmin.ui.book
 
-import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.text.TextUtils
 import android.widget.Toast
@@ -13,8 +11,6 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
-import com.flatcode.littlebooksadmin.utils.BaseActivity
-import androidx.core.content.ContextCompat
 import androidx.core.content.IntentCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -22,9 +18,13 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.flatcode.littlebooksadmin.R
 import com.flatcode.littlebooksadmin.databinding.ActivityBookAddBinding
 import com.flatcode.littlebooksadmin.model.Category
+import com.flatcode.littlebooksadmin.utils.BaseActivity
+import com.flatcode.littlebooksadmin.utils.DATA
 import com.flatcode.littlebooksadmin.utils.Resource
+import com.flatcode.littlebooksadmin.utils.cropImage
 import com.flatcode.littlebooksadmin.utils.isNetworkAvailable
-import com.flatcode.littlebooksadmin.utils.startCropActivity
+import com.flatcode.littlebooksadmin.utils.pickImage
+import com.flatcode.littlebooksadmin.utils.requestStorage
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -53,14 +53,6 @@ class BookAddActivity : BaseActivity() {
             }
         }
 
-    private val galleryActivityResultLauncher =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
-            if (result.resultCode == RESULT_OK) {
-                imageUri = result.data?.data
-                binding.image.setImageURI(imageUri)
-            }
-        }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityBookAddBinding.inflate(layoutInflater)
@@ -74,7 +66,11 @@ class BookAddActivity : BaseActivity() {
         binding.toolbar.nameSpace.setText(R.string.add_new_book)
         binding.toolbar.back.setOnClickListener { finish() }
 
-        binding.image.setOnClickListener { pickImageGallery() }
+        binding.image.setOnClickListener {
+            requestStorage(DATA.MIX_BOOK_X) {
+                pickImage(DATA.MIX_BOOK_X)
+            }
+        }
         binding.chooseBook.setOnClickListener { bookPickIntent() }
         binding.category.setOnClickListener { categoryPickDialog() }
         binding.toolbar.ok.setOnClickListener { validateData() }
@@ -164,7 +160,8 @@ class BookAddActivity : BaseActivity() {
         } else if (uri == null) {
             Toast.makeText(context, R.string.pick_book, Toast.LENGTH_SHORT).show()
         } else if (!isNetworkAvailable()) {
-            Toast.makeText(context, getString(R.string.no_internet_connection), Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, getString(R.string.no_internet_connection), Toast.LENGTH_SHORT)
+                .show()
         } else {
             viewModel.uploadBook(uri!!, title, description, selectedId ?: "", imageUri)
         }
@@ -196,51 +193,39 @@ class BookAddActivity : BaseActivity() {
         bookPickerLauncher.launch(intent)
     }
 
-    private val requestPermissionLauncher =
-        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
-            if (isGranted) {
-                launchGallery()
-            } else {
-                Toast.makeText(context, R.string.permission_denied, Toast.LENGTH_SHORT).show()
+    override fun onRequestPermissionsResult(
+        requestCode: Int, permissions: Array<out String>, grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            if (requestCode == DATA.MIX_BOOK_X) {
+                pickImage(DATA.MIX_BOOK_X)
             }
         }
-
-    private val cropImageLauncher =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if (result.resultCode == RESULT_OK) {
-                imageUri = result.data?.let { intent ->
-                    IntentCompat.getParcelableExtra(intent, "CROP_RESULT_URI", Uri::class.java)
-                }
-                binding.image.setImageURI(null)
-                binding.image.setImageURI(imageUri)
-            }
-        }
-
-    private val pickImageLauncher =
-        registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
-            uri?.let {
-                cropImageLauncher.launch(context.startCropActivity(it, 10, 14, false))
-            }
-        }
-
-    private fun launchGallery() {
-        pickImageLauncher.launch("image/*")
     }
 
-    private fun pickImageGallery() {
-        val permission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            Manifest.permission.READ_MEDIA_IMAGES
-        } else {
-            Manifest.permission.READ_EXTERNAL_STORAGE
-        }
-
-        if (ContextCompat.checkSelfPermission(
-                context, permission
-            ) == PackageManager.PERMISSION_GRANTED
-        ) {
-            launchGallery()
-        } else {
-            requestPermissionLauncher.launch(permission)
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == DATA.MIX_BOOK_X && resultCode == RESULT_OK && data != null) {
+            val imageSelectedUri = data.data
+            if (imageSelectedUri != null) {
+                cropImage(
+                    uri = imageSelectedUri,
+                    aspectRatioX = 10,
+                    aspectRatioY = 14,
+                    isOval = false,
+                    minWidth = DATA.MIX_BOOK_X,
+                    minHeight = DATA.MIX_BOOK_Y,
+                    requestCode = DATA.MIX_BOOK_X
+                )
+            } else {
+                val resultUri =
+                    IntentCompat.getParcelableExtra(data, "CROP_RESULT_URI", Uri::class.java)
+                if (resultUri != null) {
+                    imageUri = resultUri
+                    binding.image.setImageURI(imageUri)
+                }
+            }
         }
     }
 }

@@ -8,13 +8,13 @@ import android.view.View
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
-import com.flatcode.littlebooksadmin.utils.BaseActivity
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.flatcode.littlebooksadmin.R
 import com.flatcode.littlebooksadmin.databinding.ActivityAdsBinding
 import com.flatcode.littlebooksadmin.model.User
+import com.flatcode.littlebooksadmin.utils.BaseActivity
 import com.flatcode.littlebooksadmin.utils.DATA
 import com.flatcode.littlebooksadmin.utils.Resource
 import dagger.hilt.android.AndroidEntryPoint
@@ -124,16 +124,10 @@ class ADsActivity : BaseActivity() {
 
     private fun updateList(users: List<User>) {
         list.clear()
-        users.forEach {
-            val legacyUser = User(
-                it.id, it.username, it.profileImage, it.email, it.timestamp,
-                it.version, it.booksCount, it.adLoad, it.adClick
-            )
-            list.add(legacyUser)
-        }
+        list.addAll(users)
 
         binding.toolbar.number.text = getString(R.string.number_placeholder, list.size)
-        adapter!!.submitUnfilteredList(list)
+        adapter?.submitUnfilteredList(list)
 
         if (list.isNotEmpty()) {
             binding.recyclerView.visibility = View.VISIBLE

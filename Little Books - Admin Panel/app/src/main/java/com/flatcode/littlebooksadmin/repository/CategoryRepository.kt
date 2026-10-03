@@ -75,8 +75,9 @@ class CategoryRepository @Inject constructor(
                     }
                 }
             } else {
-                MediaManager.get().upload(imageUri).option("folder", "CategoryImages/")
-                    .option("public_id", id).callback(object : UploadCallback {
+                MediaManager.get().upload(imageUri).unsigned(DATA.CLOUDINARY_UPLOAD_PRESET)
+                    .option("folder", "CategoryImages/").option("public_id", id)
+                    .callback(object : UploadCallback {
                         override fun onStart(requestId: String?) {}
                         override fun onProgress(
                             requestId: String?, bytes: Long, totalBytes: Long

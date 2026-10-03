@@ -1,30 +1,28 @@
 package com.flatcode.littlebooksadmin.ui.book
 
-import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.text.TextUtils
 import android.widget.Toast
-import androidx.activity.result.ActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
-import com.flatcode.littlebooksadmin.utils.BaseActivity
-import androidx.core.content.ContextCompat
+import androidx.core.content.IntentCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.flatcode.littlebooksadmin.R
 import com.flatcode.littlebooksadmin.databinding.ActivityBookEditBinding
 import com.flatcode.littlebooksadmin.model.Category
+import com.flatcode.littlebooksadmin.utils.BaseActivity
 import com.flatcode.littlebooksadmin.utils.DATA
 import com.flatcode.littlebooksadmin.utils.Resource
+import com.flatcode.littlebooksadmin.utils.cropImage
 import com.flatcode.littlebooksadmin.utils.loadImage
+import com.flatcode.littlebooksadmin.utils.pickImage
+import com.flatcode.littlebooksadmin.utils.requestStorage
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -57,7 +55,11 @@ class BookEditActivity : BaseActivity() {
         binding.toolbar.nameSpace.setText(R.string.edit_book)
         binding.toolbar.back.setOnClickListener { onBackPressedDispatcher.onBackPressed() }
 
-        binding.image.setOnClickListener { pickImageGallery() }
+        binding.image.setOnClickListener {
+            requestStorage(DATA.MIX_BOOK_X) {
+                pickImage(DATA.MIX_BOOK_X)
+            }
+        }
         binding.category.setOnClickListener { categoryDialog() }
         binding.toolbar.ok.setOnClickListener { validateData() }
     }
@@ -74,9 +76,11 @@ class BookEditActivity : BaseActivity() {
                                     binding.titleEt.setText(book.title)
                                     binding.descriptionEt.setText(book.description)
                                     selectedId = book.categoryId.orEmpty()
-                                    binding.image.loadImage(
-                                        isUser = false, url = book.image ?: DATA.BASIC
-                                    )
+                                    if (imageUri == null) {
+                                        binding.image.loadImage(
+                                            isUser = false, url = book.image ?: DATA.BASIC
+                                        )
+                                    }
 
                                     // Set category name
                                     categoriesList.find { it.id == selectedId }?.let {
@@ -117,15 +121,11 @@ class BookEditActivity : BaseActivity() {
                             }
 
                             is Resource.Success -> {
-                                if (imageUri == null) {
-                                    dialog?.dismiss()
-                                    Toast.makeText(
-                                        context, R.string.book_info_updated, Toast.LENGTH_SHORT
-                                    ).show()
-                                    finish()
-                                } else {
-                                    // Handle image upload if needed, or if it's already triggered by ViewModel
-                                }
+                                dialog?.dismiss()
+                                Toast.makeText(
+                                    context, R.string.book_info_updated, Toast.LENGTH_SHORT
+                                ).show()
+                                finish()
                             }
 
                             is Resource.Error -> {
@@ -168,51 +168,45 @@ class BookEditActivity : BaseActivity() {
         val categoriesArray = categoriesList.map { it.category.orEmpty() }.toTypedArray()
 
         val builder = AlertDialog.Builder(context)
-        builder.setTitle(R.string.choose_category)
-            .setItems(categoriesArray) { _, which ->
-                selectedId = categoriesList[which].id
-                binding.category.text = categoriesList[which].category
-            }.show()
+        builder.setTitle(R.string.choose_category).setItems(categoriesArray) { _, which ->
+            selectedId = categoriesList[which].id
+            binding.category.text = categoriesList[which].category
+        }.show()
     }
 
-    private val galleryActivityResultLauncher =
-        registerForActivityResult(StartActivityForResult()) { result: ActivityResult ->
-            if (result.resultCode == RESULT_OK) {
-                val data = result.data!!
-                imageUri = data.data
-                binding.image.setImageURI(imageUri)
+    override fun onRequestPermissionsResult(
+        requestCode: Int, permissions: Array<out String>, grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            if (requestCode == DATA.MIX_BOOK_X) {
+                pickImage(DATA.MIX_BOOK_X)
             }
         }
+    }
 
-    private val requestPermissionLauncher =
-        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
-            if (isGranted) {
-                launchGallery()
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == DATA.MIX_BOOK_X && resultCode == RESULT_OK && data != null) {
+            val imageSelectedUri = data.data
+            if (imageSelectedUri != null) {
+                cropImage(
+                    uri = imageSelectedUri,
+                    aspectRatioX = 10,
+                    aspectRatioY = 14,
+                    isOval = false,
+                    minWidth = DATA.MIX_BOOK_X,
+                    minHeight = DATA.MIX_BOOK_Y,
+                    requestCode = DATA.MIX_BOOK_X
+                )
             } else {
-                Toast.makeText(context, R.string.permission_denied, Toast.LENGTH_SHORT).show()
+                val resultUri =
+                    IntentCompat.getParcelableExtra(data, "CROP_RESULT_URI", Uri::class.java)
+                if (resultUri != null) {
+                    imageUri = resultUri
+                    binding.image.setImageURI(imageUri)
+                }
             }
-        }
-
-    private fun launchGallery() {
-        val intent = Intent(Intent.ACTION_PICK)
-        intent.type = "image/*"
-        galleryActivityResultLauncher.launch(intent)
-    }
-
-    private fun pickImageGallery() {
-        val permission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            Manifest.permission.READ_MEDIA_IMAGES
-        } else {
-            Manifest.permission.READ_EXTERNAL_STORAGE
-        }
-
-        if (ContextCompat.checkSelfPermission(
-                context, permission
-            ) == PackageManager.PERMISSION_GRANTED
-        ) {
-            launchGallery()
-        } else {
-            requestPermissionLauncher.launch(permission)
         }
     }
 }
