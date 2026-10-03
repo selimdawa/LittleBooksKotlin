@@ -27,11 +27,13 @@ class MainViewModel @Inject constructor(
         fetchData()
     }
 
-    fun fetchData() {
+    fun fetchData(forceLoading: Boolean = false) {
         viewModelScope.launch {
-            _user.value = Resource.Loading()
-            _stats.value = Resource.Loading()
-            
+            if (forceLoading || _stats.value !is Resource.Success) {
+                _user.value = Resource.Loading()
+                _stats.value = Resource.Loading()
+            }
+
             _user.value = repository.getUserInfo(DATA.FirebaseUserUid)
             _stats.value = repository.getDashboardStats()
         }

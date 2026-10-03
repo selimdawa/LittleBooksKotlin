@@ -5,7 +5,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="?colorOnBackground"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    tools:context=".ui.others.SliderShowActivity"
+    tools:ignore="all">
 
     <include
         android:id="@+id/toolbar"
@@ -21,13 +23,12 @@
             android:layout_marginBottom="10dp"
             android:orientation="vertical">
 
-
             <ProgressBar
                 android:id="@+id/bar"
-                android:layout_width="60dp"
-                android:layout_height="60dp"
+                android:layout_width="60sp"
+                android:layout_height="60sp"
                 android:layout_gravity="center"
-                android:layout_marginVertical="100dp"
+                android:layout_marginVertical="100sp"
                 android:progressDrawable="@drawable/progress_bar_2"
                 android:visibility="visible" />
 
@@ -58,8 +59,8 @@
                             android:id="@+id/imageOne"
                             android:layout_width="match_parent"
                             android:layout_height="0dp"
-                            android:src="@color/image_profile"
                             android:contentDescription="@null"
+                            android:src="@color/image_profile"
                             app:layout_constraintDimensionRatio="16:9"
                             tools:ignore="MissingConstraints" />
 
@@ -67,26 +68,28 @@
 
                 </com.google.android.material.card.MaterialCardView>
 
-                <Button
+                <TextView
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:layout_marginStart="30dp"
                     android:layout_marginTop="-30dp"
                     android:background="@drawable/round"
                     android:backgroundTint="@color/blue"
+                    android:gravity="center"
                     android:text="@string/one"
                     android:textColor="@color/white"
                     android:textSize="20sp"
                     android:textStyle="bold" />
 
-                <Button
+                <TextView
                     android:id="@+id/addOne"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
-                    android:layout_marginStart="80dp"
+                    android:layout_marginStart="80sp"
                     android:layout_marginTop="-40dp"
                     android:background="@drawable/round"
                     android:backgroundTint="@color/red"
+                    android:gravity="center"
                     android:text="@string/plus_slider"
                     android:textColor="@color/white"
                     android:textSize="20sp"
@@ -120,8 +123,8 @@
                             android:id="@+id/imageTwo"
                             android:layout_width="match_parent"
                             android:layout_height="0dp"
-                            android:src="@color/image_profile"
                             android:contentDescription="@null"
+                            android:src="@color/image_profile"
                             app:layout_constraintDimensionRatio="16:9"
                             tools:ignore="MissingConstraints" />
 
@@ -129,26 +132,28 @@
 
                 </com.google.android.material.card.MaterialCardView>
 
-                <Button
+                <TextView
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:layout_marginStart="30dp"
                     android:layout_marginTop="-30dp"
                     android:background="@drawable/round"
                     android:backgroundTint="@color/blue"
+                    android:gravity="center"
                     android:text="@string/two"
                     android:textColor="@color/white"
                     android:textSize="20sp"
                     android:textStyle="bold" />
 
-                <Button
+                <TextView
                     android:id="@+id/addTwo"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
-                    android:layout_marginStart="80dp"
+                    android:layout_marginStart="80sp"
                     android:layout_marginTop="-40dp"
                     android:background="@drawable/round"
                     android:backgroundTint="@color/red"
+                    android:gravity="center"
                     android:text="@string/plus_slider"
                     android:textColor="@color/white"
                     android:textSize="20sp"
@@ -182,8 +187,8 @@
                             android:id="@+id/imageThree"
                             android:layout_width="match_parent"
                             android:layout_height="0dp"
-                            android:src="@color/image_profile"
                             android:contentDescription="@null"
+                            android:src="@color/image_profile"
                             app:layout_constraintDimensionRatio="16:9"
                             tools:ignore="MissingConstraints" />
 
@@ -191,26 +196,28 @@
 
                 </com.google.android.material.card.MaterialCardView>
 
-                <Button
+                <TextView
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:layout_marginStart="30dp"
                     android:layout_marginTop="-30dp"
                     android:background="@drawable/round"
                     android:backgroundTint="@color/blue"
+                    android:gravity="center"
                     android:text="@string/three"
                     android:textColor="@color/white"
                     android:textSize="20sp"
                     android:textStyle="bold" />
 
-                <Button
+                <TextView
                     android:id="@+id/addThree"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
-                    android:layout_marginStart="80dp"
+                    android:layout_marginStart="80sp"
                     android:layout_marginTop="-40dp"
                     android:background="@drawable/round"
                     android:backgroundTint="@color/red"
+                    android:gravity="center"
                     android:text="@string/plus_slider"
                     android:textColor="@color/white"
                     android:textSize="20sp"
@@ -244,8 +251,8 @@
                             android:id="@+id/imageFour"
                             android:layout_width="match_parent"
                             android:layout_height="0dp"
-                            android:src="@color/image_profile"
                             android:contentDescription="@null"
+                            android:src="@color/image_profile"
                             app:layout_constraintDimensionRatio="16:9"
                             tools:ignore="MissingConstraints" />
 
@@ -253,26 +260,28 @@
 
                 </com.google.android.material.card.MaterialCardView>
 
-                <Button
+                <TextView
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:layout_marginStart="30dp"
                     android:layout_marginTop="-30dp"
                     android:background="@drawable/round"
                     android:backgroundTint="@color/blue"
+                    android:gravity="center"
                     android:text="@string/four"
                     android:textColor="@color/white"
                     android:textSize="20sp"
                     android:textStyle="bold" />
 
-                <Button
+                <TextView
                     android:id="@+id/addFour"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
-                    android:layout_marginStart="80dp"
+                    android:layout_marginStart="80sp"
                     android:layout_marginTop="-40dp"
                     android:background="@drawable/round"
                     android:backgroundTint="@color/red"
+                    android:gravity="center"
                     android:text="@string/plus_slider"
                     android:textColor="@color/white"
                     android:textSize="20sp"
@@ -306,8 +315,8 @@
                             android:id="@+id/imageFive"
                             android:layout_width="match_parent"
                             android:layout_height="0dp"
-                            android:src="@color/image_profile"
                             android:contentDescription="@null"
+                            android:src="@color/image_profile"
                             app:layout_constraintDimensionRatio="16:9"
                             tools:ignore="MissingConstraints" />
 
@@ -315,26 +324,28 @@
 
                 </com.google.android.material.card.MaterialCardView>
 
-                <Button
+                <TextView
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:layout_marginStart="30dp"
                     android:layout_marginTop="-30dp"
                     android:background="@drawable/round"
                     android:backgroundTint="@color/blue"
+                    android:gravity="center"
                     android:text="@string/five"
                     android:textColor="@color/white"
                     android:textSize="20sp"
                     android:textStyle="bold" />
 
-                <Button
+                <TextView
                     android:id="@+id/addFive"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
-                    android:layout_marginStart="80dp"
+                    android:layout_marginStart="80sp"
                     android:layout_marginTop="-40dp"
                     android:background="@drawable/round"
                     android:backgroundTint="@color/red"
+                    android:gravity="center"
                     android:text="@string/plus_slider"
                     android:textColor="@color/white"
                     android:textSize="20sp"
@@ -368,8 +379,8 @@
                             android:id="@+id/imageSix"
                             android:layout_width="match_parent"
                             android:layout_height="0dp"
-                            android:src="@color/image_profile"
                             android:contentDescription="@null"
+                            android:src="@color/image_profile"
                             app:layout_constraintDimensionRatio="16:9"
                             tools:ignore="MissingConstraints" />
 
@@ -377,26 +388,28 @@
 
                 </com.google.android.material.card.MaterialCardView>
 
-                <Button
+                <TextView
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:layout_marginStart="30dp"
                     android:layout_marginTop="-30dp"
                     android:background="@drawable/round"
                     android:backgroundTint="@color/blue"
+                    android:gravity="center"
                     android:text="@string/six"
                     android:textColor="@color/white"
                     android:textSize="20sp"
                     android:textStyle="bold" />
 
-                <Button
+                <TextView
                     android:id="@+id/addSix"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
-                    android:layout_marginStart="80dp"
+                    android:layout_marginStart="80sp"
                     android:layout_marginTop="-40dp"
                     android:background="@drawable/round"
                     android:backgroundTint="@color/red"
+                    android:gravity="center"
                     android:text="@string/plus_slider"
                     android:textColor="@color/white"
                     android:textSize="20sp"
@@ -430,8 +443,8 @@
                             android:id="@+id/imageSeven"
                             android:layout_width="match_parent"
                             android:layout_height="0dp"
-                            android:src="@color/image_profile"
                             android:contentDescription="@null"
+                            android:src="@color/image_profile"
                             app:layout_constraintDimensionRatio="16:9"
                             tools:ignore="MissingConstraints" />
 
@@ -439,26 +452,28 @@
 
                 </com.google.android.material.card.MaterialCardView>
 
-                <Button
+                <TextView
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:layout_marginStart="30dp"
                     android:layout_marginTop="-30dp"
                     android:background="@drawable/round"
                     android:backgroundTint="@color/blue"
+                    android:gravity="center"
                     android:text="@string/seven"
                     android:textColor="@color/white"
                     android:textSize="20sp"
                     android:textStyle="bold" />
 
-                <Button
+                <TextView
                     android:id="@+id/addSeven"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
-                    android:layout_marginStart="80dp"
+                    android:layout_marginStart="80sp"
                     android:layout_marginTop="-40dp"
                     android:background="@drawable/round"
                     android:backgroundTint="@color/red"
+                    android:gravity="center"
                     android:text="@string/plus_slider"
                     android:textColor="@color/white"
                     android:textSize="20sp"
@@ -492,8 +507,8 @@
                             android:id="@+id/imageEight"
                             android:layout_width="match_parent"
                             android:layout_height="0dp"
-                            android:src="@color/image_profile"
                             android:contentDescription="@null"
+                            android:src="@color/image_profile"
                             app:layout_constraintDimensionRatio="16:9"
                             tools:ignore="MissingConstraints" />
 
@@ -501,26 +516,28 @@
 
                 </com.google.android.material.card.MaterialCardView>
 
-                <Button
+                <TextView
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:layout_marginStart="30dp"
                     android:layout_marginTop="-30dp"
                     android:background="@drawable/round"
                     android:backgroundTint="@color/blue"
+                    android:gravity="center"
                     android:text="@string/eight"
                     android:textColor="@color/white"
                     android:textSize="20sp"
                     android:textStyle="bold" />
 
-                <Button
+                <TextView
                     android:id="@+id/addEight"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
-                    android:layout_marginStart="80dp"
+                    android:layout_marginStart="80sp"
                     android:layout_marginTop="-40dp"
                     android:background="@drawable/round"
                     android:backgroundTint="@color/red"
+                    android:gravity="center"
                     android:text="@string/plus_slider"
                     android:textColor="@color/white"
                     android:textSize="20sp"
@@ -554,8 +571,8 @@
                             android:id="@+id/imageNine"
                             android:layout_width="match_parent"
                             android:layout_height="0dp"
-                            android:src="@color/image_profile"
                             android:contentDescription="@null"
+                            android:src="@color/image_profile"
                             app:layout_constraintDimensionRatio="16:9"
                             tools:ignore="MissingConstraints" />
 
@@ -563,26 +580,28 @@
 
                 </com.google.android.material.card.MaterialCardView>
 
-                <Button
+                <TextView
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:layout_marginStart="30dp"
                     android:layout_marginTop="-30dp"
                     android:background="@drawable/round"
                     android:backgroundTint="@color/blue"
+                    android:gravity="center"
                     android:text="@string/nine"
                     android:textColor="@color/white"
                     android:textSize="20sp"
                     android:textStyle="bold" />
 
-                <Button
+                <TextView
                     android:id="@+id/addNine"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
-                    android:layout_marginStart="80dp"
+                    android:layout_marginStart="80sp"
                     android:layout_marginTop="-40dp"
                     android:background="@drawable/round"
                     android:backgroundTint="@color/red"
+                    android:gravity="center"
                     android:text="@string/plus_slider"
                     android:textColor="@color/white"
                     android:textSize="20sp"
@@ -616,8 +635,8 @@
                             android:id="@+id/imageTeen"
                             android:layout_width="match_parent"
                             android:layout_height="0dp"
-                            android:src="@color/image_profile"
                             android:contentDescription="@null"
+                            android:src="@color/image_profile"
                             app:layout_constraintDimensionRatio="16:9"
                             tools:ignore="MissingConstraints" />
 
@@ -625,26 +644,28 @@
 
                 </com.google.android.material.card.MaterialCardView>
 
-                <Button
+                <TextView
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:layout_marginStart="30dp"
                     android:layout_marginTop="-30dp"
                     android:background="@drawable/round"
                     android:backgroundTint="@color/blue"
+                    android:gravity="center"
                     android:text="@string/teen"
                     android:textColor="@color/white"
                     android:textSize="20sp"
                     android:textStyle="bold" />
 
-                <Button
+                <TextView
                     android:id="@+id/addTeen"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
-                    android:layout_marginStart="80dp"
+                    android:layout_marginStart="80sp"
                     android:layout_marginTop="-40dp"
                     android:background="@drawable/round"
                     android:backgroundTint="@color/red"
+                    android:gravity="center"
                     android:text="@string/plus_slider"
                     android:textColor="@color/white"
                     android:textSize="20sp"
@@ -678,8 +699,8 @@
                             android:id="@+id/imageEleven"
                             android:layout_width="match_parent"
                             android:layout_height="0dp"
-                            android:src="@color/image_profile"
                             android:contentDescription="@null"
+                            android:src="@color/image_profile"
                             app:layout_constraintDimensionRatio="16:9"
                             tools:ignore="MissingConstraints" />
 
@@ -687,26 +708,28 @@
 
                 </com.google.android.material.card.MaterialCardView>
 
-                <Button
+                <TextView
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:layout_marginStart="30dp"
                     android:layout_marginTop="-30dp"
                     android:background="@drawable/round"
                     android:backgroundTint="@color/blue"
+                    android:gravity="center"
                     android:text="@string/eleven"
                     android:textColor="@color/white"
                     android:textSize="20sp"
                     android:textStyle="bold" />
 
-                <Button
+                <TextView
                     android:id="@+id/addEleven"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
-                    android:layout_marginStart="80dp"
+                    android:layout_marginStart="80sp"
                     android:layout_marginTop="-40dp"
                     android:background="@drawable/round"
                     android:backgroundTint="@color/red"
+                    android:gravity="center"
                     android:text="@string/plus_slider"
                     android:textColor="@color/white"
                     android:textSize="20sp"
@@ -740,8 +763,8 @@
                             android:id="@+id/imageTwelfth"
                             android:layout_width="match_parent"
                             android:layout_height="0dp"
-                            android:src="@color/image_profile"
                             android:contentDescription="@null"
+                            android:src="@color/image_profile"
                             app:layout_constraintDimensionRatio="16:9"
                             tools:ignore="MissingConstraints" />
 
@@ -749,26 +772,28 @@
 
                 </com.google.android.material.card.MaterialCardView>
 
-                <Button
+                <TextView
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:layout_marginStart="30dp"
                     android:layout_marginTop="-30dp"
                     android:background="@drawable/round"
                     android:backgroundTint="@color/blue"
+                    android:gravity="center"
                     android:text="@string/twelfth"
                     android:textColor="@color/white"
                     android:textSize="20sp"
                     android:textStyle="bold" />
 
-                <Button
+                <TextView
                     android:id="@+id/addTwelfth"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
-                    android:layout_marginStart="80dp"
+                    android:layout_marginStart="80sp"
                     android:layout_marginTop="-40dp"
                     android:background="@drawable/round"
                     android:backgroundTint="@color/red"
+                    android:gravity="center"
                     android:text="@string/plus_slider"
                     android:textColor="@color/white"
                     android:textSize="20sp"
@@ -802,8 +827,8 @@
                             android:id="@+id/imageThirteen"
                             android:layout_width="match_parent"
                             android:layout_height="0dp"
-                            android:src="@color/image_profile"
                             android:contentDescription="@null"
+                            android:src="@color/image_profile"
                             app:layout_constraintDimensionRatio="16:9"
                             tools:ignore="MissingConstraints" />
 
@@ -811,26 +836,28 @@
 
                 </com.google.android.material.card.MaterialCardView>
 
-                <Button
+                <TextView
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:layout_marginStart="30dp"
                     android:layout_marginTop="-30dp"
                     android:background="@drawable/round"
                     android:backgroundTint="@color/blue"
+                    android:gravity="center"
                     android:text="@string/thirteen"
                     android:textColor="@color/white"
                     android:textSize="20sp"
                     android:textStyle="bold" />
 
-                <Button
+                <TextView
                     android:id="@+id/addThirteen"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
-                    android:layout_marginStart="80dp"
+                    android:layout_marginStart="80sp"
                     android:layout_marginTop="-40dp"
                     android:background="@drawable/round"
                     android:backgroundTint="@color/red"
+                    android:gravity="center"
                     android:text="@string/plus_slider"
                     android:textColor="@color/white"
                     android:textSize="20sp"
@@ -864,8 +891,8 @@
                             android:id="@+id/imageFourteenth"
                             android:layout_width="match_parent"
                             android:layout_height="0dp"
-                            android:src="@color/image_profile"
                             android:contentDescription="@null"
+                            android:src="@color/image_profile"
                             app:layout_constraintDimensionRatio="16:9"
                             tools:ignore="MissingConstraints" />
 
@@ -873,26 +900,28 @@
 
                 </com.google.android.material.card.MaterialCardView>
 
-                <Button
+                <TextView
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:layout_marginStart="30dp"
                     android:layout_marginTop="-30dp"
                     android:background="@drawable/round"
                     android:backgroundTint="@color/blue"
+                    android:gravity="center"
                     android:text="@string/fourteenth"
                     android:textColor="@color/white"
                     android:textSize="20sp"
                     android:textStyle="bold" />
 
-                <Button
+                <TextView
                     android:id="@+id/addFourteenth"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
-                    android:layout_marginStart="80dp"
+                    android:layout_marginStart="80sp"
                     android:layout_marginTop="-40dp"
                     android:background="@drawable/round"
                     android:backgroundTint="@color/red"
+                    android:gravity="center"
                     android:text="@string/plus_slider"
                     android:textColor="@color/white"
                     android:textSize="20sp"
@@ -926,8 +955,8 @@
                             android:id="@+id/imageFifteenth"
                             android:layout_width="match_parent"
                             android:layout_height="0dp"
-                            android:src="@color/image_profile"
                             android:contentDescription="@null"
+                            android:src="@color/image_profile"
                             app:layout_constraintDimensionRatio="16:9"
                             tools:ignore="MissingConstraints" />
 
@@ -935,26 +964,28 @@
 
                 </com.google.android.material.card.MaterialCardView>
 
-                <Button
+                <TextView
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:layout_marginStart="30dp"
                     android:layout_marginTop="-30dp"
                     android:background="@drawable/round"
                     android:backgroundTint="@color/blue"
+                    android:gravity="center"
                     android:text="@string/fifteenth"
                     android:textColor="@color/white"
                     android:textSize="20sp"
                     android:textStyle="bold" />
 
-                <Button
+                <TextView
                     android:id="@+id/addFifteenth"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
-                    android:layout_marginStart="80dp"
+                    android:layout_marginStart="80sp"
                     android:layout_marginTop="-40dp"
                     android:background="@drawable/round"
                     android:backgroundTint="@color/red"
+                    android:gravity="center"
                     android:text="@string/plus_slider"
                     android:textColor="@color/white"
                     android:textSize="20sp"
@@ -988,8 +1019,8 @@
                             android:id="@+id/imageSixteen"
                             android:layout_width="match_parent"
                             android:layout_height="0dp"
-                            android:src="@color/image_profile"
                             android:contentDescription="@null"
+                            android:src="@color/image_profile"
                             app:layout_constraintDimensionRatio="16:9"
                             tools:ignore="MissingConstraints" />
 
@@ -997,26 +1028,28 @@
 
                 </com.google.android.material.card.MaterialCardView>
 
-                <Button
+                <TextView
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:layout_marginStart="30dp"
                     android:layout_marginTop="-30dp"
                     android:background="@drawable/round"
                     android:backgroundTint="@color/blue"
+                    android:gravity="center"
                     android:text="@string/sixteen"
                     android:textColor="@color/white"
                     android:textSize="20sp"
                     android:textStyle="bold" />
 
-                <Button
+                <TextView
                     android:id="@+id/addSixteen"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
-                    android:layout_marginStart="80dp"
+                    android:layout_marginStart="80sp"
                     android:layout_marginTop="-40dp"
                     android:background="@drawable/round"
                     android:backgroundTint="@color/red"
+                    android:gravity="center"
                     android:text="@string/plus_slider"
                     android:textColor="@color/white"
                     android:textSize="20sp"
@@ -1050,8 +1083,8 @@
                             android:id="@+id/imageSeventeen"
                             android:layout_width="match_parent"
                             android:layout_height="0dp"
-                            android:src="@color/image_profile"
                             android:contentDescription="@null"
+                            android:src="@color/image_profile"
                             app:layout_constraintDimensionRatio="16:9"
                             tools:ignore="MissingConstraints" />
 
@@ -1059,26 +1092,28 @@
 
                 </com.google.android.material.card.MaterialCardView>
 
-                <Button
+                <TextView
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:layout_marginStart="30dp"
                     android:layout_marginTop="-30dp"
                     android:background="@drawable/round"
                     android:backgroundTint="@color/blue"
+                    android:gravity="center"
                     android:text="@string/seventeen"
                     android:textColor="@color/white"
                     android:textSize="20sp"
                     android:textStyle="bold" />
 
-                <Button
+                <TextView
                     android:id="@+id/addSeventeen"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
-                    android:layout_marginStart="80dp"
+                    android:layout_marginStart="80sp"
                     android:layout_marginTop="-40dp"
                     android:background="@drawable/round"
                     android:backgroundTint="@color/red"
+                    android:gravity="center"
                     android:text="@string/plus_slider"
                     android:textColor="@color/white"
                     android:textSize="20sp"
@@ -1112,8 +1147,8 @@
                             android:id="@+id/imageEighteen"
                             android:layout_width="match_parent"
                             android:layout_height="0dp"
-                            android:src="@color/image_profile"
                             android:contentDescription="@null"
+                            android:src="@color/image_profile"
                             app:layout_constraintDimensionRatio="16:9"
                             tools:ignore="MissingConstraints" />
 
@@ -1121,26 +1156,28 @@
 
                 </com.google.android.material.card.MaterialCardView>
 
-                <Button
+                <TextView
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:layout_marginStart="30dp"
                     android:layout_marginTop="-30dp"
                     android:background="@drawable/round"
                     android:backgroundTint="@color/blue"
+                    android:gravity="center"
                     android:text="@string/eighteen"
                     android:textColor="@color/white"
                     android:textSize="20sp"
                     android:textStyle="bold" />
 
-                <Button
+                <TextView
                     android:id="@+id/addEighteen"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
-                    android:layout_marginStart="80dp"
+                    android:layout_marginStart="80sp"
                     android:layout_marginTop="-40dp"
                     android:background="@drawable/round"
                     android:backgroundTint="@color/red"
+                    android:gravity="center"
                     android:text="@string/plus_slider"
                     android:textColor="@color/white"
                     android:textSize="20sp"
@@ -1174,8 +1211,8 @@
                             android:id="@+id/imageNineteen"
                             android:layout_width="match_parent"
                             android:layout_height="0dp"
-                            android:src="@color/image_profile"
                             android:contentDescription="@null"
+                            android:src="@color/image_profile"
                             app:layout_constraintDimensionRatio="16:9"
                             tools:ignore="MissingConstraints" />
 
@@ -1183,26 +1220,28 @@
 
                 </com.google.android.material.card.MaterialCardView>
 
-                <Button
+                <TextView
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:layout_marginStart="30dp"
                     android:layout_marginTop="-30dp"
                     android:background="@drawable/round"
                     android:backgroundTint="@color/blue"
+                    android:gravity="center"
                     android:text="@string/nineteen"
                     android:textColor="@color/white"
                     android:textSize="20sp"
                     android:textStyle="bold" />
 
-                <Button
+                <TextView
                     android:id="@+id/addNineteen"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
-                    android:layout_marginStart="80dp"
+                    android:layout_marginStart="80sp"
                     android:layout_marginTop="-40dp"
                     android:background="@drawable/round"
                     android:backgroundTint="@color/red"
+                    android:gravity="center"
                     android:text="@string/plus_slider"
                     android:textColor="@color/white"
                     android:textSize="20sp"
@@ -1236,8 +1275,8 @@
                             android:id="@+id/imageTwenty"
                             android:layout_width="match_parent"
                             android:layout_height="0dp"
-                            android:src="@color/image_profile"
                             android:contentDescription="@null"
+                            android:src="@color/image_profile"
                             app:layout_constraintDimensionRatio="16:9"
                             tools:ignore="MissingConstraints" />
 
@@ -1245,26 +1284,28 @@
 
                 </com.google.android.material.card.MaterialCardView>
 
-                <Button
+                <TextView
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:layout_marginStart="30dp"
                     android:layout_marginTop="-30dp"
                     android:background="@drawable/round"
                     android:backgroundTint="@color/blue"
+                    android:gravity="center"
                     android:text="@string/twenty"
                     android:textColor="@color/white"
                     android:textSize="20sp"
                     android:textStyle="bold" />
 
-                <Button
+                <TextView
                     android:id="@+id/addTwenty"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
-                    android:layout_marginStart="80dp"
+                    android:layout_marginStart="80sp"
                     android:layout_marginTop="-40dp"
                     android:background="@drawable/round"
                     android:backgroundTint="@color/red"
+                    android:gravity="center"
                     android:text="@string/plus_slider"
                     android:textColor="@color/white"
                     android:textSize="20sp"

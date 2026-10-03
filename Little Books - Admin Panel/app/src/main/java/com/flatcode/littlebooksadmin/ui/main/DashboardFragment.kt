@@ -248,11 +248,6 @@ class DashboardFragment : Fragment() {
         binding.recyclerView.visibility = View.VISIBLE
     }
 
-    override fun onResume() {
-        super.onResume()
-        viewModel.fetchData()
-    }
-
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
