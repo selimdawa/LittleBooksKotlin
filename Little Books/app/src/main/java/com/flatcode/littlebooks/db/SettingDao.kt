@@ -12,6 +12,9 @@ interface SettingDao {
     @Query("SELECT * FROM settings")
     fun getAllSettings(): Flow<List<Setting>>
 
+    @Query("SELECT * FROM settings WHERE id = :id")
+    fun getSettingById(id: String): Flow<Setting?>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertSetting(setting: Setting)
 

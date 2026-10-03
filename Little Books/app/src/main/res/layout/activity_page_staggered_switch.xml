@@ -3,11 +3,11 @@
     xmlns:ads="http://schemas.android.com/apk/res-auto"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:ignore="all"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="?colorOnBackground"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    tools:ignore="all">
 
     <include
         android:id="@+id/toolbar"
@@ -98,9 +98,9 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:visibility="gone"
-                    app:stackFromEnd="true"
                     app:layoutManager="androidx.recyclerview.widget.StaggeredGridLayoutManager"
                     app:spanCount="2"
+                    app:stackFromEnd="true"
                     tools:listitem="@layout/item_book_staggered" />
 
             </LinearLayout>

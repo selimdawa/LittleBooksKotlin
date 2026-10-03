@@ -48,7 +48,7 @@ class ADsUserAdapter(val isUser: Boolean) :
         val adClicked = DATA.EMPTY + item.adClick
         val formattedDate: String = Application.formatTimestamp(timestamp.toLong())
 
-        holder.binding.profileImage.loadImage(isUser = true, url = profileImage)
+        holder.binding.profileImage.loadImage(true,profileImage)
 
         if (username == DATA.EMPTY) {
             holder.binding.username.visibility = View.GONE

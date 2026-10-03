@@ -2,10 +2,10 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:ignore="all"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?mc_bg">
+    android:background="?mc_bg"
+    tools:ignore="all">
 
     <androidx.core.widget.NestedScrollView
         android:id="@+id/scroll_progress"
@@ -21,15 +21,15 @@
 
             <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/profile"
-                android:layout_width="240dp"
-                android:layout_height="240dp"
+                android:layout_width="250dp"
+                android:layout_height="250dp"
+                android:background="@color/white"
+                android:padding="5dp"
                 android:scaleType="centerCrop"
                 android:src="@color/image_profile"
+                app:shapeAppearanceOverlay="@style/ShapeAppearance.App.Circle"
                 app:strokeColor="@color/white"
-                app:strokeWidth="5dp"
-                android:contentDescription="@null"
-                android:background="@color/white"
-                app:shapeAppearanceOverlay="@style/ShapeAppearance.App.Circle" />
+                app:strokeWidth="5sp" />
 
             <TextView
                 android:id="@+id/username"

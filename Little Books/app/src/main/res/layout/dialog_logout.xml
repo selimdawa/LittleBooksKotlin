@@ -2,7 +2,6 @@
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:ignore="all"
     android:layout_width="300dp"
     android:layout_height="wrap_content"
     android:padding="20dp"
@@ -10,7 +9,8 @@
     app:cardCornerRadius="30dp"
     app:cardElevation="3dp"
     app:cardUseCompatPadding="true"
-    app:strokeWidth="0dp">
+    app:strokeWidth="0dp"
+    tools:ignore="all">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -25,10 +25,10 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:background="?mc_bg"
                 android:focusableInTouchMode="true"
                 android:gravity="center"
-                android:orientation="vertical"
-                android:background="?mc_bg">
+                android:orientation="vertical">
 
                 <TextView
                     android:id="@+id/title"

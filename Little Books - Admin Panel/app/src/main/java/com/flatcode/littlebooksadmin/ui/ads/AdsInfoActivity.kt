@@ -59,7 +59,7 @@ class AdsInfoActivity : BaseActivity() {
                                 resource.data?.let { user ->
                                     binding.username.text = user.username
                                     binding.profileImage.loadImage(
-                                        isUser = true, url = user.profileImage ?: DATA.BASIC
+                                    true,user.profileImage ?: DATA.BASIC
                                     )
                                 }
                             }

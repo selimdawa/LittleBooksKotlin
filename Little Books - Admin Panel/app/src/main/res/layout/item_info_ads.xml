@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:ignore="all"
     android:id="@+id/card"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginHorizontal="5dp"
     android:layout_marginBottom="10dp"
     android:elevation="6dp"
-    app:cardCornerRadius="15dp">
+    app:cardCornerRadius="15dp"
+    app:strokeWidth="0dp"
+    tools:ignore="all">
 
     <LinearLayout
         android:id="@+id/item"
@@ -65,8 +66,8 @@
                     android:layout_width="30dp"
                     android:layout_height="30dp"
                     android:layout_marginHorizontal="5dp"
-                    android:src="@drawable/ic_load"
-                    android:contentDescription="@null" />
+                    android:contentDescription="@null"
+                    android:src="@drawable/ic_load" />
 
                 <TextView
                     android:id="@+id/numberADsLoad"
@@ -97,8 +98,8 @@
                     android:layout_width="30dp"
                     android:layout_height="30dp"
                     android:layout_marginHorizontal="5dp"
-                    android:src="@drawable/ic_finger"
-                    android:contentDescription="@null" />
+                    android:contentDescription="@null"
+                    android:src="@drawable/ic_finger" />
 
                 <TextView
                     android:id="@+id/numberADsClick"
@@ -115,4 +116,4 @@
 
     </LinearLayout>
 
-</androidx.cardview.widget.CardView>
+</com.google.android.material.card.MaterialCardView>

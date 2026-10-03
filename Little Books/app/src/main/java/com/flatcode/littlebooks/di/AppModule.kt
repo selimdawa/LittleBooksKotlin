@@ -38,7 +38,7 @@ object AppModule {
     fun provideAppDatabase(@ApplicationContext context: Context): AppDatabase {
         return Room.databaseBuilder(
             context, AppDatabase::class.java, AppDatabase.DATABASE_NAME
-        ).fallbackToDestructiveMigration(true).build()
+        ).build()
     }
 
     @Provides

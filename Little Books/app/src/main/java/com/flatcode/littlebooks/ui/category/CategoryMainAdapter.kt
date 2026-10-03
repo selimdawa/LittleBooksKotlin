@@ -38,7 +38,7 @@ class CategoryMainAdapter : ListAdapter<Category, CategoryMainAdapter.ViewHolder
             val image = DATA.EMPTY + item.image
 
             binding.image.loadImage(false, image)
-            binding.imageBlur.loadBlurImage(false, image, 50)
+            binding.imageBlur.loadBlurImage(image, 50)
 
             binding.name.visibility = if (name.isEmpty()) View.GONE else View.VISIBLE
             binding.name.text = name

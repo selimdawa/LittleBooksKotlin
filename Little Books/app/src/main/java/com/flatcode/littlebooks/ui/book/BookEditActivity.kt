@@ -1,16 +1,16 @@
 package com.flatcode.littlebooks.ui.book
 
 import android.content.Context
-import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.text.TextUtils
 import android.widget.Toast
-import androidx.activity.result.ActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.result.contract.ActivityResultContracts.GetContent
 import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
+import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
+import androidx.core.content.IntentCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -22,6 +22,7 @@ import com.flatcode.littlebooks.utils.PermissionUtils
 import com.flatcode.littlebooks.utils.Resource
 import com.flatcode.littlebooks.utils.loadCategory
 import com.flatcode.littlebooks.utils.loadImage
+import com.flatcode.littlebooks.utils.startCropActivity
 import com.flatcode.littlebooks.viewmodel.BookViewModel
 import com.flatcode.littlebooks.viewmodel.CategoryViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -35,7 +36,7 @@ class BookEditActivity : BaseActivity() {
     private var bookId: String? = null
     private var imageUri: Uri? = null
     private var dialog: AlertDialog? = null
-    
+
     private var categoryTitle = ArrayList<String>()
     private var categoryId = ArrayList<String>()
 
@@ -102,14 +103,17 @@ class BookEditActivity : BaseActivity() {
                             is Resource.Success -> {
                                 updateImageBook(resource.data!!)
                             }
+
                             is Resource.Error -> {
                                 dialog!!.dismiss()
                                 Toast.makeText(context, resource.message, Toast.LENGTH_SHORT).show()
                             }
+
                             is Resource.Loading -> {
                                 dialog!!.setMessage("Updating Image Book...")
                                 dialog!!.show()
                             }
+
                             null -> {}
                         }
                     }
@@ -144,7 +148,7 @@ class BookEditActivity : BaseActivity() {
         hashMap[DATA.TITLE] = DATA.EMPTY + title
         hashMap[DATA.DESCRIPTION] = DATA.EMPTY + description
         hashMap[DATA.CATEGORY_ID] = DATA.EMPTY + selectedId
-        
+
         lifecycleScope.launch {
             bookViewModel.updateBook(bookId!!, hashMap)
             if (imageUri != null) {
@@ -179,18 +183,28 @@ class BookEditActivity : BaseActivity() {
             }.show()
     }
 
-    private val galleryActivityResultLauncher =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+    private val cropImageLauncher =
+        registerForActivityResult(StartActivityForResult()) { result ->
             if (result.resultCode == RESULT_OK) {
-                imageUri = result.data?.data
+                imageUri = result.data?.let { intent ->
+                    IntentCompat.getParcelableExtra(intent, "CROP_RESULT_URI", Uri::class.java)
+                }
+                binding!!.image.setImageURI(null)
                 binding!!.image.setImageURI(imageUri)
+            }
+        }
+
+    private val pickImageLauncher =
+        registerForActivityResult(GetContent()) { uri: Uri? ->
+            uri?.let {
+                cropImageLauncher.launch(context.startCropActivity(it, 10, 14, false))
             }
         }
 
     private val requestPermissionLauncher =
         registerForActivityResult(RequestPermission()) { isGranted: Boolean ->
             if (isGranted) {
-                pickImageGallery()
+                pickImageLauncher.launch("image/*")
             } else {
                 Toast.makeText(context, "Permission denied...", Toast.LENGTH_SHORT).show()
             }
@@ -198,9 +212,7 @@ class BookEditActivity : BaseActivity() {
 
     private fun pickImageGallery() {
         if (PermissionUtils.checkStoragePermission(context)) {
-            val intent = Intent(Intent.ACTION_PICK)
-            intent.type = "image/*"
-            galleryActivityResultLauncher.launch(intent)
+            pickImageLauncher.launch("image/*")
         } else {
             requestPermissionLauncher.launch(PermissionUtils.storagePermission)
         }

@@ -15,6 +15,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import com.flatcode.littlebooksadmin.utils.BaseActivity
 import androidx.core.content.ContextCompat
+import androidx.core.content.IntentCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -23,6 +24,7 @@ import com.flatcode.littlebooksadmin.databinding.ActivityBookAddBinding
 import com.flatcode.littlebooksadmin.model.Category
 import com.flatcode.littlebooksadmin.utils.Resource
 import com.flatcode.littlebooksadmin.utils.isNetworkAvailable
+import com.flatcode.littlebooksadmin.utils.startCropActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -203,10 +205,26 @@ class BookAddActivity : BaseActivity() {
             }
         }
 
+    private val cropImageLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == RESULT_OK) {
+                imageUri = result.data?.let { intent ->
+                    IntentCompat.getParcelableExtra(intent, "CROP_RESULT_URI", Uri::class.java)
+                }
+                binding.image.setImageURI(null)
+                binding.image.setImageURI(imageUri)
+            }
+        }
+
+    private val pickImageLauncher =
+        registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+            uri?.let {
+                cropImageLauncher.launch(context.startCropActivity(it, 10, 14, false))
+            }
+        }
+
     private fun launchGallery() {
-        val intent = Intent(Intent.ACTION_PICK)
-        intent.type = "image/*"
-        galleryActivityResultLauncher.launch(intent)
+        pickImageLauncher.launch("image/*")
     }
 
     private fun pickImageGallery() {

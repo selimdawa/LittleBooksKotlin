@@ -1,22 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.imageview.ShapeableImageView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:ignore="all"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:orientation="vertical">
-
-    <com.google.android.material.imageview.ShapeableImageView
-        android:id="@+id/image"
-        android:layout_width="40sp"
-        android:layout_height="40sp"
-        android:layout_marginHorizontal="5sp"
-        android:scaleType="centerCrop"
-        android:src="@color/image_profile"
-        app:strokeColor="?colorError"
-        app:strokeWidth="0.75sp"
-        android:background="@color/image_profile"
-        app:shapeAppearanceOverlay="@style/ShapeAppearance.App.Circle" />
-
-</LinearLayout>
+    android:id="@+id/image"
+    android:layout_width="42sp"
+    android:layout_height="42sp"
+    android:layout_marginHorizontal="5sp"
+    android:background="@color/image_profile"
+    android:contentDescription="@null"
+    android:padding="1dp"
+    android:scaleType="centerCrop"
+    android:src="@color/image_profile"
+    app:shapeAppearanceOverlay="@style/ShapeAppearance.App.Circle"
+    app:strokeColor="?colorError"
+    app:strokeWidth="0.75sp"
+    tools:ignore="all" />

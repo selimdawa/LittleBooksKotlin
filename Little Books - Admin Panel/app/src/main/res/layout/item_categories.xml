@@ -9,12 +9,13 @@
     android:layout_marginBottom="10dp"
     android:orientation="vertical">
 
-    <androidx.cardview.widget.CardView
+    <com.google.android.material.card.MaterialCardView
         android:id="@+id/card"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:elevation="6dp"
-        app:cardCornerRadius="6dp">
+        app:cardCornerRadius="6dp"
+        app:strokeWidth="0dp">
 
         <LinearLayout
             android:id="@+id/item"
@@ -116,6 +117,6 @@
 
         </LinearLayout>
 
-    </androidx.cardview.widget.CardView>
+    </com.google.android.material.card.MaterialCardView>
 
 </LinearLayout>

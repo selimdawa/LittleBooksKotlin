@@ -2,12 +2,12 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:ignore="all"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="?colorOnBackground"
     android:orientation="vertical"
-    tools:context=".ui.book.BookDetailsActivity">
+    tools:context=".ui.book.BookDetailsActivity"
+    tools:ignore="all">
 
     <include
         android:id="@+id/toolbar"
@@ -33,9 +33,9 @@
 
                 <ImageView
                     android:id="@+id/cover"
-                    android:contentDescription="@null"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:contentDescription="@null"
                     android:scaleType="centerCrop"
                     android:src="@color/image_profile" />
 
@@ -52,24 +52,24 @@
                 android:layout_marginTop="-100dp"
                 android:orientation="vertical">
 
-                <androidx.cardview.widget.CardView
+                <com.google.android.material.card.MaterialCardView
                     android:layout_width="110dp"
                     android:layout_height="150dp"
                     android:layout_gravity="end"
                     android:layout_marginStart="15dp"
                     android:layout_marginEnd="15dp"
-                    app:cardCornerRadius="10dp">
+                    app:cardCornerRadius="10dp"
+                    app:strokeWidth="0dp">
 
                     <ImageView
                         android:id="@+id/image"
-                        android:contentDescription="@null"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
+                        android:contentDescription="@null"
                         android:scaleType="centerCrop"
                         android:src="@color/image_profile" />
 
-                </androidx.cardview.widget.CardView>
-
+                </com.google.android.material.card.MaterialCardView>
 
                 <LinearLayout
                     android:id="@+id/userInfo"
@@ -84,8 +84,8 @@
                         android:id="@+id/publisherImage"
                         android:layout_width="40dp"
                         android:layout_height="40dp"
-                        android:src="@color/image_profile"
                         android:contentDescription="@null"
+                        android:src="@color/image_profile"
                         app:shapeAppearanceOverlay="@style/ShapeAppearance.App.Circle" />
 
                     <View
@@ -321,10 +321,10 @@
 
                         <ImageView
                             android:id="@+id/read"
-                            android:contentDescription="@null"
                             android:layout_width="25dp"
                             android:layout_height="25dp"
                             android:layout_gravity="center"
+                            android:contentDescription="@null"
                             android:gravity="center"
                             android:src="@drawable/ic_book_white"
                             android:tint="?colorError" />
@@ -339,10 +339,10 @@
 
                         <ImageView
                             android:id="@+id/download"
-                            android:contentDescription="@null"
                             android:layout_width="25dp"
                             android:layout_height="25dp"
                             android:layout_gravity="center"
+                            android:contentDescription="@null"
                             android:gravity="center"
                             android:src="@drawable/ic_download_white"
                             android:tint="?colorError"
@@ -358,10 +358,10 @@
 
                         <ImageView
                             android:id="@+id/love"
-                            android:contentDescription="@null"
                             android:layout_width="25dp"
                             android:layout_height="25dp"
                             android:layout_gravity="center"
+                            android:contentDescription="@null"
                             android:gravity="center"
                             android:src="@drawable/ic_heart_unselected"
                             android:tint="?colorError" />
@@ -378,10 +378,10 @@
 
                         <ImageView
                             android:id="@+id/favorite"
-                            android:contentDescription="@null"
                             android:layout_width="25dp"
                             android:layout_height="25dp"
                             android:layout_gravity="center"
+                            android:contentDescription="@null"
                             android:gravity="center"
                             android:src="@drawable/ic_star_unselected"
                             android:tint="?colorError" />
@@ -398,10 +398,10 @@
 
                         <ImageView
                             android:id="@+id/addComment"
-                            android:contentDescription="@null"
                             android:layout_width="25dp"
                             android:layout_height="25dp"
                             android:layout_gravity="center"
+                            android:contentDescription="@null"
                             android:gravity="center"
                             android:src="@drawable/ic_add"
                             android:tint="?colorError" />

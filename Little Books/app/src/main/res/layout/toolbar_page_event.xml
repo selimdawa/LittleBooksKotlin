@@ -12,7 +12,6 @@
     app:strokeWidth="0dp">
 
     <com.google.android.material.appbar.MaterialToolbar
-        android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="?mc_bg"
@@ -70,7 +69,6 @@
     </com.google.android.material.appbar.MaterialToolbar>
 
     <com.google.android.material.appbar.MaterialToolbar
-        android:id="@+id/toolbarSearch"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="?mc_bg"

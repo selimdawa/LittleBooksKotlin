@@ -85,7 +85,7 @@ class BookDetailsActivity : BaseActivity() {
                                 // binding!!.pages.text = DATA.EMPTY + book?.pagesCount // layout doesn't have pages count text view?
                                 binding!!.category.loadCategory(book.categoryId ?: "")
                                 binding!!.image.loadImage(false, book.url)
-                                binding!!.cover.loadBlurImage(false, book.url ?: "", 50)
+                                binding!!.cover.loadBlurImage(book.url ?: "", 50)
                                 binding!!.size.loadPdfInfo(book.url)
                             }
 

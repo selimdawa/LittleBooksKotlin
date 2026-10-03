@@ -6,11 +6,12 @@ import android.net.Uri
 import android.os.Bundle
 import android.text.TextUtils
 import android.widget.Toast
-import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts.GetContent
 import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
+import androidx.core.content.IntentCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -21,6 +22,7 @@ import com.flatcode.littlebooks.utils.DATA
 import com.flatcode.littlebooks.utils.PermissionUtils
 import com.flatcode.littlebooks.utils.Resource
 import com.flatcode.littlebooks.utils.isNetworkAvailable
+import com.flatcode.littlebooks.utils.startCropActivity
 import com.flatcode.littlebooks.viewmodel.BookViewModel
 import com.flatcode.littlebooks.viewmodel.CategoryViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -159,7 +161,8 @@ class BookAddActivity : BaseActivity() {
         } else if (imageUri == null) {
             Toast.makeText(context, "Pick Image...", Toast.LENGTH_SHORT).show()
         } else if (!isNetworkAvailable()) {
-            Toast.makeText(context, getString(R.string.no_internet_connection), Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, getString(R.string.no_internet_connection), Toast.LENGTH_SHORT)
+                .show()
         } else {
             bookViewModel.uploadBookFile(uri!!)
         }
@@ -201,10 +204,10 @@ class BookAddActivity : BaseActivity() {
         val categories = titleList.toTypedArray()
         val builder = AlertDialog.Builder(context)
         builder.setTitle("Pick Category").setItems(categories) { _, which ->
-                selectedTitle = titleList[which]
-                selectedId = idList[which]
-                binding!!.category.text = selectedTitle
-            }.show()
+            selectedTitle = titleList[which]
+            selectedId = idList[which]
+            binding!!.category.text = selectedTitle
+        }.show()
     }
 
     private fun bookPickIntent() {
@@ -226,18 +229,28 @@ class BookAddActivity : BaseActivity() {
         }
     }
 
-    private val galleryActivityResultLauncher =
-        registerForActivityResult(StartActivityForResult()) { result: ActivityResult ->
+    private val cropImageLauncher =
+        registerForActivityResult(StartActivityForResult()) { result ->
             if (result.resultCode == RESULT_OK) {
-                imageUri = result.data?.data
+                imageUri = result.data?.let { intent ->
+                    IntentCompat.getParcelableExtra(intent, "CROP_RESULT_URI", Uri::class.java)
+                }
+                binding!!.image.setImageURI(null)
                 binding!!.image.setImageURI(imageUri)
+            }
+        }
+
+    private val pickImageLauncher =
+        registerForActivityResult(GetContent()) { uri: Uri? ->
+            uri?.let {
+                cropImageLauncher.launch(context.startCropActivity(it, 10, 14, false))
             }
         }
 
     private val requestPermissionLauncher =
         registerForActivityResult(RequestPermission()) { isGranted: Boolean ->
             if (isGranted) {
-                pickImageGallery()
+                pickImageLauncher.launch("image/*")
             } else {
                 Toast.makeText(context, "Permission denied...", Toast.LENGTH_SHORT).show()
             }
@@ -245,9 +258,7 @@ class BookAddActivity : BaseActivity() {
 
     private fun pickImageGallery() {
         if (PermissionUtils.checkStoragePermission(context)) {
-            val intent = Intent(Intent.ACTION_PICK)
-            intent.type = "image/*"
-            galleryActivityResultLauncher.launch(intent)
+            pickImageLauncher.launch("image/*")
         } else {
             requestPermissionLauncher.launch(PermissionUtils.storagePermission)
         }

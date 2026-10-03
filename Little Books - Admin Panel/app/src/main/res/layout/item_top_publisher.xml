@@ -2,19 +2,20 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:ignore="all"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginHorizontal="5dp"
     android:layout_marginBottom="10dp"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    tools:ignore="all">
 
-    <androidx.cardview.widget.CardView
+    <com.google.android.material.card.MaterialCardView
         android:id="@+id/card"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:elevation="6dp"
-        app:cardCornerRadius="6dp">
+        app:cardCornerRadius="6dp"
+        app:strokeWidth="0dp">
 
         <LinearLayout
             android:id="@+id/item"
@@ -31,9 +32,9 @@
                     android:id="@+id/imageProfile"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
+                    android:contentDescription="@null"
                     android:scaleType="centerCrop"
                     android:src="@color/image_profile"
-                    android:contentDescription="@null"
                     app:layout_constraintDimensionRatio="1:1"
                     tools:ignore="MissingConstraints" />
 
@@ -83,8 +84,8 @@
                             android:layout_width="20dp"
                             android:layout_height="20dp"
                             android:layout_gravity="center"
-                            android:src="@drawable/ic_rank"
-                            android:contentDescription="@null" />
+                            android:contentDescription="@null"
+                            android:src="@drawable/ic_rank" />
 
                         <TextView
                             android:id="@+id/rank"
@@ -110,8 +111,8 @@
                             android:layout_width="20dp"
                             android:layout_height="20dp"
                             android:layout_gravity="center"
-                            android:src="@drawable/ic_book_white"
-                            android:contentDescription="@null" />
+                            android:contentDescription="@null"
+                            android:src="@drawable/ic_book_white" />
 
                         <TextView
                             android:id="@+id/numberBooks"
@@ -132,6 +133,6 @@
 
         </LinearLayout>
 
-    </androidx.cardview.widget.CardView>
+    </com.google.android.material.card.MaterialCardView>
 
 </LinearLayout>

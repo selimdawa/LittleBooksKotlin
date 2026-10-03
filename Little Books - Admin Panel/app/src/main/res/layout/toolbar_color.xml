@@ -2,14 +2,14 @@
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:ignore="all"
     android:id="@+id/item"
     android:layout_width="match_parent"
     android:layout_height="45dp"
     android:layout_margin="10dp"
     android:visibility="visible"
     app:cardCornerRadius="6dp"
-    app:strokeWidth="0dp">
+    app:strokeWidth="0dp"
+    tools:ignore="all">
 
     <com.google.android.material.appbar.MaterialToolbar
         android:layout_width="match_parent"
@@ -33,8 +33,8 @@
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:layout_gravity="start"
-            android:src="@drawable/ic_back_white"
             android:contentDescription="@null"
+            android:src="@drawable/ic_back_white"
             app:tint="@color/dark" />
 
         <TextView

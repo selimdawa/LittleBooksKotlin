@@ -2,19 +2,19 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:ignore="all"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="?colorOnBackground"
-    android:padding="20dp">
+    android:padding="20dp"
+    tools:ignore="all">
 
     <ImageButton
         android:id="@+id/back"
         android:layout_width="25dp"
         android:layout_height="25dp"
         android:background="@android:color/transparent"
-        android:src="@drawable/ic_back_white"
         android:contentDescription="@null"
+        android:src="@drawable/ic_back_white"
         app:tint="?colorError" />
 
     <TextView

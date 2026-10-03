@@ -2,13 +2,13 @@
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:ignore="all"
     android:layout_width="match_parent"
     android:layout_height="140sp"
     android:layout_marginBottom="10sp"
     android:elevation="6sp"
     app:cardCornerRadius="15sp"
-    app:strokeWidth="0dp">
+    app:strokeWidth="0dp"
+    tools:ignore="all">
 
     <LinearLayout
         android:id="@+id/item"

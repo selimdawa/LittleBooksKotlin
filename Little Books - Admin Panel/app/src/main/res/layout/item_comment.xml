@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:ignore="all"
     android:id="@+id/card"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="10dp"
     android:elevation="6dp"
-    app:cardCornerRadius="15dp">
+    app:cardCornerRadius="15dp"
+    app:strokeWidth="0dp"
+    tools:ignore="all">
 
     <LinearLayout
         android:id="@+id/item"
@@ -26,9 +27,9 @@
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:layout_margin="10dp"
+                android:contentDescription="@string/profile_image"
                 android:scaleType="centerCrop"
                 android:src="@color/image_profile"
-                android:contentDescription="@string/profile_image"
                 app:shapeAppearanceOverlay="@style/ShapeAppearance.App.Circle" />
 
             <RelativeLayout
@@ -72,4 +73,4 @@
 
     </LinearLayout>
 
-</androidx.cardview.widget.CardView>
+</com.google.android.material.card.MaterialCardView>

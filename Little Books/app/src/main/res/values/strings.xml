@@ -74,4 +74,7 @@
     <string name="followers_count_format">%1$d Followers</string>
     <string name="following_count_format">%1$d Following</string>
     <string name="no_internet_connection">No internet connection</string>
+
+    <string name="please_wait">Please wait&#8230;</string>
+    <string name="loading">Loading&#8230;</string>
 </resources>

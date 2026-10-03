@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:ignore="all"
     android:id="@+id/card"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginHorizontal="5dp"
     android:layout_marginBottom="10dp"
     android:elevation="6dp"
-    app:cardCornerRadius="15dp">
+    app:cardCornerRadius="15dp"
+    app:strokeWidth="0dp"
+    tools:ignore="all">
 
     <LinearLayout
         android:id="@+id/item"
@@ -30,8 +31,8 @@
             <ImageView
                 android:layout_width="25dp"
                 android:layout_height="25dp"
-                android:src="@drawable/ic_rank"
-                android:contentDescription="@null" />
+                android:contentDescription="@null"
+                android:src="@drawable/ic_rank" />
 
             <TextView
                 android:id="@+id/rank"
@@ -51,8 +52,8 @@
             <ImageView
                 android:layout_width="25dp"
                 android:layout_height="25dp"
-                android:src="@drawable/ic_time"
-                android:contentDescription="@null" />
+                android:contentDescription="@null"
+                android:src="@drawable/ic_time" />
 
             <TextView
                 android:id="@+id/time"
@@ -75,15 +76,16 @@
 
             <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/profileImage"
-                android:layout_width="80dp"
-                android:layout_height="80dp"
+                android:layout_width="82dp"
+                android:layout_height="82dp"
+                android:background="@color/black"
+                android:contentDescription="@string/profile_image"
+                android:padding="2dp"
                 android:scaleType="centerCrop"
                 android:src="@color/image_profile"
-                android:contentDescription="@string/profile_image"
+                app:shapeAppearanceOverlay="@style/ShapeAppearance.App.Circle"
                 app:strokeColor="@color/white"
-                app:strokeWidth="2dp"
-                android:background="@color/black"
-                app:shapeAppearanceOverlay="@style/ShapeAppearance.App.Circle" />
+                app:strokeWidth="2dp" />
 
             <TextView
                 android:id="@+id/username"
@@ -110,8 +112,8 @@
             <ImageView
                 android:layout_width="25dp"
                 android:layout_height="25dp"
-                android:src="@drawable/ic_load"
-                android:contentDescription="@null" />
+                android:contentDescription="@null"
+                android:src="@drawable/ic_load" />
 
             <TextView
                 android:id="@+id/numberADsLoad"
@@ -131,8 +133,8 @@
             <ImageView
                 android:layout_width="25dp"
                 android:layout_height="25dp"
-                android:src="@drawable/ic_finger"
-                android:contentDescription="@null" />
+                android:contentDescription="@null"
+                android:src="@drawable/ic_finger" />
 
             <TextView
                 android:id="@+id/numberADsClick"
@@ -146,4 +148,4 @@
 
     </LinearLayout>
 
-</androidx.cardview.widget.CardView>
+</com.google.android.material.card.MaterialCardView>

@@ -2,12 +2,12 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:ignore="all"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="?colorOnBackground"
     android:orientation="vertical"
-    tools:context=".ui.book.EditorsChoiceAddActivity">
+    tools:context=".ui.book.EditorsChoiceAddActivity"
+    tools:ignore="all">
 
     <include
         android:id="@+id/toolbar"
@@ -42,14 +42,15 @@
                     android:gravity="start"
                     android:orientation="horizontal">
 
-                    <androidx.cardview.widget.CardView
+                    <com.google.android.material.card.MaterialCardView
                         android:id="@+id/all"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="5dp"
                         android:elevation="6dp"
                         app:cardBackgroundColor="?mc_bg"
-                        app:cardCornerRadius="10dp">
+                        app:cardCornerRadius="10dp"
+                        app:strokeWidth="0dp">
 
                         <TextView
                             android:id="@+id/name"
@@ -62,16 +63,17 @@
                             android:textSize="18sp"
                             android:textStyle="bold" />
 
-                    </androidx.cardview.widget.CardView>
+                    </com.google.android.material.card.MaterialCardView>
 
-                    <androidx.cardview.widget.CardView
+                    <com.google.android.material.card.MaterialCardView
                         android:id="@+id/mostViews"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginHorizontal="5dp"
                         android:elevation="6dp"
                         app:cardBackgroundColor="?mc_bg"
-                        app:cardCornerRadius="10dp">
+                        app:cardCornerRadius="10dp"
+                        app:strokeWidth="0dp">
 
                         <TextView
                             android:id="@+id/name2"
@@ -84,16 +86,17 @@
                             android:textSize="18sp"
                             android:textStyle="bold" />
 
-                    </androidx.cardview.widget.CardView>
+                    </com.google.android.material.card.MaterialCardView>
 
-                    <androidx.cardview.widget.CardView
+                    <com.google.android.material.card.MaterialCardView
                         android:id="@+id/mostLoves"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginHorizontal="5dp"
                         android:elevation="6dp"
                         app:cardBackgroundColor="?mc_bg"
-                        app:cardCornerRadius="10dp">
+                        app:cardCornerRadius="10dp"
+                        app:strokeWidth="0dp">
 
                         <TextView
                             android:id="@+id/name3"
@@ -106,16 +109,17 @@
                             android:textSize="18sp"
                             android:textStyle="bold" />
 
-                    </androidx.cardview.widget.CardView>
+                    </com.google.android.material.card.MaterialCardView>
 
-                    <androidx.cardview.widget.CardView
+                    <com.google.android.material.card.MaterialCardView
                         android:id="@+id/mostDownloads"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="5dp"
                         android:elevation="6dp"
                         app:cardBackgroundColor="?mc_bg"
-                        app:cardCornerRadius="10dp">
+                        app:cardCornerRadius="10dp"
+                        app:strokeWidth="0dp">
 
                         <TextView
                             android:id="@+id/name4"
@@ -128,16 +132,17 @@
                             android:textSize="18sp"
                             android:textStyle="bold" />
 
-                    </androidx.cardview.widget.CardView>
+                    </com.google.android.material.card.MaterialCardView>
 
-                    <androidx.cardview.widget.CardView
+                    <com.google.android.material.card.MaterialCardView
                         android:id="@+id/favorites"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="5dp"
                         android:elevation="6dp"
                         app:cardBackgroundColor="?mc_bg"
-                        app:cardCornerRadius="10dp">
+                        app:cardCornerRadius="10dp"
+                        app:strokeWidth="0dp">
 
                         <TextView
                             android:id="@+id/name5"
@@ -150,7 +155,7 @@
                             android:textSize="18sp"
                             android:textStyle="bold" />
 
-                    </androidx.cardview.widget.CardView>
+                    </com.google.android.material.card.MaterialCardView>
 
                 </LinearLayout>
 

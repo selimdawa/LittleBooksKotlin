@@ -10,7 +10,6 @@
     app:strokeWidth="0dp">
 
     <com.google.android.material.appbar.MaterialToolbar
-        android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="?mc_bg"
@@ -21,8 +20,8 @@
             android:layout_width="25dp"
             android:layout_height="25dp"
             android:layout_gravity="start"
-            android:src="@drawable/ic_back_white"
             android:contentDescription="@null"
+            android:src="@drawable/ic_back_white"
             android:visibility="visible" />
 
         <LinearLayout
@@ -61,14 +60,13 @@
             android:layout_height="25dp"
             android:layout_gravity="end"
             android:layout_marginEnd="15dp"
-            android:src="@drawable/ic_search"
             android:contentDescription="@null"
+            android:src="@drawable/ic_search"
             android:visibility="visible" />
 
     </com.google.android.material.appbar.MaterialToolbar>
 
     <com.google.android.material.appbar.MaterialToolbar
-        android:id="@+id/toolbarSearch"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="?mc_bg"
@@ -79,8 +77,8 @@
             android:layout_width="25dp"
             android:layout_height="25dp"
             android:layout_gravity="center"
-            android:src="@drawable/ic_close"
-            android:contentDescription="@null" />
+            android:contentDescription="@null"
+            android:src="@drawable/ic_close" />
 
         <EditText
             android:id="@+id/textSearch"

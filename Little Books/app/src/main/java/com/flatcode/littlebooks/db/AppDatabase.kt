@@ -1,5 +1,6 @@
 package com.flatcode.littlebooks.db
 
+import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
@@ -14,11 +15,9 @@ import com.flatcode.littlebooks.model.SliderEntity
 import com.flatcode.littlebooks.model.User
 
 @Database(
-    entities = [
-        Book::class, User::class, Category::class, Comment::class, ADs::class, Setting::class,
-        FavoriteEntity::class, InterestedEntity::class, SliderEntity::class
-    ],
+    entities = [Book::class, User::class, Category::class, Comment::class, ADs::class, Setting::class, FavoriteEntity::class, InterestedEntity::class, SliderEntity::class],
     version = 2,
+    autoMigrations = [AutoMigration(from = 1, to = 2)],
     exportSchema = true
 )
 @TypeConverters(Converters::class)
