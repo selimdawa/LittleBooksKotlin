@@ -87,15 +87,12 @@
 
                     <TextView
                         android:id="@+id/name"
-                        android:layout_width="0dp"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:layout_marginHorizontal="3dp"
-                        android:layout_marginVertical="1dp"
-                        android:layout_weight="2"
                         android:gravity="center"
                         android:textColor="@color/white"
-                        android:textSize="16sp"
+                        android:textSize="14sp"
                         android:textStyle="bold" />
 
                 </LinearLayout>

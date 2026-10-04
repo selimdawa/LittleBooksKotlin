@@ -6,16 +6,15 @@ import android.net.Uri
 import android.os.Bundle
 import android.text.TextUtils
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts.GetContent
 import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
+import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
+import androidx.core.content.IntentCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import com.canhub.cropper.CropImageContract
-import com.canhub.cropper.CropImageContractOptions
-import com.canhub.cropper.CropImageOptions
-import com.canhub.cropper.CropImageView
 import com.flatcode.littlebooks.R
 import com.flatcode.littlebooks.databinding.ActivityProfileEditBinding
 import com.flatcode.littlebooks.utils.BaseActivity
@@ -24,6 +23,7 @@ import com.flatcode.littlebooks.utils.PermissionUtils
 import com.flatcode.littlebooks.utils.Resource
 import com.flatcode.littlebooks.utils.isNetworkAvailable
 import com.flatcode.littlebooks.utils.loadImage
+import com.flatcode.littlebooks.utils.startCropActivity
 import com.flatcode.littlebooks.viewmodel.ProfileViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -39,15 +39,32 @@ class ProfileEditActivity : BaseActivity() {
 
     private val viewModel: ProfileViewModel by viewModels()
 
-    private val cropImage = registerForActivityResult(CropImageContract()) { result ->
-        if (result.isSuccessful) {
-            imageUri = result.uriContent
-            binding!!.image.setImageURI(imageUri)
-        } else {
-            val error = result.error
-            Toast.makeText(this, "Error! $error", Toast.LENGTH_SHORT).show()
+    private val cropImageLauncher =
+        registerForActivityResult(StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                imageUri = result.data?.let { intent ->
+                    IntentCompat.getParcelableExtra(intent, "CROP_RESULT_URI", Uri::class.java)
+                }
+                binding!!.image.setImageURI(null)
+                binding!!.image.setImageURI(imageUri)
+            }
         }
-    }
+
+    private val pickImageLauncher =
+        registerForActivityResult(GetContent()) { uri: Uri? ->
+            uri?.let {
+                cropImageLauncher.launch(context.startCropActivity(it, 1, 1, true))
+            }
+        }
+
+    private val requestPermissionLauncher =
+        registerForActivityResult(RequestPermission()) { isGranted: Boolean ->
+            if (isGranted) {
+                pickImageLauncher.launch("image/*")
+            } else {
+                Toast.makeText(context, "Permission denied...", Toast.LENGTH_SHORT).show()
+            }
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,39 +80,16 @@ class ProfileEditActivity : BaseActivity() {
 
         binding!!.toolbar.nameSpace.setText(R.string.edit_profile)
         binding!!.toolbar.back.setOnClickListener { onBackPressedDispatcher.onBackPressed() }
-        binding!!.image.setOnClickListener { startCrop() }
+        binding!!.image.setOnClickListener { pickImageGallery() }
         binding!!.go.setOnClickListener { validateData() }
 
         observeViewModel()
         loadUserInfo()
     }
 
-    private val requestPermissionLauncher =
-        registerForActivityResult(RequestPermission()) { isGranted: Boolean ->
-            if (isGranted) {
-                startCrop()
-            } else {
-                Toast.makeText(context, "Permission denied...", Toast.LENGTH_SHORT).show()
-            }
-        }
-
-    private fun startCrop() {
+    private fun pickImageGallery() {
         if (PermissionUtils.checkStoragePermission(context)) {
-            cropImage.launch(
-                CropImageContractOptions(
-                    uri = null,
-                    cropImageOptions = CropImageOptions(
-                        guidelines = CropImageView.Guidelines.ON,
-                        multiTouchEnabled = true,
-                        minCropResultWidth = DATA.MIN_SQUARE,
-                        minCropResultHeight = DATA.MIN_SQUARE,
-                        aspectRatioX = 1,
-                        aspectRatioY = 1,
-                        fixAspectRatio = true,
-                        cropShape = CropImageView.CropShape.OVAL
-                    )
-                )
-            )
+            pickImageLauncher.launch("image/*")
         } else {
             requestPermissionLauncher.launch(PermissionUtils.storagePermission)
         }
@@ -112,7 +106,9 @@ class ProfileEditActivity : BaseActivity() {
                     viewModel.user.collect { resource ->
                         if (resource is Resource.Success) {
                             val user = resource.data
-                            binding!!.image.loadImage(true, user?.profileImage)
+                            if (imageUri == null) {
+                                binding!!.image.loadImage(true, user?.profileImage)
+                            }
                             binding!!.nameEt.setText(user?.username)
                         }
                     }

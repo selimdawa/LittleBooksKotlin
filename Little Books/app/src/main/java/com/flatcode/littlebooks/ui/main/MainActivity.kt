@@ -75,13 +75,13 @@ class MainActivity : BaseActivity() {
             add(Model(R.id.categoriesFragment, R.drawable.ic_group))
 
             setOnClickMenuListener { model ->
-                navController.navigate(model.id, navOptions {
-                    popUpTo(navController.graph.findStartDestination().id) {
-                        saveState = true
+                try {
+                    if (navController.currentDestination?.id != model.id) {
+                        navController.navigate(model.id)
                     }
-                    launchSingleTop = true
-                    restoreState = true
-                })
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
             }
 
             show(R.id.homeFragment, false)

@@ -10,7 +10,9 @@ import com.flatcode.littlebooks.utils.DATA
 import com.flatcode.littlebooks.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -22,39 +24,34 @@ class HomeViewModel @Inject constructor(
     private val _sliderImages = MutableStateFlow<Resource<List<String>>>(Resource.Loading())
     val sliderImages: StateFlow<Resource<List<String>>> = _sliderImages
 
-    private val _categories = MutableStateFlow<Resource<List<Category>>>(Resource.Loading())
-    val categories: StateFlow<Resource<List<Category>>> = _categories
+    val categories: StateFlow<List<Category>> = categoryRepository.getCategories()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
-    private val _editorsChoiceBooks = MutableStateFlow<Resource<List<Book>>>(Resource.Loading())
-    val editorsChoiceBooks: StateFlow<Resource<List<Book>>> = _editorsChoiceBooks
+    val editorsChoiceBooks: StateFlow<List<Book>> = bookRepository.getEditorsChoiceBooks()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
-    private val _mostViewedBooks = MutableStateFlow<Resource<List<Book>>>(Resource.Loading())
-    val mostViewedBooks: StateFlow<Resource<List<Book>>> = _mostViewedBooks
+    val mostViewedBooks: StateFlow<List<Book>> =
+        bookRepository.getBooks(DATA.VIEWS_COUNT, DATA.ORDER_MAIN)
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
-    private val _mostLovedBooks = MutableStateFlow<Resource<List<Book>>>(Resource.Loading())
-    val mostLovedBooks: StateFlow<Resource<List<Book>>> = _mostLovedBooks
+    val mostLovedBooks: StateFlow<List<Book>> =
+        bookRepository.getBooks(DATA.LOVES_COUNT, DATA.ORDER_MAIN)
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
-    private val _mostDownloadedBooks = MutableStateFlow<Resource<List<Book>>>(Resource.Loading())
-    val mostDownloadedBooks: StateFlow<Resource<List<Book>>> = _mostDownloadedBooks
+    val mostDownloadedBooks: StateFlow<List<Book>> =
+        bookRepository.getBooks(DATA.DOWNLOADS_COUNT, DATA.ORDER_MAIN)
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
-    private val _newBooks = MutableStateFlow<Resource<List<Book>>>(Resource.Loading())
-    val newBooks: StateFlow<Resource<List<Book>>> = _newBooks
+    val newBooks: StateFlow<List<Book>> = bookRepository.getBooks(DATA.TIMESTAMP, DATA.ORDER_MAIN)
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     init {
-        fetchHomeData()
+        fetchSliderImages()
     }
 
-    fun fetchHomeData() {
+    private fun fetchSliderImages() {
         viewModelScope.launch {
             _sliderImages.value = bookRepository.getSliderImages()
-            _categories.value = categoryRepository.getCategories()
-            _editorsChoiceBooks.value = bookRepository.getEditorsChoiceBooks()
-
-            _mostViewedBooks.value = bookRepository.getBooksBy(DATA.VIEWS_COUNT, DATA.ORDER_MAIN)
-            _mostLovedBooks.value = bookRepository.getBooksBy(DATA.LOVES_COUNT, DATA.ORDER_MAIN)
-            _mostDownloadedBooks.value =
-                bookRepository.getBooksBy(DATA.DOWNLOADS_COUNT, DATA.ORDER_MAIN)
-            _newBooks.value = bookRepository.getBooksBy(DATA.TIMESTAMP, DATA.ORDER_MAIN)
         }
     }
 }

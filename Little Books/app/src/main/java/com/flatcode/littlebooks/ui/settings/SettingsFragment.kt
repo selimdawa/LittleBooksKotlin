@@ -1,6 +1,6 @@
 package com.flatcode.littlebooks.ui.settings
 
-import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -52,9 +52,15 @@ class SettingsFragment : Fragment() {
                 DATA.LOGOUT -> context?.dialogLogout()
                 DATA.SHARE_APP -> context?.shareApp()
                 DATA.RATE_APP -> context?.rateApp()
-                else -> item.c?.let { context?.openActivity<Activity>() }
+                else -> item.c?.let { targetClass ->
+                    context?.let { ctx ->
+                        val intent = Intent(ctx, targetClass)
+                        ctx.startActivity(intent)
+                    }
+                }
             }
         }
+
         binding!!.recyclerView.adapter = adapter
 
         binding!!.toolbar.item.setOnClickListener {
@@ -111,7 +117,11 @@ class SettingsFragment : Fragment() {
         val list = mutableListOf<Setting>()
         list.add(
             Setting(
-                DATA.EDIT_PROFILE, "Edit Profile", R.drawable.ic_edit_white, 0, ProfileEditActivity::class.java
+                DATA.EDIT_PROFILE,
+                "Edit Profile",
+                R.drawable.ic_edit_white,
+                0,
+                ProfileEditActivity::class.java
             )
         )
         list.add(
@@ -125,12 +135,20 @@ class SettingsFragment : Fragment() {
         )
         list.add(
             Setting(
-                DATA.FOLLOWERS_ID, "Followers", R.drawable.ic_followers, followers, FollowersActivity::class.java
+                DATA.FOLLOWERS_ID,
+                "Followers",
+                R.drawable.ic_followers,
+                followers,
+                FollowersActivity::class.java
             )
         )
         list.add(
             Setting(
-                DATA.FOLLOWING_ID, "Following", R.drawable.ic_following, following, FollowingActivity::class.java
+                DATA.FOLLOWING_ID,
+                "Following",
+                R.drawable.ic_following,
+                following,
+                FollowingActivity::class.java
             )
         )
         list.add(
@@ -138,7 +156,15 @@ class SettingsFragment : Fragment() {
                 DATA.MY_BOOKS, "My books", R.drawable.ic_books, myBooks, MyBooksActivity::class.java
             )
         )
-        list.add(Setting(DATA.ADD_BOOK, "Add book", R.drawable.ic_book_white, 0, BookAddActivity::class.java))
+        list.add(
+            Setting(
+                DATA.ADD_BOOK,
+                "Add book",
+                R.drawable.ic_book_white,
+                0,
+                BookAddActivity::class.java
+            )
+        )
         list.add(
             Setting(
                 DATA.FAVORITES_ID,

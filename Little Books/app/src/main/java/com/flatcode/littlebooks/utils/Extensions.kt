@@ -124,21 +124,29 @@ fun Context.rateApp() {
 
 suspend fun cloudinaryUpload(uri: Uri): Resource<String> =
     suspendCancellableCoroutine { continuation ->
-        MediaManager.get().upload(uri).option("upload_preset", DATA.CLOUDINARY_UPLOAD_PRESET)
-            .callback(object : UploadCallback {
-                override fun onStart(requestId: String) {}
-                override fun onProgress(requestId: String, bytes: Long, totalBytes: Long) {}
-                override fun onSuccess(requestId: String, resultData: Map<*, *>) {
-                    val url = resultData["secure_url"] as? String ?: resultData["url"] as String
-                    continuation.resume(Resource.Success(url))
-                }
+        try {
+            MediaManager.get().upload(uri).unsigned(DATA.CLOUDINARY_UPLOAD_PRESET)
+                .callback(object : UploadCallback {
+                    override fun onStart(requestId: String) {}
+                    override fun onProgress(requestId: String, bytes: Long, totalBytes: Long) {}
+                    override fun onSuccess(requestId: String, resultData: Map<*, *>) {
+                        val url = resultData["secure_url"] as? String ?: resultData["url"] as? String ?: ""
+                        if (url.isNotEmpty()) {
+                            continuation.resume(Resource.Success(url))
+                        } else {
+                            continuation.resume(Resource.Error("Cloudinary upload failed: secure_url is null"))
+                        }
+                    }
 
-                override fun onError(requestId: String, error: ErrorInfo) {
-                    continuation.resume(Resource.Error(error.description))
-                }
+                    override fun onError(requestId: String, error: ErrorInfo?) {
+                        continuation.resume(Resource.Error(error?.description ?: "Cloudinary upload failed"))
+                    }
 
-                override fun onReschedule(requestId: String, error: ErrorInfo) {}
-            }).dispatch()
+                    override fun onReschedule(requestId: String, error: ErrorInfo?) {}
+                }).dispatch()
+        } catch (e: Exception) {
+            continuation.resume(Resource.Error(e.message ?: "Cloudinary upload error"))
+        }
     }
 
 fun ImageView.loadImage(isUser: Boolean, url: String?) {
@@ -201,19 +209,23 @@ fun TextView.loadPdfInfo(pdfUrl: String?) {
 }
 
 fun AdView.loadBannerAd(context: Context, bannerName: String?) {
-    MobileAds.initialize(context) { }
-    val adRequest = AdRequest.Builder().build()
-    this.loadAd(adRequest)
-    this.adListener = object : AdListener() {
-        override fun onAdLoaded() {
-            adUserCount(DATA.FirebaseUserUid, DATA.AD_LOAD, 1)
-            adCount(DATA.FirebaseUserUid, bannerName, DATA.ADS_LOADED_COUNT)
-        }
+    try {
+        MobileAds.initialize(context) { }
+        val adRequest = AdRequest.Builder().build()
+        this.loadAd(adRequest)
+        this.adListener = object : AdListener() {
+            override fun onAdLoaded() {
+                adUserCount(DATA.FirebaseUserUid, DATA.AD_LOAD, 1)
+                adCount(DATA.FirebaseUserUid, bannerName, DATA.ADS_LOADED_COUNT)
+            }
 
-        override fun onAdOpened() {
-            adUserCount(DATA.FirebaseUserUid, DATA.AD_CLICK, 1)
-            adCount(DATA.FirebaseUserUid, bannerName, DATA.ADS_CLICKED_COUNT)
+            override fun onAdOpened() {
+                adUserCount(DATA.FirebaseUserUid, DATA.AD_CLICK, 1)
+                adCount(DATA.FirebaseUserUid, bannerName, DATA.ADS_CLICKED_COUNT)
+            }
         }
+    } catch (e: Exception) {
+        e.printStackTrace()
     }
 }
 
@@ -223,27 +235,31 @@ fun Context.loadBannerAdTwo(
     adView2: AdView,
     bannerName2: String?,
 ) {
-    MobileAds.initialize(this) { }
-    val adRequest = AdRequest.Builder().build()
-    adView.loadAd(adRequest)
-    adView.adListener = object : AdListener() {
-        override fun onAdOpened() {
-            adUserCount(DATA.FirebaseUserUid, DATA.AD_CLICK, 1)
-            adCount(DATA.FirebaseUserUid, bannerName, DATA.ADS_CLICKED_COUNT)
+    try {
+        MobileAds.initialize(this) { }
+        val adRequest = AdRequest.Builder().build()
+        adView.loadAd(adRequest)
+        adView.adListener = object : AdListener() {
+            override fun onAdOpened() {
+                adUserCount(DATA.FirebaseUserUid, DATA.AD_CLICK, 1)
+                adCount(DATA.FirebaseUserUid, bannerName, DATA.ADS_CLICKED_COUNT)
+            }
         }
-    }
-    adView2.loadAd(adRequest)
-    adView2.adListener = object : AdListener() {
-        override fun onAdLoaded() {
-            adUserCount(DATA.FirebaseUserUid, DATA.AD_LOAD, 2)
-            adCount(DATA.FirebaseUserUid, bannerName, DATA.ADS_LOADED_COUNT)
-            adCount(DATA.FirebaseUserUid, bannerName2, DATA.ADS_LOADED_COUNT)
-        }
+        adView2.loadAd(adRequest)
+        adView2.adListener = object : AdListener() {
+            override fun onAdLoaded() {
+                adUserCount(DATA.FirebaseUserUid, DATA.AD_LOAD, 2)
+                adCount(DATA.FirebaseUserUid, bannerName, DATA.ADS_LOADED_COUNT)
+                adCount(DATA.FirebaseUserUid, bannerName2, DATA.ADS_LOADED_COUNT)
+            }
 
-        override fun onAdOpened() {
-            adUserCount(DATA.FirebaseUserUid, DATA.AD_CLICK, 1)
-            adCount(DATA.FirebaseUserUid, bannerName2, DATA.ADS_CLICKED_COUNT)
+            override fun onAdOpened() {
+                adUserCount(DATA.FirebaseUserUid, DATA.AD_CLICK, 1)
+                adCount(DATA.FirebaseUserUid, bannerName2, DATA.ADS_CLICKED_COUNT)
+            }
         }
+    } catch (e: Exception) {
+        e.printStackTrace()
     }
 }
 

@@ -10,7 +10,6 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.flatcode.littlebooks.databinding.FragmentCategoriesBinding
-import com.flatcode.littlebooks.utils.Resource
 import com.flatcode.littlebooks.viewmodel.CategoryViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -39,22 +38,9 @@ class CategoriesFragment : Fragment() {
     private fun observeViewModel() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.categories.collect { resource ->
-                    when (resource) {
-                        is Resource.Success -> {
-                            binding!!.bar.visibility = View.GONE
-                            adapter?.submitList(resource.data ?: emptyList())
-                        }
-
-                        is Resource.Error -> {
-                            binding!!.bar.visibility = View.GONE
-                            // Handle error
-                        }
-
-                        is Resource.Loading -> {
-                            binding!!.bar.visibility = View.VISIBLE
-                        }
-                    }
+                viewModel.categories.collect { list ->
+                    binding!!.bar.visibility = View.GONE
+                    adapter?.submitList(list)
                 }
             }
         }
@@ -65,6 +51,3 @@ class CategoriesFragment : Fragment() {
         binding = null
     }
 }
-
-
-

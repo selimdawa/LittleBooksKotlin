@@ -3,10 +3,15 @@ package com.flatcode.littlebooks.repository
 import com.flatcode.littlebooks.db.CategoryDao
 import com.flatcode.littlebooks.model.Category
 import com.flatcode.littlebooks.utils.DATA
-import com.flatcode.littlebooks.utils.Resource
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.tasks.await
+import com.google.firebase.database.ValueEventListener
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -14,19 +19,27 @@ import javax.inject.Singleton
 class CategoryRepository @Inject constructor(
     private val db: FirebaseDatabase, private val categoryDao: CategoryDao
 ) {
-    suspend fun getCategories(): Resource<List<Category>> {
-        return try {
-            val snapshot = db.getReference(DATA.CATEGORIES).get().await()
-            val list = mutableListOf<Category>()
-            for (data in snapshot.children) {
-                data.getValue(Category::class.java)?.let { list.add(it) }
+    fun getCategories(): Flow<List<Category>> {
+        syncCategories()
+        return categoryDao.getAllCategories()
+    }
+
+    fun syncCategories() {
+        db.getReference(DATA.CATEGORIES).addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val list = mutableListOf<Category>()
+                for (data in snapshot.children) {
+                    val item = data.getValue(Category::class.java) ?: continue
+                    list.add(item)
+                }
+                CoroutineScope(Dispatchers.IO).launch {
+                    categoryDao.insertCategories(list)
+                }
             }
-            categoryDao.insertCategories(list)
-            Resource.Success(list)
-        } catch (e: Exception) {
-            val localList = categoryDao.getAllCategories().first()
-            if (localList.isNotEmpty()) Resource.Success(localList)
-            else Resource.Error(e.message ?: "An unknown error occurred")
-        }
+
+            override fun onCancelled(error: DatabaseError) {
+                Timber.e(error.toException(), "syncCategories failed")
+            }
+        })
     }
 }

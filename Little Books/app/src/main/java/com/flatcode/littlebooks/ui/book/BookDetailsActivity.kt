@@ -16,17 +16,22 @@ import com.flatcode.littlebooks.R
 import com.flatcode.littlebooks.databinding.ActivityBookDetailsBinding
 import com.flatcode.littlebooks.databinding.DialogCommentAddBinding
 import com.flatcode.littlebooks.model.Comment
+import com.flatcode.littlebooks.model.User
+import com.flatcode.littlebooks.ui.profile.ProfileActivity
 import com.flatcode.littlebooks.utils.BaseActivity
 import com.flatcode.littlebooks.utils.DATA
 import com.flatcode.littlebooks.utils.Resource
+import com.flatcode.littlebooks.utils.formatTimestamp
 import com.flatcode.littlebooks.utils.loadBlurImage
 import com.flatcode.littlebooks.utils.loadCategory
 import com.flatcode.littlebooks.utils.loadImage
 import com.flatcode.littlebooks.utils.loadPdfInfo
 import com.flatcode.littlebooks.utils.openActivity
 import com.flatcode.littlebooks.viewmodel.BookViewModel
+import com.google.firebase.database.FirebaseDatabase
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 
 @AndroidEntryPoint
 class BookDetailsActivity : BaseActivity() {
@@ -51,7 +56,7 @@ class BookDetailsActivity : BaseActivity() {
         progressDialog =
             AlertDialog.Builder(this).setTitle("Please wait").setCancelable(false).create()
 
-        binding!!.toolbar.back.setOnClickListener { onBackPressedDispatcher.onBackPressed() }
+        binding!!.toolbar.back.setOnClickListener { finish() }
         binding!!.favorite.setOnClickListener {
             val isFavorite = binding!!.favorite.tag == "added"
             viewModel.toggleFavorite(DATA.FirebaseUserUid, bookId!!, !isFavorite)
@@ -85,11 +90,17 @@ class BookDetailsActivity : BaseActivity() {
                                 binding!!.description.text = book.description
                                 binding!!.views.text = book.viewsCount.toString()
                                 binding!!.downloads.text = book.downloadsCount.toString()
-                                // binding!!.pages.text = DATA.EMPTY + book?.pagesCount // layout doesn't have pages count text view?
+                                binding!!.loves.text = book.lovesCount.toString()
+                                binding!!.date.text = book.timestamp.formatTimestamp()
                                 binding!!.category.loadCategory(book.categoryId ?: "")
-                                binding!!.image.loadImage(false, book.url)
-                                binding!!.cover.loadBlurImage(book.url ?: "", 50)
+                                binding!!.image.loadImage(false, book.image)
+                                binding!!.cover.loadImage(false, book.image)
                                 binding!!.size.loadPdfInfo(book.url)
+
+                                val publisherId = book.publisher
+                                if (!publisherId.isNullOrEmpty()) {
+                                    loadPublisherInfo(publisherId)
+                                }
                             }
 
                             is Resource.Error -> {
@@ -123,6 +134,24 @@ class BookDetailsActivity : BaseActivity() {
                         }
                     }
                 }
+            }
+        }
+    }
+
+    private fun loadPublisherInfo(publisherId: String) {
+        lifecycleScope.launch {
+            val ref = FirebaseDatabase.getInstance().getReference(DATA.USERS).child(publisherId)
+            try {
+                val snapshot = ref.get().await()
+                val user = snapshot.getValue(User::class.java)
+                user?.let {
+                    binding!!.publisherName.text = it.username
+                    binding!!.publisherImage.loadImage(true, it.profileImage)
+                    binding!!.userInfo.setOnClickListener { _ ->
+                        context.openActivity<ProfileActivity>(clear = false, DATA.PROFILE_ID to it.id)
+                    }
+                }
+            } catch (_: Exception) {
             }
         }
     }

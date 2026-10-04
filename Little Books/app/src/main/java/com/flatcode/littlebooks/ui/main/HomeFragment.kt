@@ -141,99 +141,54 @@ class HomeFragment : Fragment() {
                     }
                 }
                 launch {
-                    viewModel.categories.collect { resource ->
-                        handleResource(resource, { categoryAdapter?.submitList(it) })
+                    viewModel.categories.collect { list ->
+                        categoryAdapter?.submitList(list)
                     }
                 }
                 launch {
-                    viewModel.editorsChoiceBooks.collect { resource ->
-                        handleResource(
-                            resource,
-                            { editorsChoiceAdapter?.submitList(it) },
-                            binding!!.bar,
-                            binding!!.recyclerView,
-                            binding!!.empty
-                        )
+                    viewModel.editorsChoiceBooks.collect { list ->
+                        handleList(list, { editorsChoiceAdapter?.submitList(it) }, binding!!.bar, binding!!.recyclerView, binding!!.empty)
                     }
                 }
                 launch {
-                    viewModel.mostViewedBooks.collect { resource ->
-                        handleResource(
-                            resource,
-                            { mostViewedAdapter?.submitList(it) },
-                            binding!!.bar2,
-                            binding!!.recyclerView2,
-                            binding!!.empty2
-                        )
+                    viewModel.mostViewedBooks.collect { list ->
+                        handleList(list, { mostViewedAdapter?.submitList(it) }, binding!!.bar2, binding!!.recyclerView2, binding!!.empty2)
                     }
                 }
                 launch {
-                    viewModel.mostLovedBooks.collect { resource ->
-                        handleResource(
-                            resource,
-                            { mostLovedAdapter?.submitList(it) },
-                            binding!!.bar3,
-                            binding!!.recyclerView3,
-                            binding!!.empty3
-                        )
+                    viewModel.mostLovedBooks.collect { list ->
+                        handleList(list, { mostLovedAdapter?.submitList(it) }, binding!!.bar3, binding!!.recyclerView3, binding!!.empty3)
                     }
                 }
                 launch {
-                    viewModel.mostDownloadedBooks.collect { resource ->
-                        handleResource(
-                            resource,
-                            { mostDownloadedAdapter?.submitList(it) },
-                            binding!!.bar4,
-                            binding!!.recyclerView4,
-                            binding!!.empty4
-                        )
+                    viewModel.mostDownloadedBooks.collect { list ->
+                        handleList(list, { mostDownloadedAdapter?.submitList(it) }, binding!!.bar4, binding!!.recyclerView4, binding!!.empty4)
                     }
                 }
                 launch {
-                    viewModel.newBooks.collect { resource ->
-                        handleResource(
-                            resource,
-                            { newBooksAdapter?.submitList(it) },
-                            binding!!.bar5,
-                            binding!!.recyclerView5,
-                            binding!!.empty5
-                        )
+                    viewModel.newBooks.collect { list ->
+                        handleList(list, { newBooksAdapter?.submitList(it) }, binding!!.bar5, binding!!.recyclerView5, binding!!.empty5)
                     }
                 }
             }
         }
     }
 
-    private fun <T> handleResource(
-        resource: Resource<List<T>>,
+    private fun <T> handleList(
+        list: List<T>,
         submitList: (List<T>) -> Unit,
         bar: View? = null,
         recyclerView: View? = null,
         empty: View? = null
     ) {
-        when (resource) {
-            is Resource.Success -> {
-                val data = resource.data ?: emptyList()
-                submitList(data)
-                bar?.visibility = View.GONE
-                if (data.isNotEmpty()) {
-                    recyclerView?.visibility = View.VISIBLE
-                    empty?.visibility = View.GONE
-                } else {
-                    recyclerView?.visibility = View.GONE
-                    empty?.visibility = View.VISIBLE
-                }
-            }
-
-            is Resource.Error -> {
-                bar?.visibility = View.GONE
-                recyclerView?.visibility = View.GONE
-                empty?.visibility = View.VISIBLE
-            }
-
-            is Resource.Loading -> {
-                bar?.visibility = View.VISIBLE
-            }
+        submitList(list)
+        bar?.visibility = View.GONE
+        if (list.isNotEmpty()) {
+            recyclerView?.visibility = View.VISIBLE
+            empty?.visibility = View.GONE
+        } else {
+            recyclerView?.visibility = View.GONE
+            empty?.visibility = View.VISIBLE
         }
     }
 

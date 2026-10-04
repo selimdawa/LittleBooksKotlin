@@ -12,10 +12,18 @@ import com.flatcode.littlebooks.model.SliderEntity
 import com.flatcode.littlebooks.utils.DATA
 import com.flatcode.littlebooks.utils.Resource
 import com.flatcode.littlebooks.utils.cloudinaryUpload
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.Query
+import com.google.firebase.database.ValueEventListener
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
+import timber.log.Timber
 import java.net.URL
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -28,6 +36,100 @@ class BookRepository @Inject constructor(
     private val favoriteDao: FavoriteDao,
     private val sliderDao: SliderDao
 ) {
+
+    fun getBooks(orderBy: String, limit: Int? = null): Flow<List<Book>> {
+        syncBooksFromRemote()
+        return when (orderBy) {
+            DATA.VIEWS_COUNT -> bookDao.getMostViewedBooks(limit ?: 100)
+            DATA.LOVES_COUNT -> bookDao.getMostLovedBooks()
+            DATA.DOWNLOADS_COUNT -> bookDao.getMostDownloadedBooks()
+            DATA.EDITORS_CHOICE -> bookDao.getAllBooks().map { list ->
+                list.filter { it.editorsChoice == 1 || it.editorsChoice == 2 }
+            }
+
+            else -> bookDao.getLatestBooks(limit ?: 100)
+        }
+    }
+
+    fun getEditorsChoiceBooks(): Flow<List<Book>> {
+        return getBooks(DATA.EDITORS_CHOICE, DATA.ORDER_MAIN)
+    }
+
+    fun getBooksByCategory(categoryId: String): Flow<List<Book>> {
+        syncBooksFromRemote()
+        return bookDao.getBooksByCategory(categoryId)
+    }
+
+    fun getBooksByPublisher(publisherId: String): Flow<List<Book>> {
+        syncBooksFromRemote()
+        return bookDao.getBooksByPublisher(publisherId)
+    }
+
+    fun observeBookById(bookId: String): Flow<Book?> {
+        syncBookById(bookId)
+        return bookDao.observeBookById(bookId)
+    }
+
+    private fun syncBookById(bookId: String) {
+        if (bookId.isEmpty()) return
+        db.getReference(DATA.BOOKS).child(bookId)
+            .addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    snapshot.getValue(Book::class.java)?.let { book ->
+                        CoroutineScope(Dispatchers.IO).launch {
+                            bookDao.insertBook(book)
+                        }
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    Timber.e(error.toException(), "syncBookById failed")
+                }
+            })
+    }
+
+    fun syncBooksFromRemote() {
+        db.getReference(DATA.BOOKS).addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val list = mutableListOf<Book>()
+                for (data in snapshot.children) {
+                    val item = data.getValue(Book::class.java) ?: continue
+                    list.add(item)
+                }
+                CoroutineScope(Dispatchers.IO).launch {
+                    bookDao.insertBooks(list)
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Timber.e(error.toException(), "syncBooksFromRemote failed")
+            }
+        })
+    }
+
+    fun getFavoriteBooks(userId: String): Flow<List<Book>> {
+        syncFavorites(userId)
+        return favoriteDao.getFavoriteBooks(userId)
+    }
+
+    private fun syncFavorites(userId: String) {
+        if (userId.isEmpty()) return
+        db.getReference(DATA.FAVORITES).child(userId)
+            .addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    val favList =
+                        snapshot.children.mapNotNull { it.key }.map { FavoriteEntity(userId, it) }
+                    CoroutineScope(Dispatchers.IO).launch {
+                        favoriteDao.deleteAllFavoritesForUser(userId)
+                        favoriteDao.insertFavorites(favList)
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    Timber.e(error.toException(), "syncFavorites failed")
+                }
+            })
+    }
 
     suspend fun toggleFavorite(
         userId: String, bookId: String, isFavorite: Boolean
@@ -52,28 +154,6 @@ class BookRepository @Inject constructor(
         }
     }
 
-    suspend fun syncBooksFromRemote(orderBy: String = "", limit: Int = 0): Resource<Unit> {
-        return try {
-            var query: Query = db.getReference(DATA.BOOKS)
-            if (orderBy.isNotEmpty()) {
-                query = query.orderByChild(orderBy)
-            }
-            if (limit > 0) {
-                query = query.limitToLast(limit)
-            }
-
-            val snapshot = query.get().await()
-            val list = mutableListOf<Book>()
-            for (data in snapshot.children) {
-                data.getValue(Book::class.java)?.let { list.add(it) }
-            }
-            bookDao.insertBooks(list)
-            Resource.Success(Unit)
-        } catch (e: Exception) {
-            Resource.Error(e.message ?: "Sync failed")
-        }
-    }
-
     suspend fun getSliderImages(): Resource<List<String>> {
         return try {
             val snapshot = db.getReference(DATA.SLIDER_SHOW).get().await()
@@ -94,36 +174,6 @@ class BookRepository @Inject constructor(
             val localList = sliderDao.getSliderImages().first().map { it.image }
             if (localList.isNotEmpty()) Resource.Success(localList)
             else Resource.Error(e.message ?: "An unknown error occurred")
-        }
-    }
-
-    suspend fun getBooksBy(orderBy: String, limit: Int = 0): Resource<List<Book>> {
-        return try {
-            syncBooksFromRemote(orderBy, limit)
-            val list = bookDao.getAllBooks().first()
-            Resource.Success(list)
-        } catch (e: Exception) {
-            val localList = bookDao.getAllBooks().first()
-            if (localList.isNotEmpty()) Resource.Success(localList)
-            else Resource.Error(e.message ?: "An unknown error occurred")
-        }
-    }
-
-    suspend fun getEditorsChoiceBooks(): Resource<List<Book>> {
-        return try {
-            val snapshot =
-                db.getReference(DATA.BOOKS).orderByChild(DATA.EDITORS_CHOICE).get().await()
-            val list = mutableListOf<Book>()
-            for (data in snapshot.children) {
-                val item = data.getValue(Book::class.java)
-                if (item != null && (item.editorsChoice == 1 || item.editorsChoice == 2)) {
-                    list.add(item)
-                }
-            }
-            bookDao.insertBooks(list)
-            Resource.Success(list)
-        } catch (e: Exception) {
-            Resource.Error(e.message ?: "An unknown error occurred")
         }
     }
 
