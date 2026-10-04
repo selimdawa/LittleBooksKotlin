@@ -32,7 +32,7 @@
             android:padding="5dp"
             android:src="@color/image_profile"
             app:shapeAppearanceOverlay="@style/ShapeAppearance.App.Circle"
-            app:strokeColor="@color/black"
+            app:strokeColor="?colorError"
             app:strokeWidth="5dp" />
 
         <TextView

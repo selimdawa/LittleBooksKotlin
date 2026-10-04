@@ -78,7 +78,7 @@ class BookEditActivity : BaseActivity() {
                                     selectedId = book.categoryId.orEmpty()
                                     if (imageUri == null) {
                                         binding.image.loadImage(
-                                            isUser = false, url = book.image ?: DATA.BASIC
+                                            isUser = false, data = book.image ?: DATA.BASIC
                                         )
                                     }
 
@@ -204,7 +204,7 @@ class BookEditActivity : BaseActivity() {
                     IntentCompat.getParcelableExtra(data, "CROP_RESULT_URI", Uri::class.java)
                 if (resultUri != null) {
                     imageUri = resultUri
-                    binding.image.setImageURI(imageUri)
+                    binding.image.loadImage(isUser = false, data = imageUri)
                 }
             }
         }

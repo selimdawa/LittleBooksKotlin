@@ -122,7 +122,9 @@ class CategoryEditActivity : BaseActivity() {
                 val item = snapshot.getValue(Category::class.java) ?: return
                 val categoryName = item.category
                 val image = item.image
-                binding.image.loadImage(isUser = true, url = image)
+                if (imageUri == null) {
+                    binding.image.loadImage(isUser = true, data = image)
+                }
                 binding.categoryEt.setText(categoryName)
             }
 
@@ -160,7 +162,7 @@ class CategoryEditActivity : BaseActivity() {
                     IntentCompat.getParcelableExtra(data, "CROP_RESULT_URI", Uri::class.java)
                 if (resultUri != null) {
                     imageUri = resultUri
-                    binding.image.setImageURI(imageUri)
+                    binding.image.loadImage(isUser = true, data = imageUri)
                 }
             }
         }

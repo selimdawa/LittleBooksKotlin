@@ -68,7 +68,7 @@ class ProfileEditActivity : BaseActivity() {
                                     binding.nameEt.setText(user.username)
                                     if (imageUri == null) {
                                         binding.profileImage.loadImage(
-                                            isUser = true, url = user.profileImage ?: DATA.BASIC
+                                            isUser = true, data = user.profileImage ?: DATA.BASIC
                                         )
                                     }
                                 }
@@ -155,7 +155,7 @@ class ProfileEditActivity : BaseActivity() {
                     IntentCompat.getParcelableExtra(data, "CROP_RESULT_URI", Uri::class.java)
                 if (resultUri != null) {
                     imageUri = resultUri
-                    binding.profileImage.setImageURI(imageUri)
+                    binding.profileImage.loadImage(isUser = true, data = imageUri)
                 }
             }
         }

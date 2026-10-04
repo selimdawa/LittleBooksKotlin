@@ -128,7 +128,7 @@ class BookDetailsActivity : BaseActivity() {
 
                                     val date: String = Application.formatTimestamp(book.timestamp)
                                     binding.category.loadCategory(book.categoryId)
-                                    binding.size.loadPdfInfo()
+                                    binding.size.loadPdfInfo(book.url)
 
                                     binding.image.loadImage(
                                         isUser = false, url = book.image ?: DATA.BASIC

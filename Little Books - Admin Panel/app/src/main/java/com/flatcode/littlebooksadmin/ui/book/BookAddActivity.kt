@@ -23,6 +23,7 @@ import com.flatcode.littlebooksadmin.utils.DATA
 import com.flatcode.littlebooksadmin.utils.Resource
 import com.flatcode.littlebooksadmin.utils.cropImage
 import com.flatcode.littlebooksadmin.utils.isNetworkAvailable
+import com.flatcode.littlebooksadmin.utils.loadImage
 import com.flatcode.littlebooksadmin.utils.pickImage
 import com.flatcode.littlebooksadmin.utils.requestStorage
 import dagger.hilt.android.AndroidEntryPoint
@@ -223,7 +224,7 @@ class BookAddActivity : BaseActivity() {
                     IntentCompat.getParcelableExtra(data, "CROP_RESULT_URI", Uri::class.java)
                 if (resultUri != null) {
                     imageUri = resultUri
-                    binding.image.setImageURI(imageUri)
+                    binding.image.loadImage(isUser = false, data = imageUri)
                 }
             }
         }

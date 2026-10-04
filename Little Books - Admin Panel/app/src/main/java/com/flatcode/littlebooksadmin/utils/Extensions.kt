@@ -120,10 +120,38 @@ fun Activity.cropImage(
     startActivityForResult(intent, requestCode)
 }
 
-fun TextView.loadPdfInfo() {
-    // Cloudinary metadata is not easily accessible from client without Admin API
-    // Setting a placeholder or empty for now
-    this.text = "N/A"
+fun TextView.loadPdfInfo(pdfUrl: String? = null) {
+    if (pdfUrl.isNullOrBlank()) {
+        this.text = "N/A"
+        return
+    }
+    this.text = "..."
+    Executors.newSingleThreadExecutor().execute {
+        try {
+            val url = URL(pdfUrl)
+            val connection = url.openConnection() as HttpURLConnection
+            connection.requestMethod = "HEAD"
+            connection.connectTimeout = 5000
+            connection.readTimeout = 5000
+            connection.connect()
+            val bytes = connection.contentLengthLong
+            connection.disconnect()
+
+            val sizeStr = if (bytes > 0) {
+                when {
+                    bytes >= 1024 * 1024 -> String.format(java.util.Locale.US, "%.1f MB", bytes / (1024.0 * 1024.0))
+                    bytes >= 1024 -> String.format(java.util.Locale.US, "%d KB", bytes / 1024)
+                    else -> "$bytes B"
+                }
+            } else {
+                "N/A"
+            }
+
+            post { this.text = sizeStr }
+        } catch (_: Exception) {
+            post { this.text = "N/A" }
+        }
+    }
 }
 
 fun TextView.loadCategory(categoryId: String?) {
@@ -206,13 +234,15 @@ private fun Context.saveDownloadedBook(
     }
 }
 
-fun ImageView.loadImage(isUser: Boolean, url: String?) {
+fun ImageView.loadImage(isUser: Boolean, data: Any? = null, url: Any? = null) {
+    val imageSource = data ?: url
     val defaultRes = if (isUser) R.drawable.basic_user else R.color.image_profile
     try {
-        if (url.isNullOrBlank() || url == DATA.BASIC || url == "null") {
+        val str = imageSource?.toString()
+        if (imageSource == null || str.isNullOrBlank() || str == DATA.BASIC || str == "null") {
             this.setImageResource(defaultRes)
         } else {
-            this.load(url) {
+            this.load(imageSource) {
                 placeholder(R.color.image_profile)
                 error(defaultRes)
                 fallback(defaultRes)

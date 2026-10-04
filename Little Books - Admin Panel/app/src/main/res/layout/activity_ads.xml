@@ -48,9 +48,13 @@
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="5dp"
                         android:elevation="6dp"
-                        app:cardBackgroundColor="?mc_bg"
                         app:cardCornerRadius="10dp"
                         app:strokeWidth="0dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="?mc_bg">
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -62,6 +66,8 @@
                             android:textSize="18sp"
                             android:textStyle="bold" />
 
+                        </LinearLayout>
+
                     </com.google.android.material.card.MaterialCardView>
 
                     <com.google.android.material.card.MaterialCardView
@@ -70,9 +76,13 @@
                         android:layout_height="wrap_content"
                         android:layout_marginHorizontal="5dp"
                         android:elevation="6dp"
-                        app:cardBackgroundColor="?mc_bg"
                         app:cardCornerRadius="10dp"
                         app:strokeWidth="0dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="?mc_bg">
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -84,6 +94,8 @@
                             android:textSize="18sp"
                             android:textStyle="bold" />
 
+                        </LinearLayout>
+
                     </com.google.android.material.card.MaterialCardView>
 
                     <com.google.android.material.card.MaterialCardView
@@ -92,9 +104,13 @@
                         android:layout_height="wrap_content"
                         android:layout_marginHorizontal="5dp"
                         android:elevation="6dp"
-                        app:cardBackgroundColor="?mc_bg"
                         app:cardCornerRadius="10dp"
                         app:strokeWidth="0dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="?mc_bg">
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -106,6 +122,8 @@
                             android:textSize="18sp"
                             android:textStyle="bold" />
 
+                        </LinearLayout>
+
                     </com.google.android.material.card.MaterialCardView>
 
                     <com.google.android.material.card.MaterialCardView
@@ -114,9 +132,13 @@
                         android:layout_height="wrap_content"
                         android:layout_marginHorizontal="5dp"
                         android:elevation="6dp"
-                        app:cardBackgroundColor="?mc_bg"
                         app:cardCornerRadius="10dp"
                         app:strokeWidth="0dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="?mc_bg">
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -127,6 +149,8 @@
                             android:textColor="@color/white"
                             android:textSize="18sp"
                             android:textStyle="bold" />
+
+                        </LinearLayout>
 
                     </com.google.android.material.card.MaterialCardView>
 
@@ -173,8 +197,6 @@
                 android:orientation="vertical"
                 android:visibility="gone"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                app:reverseLayout="true"
-                app:stackFromEnd="true"
                 tools:listitem="@layout/item_book_linear" />
 
         </LinearLayout>
