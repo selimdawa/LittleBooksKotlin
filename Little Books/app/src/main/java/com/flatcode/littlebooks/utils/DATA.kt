@@ -61,9 +61,9 @@ object DATA {
     var CATEGORY_NAME = "categoryName"
 
     //Other
-    val AUTH = FirebaseAuth.getInstance()
-    val FIREBASE_USER = AUTH.currentUser
-    val FirebaseUserUid = FIREBASE_USER!!.uid
+    val AUTH: FirebaseAuth get() = FirebaseAuth.getInstance()
+    val FIREBASE_USER: com.google.firebase.auth.FirebaseUser? get() = AUTH.currentUser
+    val FirebaseUserUid: String get() = FIREBASE_USER?.uid ?: ""
     const val WEB_SITE = ""
     const val FB_ID = ""
 

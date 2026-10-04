@@ -20,10 +20,11 @@ fun Context.deleteBook(
     bookId: String?,
     bookTitle: String,
 ) {
+    if (bookId.isNullOrEmpty()) return
     val dialog =
         AlertDialog.Builder(this).setTitle("Please wait").setMessage("Deleting $bookTitle ...")
             .setCancelable(false).show()
-    FirebaseDatabase.getInstance().getReference(DATA.BOOKS).child(bookId!!).removeValue()
+    FirebaseDatabase.getInstance().getReference(DATA.BOOKS).child(bookId).removeValue()
         .addOnSuccessListener {
             dialog.dismiss()
             Toast.makeText(this, "Books Deleted Successfully...", Toast.LENGTH_SHORT).show()
@@ -36,11 +37,12 @@ fun Context.deleteBook(
 }
 
 fun ImageView.isFavorite(id: String?, userId: String?) {
+    if (id.isNullOrEmpty() || userId.isNullOrEmpty()) return
     val reference: DatabaseReference =
-        FirebaseDatabase.getInstance().reference.child(DATA.FAVORITES).child(userId!!)
+        FirebaseDatabase.getInstance().reference.child(DATA.FAVORITES).child(userId)
     reference.addValueEventListener(object : ValueEventListener {
         override fun onDataChange(dataSnapshot: DataSnapshot) {
-            if (dataSnapshot.child(id!!).exists()) {
+            if (dataSnapshot.child(id).exists()) {
                 this@isFavorite.setImageResource(R.drawable.ic_star_selected)
                 this@isFavorite.tag = "added"
             } else {
@@ -54,33 +56,39 @@ fun ImageView.isFavorite(id: String?, userId: String?) {
 }
 
 fun ImageView.checkFavorite(bookId: String?) {
+    val uid = DATA.FirebaseUserUid
+    if (uid.isEmpty() || bookId.isNullOrEmpty()) return
     if (this.tag == "add") {
-        FirebaseDatabase.getInstance().getReference(DATA.FAVORITES).child(DATA.FirebaseUserUid)
-            .child(bookId!!).setValue(true)
+        FirebaseDatabase.getInstance().getReference(DATA.FAVORITES).child(uid)
+            .child(bookId).setValue(true)
     } else {
-        FirebaseDatabase.getInstance().getReference(DATA.FAVORITES).child(DATA.FirebaseUserUid)
-            .child(bookId!!).removeValue()
+        FirebaseDatabase.getInstance().getReference(DATA.FAVORITES).child(uid)
+            .child(bookId).removeValue()
     }
 }
 
 fun ImageView.checkLove(bookId: String?) {
+    val uid = DATA.FirebaseUserUid
+    if (uid.isEmpty() || bookId.isNullOrEmpty()) return
     if (this.tag == "love") {
-        FirebaseDatabase.getInstance().getReference(DATA.LOVES).child(bookId!!)
-            .child(DATA.FirebaseUserUid).setValue(true)
+        FirebaseDatabase.getInstance().getReference(DATA.LOVES).child(bookId)
+            .child(uid).setValue(true)
         incrementItemCount(DATA.BOOKS, bookId, DATA.LOVES_COUNT)
     } else {
-        FirebaseDatabase.getInstance().getReference(DATA.LOVES).child(bookId!!)
-            .child(DATA.FirebaseUserUid).removeValue()
+        FirebaseDatabase.getInstance().getReference(DATA.LOVES).child(bookId)
+            .child(uid).removeValue()
         incrementItemRemoveCount(DATA.BOOKS, bookId, DATA.LOVES_COUNT)
     }
 }
 
 fun ImageView.isLoves(bookId: String?) {
+    val uid = DATA.FirebaseUserUid
+    if (uid.isEmpty() || bookId.isNullOrEmpty()) return
     val reference: DatabaseReference =
-        FirebaseDatabase.getInstance().reference.child(DATA.LOVES).child(bookId!!)
+        FirebaseDatabase.getInstance().reference.child(DATA.LOVES).child(bookId)
     reference.addValueEventListener(object : ValueEventListener {
         override fun onDataChange(dataSnapshot: DataSnapshot) {
-            if (dataSnapshot.child(DATA.FirebaseUserUid).exists()) {
+            if (dataSnapshot.child(uid).exists()) {
                 this@isLoves.setImageResource(R.drawable.ic_heart_selected)
                 this@isLoves.tag = "loved"
             } else {
@@ -94,7 +102,7 @@ fun ImageView.isLoves(bookId: String?) {
 }
 
 fun TextView.loadCategory(categoryId: String?) {
-    categoryId ?: return
+    if (categoryId.isNullOrEmpty()) return
     FirebaseDatabase.getInstance().getReference(DATA.CATEGORIES).child(categoryId)
         .addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -112,7 +120,7 @@ fun incrementItemRemoveCount(database: String?, id: String?, childDB: String?) =
     updateItemCount(database, id, childDB, -1)
 
 private fun updateItemCount(database: String?, id: String?, childDB: String?, increment: Int) {
-    if (database == null || id == null || childDB == null) return
+    if (database.isNullOrEmpty() || id.isNullOrEmpty() || childDB.isNullOrEmpty()) return
     val ref = FirebaseDatabase.getInstance().getReference(database).child(id)
     ref.addListenerForSingleValueEvent(object : ValueEventListener {
         override fun onDataChange(snapshot: DataSnapshot) {
@@ -125,13 +133,16 @@ private fun updateItemCount(database: String?, id: String?, childDB: String?, in
 }
 
 fun adCount(userId: String?, bannerName: String?, key: String?) {
-    if (userId == null || bannerName == null || key == null) return
+    if (userId.isNullOrEmpty() || bannerName.isNullOrEmpty() || key.isNullOrEmpty()) return
     val ref = FirebaseDatabase.getInstance().getReference(DATA.AD_S).child(userId).child(bannerName)
     ref.addListenerForSingleValueEvent(object : ValueEventListener {
         override fun onDataChange(snapshot: DataSnapshot) {
             val count = snapshot.child(key).value.toString().toLongOrNull() ?: 0L
             ref.updateChildren(mapOf(key to count + 1)).addOnCompleteListener {
-                adName(DATA.FirebaseUserUid, bannerName)
+                val currentUid = DATA.FirebaseUserUid
+                if (currentUid.isNotEmpty()) {
+                    adName(currentUid, bannerName)
+                }
             }
         }
 
@@ -140,7 +151,7 @@ fun adCount(userId: String?, bannerName: String?, key: String?) {
 }
 
 fun adUserCount(userId: String?, key: String?, number: Int) {
-    if (userId == null || key == null) return
+    if (userId.isNullOrEmpty() || key.isNullOrEmpty()) return
     val ref = FirebaseDatabase.getInstance().getReference(DATA.USERS).child(userId)
     ref.addListenerForSingleValueEvent(object : ValueEventListener {
         override fun onDataChange(snapshot: DataSnapshot) {
@@ -153,7 +164,7 @@ fun adUserCount(userId: String?, key: String?, number: Int) {
 }
 
 fun adName(userId: String?, bannerName: String?) {
-    if (userId == null || bannerName == null) return
+    if (userId.isNullOrEmpty() || bannerName.isNullOrEmpty()) return
     val ref = FirebaseDatabase.getInstance().getReference(DATA.AD_S).child(userId).child(bannerName)
     ref.addListenerForSingleValueEvent(object : ValueEventListener {
         override fun onDataChange(snapshot: DataSnapshot) {

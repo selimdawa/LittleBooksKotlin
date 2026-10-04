@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:ads="http://schemas.android.com/apk/res-auto"
+    xmlns:ads="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -40,17 +40,15 @@
                         app:layout_constraintDimensionRatio="16:9"
                         app:sliderAnimationDuration="600"
                         app:sliderAutoCycleDirection="back_and_forth"
-                        app:sliderAutoCycleEnabled="true"
                         app:sliderIndicatorAnimationDuration="600"
+                        app:sliderIndicatorEnabled="true"
                         app:sliderIndicatorGravity="center_horizontal|bottom"
-                        app:sliderIndicatorMargin="15dp"
                         app:sliderIndicatorOrientation="horizontal"
-                        app:sliderIndicatorPadding="3dp"
-                        app:sliderIndicatorRadius="1.5dp"
+                        app:sliderIndicatorPadding="8dp"
+                        app:sliderIndicatorRadius="3dp"
                         app:sliderIndicatorSelectedColor="?mc_track"
-                        app:sliderIndicatorUnselectedColor="@color/white"
+                        app:sliderIndicatorUnselectedColor="#FFF"
                         app:sliderScrollTimeInSec="3"
-                        app:sliderStartAutoCycle="true"
                         tools:ignore="MissingConstraints" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>

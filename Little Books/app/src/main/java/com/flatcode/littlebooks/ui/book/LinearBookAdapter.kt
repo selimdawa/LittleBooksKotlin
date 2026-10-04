@@ -4,15 +4,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
-import com.flatcode.littlebooks.ui.BaseListAdapter
 import com.flatcode.littlebooks.databinding.ItemBookLinearBinding
 import com.flatcode.littlebooks.model.Book
+import com.flatcode.littlebooks.ui.BaseListAdapter
 import com.flatcode.littlebooks.utils.DATA
 import com.flatcode.littlebooks.utils.checkFavorite
 import com.flatcode.littlebooks.utils.checkLove
-import com.flatcode.littlebooks.utils.loadImage
 import com.flatcode.littlebooks.utils.isFavorite
 import com.flatcode.littlebooks.utils.isLoves
+import com.flatcode.littlebooks.utils.loadImage
 import com.flatcode.littlebooks.utils.moreOptionDialog
 
 class LinearBookAdapter(
@@ -20,7 +20,10 @@ class LinearBookAdapter(
     private val onItemClick: (Book) -> Unit
 ) : BaseListAdapter<Book, ItemBookLinearBinding>(DiffCallback) {
 
-    override fun inflateBinding(inflater: LayoutInflater, parent: ViewGroup): ItemBookLinearBinding {
+    override fun inflateBinding(
+        inflater: LayoutInflater,
+        parent: ViewGroup
+    ): ItemBookLinearBinding {
         return ItemBookLinearBinding.inflate(inflater, parent, false)
     }
 
@@ -34,7 +37,8 @@ class LinearBookAdapter(
         binding.title.visibility = if (item.title.isNullOrEmpty()) View.GONE else View.VISIBLE
         binding.title.text = item.title
 
-        binding.description.visibility = if (item.description.isNullOrEmpty()) View.GONE else View.VISIBLE
+        binding.description.visibility =
+            if (item.description.isNullOrEmpty()) View.GONE else View.VISIBLE
         binding.description.text = item.description
 
         binding.numberViews.text = item.viewsCount.toString()
