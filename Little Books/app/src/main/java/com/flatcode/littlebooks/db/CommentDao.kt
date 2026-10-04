@@ -10,11 +10,14 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface CommentDao {
-    @Query("SELECT * FROM comments WHERE bookId = :bookId")
+    @Query("SELECT * FROM comments WHERE bookId = :bookId ORDER BY timestamp DESC")
     fun getCommentsForBook(bookId: String): Flow<List<Comment>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertComment(comment: Comment)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertComments(comments: List<Comment>)
 
     @Delete
     suspend fun deleteComment(comment: Comment)

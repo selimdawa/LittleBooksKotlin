@@ -90,8 +90,12 @@ class BookViewModel @Inject constructor(
             }
         }
         viewModelScope.launch {
+            repository.getComments(bookId).collect {
+                _comments.value = it
+            }
+        }
+        viewModelScope.launch {
             _isFavorite.value = repository.checkFavorite(userId, bookId)
-            _comments.value = repository.getComments(bookId)
             repository.incrementViewCount(bookId)
         }
     }
@@ -130,10 +134,7 @@ class BookViewModel @Inject constructor(
             commentData[DATA.COMMENT] = comment
             commentData[DATA.PUBLISHER] = userId
 
-            val result = repository.addComment(bookId, commentData)
-            if (result.isSuccess) {
-                _comments.value = repository.getComments(bookId)
-            }
+            repository.addComment(bookId, commentData)
         }
     }
 

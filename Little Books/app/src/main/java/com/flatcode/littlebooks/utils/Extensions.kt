@@ -122,7 +122,7 @@ fun Context.rateApp() {
     }
 }
 
-suspend fun cloudinaryUpload(uri: Uri): Resource<String> =
+suspend fun cloudinaryUpload(uri: Uri): String =
     suspendCancellableCoroutine { continuation ->
         try {
             MediaManager.get().upload(uri).unsigned(DATA.CLOUDINARY_UPLOAD_PRESET)
@@ -130,22 +130,20 @@ suspend fun cloudinaryUpload(uri: Uri): Resource<String> =
                     override fun onStart(requestId: String) {}
                     override fun onProgress(requestId: String, bytes: Long, totalBytes: Long) {}
                     override fun onSuccess(requestId: String, resultData: Map<*, *>) {
-                        val url = resultData["secure_url"] as? String ?: resultData["url"] as? String ?: ""
-                        if (url.isNotEmpty()) {
-                            continuation.resume(Resource.Success(url))
-                        } else {
-                            continuation.resume(Resource.Error("Cloudinary upload failed: secure_url is null"))
-                        }
+                        val url =
+                            resultData["secure_url"] as? String ?: resultData["url"] as? String
+                            ?: ""
+                        continuation.resume(url)
                     }
 
                     override fun onError(requestId: String, error: ErrorInfo?) {
-                        continuation.resume(Resource.Error(error?.description ?: "Cloudinary upload failed"))
+                        continuation.resume("")
                     }
 
                     override fun onReschedule(requestId: String, error: ErrorInfo?) {}
                 }).dispatch()
-        } catch (e: Exception) {
-            continuation.resume(Resource.Error(e.message ?: "Cloudinary upload error"))
+        } catch (_: Exception) {
+            continuation.resume("")
         }
     }
 

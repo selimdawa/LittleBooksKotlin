@@ -38,15 +38,16 @@ class BookRepository @Inject constructor(
 
     fun getBooks(orderBy: String, limit: Int? = null): Flow<List<Book>> {
         syncBooksFromRemote()
+        val l = limit ?: 100
         return when (orderBy) {
-            DATA.VIEWS_COUNT -> bookDao.getMostViewedBooks(limit ?: 100)
-            DATA.LOVES_COUNT -> bookDao.getMostLovedBooks()
-            DATA.DOWNLOADS_COUNT -> bookDao.getMostDownloadedBooks()
+            DATA.VIEWS_COUNT -> bookDao.getMostViewedBooks(l)
+            DATA.LOVES_COUNT -> bookDao.getMostLovedBooks(l)
+            DATA.DOWNLOADS_COUNT -> bookDao.getMostDownloadedBooks(l)
             DATA.EDITORS_CHOICE -> bookDao.getAllBooks().map { list ->
-                list.filter { it.editorsChoice == 1 || it.editorsChoice == 2 }
+                list.filter { it.editorsChoice == 1 || it.editorsChoice == 2 }.take(l)
             }
 
-            else -> bookDao.getLatestBooks(limit ?: 100)
+            else -> bookDao.getLatestBooks(l)
         }
     }
 
@@ -206,20 +207,31 @@ class BookRepository @Inject constructor(
         }
     }
 
-    suspend fun getComments(bookId: String): List<Comment> {
-        return try {
-            val snapshot = db.getReference(DATA.COMMENTS).child(bookId).get().await()
-            val list = mutableListOf<Comment>()
-            for (data in snapshot.children) {
-                data.getValue(Comment::class.java)?.let {
-                    list.add(it)
-                    commentDao.insertComment(it)
+    fun getComments(bookId: String): Flow<List<Comment>> {
+        syncComments(bookId)
+        return commentDao.getCommentsForBook(bookId)
+    }
+
+    private fun syncComments(bookId: String) {
+        if (bookId.isEmpty()) return
+        db.getReference(DATA.COMMENTS).child(bookId)
+            .addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    val list = mutableListOf<Comment>()
+                    for (data in snapshot.children) {
+                        data.getValue(Comment::class.java)?.let {
+                            list.add(it)
+                        }
+                    }
+                    CoroutineScope(Dispatchers.IO).launch {
+                        commentDao.insertComments(list)
+                    }
                 }
-            }
-            list
-        } catch (_: Exception) {
-            emptyList()
-        }
+
+                override fun onCancelled(error: DatabaseError) {
+                    Timber.e(error.toException(), "syncComments failed")
+                }
+            })
     }
 
     suspend fun getBooksFromFollowedPublishers(
@@ -244,7 +256,11 @@ class BookRepository @Inject constructor(
     suspend fun uploadBookFile(bookUri: Uri): Result<String> {
         return try {
             val url = cloudinaryUpload(bookUri)
-            Result.success(url)
+            if (url.isNotEmpty()) {
+                Result.success(url)
+            } else {
+                Result.failure(Exception("Upload file failed"))
+            }
         } catch (e: Exception) {
             Result.failure(e)
         }
@@ -253,7 +269,11 @@ class BookRepository @Inject constructor(
     suspend fun uploadBookImage(imageUri: Uri): Result<String> {
         return try {
             val url = cloudinaryUpload(imageUri)
-            Result.success(url)
+            if (url.isNotEmpty()) {
+                Result.success(url)
+            } else {
+                Result.failure(Exception("Upload image failed"))
+            }
         } catch (e: Exception) {
             Result.failure(e)
         }

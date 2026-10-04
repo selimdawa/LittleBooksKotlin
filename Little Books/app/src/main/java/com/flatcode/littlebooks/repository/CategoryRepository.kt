@@ -30,6 +30,11 @@ class CategoryRepository @Inject constructor(
                 val list = mutableListOf<Category>()
                 for (data in snapshot.children) {
                     val item = data.getValue(Category::class.java) ?: continue
+                    if (item.category.isNullOrEmpty()) {
+                        item.category = data.child("name").value?.toString()
+                            ?: data.child("category").value?.toString()
+                                    ?: data.child("title").value?.toString()
+                    }
                     list.add(item)
                 }
                 CoroutineScope(Dispatchers.IO).launch {

@@ -18,14 +18,11 @@ interface BookDao {
     @Query("SELECT * FROM books ORDER BY viewsCount DESC LIMIT :limit")
     fun getMostViewedBooks(limit: Int): Flow<List<Book>>
 
-    @Query("SELECT * FROM books ORDER BY viewsCount DESC")
-    fun getMostViewedBooks(): Flow<List<Book>>
+    @Query("SELECT * FROM books ORDER BY lovesCount DESC LIMIT :limit")
+    fun getMostLovedBooks(limit: Int): Flow<List<Book>>
 
-    @Query("SELECT * FROM books ORDER BY lovesCount DESC")
-    fun getMostLovedBooks(): Flow<List<Book>>
-
-    @Query("SELECT * FROM books ORDER BY downloadsCount DESC")
-    fun getMostDownloadedBooks(): Flow<List<Book>>
+    @Query("SELECT * FROM books ORDER BY downloadsCount DESC LIMIT :limit")
+    fun getMostDownloadedBooks(limit: Int): Flow<List<Book>>
 
     @Query("SELECT * FROM books ORDER BY timestamp DESC LIMIT :limit")
     fun getLatestBooks(limit: Int): Flow<List<Book>>

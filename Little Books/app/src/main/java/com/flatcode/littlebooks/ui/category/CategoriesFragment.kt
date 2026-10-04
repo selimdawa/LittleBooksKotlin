@@ -40,7 +40,14 @@ class CategoriesFragment : Fragment() {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.categories.collect { list ->
                     binding!!.bar.visibility = View.GONE
-                    adapter?.submitList(list)
+                    if (list.isNotEmpty()) {
+                        binding!!.recyclerView.visibility = View.VISIBLE
+                        binding!!.emptyText.visibility = View.GONE
+                        adapter?.submitList(list)
+                    } else {
+                        binding!!.recyclerView.visibility = View.GONE
+                        binding!!.emptyText.visibility = View.VISIBLE
+                    }
                 }
             }
         }
