@@ -6,7 +6,6 @@ import androidx.lifecycle.viewModelScope
 import com.flatcode.littlebooks.model.User
 import com.flatcode.littlebooks.repository.BookRepository
 import com.flatcode.littlebooks.repository.UserRepository
-import com.flatcode.littlebooks.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -23,43 +22,40 @@ class ProfileViewModel @Inject constructor(
 
     private val _searchQuery = MutableStateFlow("")
 
-    private val _user = MutableStateFlow<Resource<User>>(Resource.Loading())
-    val user: StateFlow<Resource<User>> = _user
+    private val _user = MutableStateFlow<User?>(null)
+    val user: StateFlow<User?> = _user
 
-    private val _booksCount = MutableStateFlow<Resource<Int>>(Resource.Loading())
-    val booksCount: StateFlow<Resource<Int>> = _booksCount
+    private val _booksCount = MutableStateFlow(0)
+    val booksCount: StateFlow<Int> = _booksCount
 
-    private val _followersCount = MutableStateFlow<Resource<Long>>(Resource.Loading())
-    val followersCount: StateFlow<Resource<Long>> = _followersCount
+    private val _followersCount = MutableStateFlow(0L)
+    val followersCount: StateFlow<Long> = _followersCount
 
-    private val _followingCount = MutableStateFlow<Resource<Long>>(Resource.Loading())
-    val followingCount: StateFlow<Resource<Long>> = _followingCount
+    private val _followingCount = MutableStateFlow(0L)
+    val followingCount: StateFlow<Long> = _followingCount
 
-    private val _favoritesCount = MutableStateFlow<Resource<Long>>(Resource.Loading())
-    val favoritesCount: StateFlow<Resource<Long>> = _favoritesCount
+    private val _favoritesCount = MutableStateFlow(0L)
+    val favoritesCount: StateFlow<Long> = _favoritesCount
 
-    private val _isFollowing = MutableStateFlow<Resource<Boolean>>(Resource.Loading())
-    val isFollowing: StateFlow<Resource<Boolean>> = _isFollowing
+    private val _isFollowing = MutableStateFlow(false)
+    val isFollowing: StateFlow<Boolean> = _isFollowing
 
-    private val _explorePublishersCount = MutableStateFlow<Resource<Int>>(Resource.Loading())
-    val explorePublishersCount: StateFlow<Resource<Int>> = _explorePublishersCount
+    private val _explorePublishersCount = MutableStateFlow(0)
+    val explorePublishersCount: StateFlow<Int> = _explorePublishersCount
 
-    private val _explorePublishers = MutableStateFlow<Resource<List<User>>>(Resource.Loading())
+    private val _explorePublishers = MutableStateFlow<List<User>>(emptyList())
 
-    private val _uploadStatus = MutableStateFlow<Resource<String>?>(null)
-    val uploadStatus: StateFlow<Resource<String>?> = _uploadStatus
+    private val _uploadStatus = MutableStateFlow<Result<String>?>(null)
+    val uploadStatus: StateFlow<Result<String>?> = _uploadStatus
 
-    val filteredExplorePublishers: StateFlow<Resource<List<User>>> =
-        combine(_explorePublishers, _searchQuery) { resource, query ->
-            if (resource is Resource.Success && query.isNotEmpty()) {
-                val filtered = resource.data?.filter {
-                    it.username?.contains(query, ignoreCase = true) == true
-                }
-                Resource.Success(filtered ?: emptyList())
+    val filteredExplorePublishers: StateFlow<List<User>> =
+        combine(_explorePublishers, _searchQuery) { list, query ->
+            if (query.isNotEmpty()) {
+                list.filter { it.username?.contains(query, ignoreCase = true) == true }
             } else {
-                resource
+                list
             }
-        }.stateIn(viewModelScope, SharingStarted.Lazily, Resource.Loading())
+        }.stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
     fun setSearchQuery(query: String) {
         _searchQuery.value = query
@@ -72,7 +68,11 @@ class ProfileViewModel @Inject constructor(
         followTypeFollowing: String
     ) {
         viewModelScope.launch {
-            _user.value = userRepository.getUserInfo(profileId)
+            userRepository.getUserInfo(profileId).collect {
+                _user.value = it
+            }
+        }
+        viewModelScope.launch {
             _booksCount.value = bookRepository.getBooksCountByPublisher(profileId)
             _followersCount.value = userRepository.getFollowCount(profileId, followTypeFollowers)
             _followingCount.value = userRepository.getFollowCount(profileId, followTypeFollowing)
@@ -84,7 +84,6 @@ class ProfileViewModel @Inject constructor(
 
     fun loadExplorePublishers(currentUserId: String) {
         viewModelScope.launch {
-            _explorePublishers.value = Resource.Loading()
             _explorePublishers.value = userRepository.getExplorePublishers(currentUserId)
         }
     }
@@ -92,8 +91,8 @@ class ProfileViewModel @Inject constructor(
     fun followUser(currentUserId: String, targetUserId: String, follow: Boolean) {
         viewModelScope.launch {
             val result = userRepository.followUser(currentUserId, targetUserId, follow)
-            if (result is Resource.Success) {
-                _isFollowing.value = Resource.Success(follow)
+            if (result.isSuccess) {
+                _isFollowing.value = follow
             }
         }
     }
@@ -101,13 +100,11 @@ class ProfileViewModel @Inject constructor(
     fun updateUserInfo(userId: String, hashMap: Map<String, Any>) {
         viewModelScope.launch {
             userRepository.updateUserInfo(userId, hashMap)
-            _user.value = userRepository.getUserInfo(userId)
         }
     }
 
     fun uploadProfileImage(imageUri: Uri) {
         viewModelScope.launch {
-            _uploadStatus.value = Resource.Loading()
             _uploadStatus.value = userRepository.uploadProfileImage(imageUri)
         }
     }

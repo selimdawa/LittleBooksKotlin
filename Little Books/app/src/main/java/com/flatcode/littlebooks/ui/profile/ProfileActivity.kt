@@ -13,7 +13,6 @@ import com.flatcode.littlebooks.databinding.ActivityProfileBinding
 import com.flatcode.littlebooks.ui.main.MainActivity
 import com.flatcode.littlebooks.utils.BaseActivity
 import com.flatcode.littlebooks.utils.DATA
-import com.flatcode.littlebooks.utils.Resource
 import com.flatcode.littlebooks.utils.loadImage
 import com.flatcode.littlebooks.utils.openActivity
 import com.flatcode.littlebooks.viewmodel.ProfileViewModel
@@ -78,53 +77,41 @@ class ProfileActivity : BaseActivity() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch {
-                    viewModel.user.collect { resource ->
-                        if (resource is Resource.Success) {
-                            val user = resource.data
-                            binding!!.username.text = user?.username
-                            binding!!.profile.loadImage(true, user?.profileImage)
+                    viewModel.user.collect { user ->
+                        user?.let {
+                            binding!!.username.text = it.username
+                            binding!!.profile.loadImage(true, it.profileImage)
                         }
                     }
                 }
                 launch {
-                    viewModel.booksCount.collect { resource ->
-                        if (resource is Resource.Success) {
-                            binding!!.numberBooks.text = resource.data.toString()
-                        }
+                    viewModel.booksCount.collect { count ->
+                        binding!!.numberBooks.text = count.toString()
                     }
                 }
                 launch {
-                    viewModel.followersCount.collect { resource ->
-                        if (resource is Resource.Success) {
-                            binding!!.numberFollowers.text = resource.data.toString()
-                        }
+                    viewModel.followersCount.collect { count ->
+                        binding!!.numberFollowers.text = count.toString()
                     }
                 }
                 launch {
-                    viewModel.followingCount.collect { resource ->
-                        if (resource is Resource.Success) {
-                            binding!!.numberFollowing.text = resource.data.toString()
-                        }
+                    viewModel.followingCount.collect { count ->
+                        binding!!.numberFollowing.text = count.toString()
                     }
                 }
                 launch {
-                    viewModel.favoritesCount.collect { resource ->
-                        if (resource is Resource.Success) {
-                            binding!!.numberFavorites.text = resource.data.toString()
-                        }
+                    viewModel.favoritesCount.collect { count ->
+                        binding!!.numberFavorites.text = count.toString()
                     }
                 }
                 launch {
-                    viewModel.isFollowing.collect { resource ->
-                        if (resource is Resource.Success) {
-                            val following = resource.data == true
-                            if (following) {
-                                binding!!.follow.setImageResource(R.drawable.ic_heart_selected)
-                                binding!!.follow.tag = "added"
-                            } else {
-                                binding!!.follow.setImageResource(R.drawable.ic_heart_unselected)
-                                binding!!.follow.tag = "add"
-                            }
+                    viewModel.isFollowing.collect { following ->
+                        if (following) {
+                            binding!!.follow.setImageResource(R.drawable.ic_heart_selected)
+                            binding!!.follow.tag = "added"
+                        } else {
+                            binding!!.follow.setImageResource(R.drawable.ic_heart_unselected)
+                            binding!!.follow.tag = "add"
                         }
                     }
                 }

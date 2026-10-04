@@ -14,7 +14,6 @@ import com.flatcode.littlebooks.R
 import com.flatcode.littlebooks.databinding.ActivityPageStaggeredSwitchBinding
 import com.flatcode.littlebooks.utils.BaseActivity
 import com.flatcode.littlebooks.utils.DATA
-import com.flatcode.littlebooks.utils.Resource
 import com.flatcode.littlebooks.utils.loadBannerAd
 import com.flatcode.littlebooks.viewmodel.BookViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -104,39 +103,23 @@ class BooksCategoryActivity : BaseActivity() {
     }
 
     private fun loadBooks() {
-        categoryId?.let { viewModel.loadBooksByCategory(it, type) }
+        categoryId?.let { viewModel.loadBooksByCategory(it) }
     }
 
     private fun observeViewModel() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.filteredBooksByCategory.collect { resource ->
-                    when (resource) {
-                        is Resource.Success -> {
-                            binding!!.progress.visibility = View.GONE
-                            val data = resource.data ?: emptyList()
-                            binding!!.toolbar.number.text =
-                                getString(R.string.count_format, data.size)
-                            if (data.isNotEmpty()) {
-                                binding!!.recyclerView.visibility = View.VISIBLE
-                                binding!!.emptyText.visibility = View.GONE
-                                adapter!!.submitList(data.reversed())
-                            } else {
-                                binding!!.recyclerView.visibility = View.GONE
-                                binding!!.emptyText.visibility = View.VISIBLE
-                                adapter!!.submitList(emptyList())
-                            }
-                        }
-
-                        is Resource.Error -> {
-                            binding!!.progress.visibility = View.GONE
-                            binding!!.recyclerView.visibility = View.GONE
-                            binding!!.emptyText.visibility = View.VISIBLE
-                        }
-
-                        is Resource.Loading -> {
-                            binding!!.progress.visibility = View.VISIBLE
-                        }
+                viewModel.filteredBooksByCategory.collect { data ->
+                    binding!!.progress.visibility = View.GONE
+                    binding!!.toolbar.number.text = getString(R.string.count_format, data.size)
+                    if (data.isNotEmpty()) {
+                        binding!!.recyclerView.visibility = View.VISIBLE
+                        binding!!.emptyText.visibility = View.GONE
+                        adapter!!.submitList(data.reversed())
+                    } else {
+                        binding!!.recyclerView.visibility = View.GONE
+                        binding!!.emptyText.visibility = View.VISIBLE
+                        adapter!!.submitList(emptyList())
                     }
                 }
             }

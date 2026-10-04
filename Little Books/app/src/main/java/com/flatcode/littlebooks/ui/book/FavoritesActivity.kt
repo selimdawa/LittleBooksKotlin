@@ -11,7 +11,6 @@ import androidx.viewbinding.ViewBinding
 import com.flatcode.littlebooks.databinding.ActivityFavoritesBinding
 import com.flatcode.littlebooks.utils.BaseActivity
 import com.flatcode.littlebooks.utils.DATA
-import com.flatcode.littlebooks.utils.Resource
 import com.flatcode.littlebooks.viewmodel.BookViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -44,31 +43,16 @@ class FavoritesActivity : BaseActivity() {
     private fun observeViewModel() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.filteredFavorites.collect { resource ->
+                viewModel.filteredFavorites.collect { data ->
                     val binding = binding ?: return@collect
-                    when (resource) {
-                        is Resource.Success -> {
-                            binding.bar.visibility = View.GONE
-                            val data = resource.data ?: emptyList()
-                            adapter?.submitList(data)
-                            if (data.isEmpty()) {
-                                binding.empty.visibility = View.VISIBLE
-                                binding.recyclerView.visibility = View.GONE
-                            } else {
-                                binding.empty.visibility = View.GONE
-                                binding.recyclerView.visibility = View.VISIBLE
-                            }
-                        }
-
-                        is Resource.Error -> {
-                            binding.bar.visibility = View.GONE
-                            binding.empty.visibility = View.VISIBLE
-                            binding.recyclerView.visibility = View.GONE
-                        }
-
-                        is Resource.Loading -> {
-                            binding.bar.visibility = View.VISIBLE
-                        }
+                    binding.bar.visibility = View.GONE
+                    adapter?.submitList(data)
+                    if (data.isEmpty()) {
+                        binding.empty.visibility = View.VISIBLE
+                        binding.recyclerView.visibility = View.GONE
+                    } else {
+                        binding.empty.visibility = View.GONE
+                        binding.recyclerView.visibility = View.VISIBLE
                     }
                 }
             }

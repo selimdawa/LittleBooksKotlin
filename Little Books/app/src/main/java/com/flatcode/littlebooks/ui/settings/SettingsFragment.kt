@@ -22,7 +22,6 @@ import com.flatcode.littlebooks.ui.profile.ProfileActivity
 import com.flatcode.littlebooks.ui.profile.ProfileEditActivity
 import com.flatcode.littlebooks.ui.publisher.ExplorePublishersActivity
 import com.flatcode.littlebooks.utils.DATA
-import com.flatcode.littlebooks.utils.Resource
 import com.flatcode.littlebooks.utils.dialogAboutApp
 import com.flatcode.littlebooks.utils.dialogLogout
 import com.flatcode.littlebooks.utils.loadImage
@@ -78,12 +77,11 @@ class SettingsFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch {
-                    viewModel.user.collect { resource ->
-                        if (resource is Resource.Success) {
-                            val user = resource.data
-                            binding!!.toolbar.imageProfile.loadImage(true, user?.profileImage)
-                            binding!!.toolbar.username.text = user?.username
-                            binding!!.toolbar.email.text = user?.email
+                    viewModel.user.collect { user ->
+                        user?.let {
+                            binding!!.toolbar.imageProfile.loadImage(true, it.profileImage)
+                            binding!!.toolbar.username.text = it.username
+                            binding!!.toolbar.email.text = it.email
                         }
                     }
                 }
@@ -96,15 +94,9 @@ class SettingsFragment : Fragment() {
                         viewModel.followingCount,
                         viewModel.favoritesCount
                     ) { explore, books, followers, following, favorites ->
-                        if (explore is Resource.Success && books is Resource.Success && followers is Resource.Success && following is Resource.Success && favorites is Resource.Success) {
-                            loadSettings(
-                                explore.data ?: 0,
-                                books.data ?: 0,
-                                followers.data?.toInt() ?: 0,
-                                following.data?.toInt() ?: 0,
-                                favorites.data?.toInt() ?: 0
-                            )
-                        }
+                        loadSettings(
+                            explore, books, followers.toInt(), following.toInt(), favorites.toInt()
+                        )
                     }.collect {}
                 }
             }
@@ -158,11 +150,7 @@ class SettingsFragment : Fragment() {
         )
         list.add(
             Setting(
-                DATA.ADD_BOOK,
-                "Add book",
-                R.drawable.ic_book_white,
-                0,
-                BookAddActivity::class.java
+                DATA.ADD_BOOK, "Add book", R.drawable.ic_book_white, 0, BookAddActivity::class.java
             )
         )
         list.add(

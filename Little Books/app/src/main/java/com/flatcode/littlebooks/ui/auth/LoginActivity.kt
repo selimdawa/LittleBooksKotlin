@@ -6,14 +6,13 @@ import android.text.TextUtils
 import android.util.Patterns
 import android.widget.Toast
 import androidx.activity.viewModels
-import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.flatcode.littlebooks.databinding.ActivityLoginBinding
 import com.flatcode.littlebooks.ui.main.MainActivity
 import com.flatcode.littlebooks.utils.BaseActivity
-import com.flatcode.littlebooks.utils.Resource
+import com.flatcode.littlebooks.utils.ProgressDialog
 import com.flatcode.littlebooks.utils.openActivity
 import com.flatcode.littlebooks.viewmodel.AuthViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -24,7 +23,7 @@ class LoginActivity : BaseActivity() {
 
     private var binding: ActivityLoginBinding? = null
     var context: Context = this@LoginActivity
-    private var dialog: AlertDialog? = null
+    private var dialog: ProgressDialog? = null
 
     private val viewModel: AuthViewModel by viewModels()
 
@@ -34,10 +33,10 @@ class LoginActivity : BaseActivity() {
         val view = binding!!.root
         setContentView(view)
 
-        dialog = AlertDialog.Builder(this)
-            .setTitle("Please wait...")
-            .setCancelable(false)
-            .create()
+        dialog = ProgressDialog(this).apply {
+            setTitle("Please wait...")
+            setCanceledOnTouchOutside(false)
+        }
 
         binding!!.forget.setOnClickListener { context.openActivity<ForgetPasswordActivity>() }
         binding!!.noAccount.setOnClickListener { context.openActivity<RegisterActivity>() }
@@ -49,25 +48,16 @@ class LoginActivity : BaseActivity() {
     private fun observeViewModel() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.loginStatus.collect { resource ->
-                    when (resource) {
-                        is Resource.Success -> {
-                            dialog!!.dismiss()
+                viewModel.loginStatus.collect { result ->
+                    result?.let {
+                        dialog?.dismiss()
+                        if (it.isSuccess) {
                             context.openActivity<MainActivity>(true)
                             finish()
+                        } else {
+                            Toast.makeText(context, it.exceptionOrNull()?.message ?: "Login failed", Toast.LENGTH_SHORT).show()
                         }
-
-                        is Resource.Error -> {
-                            dialog!!.dismiss()
-                            Toast.makeText(context, resource.message, Toast.LENGTH_SHORT).show()
-                        }
-
-                        is Resource.Loading -> {
-                            dialog!!.setMessage("Logging In...")
-                            dialog!!.show()
-                        }
-
-                        null -> {}
+                        viewModel.resetStatus()
                     }
                 }
             }
@@ -85,6 +75,8 @@ class LoginActivity : BaseActivity() {
         } else if (TextUtils.isEmpty(password)) {
             Toast.makeText(context, "Enter password...!", Toast.LENGTH_SHORT).show()
         } else {
+            dialog?.setMessage("Logging In...")
+            dialog?.show()
             viewModel.login(email, password)
         }
     }

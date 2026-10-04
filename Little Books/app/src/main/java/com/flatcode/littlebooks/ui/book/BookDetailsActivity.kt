@@ -15,14 +15,12 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.flatcode.littlebooks.R
 import com.flatcode.littlebooks.databinding.ActivityBookDetailsBinding
 import com.flatcode.littlebooks.databinding.DialogCommentAddBinding
-import com.flatcode.littlebooks.model.Comment
 import com.flatcode.littlebooks.model.User
 import com.flatcode.littlebooks.ui.profile.ProfileActivity
 import com.flatcode.littlebooks.utils.BaseActivity
 import com.flatcode.littlebooks.utils.DATA
-import com.flatcode.littlebooks.utils.Resource
+import com.flatcode.littlebooks.utils.ProgressDialog
 import com.flatcode.littlebooks.utils.formatTimestamp
-import com.flatcode.littlebooks.utils.loadBlurImage
 import com.flatcode.littlebooks.utils.loadCategory
 import com.flatcode.littlebooks.utils.loadImage
 import com.flatcode.littlebooks.utils.loadPdfInfo
@@ -43,7 +41,7 @@ class BookDetailsActivity : BaseActivity() {
     private var adapterComment: CommentAdapter? = null
 
     private val viewModel: BookViewModel by viewModels()
-    private var progressDialog: AlertDialog? = null
+    private var progressDialog: ProgressDialog? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,8 +51,10 @@ class BookDetailsActivity : BaseActivity() {
 
         bookId = intent.getStringExtra(DATA.BOOK_ID)
 
-        progressDialog =
-            AlertDialog.Builder(this).setTitle("Please wait").setCancelable(false).create()
+        progressDialog = ProgressDialog(this).apply {
+            setTitle("Please wait...")
+            setCanceledOnTouchOutside(false)
+        }
 
         binding!!.toolbar.back.setOnClickListener { finish() }
         binding!!.favorite.setOnClickListener {
@@ -81,57 +81,41 @@ class BookDetailsActivity : BaseActivity() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch {
-                    viewModel.bookDetails.collect { resource ->
-                        when (resource) {
-                            is Resource.Success -> {
-                                val book = resource.data ?: return@collect
-                                binding!!.toolbar.nameSpace.text = book.title
-                                binding!!.title.text = book.title
-                                binding!!.description.text = book.description
-                                binding!!.views.text = book.viewsCount.toString()
-                                binding!!.downloads.text = book.downloadsCount.toString()
-                                binding!!.loves.text = book.lovesCount.toString()
-                                binding!!.date.text = book.timestamp.formatTimestamp()
-                                binding!!.category.loadCategory(book.categoryId ?: "")
-                                binding!!.image.loadImage(false, book.image)
-                                binding!!.cover.loadImage(false, book.image)
-                                binding!!.size.loadPdfInfo(book.url)
+                    viewModel.bookDetails.collect { book ->
+                        book?.let {
+                            binding!!.toolbar.nameSpace.text = it.title
+                            binding!!.title.text = it.title
+                            binding!!.description.text = it.description
+                            binding!!.views.text = it.viewsCount.toString()
+                            binding!!.downloads.text = it.downloadsCount.toString()
+                            binding!!.loves.text = it.lovesCount.toString()
+                            binding!!.date.text = it.timestamp.formatTimestamp()
+                            binding!!.category.loadCategory(it.categoryId ?: "")
+                            binding!!.image.loadImage(false, it.image)
+                            binding!!.cover.loadImage(false, it.image)
+                            binding!!.size.loadPdfInfo(it.url)
 
-                                val publisherId = book.publisher
-                                if (!publisherId.isNullOrEmpty()) {
-                                    loadPublisherInfo(publisherId)
-                                }
-                            }
-
-                            is Resource.Error -> {
-                                Toast.makeText(context, resource.message, Toast.LENGTH_SHORT).show()
-                            }
-
-                            is Resource.Loading -> {
-                                // Handle loading
+                            val publisherId = it.publisher
+                            if (!publisherId.isNullOrEmpty()) {
+                                loadPublisherInfo(publisherId)
                             }
                         }
                     }
                 }
                 launch {
-                    viewModel.isFavorite.collect { resource ->
-                        if (resource is Resource.Success) {
-                            val isFav = resource.data == true
-                            if (isFav) {
-                                binding!!.favorite.setImageResource(R.drawable.ic_star_selected)
-                                binding!!.favorite.tag = "added"
-                            } else {
-                                binding!!.favorite.setImageResource(R.drawable.ic_star_unselected)
-                                binding!!.favorite.tag = "add"
-                            }
+                    viewModel.isFavorite.collect { isFav ->
+                        if (isFav) {
+                            binding!!.favorite.setImageResource(R.drawable.ic_star_selected)
+                            binding!!.favorite.tag = "added"
+                        } else {
+                            binding!!.favorite.setImageResource(R.drawable.ic_star_unselected)
+                            binding!!.favorite.tag = "add"
                         }
                     }
                 }
                 launch {
-                    viewModel.comments.collect { resource ->
-                        if (resource is Resource.Success) {
-                            adapterComment?.submitList(resource.data as List<Comment>)
-                        }
+                    viewModel.comments.collect { list ->
+                        adapterComment?.submitList(list)
                     }
                 }
             }
@@ -148,7 +132,9 @@ class BookDetailsActivity : BaseActivity() {
                     binding!!.publisherName.text = it.username
                     binding!!.publisherImage.loadImage(true, it.profileImage)
                     binding!!.userInfo.setOnClickListener { _ ->
-                        context.openActivity<ProfileActivity>(clear = false, DATA.PROFILE_ID to it.id)
+                        context.openActivity<ProfileActivity>(
+                            clear = false, DATA.PROFILE_ID to it.id
+                        )
                     }
                 }
             } catch (_: Exception) {

@@ -14,7 +14,6 @@ import com.flatcode.littlebooks.ui.book.BooksCategoryActivity
 import com.flatcode.littlebooks.ui.book.MoreBooksActivity
 import com.flatcode.littlebooks.ui.category.CategoryAdapter
 import com.flatcode.littlebooks.utils.DATA
-import com.flatcode.littlebooks.utils.Resource
 import com.flatcode.littlebooks.utils.loadBannerAdTwo
 import com.flatcode.littlebooks.utils.openActivity
 import com.flatcode.littlebooks.viewmodel.HomeViewModel
@@ -130,13 +129,9 @@ class HomeFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch {
-                    viewModel.sliderImages.collect { resource ->
-                        if (resource is Resource.Success) {
-                            binding!!.imageSlider.setSliderAdapter(
-                                ImageSliderAdapter(
-                                    resource.data ?: emptyList()
-                                )
-                            )
+                    viewModel.sliderImages.collect { list ->
+                        if (list.isNotEmpty()) {
+                            binding!!.imageSlider.setSliderAdapter(ImageSliderAdapter(list))
                         }
                     }
                 }
@@ -147,27 +142,57 @@ class HomeFragment : Fragment() {
                 }
                 launch {
                     viewModel.editorsChoiceBooks.collect { list ->
-                        handleList(list, { editorsChoiceAdapter?.submitList(it) }, binding!!.bar, binding!!.recyclerView, binding!!.empty)
+                        handleList(
+                            list,
+                            { editorsChoiceAdapter?.submitList(it) },
+                            binding!!.bar,
+                            binding!!.recyclerView,
+                            binding!!.empty
+                        )
                     }
                 }
                 launch {
                     viewModel.mostViewedBooks.collect { list ->
-                        handleList(list, { mostViewedAdapter?.submitList(it) }, binding!!.bar2, binding!!.recyclerView2, binding!!.empty2)
+                        handleList(
+                            list,
+                            { mostViewedAdapter?.submitList(it) },
+                            binding!!.bar2,
+                            binding!!.recyclerView2,
+                            binding!!.empty2
+                        )
                     }
                 }
                 launch {
                     viewModel.mostLovedBooks.collect { list ->
-                        handleList(list, { mostLovedAdapter?.submitList(it) }, binding!!.bar3, binding!!.recyclerView3, binding!!.empty3)
+                        handleList(
+                            list,
+                            { mostLovedAdapter?.submitList(it) },
+                            binding!!.bar3,
+                            binding!!.recyclerView3,
+                            binding!!.empty3
+                        )
                     }
                 }
                 launch {
                     viewModel.mostDownloadedBooks.collect { list ->
-                        handleList(list, { mostDownloadedAdapter?.submitList(it) }, binding!!.bar4, binding!!.recyclerView4, binding!!.empty4)
+                        handleList(
+                            list,
+                            { mostDownloadedAdapter?.submitList(it) },
+                            binding!!.bar4,
+                            binding!!.recyclerView4,
+                            binding!!.empty4
+                        )
                     }
                 }
                 launch {
                     viewModel.newBooks.collect { list ->
-                        handleList(list, { newBooksAdapter?.submitList(it) }, binding!!.bar5, binding!!.recyclerView5, binding!!.empty5)
+                        handleList(
+                            list,
+                            { newBooksAdapter?.submitList(it) },
+                            binding!!.bar5,
+                            binding!!.recyclerView5,
+                            binding!!.empty5
+                        )
                     }
                 }
             }

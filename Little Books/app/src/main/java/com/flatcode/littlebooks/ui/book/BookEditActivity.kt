@@ -19,7 +19,7 @@ import com.flatcode.littlebooks.databinding.ActivityBookEditBinding
 import com.flatcode.littlebooks.utils.BaseActivity
 import com.flatcode.littlebooks.utils.DATA
 import com.flatcode.littlebooks.utils.PermissionUtils
-import com.flatcode.littlebooks.utils.Resource
+import com.flatcode.littlebooks.utils.ProgressDialog
 import com.flatcode.littlebooks.utils.loadCategory
 import com.flatcode.littlebooks.utils.loadImage
 import com.flatcode.littlebooks.utils.startCropActivity
@@ -35,7 +35,7 @@ class BookEditActivity : BaseActivity() {
     var context: Context = this@BookEditActivity
     private var bookId: String? = null
     private var imageUri: Uri? = null
-    private var dialog: AlertDialog? = null
+    private var dialog: ProgressDialog? = null
 
     private var categoryTitle = ArrayList<String>()
     private var categoryId = ArrayList<String>()
@@ -50,11 +50,10 @@ class BookEditActivity : BaseActivity() {
         setContentView(view)
 
         bookId = intent.getStringExtra(DATA.BOOK_ID)
-        dialog = AlertDialog.Builder(context)
-            .setTitle("Please wait")
-            .setMessage("...")
-            .setCancelable(false)
-            .create()
+        dialog = ProgressDialog(this).apply {
+            setTitle("Please wait...")
+            setCanceledOnTouchOutside(false)
+        }
 
         binding!!.toolbar.nameSpace.setText(R.string.edit_book)
         binding!!.toolbar.back.setOnClickListener { onBackPressedDispatcher.onBackPressed() }
@@ -74,47 +73,39 @@ class BookEditActivity : BaseActivity() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch {
-                    categoryViewModel.categories.collect { resource ->
-                        if (resource is Resource.Success) {
-                            categoryTitle.clear()
-                            categoryId.clear()
-                            resource.data?.forEach {
-                                categoryTitle.add(it.category ?: "")
-                                categoryId.add(it.id)
-                            }
+                    categoryViewModel.categories.collect { list ->
+                        categoryTitle.clear()
+                        categoryId.clear()
+                        list.forEach {
+                            categoryTitle.add(it.category ?: "")
+                            categoryId.add(it.id)
                         }
                     }
                 }
                 launch {
-                    bookViewModel.bookDetails.collect { resource ->
-                        if (resource is Resource.Success) {
-                            val book = resource.data
-                            binding!!.titleEt.setText(book?.title)
-                            binding!!.descriptionEt.setText(book?.description)
-                            binding!!.image.loadImage(false, book?.image)
-                            selectedId = book?.categoryId ?: ""
+                    bookViewModel.bookDetails.collect { book ->
+                        book?.let {
+                            binding!!.titleEt.setText(it.title)
+                            binding!!.descriptionEt.setText(it.description)
+                            binding!!.image.loadImage(false, it.image)
+                            selectedId = it.categoryId ?: ""
                             binding!!.category.loadCategory(selectedId)
                         }
                     }
                 }
                 launch {
-                    bookViewModel.uploadImageStatus.collect { resource ->
-                        when (resource) {
-                            is Resource.Success -> {
-                                updateImageBook(resource.data!!)
+                    bookViewModel.uploadImageStatus.collect { result ->
+                        result?.let {
+                            dialog?.dismiss()
+                            if (it.isSuccess) {
+                                updateImageBook(it.getOrNull()!!)
+                            } else {
+                                Toast.makeText(
+                                    context,
+                                    it.exceptionOrNull()?.message ?: "Upload image failed",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                             }
-
-                            is Resource.Error -> {
-                                dialog!!.dismiss()
-                                Toast.makeText(context, resource.message, Toast.LENGTH_SHORT).show()
-                            }
-
-                            is Resource.Loading -> {
-                                dialog!!.setMessage("Updating Image Book...")
-                                dialog!!.show()
-                            }
-
-                            null -> {}
                         }
                     }
                 }
@@ -142,8 +133,8 @@ class BookEditActivity : BaseActivity() {
     }
 
     private fun updateBook() {
-        dialog!!.setMessage("Updating book info...")
-        dialog!!.show()
+        dialog?.setMessage("Updating book info...")
+        dialog?.show()
         val hashMap = HashMap<String, Any?>()
         hashMap[DATA.TITLE] = DATA.EMPTY + title
         hashMap[DATA.DESCRIPTION] = DATA.EMPTY + description
@@ -154,7 +145,7 @@ class BookEditActivity : BaseActivity() {
             if (imageUri != null) {
                 bookViewModel.uploadBookImage(imageUri!!)
             } else {
-                dialog!!.dismiss()
+                dialog?.dismiss()
                 Toast.makeText(context, "Book info updated...", Toast.LENGTH_SHORT).show()
                 finish()
             }
@@ -166,7 +157,7 @@ class BookEditActivity : BaseActivity() {
         hashMap[DATA.IMAGE] = imageUrl
         lifecycleScope.launch {
             bookViewModel.updateBook(bookId!!, hashMap)
-            dialog!!.dismiss()
+            dialog?.dismiss()
             Toast.makeText(context, "Book updated...", Toast.LENGTH_SHORT).show()
             finish()
         }
@@ -175,31 +166,28 @@ class BookEditActivity : BaseActivity() {
     private fun categoryDialog() {
         val categoriesArray = categoryTitle.toTypedArray()
         val builder = AlertDialog.Builder(context)
-        builder.setTitle("Choose Category")
-            .setItems(categoriesArray) { _, which ->
+        builder.setTitle("Choose Category").setItems(categoriesArray) { _, which ->
                 selectedId = categoryId[which]
                 selectedTitle = categoryTitle[which]
                 binding!!.category.text = selectedTitle
             }.show()
     }
 
-    private val cropImageLauncher =
-        registerForActivityResult(StartActivityForResult()) { result ->
-            if (result.resultCode == RESULT_OK) {
-                imageUri = result.data?.let { intent ->
-                    IntentCompat.getParcelableExtra(intent, "CROP_RESULT_URI", Uri::class.java)
-                }
-                binding!!.image.setImageURI(null)
-                binding!!.image.setImageURI(imageUri)
+    private val cropImageLauncher = registerForActivityResult(StartActivityForResult()) { result ->
+        if (result.resultCode == RESULT_OK) {
+            imageUri = result.data?.let { intent ->
+                IntentCompat.getParcelableExtra(intent, "CROP_RESULT_URI", Uri::class.java)
             }
+            binding!!.image.setImageURI(null)
+            binding!!.image.setImageURI(imageUri)
         }
+    }
 
-    private val pickImageLauncher =
-        registerForActivityResult(GetContent()) { uri: Uri? ->
-            uri?.let {
-                cropImageLauncher.launch(context.startCropActivity(it, 10, 14, false))
-            }
+    private val pickImageLauncher = registerForActivityResult(GetContent()) { uri: Uri? ->
+        uri?.let {
+            cropImageLauncher.launch(context.startCropActivity(it, 10, 14, false))
         }
+    }
 
     private val requestPermissionLauncher =
         registerForActivityResult(RequestPermission()) { isGranted: Boolean ->

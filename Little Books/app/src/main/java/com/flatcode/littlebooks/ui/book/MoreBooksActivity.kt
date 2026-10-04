@@ -15,7 +15,6 @@ import com.flatcode.littlebooks.R
 import com.flatcode.littlebooks.databinding.ActivityPageLinearBinding
 import com.flatcode.littlebooks.utils.BaseActivity
 import com.flatcode.littlebooks.utils.DATA
-import com.flatcode.littlebooks.utils.Resource
 import com.flatcode.littlebooks.utils.loadBannerAd
 import com.flatcode.littlebooks.utils.openActivity
 import com.flatcode.littlebooks.viewmodel.BookViewModel
@@ -95,32 +94,16 @@ class MoreBooksActivity : BaseActivity() {
     private fun observeViewModel() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.filteredAllBooks.collect { resource ->
-                    when (resource) {
-                        is Resource.Success -> {
-                            binding!!.progress.visibility = View.GONE
-                            val data = resource.data ?: emptyList()
-                            binding!!.toolbar.number.text =
-                                getString(R.string.count_format, data.size)
-                            adapter!!.submitList(data)
-                            if (data.isNotEmpty()) {
-                                recyclerView!!.visibility = View.VISIBLE
-                                binding!!.emptyText.visibility = View.GONE
-                            } else {
-                                recyclerView!!.visibility = View.GONE
-                                binding!!.emptyText.visibility = View.VISIBLE
-                            }
-                        }
-
-                        is Resource.Error -> {
-                            binding!!.progress.visibility = View.GONE
-                            recyclerView!!.visibility = View.GONE
-                            binding!!.emptyText.visibility = View.VISIBLE
-                        }
-
-                        is Resource.Loading -> {
-                            binding!!.progress.visibility = View.VISIBLE
-                        }
+                viewModel.filteredAllBooks.collect { data ->
+                    binding!!.progress.visibility = View.GONE
+                    binding!!.toolbar.number.text = getString(R.string.count_format, data.size)
+                    adapter!!.submitList(data)
+                    if (data.isNotEmpty()) {
+                        recyclerView!!.visibility = View.VISIBLE
+                        binding!!.emptyText.visibility = View.GONE
+                    } else {
+                        recyclerView!!.visibility = View.GONE
+                        binding!!.emptyText.visibility = View.VISIBLE
                     }
                 }
             }

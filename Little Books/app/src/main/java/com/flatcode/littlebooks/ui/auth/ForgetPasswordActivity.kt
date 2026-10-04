@@ -5,13 +5,12 @@ import android.os.Bundle
 import android.util.Patterns
 import android.widget.Toast
 import androidx.activity.viewModels
-import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.flatcode.littlebooks.databinding.ActivityForgetPasswordBinding
 import com.flatcode.littlebooks.utils.BaseActivity
-import com.flatcode.littlebooks.utils.Resource
+import com.flatcode.littlebooks.utils.ProgressDialog
 import com.flatcode.littlebooks.utils.openActivity
 import com.flatcode.littlebooks.viewmodel.AuthViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -22,7 +21,7 @@ class ForgetPasswordActivity : BaseActivity() {
 
     private var binding: ActivityForgetPasswordBinding? = null
     private val context: Context = this@ForgetPasswordActivity
-    private var dialog: AlertDialog? = null
+    private var dialog: ProgressDialog? = null
 
     private val viewModel: AuthViewModel by viewModels()
 
@@ -32,10 +31,10 @@ class ForgetPasswordActivity : BaseActivity() {
         val view = binding!!.root
         setContentView(view)
 
-        dialog = AlertDialog.Builder(this)
-            .setTitle("Please wait...")
-            .setCancelable(false)
-            .create()
+        dialog = ProgressDialog(this).apply {
+            setTitle("Please wait...")
+            setCanceledOnTouchOutside(false)
+        }
 
         binding!!.noAccount.setOnClickListener {
             context.openActivity<RegisterActivity>()
@@ -53,26 +52,17 @@ class ForgetPasswordActivity : BaseActivity() {
     private fun observeViewModel() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.forgetPasswordStatus.collect { resource ->
-                    when (resource) {
-                        is Resource.Success -> {
-                            dialog!!.dismiss()
+                viewModel.forgetPasswordStatus.collect { result ->
+                    result?.let {
+                        dialog?.dismiss()
+                        if (it.isSuccess) {
                             Toast.makeText(
                                 context, "Instructions to reset password sent", Toast.LENGTH_SHORT
                             ).show()
+                        } else {
+                            Toast.makeText(context, it.exceptionOrNull()?.message ?: "Failed", Toast.LENGTH_SHORT).show()
                         }
-
-                        is Resource.Error -> {
-                            dialog!!.dismiss()
-                            Toast.makeText(context, resource.message, Toast.LENGTH_SHORT).show()
-                        }
-
-                        is Resource.Loading -> {
-                            dialog!!.setMessage("Sending password recovery instructions...")
-                            dialog!!.show()
-                        }
-
-                        null -> {}
+                        viewModel.resetStatus()
                     }
                 }
             }
@@ -87,6 +77,8 @@ class ForgetPasswordActivity : BaseActivity() {
         } else if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             Toast.makeText(context, "Invalid email format...!", Toast.LENGTH_SHORT).show()
         } else {
+            dialog?.setMessage("Sending password recovery instructions...")
+            dialog?.show()
             viewModel.forgetPassword(email)
         }
     }

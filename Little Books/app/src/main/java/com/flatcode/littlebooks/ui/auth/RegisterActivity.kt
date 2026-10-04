@@ -6,14 +6,13 @@ import android.text.TextUtils
 import android.util.Patterns
 import android.widget.Toast
 import androidx.activity.viewModels
-import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.flatcode.littlebooks.databinding.ActivityRegisterBinding
 import com.flatcode.littlebooks.ui.main.MainActivity
 import com.flatcode.littlebooks.utils.BaseActivity
-import com.flatcode.littlebooks.utils.Resource
+import com.flatcode.littlebooks.utils.ProgressDialog
 import com.flatcode.littlebooks.utils.openActivity
 import com.flatcode.littlebooks.viewmodel.AuthViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -24,7 +23,7 @@ class RegisterActivity : BaseActivity() {
 
     private var binding: ActivityRegisterBinding? = null
     var context: Context = this@RegisterActivity
-    private var dialog: AlertDialog? = null
+    private var dialog: ProgressDialog? = null
 
     private val viewModel: AuthViewModel by viewModels()
 
@@ -34,10 +33,10 @@ class RegisterActivity : BaseActivity() {
         val view = binding!!.root
         setContentView(view)
 
-        dialog = AlertDialog.Builder(this)
-            .setTitle("Please wait...")
-            .setCancelable(false)
-            .create()
+        dialog = ProgressDialog(this).apply {
+            setTitle("Please wait...")
+            setCanceledOnTouchOutside(false)
+        }
 
         binding!!.login.setOnClickListener {
             context.openActivity<LoginActivity>()
@@ -52,23 +51,17 @@ class RegisterActivity : BaseActivity() {
     private fun observeViewModel() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.registerStatus.collect { resource ->
-                    when (resource) {
-                        is Resource.Success -> {
-                            dialog!!.dismiss()
+                viewModel.registerStatus.collect { result ->
+                    result?.let {
+                        dialog?.dismiss()
+                        if (it.isSuccess) {
                             Toast.makeText(context, "Account created...", Toast.LENGTH_SHORT).show()
                             context.openActivity<MainActivity>(true)
                             finish()
+                        } else {
+                            Toast.makeText(context, it.exceptionOrNull()?.message ?: "Registration failed", Toast.LENGTH_SHORT).show()
                         }
-                        is Resource.Error -> {
-                            dialog!!.dismiss()
-                            Toast.makeText(context, resource.message, Toast.LENGTH_SHORT).show()
-                        }
-                        is Resource.Loading -> {
-                            dialog!!.setMessage("Creating account...")
-                            dialog!!.show()
-                        }
-                        null -> {}
+                        viewModel.resetStatus()
                     }
                 }
             }
@@ -95,6 +88,8 @@ class RegisterActivity : BaseActivity() {
         } else if (password != cPassword) {
             Toast.makeText(context, "Password doesn't match...!", Toast.LENGTH_SHORT).show()
         } else {
+            dialog?.setMessage("Creating account...")
+            dialog?.show()
             viewModel.register(name, email, password)
         }
     }

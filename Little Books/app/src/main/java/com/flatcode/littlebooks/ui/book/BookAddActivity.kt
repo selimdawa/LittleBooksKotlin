@@ -10,7 +10,6 @@ import androidx.activity.result.contract.ActivityResultContracts.GetContent
 import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.activity.viewModels
-import androidx.appcompat.app.AlertDialog
 import androidx.core.content.IntentCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -20,7 +19,7 @@ import com.flatcode.littlebooks.databinding.ActivityBookAddBinding
 import com.flatcode.littlebooks.utils.BaseActivity
 import com.flatcode.littlebooks.utils.DATA
 import com.flatcode.littlebooks.utils.PermissionUtils
-import com.flatcode.littlebooks.utils.Resource
+import com.flatcode.littlebooks.utils.ProgressDialog
 import com.flatcode.littlebooks.utils.isNetworkAvailable
 import com.flatcode.littlebooks.utils.startCropActivity
 import com.flatcode.littlebooks.viewmodel.BookViewModel
@@ -38,7 +37,7 @@ class BookAddActivity : BaseActivity() {
 
     private var titleList = ArrayList<String>()
     private var idList = ArrayList<String>()
-    private var dialog: AlertDialog? = null
+    private var dialog: ProgressDialog? = null
 
     private val bookViewModel: BookViewModel by viewModels()
     private val categoryViewModel: CategoryViewModel by viewModels()
@@ -49,8 +48,10 @@ class BookAddActivity : BaseActivity() {
         val view = binding!!.root
         setContentView(view)
 
-        dialog =
-            AlertDialog.Builder(context).setTitle("Please wait...").setCancelable(false).create()
+        dialog = ProgressDialog(this).apply {
+            setTitle("Please wait...")
+            setCanceledOnTouchOutside(false)
+        }
 
         binding!!.toolbar.nameSpace.setText(R.string.add_new_book)
         binding!!.toolbar.back.setOnClickListener { onBackPressedDispatcher.onBackPressed() }
@@ -66,77 +67,60 @@ class BookAddActivity : BaseActivity() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch {
-                    categoryViewModel.categories.collect { resource ->
-                        if (resource is Resource.Success) {
-                            titleList.clear()
-                            idList.clear()
-                            resource.data?.forEach {
-                                titleList.add(it.category ?: "")
-                                idList.add(it.id)
+                    categoryViewModel.categories.collect { list ->
+                        titleList.clear()
+                        idList.clear()
+                        list.forEach {
+                            titleList.add(it.category ?: "")
+                            idList.add(it.id)
+                        }
+                    }
+                }
+                launch {
+                    bookViewModel.uploadFileStatus.collect { result ->
+                        result?.let {
+                            if (it.isSuccess) {
+                                uploadBookInfoDB(it.getOrNull()!!)
+                            } else {
+                                dialog?.dismiss()
+                                Toast.makeText(
+                                    context,
+                                    it.exceptionOrNull()?.message ?: "Upload failed",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                             }
                         }
                     }
                 }
                 launch {
-                    bookViewModel.uploadFileStatus.collect { resource ->
-                        when (resource) {
-                            is Resource.Success -> {
-                                uploadBookInfoDB(resource.data!!)
-                            }
-
-                            is Resource.Error -> {
-                                dialog!!.dismiss()
-                                Toast.makeText(context, resource.message, Toast.LENGTH_SHORT).show()
-                            }
-
-                            is Resource.Loading -> {
-                                dialog!!.setMessage("Uploading Book...")
-                                dialog!!.show()
-                            }
-
-                            null -> {}
-                        }
-                    }
-                }
-                launch {
-                    bookViewModel.addBookStatus.collect { resource ->
-                        when (resource) {
-                            is Resource.Success -> {
+                    bookViewModel.addBookStatus.collect { result ->
+                        result?.let {
+                            if (it.isSuccess) {
                                 uploadImage()
+                            } else {
+                                dialog?.dismiss()
+                                Toast.makeText(
+                                    context,
+                                    it.exceptionOrNull()?.message ?: "Add book failed",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                             }
-
-                            is Resource.Error -> {
-                                dialog!!.dismiss()
-                                Toast.makeText(context, resource.message, Toast.LENGTH_SHORT).show()
-                            }
-
-                            is Resource.Loading -> {
-                                dialog!!.setMessage("Uploading book info...")
-                                dialog!!.show()
-                            }
-
-                            null -> {}
                         }
                     }
                 }
                 launch {
-                    bookViewModel.uploadImageStatus.collect { resource ->
-                        when (resource) {
-                            is Resource.Success -> {
+                    bookViewModel.uploadImageStatus.collect { result ->
+                        result?.let {
+                            dialog?.dismiss()
+                            if (it.isSuccess) {
                                 updateImageBook()
+                            } else {
+                                Toast.makeText(
+                                    context,
+                                    it.exceptionOrNull()?.message ?: "Image upload failed",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                             }
-
-                            is Resource.Error -> {
-                                dialog!!.dismiss()
-                                Toast.makeText(context, resource.message, Toast.LENGTH_SHORT).show()
-                            }
-
-                            is Resource.Loading -> {
-                                dialog!!.setMessage("Updating Image Book...")
-                                dialog!!.show()
-                            }
-
-                            null -> {}
                         }
                     }
                 }
@@ -164,12 +148,15 @@ class BookAddActivity : BaseActivity() {
             Toast.makeText(context, getString(R.string.no_internet_connection), Toast.LENGTH_SHORT)
                 .show()
         } else {
+            dialog?.setMessage("Uploading Book...")
+            dialog?.show()
             bookViewModel.uploadBookFile(uri!!)
         }
     }
 
     private fun uploadBookInfoDB(uploadedBookUrl: String) {
-        val bookId = DATA.EMPTY + System.currentTimeMillis() // Or use repo to generate
+        dialog?.setMessage("Uploading book info...")
+        val bookId = DATA.EMPTY + System.currentTimeMillis()
         val hashMap = HashMap<String, Any?>()
         hashMap[DATA.PUBLISHER] = DATA.EMPTY + DATA.FirebaseUserUid
         hashMap[DATA.ID] = bookId
@@ -188,6 +175,7 @@ class BookAddActivity : BaseActivity() {
     }
 
     private fun uploadImage() {
+        dialog?.setMessage("Updating Image Book...")
         bookViewModel.uploadBookImage(imageUri!!)
     }
 
@@ -202,7 +190,7 @@ class BookAddActivity : BaseActivity() {
 
     private fun categoryPickDialog() {
         val categories = titleList.toTypedArray()
-        val builder = AlertDialog.Builder(context)
+        val builder = androidx.appcompat.app.AlertDialog.Builder(context)
         builder.setTitle("Pick Category").setItems(categories) { _, which ->
             selectedTitle = titleList[which]
             selectedId = idList[which]
@@ -229,23 +217,21 @@ class BookAddActivity : BaseActivity() {
         }
     }
 
-    private val cropImageLauncher =
-        registerForActivityResult(StartActivityForResult()) { result ->
-            if (result.resultCode == RESULT_OK) {
-                imageUri = result.data?.let { intent ->
-                    IntentCompat.getParcelableExtra(intent, "CROP_RESULT_URI", Uri::class.java)
-                }
-                binding!!.image.setImageURI(null)
-                binding!!.image.setImageURI(imageUri)
+    private val cropImageLauncher = registerForActivityResult(StartActivityForResult()) { result ->
+        if (result.resultCode == RESULT_OK) {
+            imageUri = result.data?.let { intent ->
+                IntentCompat.getParcelableExtra(intent, "CROP_RESULT_URI", Uri::class.java)
             }
+            binding!!.image.setImageURI(null)
+            binding!!.image.setImageURI(imageUri)
         }
+    }
 
-    private val pickImageLauncher =
-        registerForActivityResult(GetContent()) { uri: Uri? ->
-            uri?.let {
-                cropImageLauncher.launch(context.startCropActivity(it, 10, 14, false))
-            }
+    private val pickImageLauncher = registerForActivityResult(GetContent()) { uri: Uri? ->
+        uri?.let {
+            cropImageLauncher.launch(context.startCropActivity(it, 10, 14, false))
         }
+    }
 
     private val requestPermissionLauncher =
         registerForActivityResult(RequestPermission()) { isGranted: Boolean ->

@@ -7,7 +7,6 @@ import com.flatcode.littlebooks.model.Book
 import com.flatcode.littlebooks.model.Comment
 import com.flatcode.littlebooks.repository.BookRepository
 import com.flatcode.littlebooks.utils.DATA
-import com.flatcode.littlebooks.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -24,65 +23,59 @@ class BookViewModel @Inject constructor(
 
     private val _searchQuery = MutableStateFlow("")
 
-    private val _bookDetails = MutableStateFlow<Resource<Book>>(Resource.Loading())
-    val bookDetails: StateFlow<Resource<Book>> = _bookDetails
+    private val _bookDetails = MutableStateFlow<Book?>(null)
+    val bookDetails: StateFlow<Book?> = _bookDetails
 
-    private val _isFavorite = MutableStateFlow<Resource<Boolean>>(Resource.Loading())
-    val isFavorite: StateFlow<Resource<Boolean>> = _isFavorite
+    private val _isFavorite = MutableStateFlow(false)
+    val isFavorite: StateFlow<Boolean> = _isFavorite
 
-    private val _favorites = MutableStateFlow<Resource<List<Book>>>(Resource.Loading())
-    val favorites: StateFlow<Resource<List<Book>>> = _favorites
+    private val _favorites = MutableStateFlow<List<Book>>(emptyList())
 
-    private val _comments = MutableStateFlow<Resource<List<Comment>>>(Resource.Loading())
-    val comments: StateFlow<Resource<List<Comment>>> = _comments
+    private val _comments = MutableStateFlow<List<Comment>>(emptyList())
+    val comments: StateFlow<List<Comment>> = _comments
 
-    private val _addBookStatus = MutableStateFlow<Resource<String>?>(null)
-    val addBookStatus: StateFlow<Resource<String>?> = _addBookStatus
+    private val _addBookStatus = MutableStateFlow<Result<String>?>(null)
+    val addBookStatus: StateFlow<Result<String>?> = _addBookStatus
 
-    private val _uploadFileStatus = MutableStateFlow<Resource<String>?>(null)
-    val uploadFileStatus: StateFlow<Resource<String>?> = _uploadFileStatus
+    private val _uploadFileStatus = MutableStateFlow<Result<String>?>(null)
+    val uploadFileStatus: StateFlow<Result<String>?> = _uploadFileStatus
 
-    private val _uploadImageStatus = MutableStateFlow<Resource<String>?>(null)
-    val uploadImageStatus: StateFlow<Resource<String>?> = _uploadImageStatus
+    private val _uploadImageStatus = MutableStateFlow<Result<String>?>(null)
+    val uploadImageStatus: StateFlow<Result<String>?> = _uploadImageStatus
 
-    private val _booksByPublisher = MutableStateFlow<Resource<List<Book>>>(Resource.Loading())
-    val booksByPublisher: StateFlow<Resource<List<Book>>> = _booksByPublisher
+    private val _booksByPublisher = MutableStateFlow<List<Book>>(emptyList())
 
-    private val _allBooks = MutableStateFlow<Resource<List<Book>>>(Resource.Loading())
+    private val _allBooks = MutableStateFlow<List<Book>>(emptyList())
 
-    private val _booksByCategory = MutableStateFlow<Resource<List<Book>>>(Resource.Loading())
+    private val _booksByCategory = MutableStateFlow<List<Book>>(emptyList())
 
-    private val _bookFile = MutableStateFlow<Resource<ByteArray>>(Resource.Loading())
-    val bookFile: StateFlow<Resource<ByteArray>> = _bookFile
+    private val _bookFile = MutableStateFlow<Result<ByteArray>?>(null)
+    val bookFile: StateFlow<Result<ByteArray>?> = _bookFile
 
-    val filteredAllBooks: StateFlow<Resource<List<Book>>> =
-        combine(_allBooks, _searchQuery) { resource, query ->
-            filterBooks(resource, query)
-        }.stateIn(viewModelScope, SharingStarted.Lazily, Resource.Loading())
+    val filteredAllBooks: StateFlow<List<Book>> = combine(_allBooks, _searchQuery) { list, query ->
+        filterList(list, query)
+    }.stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
-    val filteredBooksByCategory: StateFlow<Resource<List<Book>>> =
-        combine(_booksByCategory, _searchQuery) { resource, query ->
-            filterBooks(resource, query)
-        }.stateIn(viewModelScope, SharingStarted.Lazily, Resource.Loading())
+    val filteredBooksByCategory: StateFlow<List<Book>> =
+        combine(_booksByCategory, _searchQuery) { list, query ->
+            filterList(list, query)
+        }.stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
-    val filteredBooksByPublisher: StateFlow<Resource<List<Book>>> =
-        combine(_booksByPublisher, _searchQuery) { resource, query ->
-            filterBooks(resource, query)
-        }.stateIn(viewModelScope, SharingStarted.Lazily, Resource.Loading())
+    val filteredBooksByPublisher: StateFlow<List<Book>> =
+        combine(_booksByPublisher, _searchQuery) { list, query ->
+            filterList(list, query)
+        }.stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
-    val filteredFavorites: StateFlow<Resource<List<Book>>> =
-        combine(_favorites, _searchQuery) { resource, query ->
-            filterBooks(resource, query)
-        }.stateIn(viewModelScope, SharingStarted.Lazily, Resource.Loading())
+    val filteredFavorites: StateFlow<List<Book>> =
+        combine(_favorites, _searchQuery) { list, query ->
+            filterList(list, query)
+        }.stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
-    private fun filterBooks(resource: Resource<List<Book>>, query: String): Resource<List<Book>> {
-        return if (resource is Resource.Success && query.isNotEmpty()) {
-            val filtered = resource.data?.filter {
-                it.title?.contains(query, ignoreCase = true) == true
-            }
-            Resource.Success(filtered ?: emptyList())
+    private fun filterList(list: List<Book>, query: String): List<Book> {
+        return if (query.isNotEmpty()) {
+            list.filter { it.title?.contains(query, ignoreCase = true) == true }
         } else {
-            resource
+            list
         }
     }
 
@@ -92,27 +85,39 @@ class BookViewModel @Inject constructor(
 
     fun loadBookDetails(bookId: String, userId: String) {
         viewModelScope.launch {
-            _bookDetails.value = Resource.Loading()
-            _bookDetails.value = repository.getBookDetails(bookId)
+            repository.observeBookById(bookId).collect {
+                _bookDetails.value = it
+            }
+        }
+        viewModelScope.launch {
             _isFavorite.value = repository.checkFavorite(userId, bookId)
             _comments.value = repository.getComments(bookId)
             repository.incrementViewCount(bookId)
         }
     }
 
+    fun loadBooksBy(orderBy: String) {
+        viewModelScope.launch {
+            repository.getBooks(orderBy).collect {
+                _allBooks.value = it
+            }
+        }
+    }
+
     fun toggleFavorite(userId: String, bookId: String, isFav: Boolean) {
         viewModelScope.launch {
             val result = repository.toggleFavorite(userId, bookId, isFav)
-            if (result is Resource.Success) {
-                _isFavorite.value = Resource.Success(isFav)
+            if (result.isSuccess) {
+                _isFavorite.value = isFav
             }
         }
     }
 
     fun loadFavorites(userId: String) {
         viewModelScope.launch {
-            _favorites.value = Resource.Loading()
-            _favorites.value = repository.getFavorites(userId)
+            repository.getFavoriteBooks(userId).collect {
+                _favorites.value = it
+            }
         }
     }
 
@@ -126,7 +131,7 @@ class BookViewModel @Inject constructor(
             commentData[DATA.PUBLISHER] = userId
 
             val result = repository.addComment(bookId, commentData)
-            if (result is Resource.Success) {
+            if (result.isSuccess) {
                 _comments.value = repository.getComments(bookId)
             }
         }
@@ -134,21 +139,18 @@ class BookViewModel @Inject constructor(
 
     fun uploadBookFile(bookUri: Uri) {
         viewModelScope.launch {
-            _uploadFileStatus.value = Resource.Loading()
             _uploadFileStatus.value = repository.uploadBookFile(bookUri)
         }
     }
 
     fun uploadBookImage(imageUri: Uri) {
         viewModelScope.launch {
-            _uploadImageStatus.value = Resource.Loading()
             _uploadImageStatus.value = repository.uploadBookImage(imageUri)
         }
     }
 
     fun addBook(bookData: HashMap<String, Any?>) {
         viewModelScope.launch {
-            _addBookStatus.value = Resource.Loading()
             _addBookStatus.value = repository.addBook(bookData)
         }
     }
@@ -159,34 +161,24 @@ class BookViewModel @Inject constructor(
         }
     }
 
-    fun loadBooksByPublisher(publisherId: String, orderBy: String) {
+    fun loadBooksByPublisher(publisherId: String) {
         viewModelScope.launch {
-            _booksByPublisher.value = Resource.Loading()
-            _booksByPublisher.value = repository.getBooksByPublisher(publisherId, orderBy)
-        }
-    }
-
-    fun loadBooksBy(orderBy: String) {
-        viewModelScope.launch {
-            _allBooks.value = Resource.Loading()
-            if (orderBy == DATA.EDITORS_CHOICE) {
-                _allBooks.value = repository.getEditorsChoiceBooks()
-            } else {
-                _allBooks.value = repository.getBooksBy(orderBy)
+            repository.getBooksByPublisher(publisherId).collect {
+                _booksByPublisher.value = it
             }
         }
     }
 
-    fun loadBooksByCategory(categoryId: String, orderBy: String) {
+    fun loadBooksByCategory(categoryId: String) {
         viewModelScope.launch {
-            _booksByCategory.value = Resource.Loading()
-            _booksByCategory.value = repository.getBooksByCategory(categoryId, orderBy)
+            repository.getBooksByCategory(categoryId).collect {
+                _booksByCategory.value = it
+            }
         }
     }
 
     fun loadBookFile(pdfUrl: String) {
         viewModelScope.launch {
-            _bookFile.value = Resource.Loading()
             _bookFile.value = repository.getBookFile(pdfUrl)
         }
     }

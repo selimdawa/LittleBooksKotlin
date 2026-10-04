@@ -10,7 +10,6 @@ import com.flatcode.littlebooks.model.Comment
 import com.flatcode.littlebooks.model.FavoriteEntity
 import com.flatcode.littlebooks.model.SliderEntity
 import com.flatcode.littlebooks.utils.DATA
-import com.flatcode.littlebooks.utils.Resource
 import com.flatcode.littlebooks.utils.cloudinaryUpload
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -133,7 +132,7 @@ class BookRepository @Inject constructor(
 
     suspend fun toggleFavorite(
         userId: String, bookId: String, isFavorite: Boolean
-    ): Resource<Unit> {
+    ): Result<Unit> {
         return try {
             val ref = db.getReference(DATA.FAVORITES).child(userId).child(bookId)
             if (isFavorite) {
@@ -143,18 +142,18 @@ class BookRepository @Inject constructor(
                 ref.removeValue().await()
                 favoriteDao.deleteFavorite(userId, bookId)
             }
-            Resource.Success(Unit)
+            Result.success(Unit)
         } catch (_: Exception) {
             if (isFavorite) {
                 favoriteDao.insertFavorite(FavoriteEntity(userId, bookId))
             } else {
                 favoriteDao.deleteFavorite(userId, bookId)
             }
-            Resource.Success(Unit)
+            Result.success(Unit)
         }
     }
 
-    suspend fun getSliderImages(): Resource<List<String>> {
+    suspend fun getSliderImages(): List<String> {
         return try {
             val snapshot = db.getReference(DATA.SLIDER_SHOW).get().await()
             val list = mutableListOf<String>()
@@ -169,15 +168,13 @@ class BookRepository @Inject constructor(
             }
             sliderDao.deleteAllSliderImages()
             sliderDao.insertSliderImages(sliderList)
-            Resource.Success(list)
-        } catch (e: Exception) {
-            val localList = sliderDao.getSliderImages().first().map { it.image }
-            if (localList.isNotEmpty()) Resource.Success(localList)
-            else Resource.Error(e.message ?: "An unknown error occurred")
+            list
+        } catch (_: Exception) {
+            sliderDao.getSliderImages().first().map { it.image }
         }
     }
 
-    suspend fun getBooksCountByPublisher(publisherId: String): Resource<Int> {
+    suspend fun getBooksCountByPublisher(publisherId: String): Int {
         return try {
             val snapshot = db.getReference(DATA.BOOKS).get().await()
             var count = 0
@@ -185,71 +182,31 @@ class BookRepository @Inject constructor(
                 val item = data.getValue(Book::class.java)
                 if (item?.publisher == publisherId) count++
             }
-            Resource.Success(count)
-        } catch (e: Exception) {
-            Resource.Error(e.message ?: "An unknown error occurred")
+            count
+        } catch (_: Exception) {
+            0
         }
     }
 
-    suspend fun getBookDetails(bookId: String): Resource<Book> {
-        return try {
-            val localBook = bookDao.getBookById(bookId)
-            if (localBook != null) return Resource.Success(localBook)
-
-            val snapshot = db.getReference(DATA.BOOKS).child(bookId).get().await()
-            val book = snapshot.getValue(Book::class.java)
-            if (book != null) {
-                bookDao.insertBook(book)
-                Resource.Success(book)
-            } else Resource.Error("Book not found")
-        } catch (e: Exception) {
-            Resource.Error(e.message ?: "An unknown error occurred")
-        }
-    }
-
-    suspend fun addComment(bookId: String, commentData: Map<String, Any>): Resource<Unit> {
+    suspend fun addComment(bookId: String, commentData: Map<String, Any>): Result<Unit> {
         return try {
             db.getReference(DATA.COMMENTS).child(bookId).push().setValue(commentData).await()
-            Resource.Success(Unit)
+            Result.success(Unit)
         } catch (e: Exception) {
-            Resource.Error(e.message ?: "An unknown error occurred")
+            Result.failure(e)
         }
     }
 
-    suspend fun checkFavorite(userId: String, bookId: String): Resource<Boolean> {
+    suspend fun checkFavorite(userId: String, bookId: String): Boolean {
         return try {
             val snapshot = db.getReference(DATA.FAVORITES).child(userId).child(bookId).get().await()
-            Resource.Success(snapshot.exists())
-        } catch (e: Exception) {
-            Resource.Error(e.message ?: "An unknown error occurred")
+            snapshot.exists()
+        } catch (_: Exception) {
+            false
         }
     }
 
-    suspend fun getFavorites(userId: String): Resource<List<Book>> {
-        return try {
-            val favSnapshot = db.getReference(DATA.FAVORITES).child(userId).get().await()
-            val bookList = mutableListOf<Book>()
-            val favList = mutableListOf<FavoriteEntity>()
-            for (data in favSnapshot.children) {
-                val bookId = data.key ?: continue
-                favList.add(FavoriteEntity(userId, bookId))
-                val bookSnapshot = db.getReference(DATA.BOOKS).child(bookId).get().await()
-                bookSnapshot.getValue(Book::class.java)?.let {
-                    bookList.add(it)
-                    bookDao.insertBook(it)
-                }
-            }
-            favoriteDao.deleteAllFavoritesForUser(userId)
-            favoriteDao.insertFavorites(favList)
-            Resource.Success(bookList)
-        } catch (e: Exception) {
-            val localFavorites = favoriteDao.getFavoriteBooks(userId).first()
-            if (localFavorites.isNotEmpty()) Resource.Success(localFavorites)
-            else Resource.Error(e.message ?: "An unknown error occurred")
-        }
-    }
-
-    suspend fun getComments(bookId: String): Resource<List<Comment>> {
+    suspend fun getComments(bookId: String): List<Comment> {
         return try {
             val snapshot = db.getReference(DATA.COMMENTS).child(bookId).get().await()
             val list = mutableListOf<Comment>()
@@ -259,15 +216,15 @@ class BookRepository @Inject constructor(
                     commentDao.insertComment(it)
                 }
             }
-            Resource.Success(list)
-        } catch (e: Exception) {
-            Resource.Error(e.message ?: "An unknown error occurred")
+            list
+        } catch (_: Exception) {
+            emptyList()
         }
     }
 
     suspend fun getBooksFromFollowedPublishers(
         followedIds: List<String>, orderBy: String
-    ): Resource<List<Book>> {
+    ): List<Book> {
         return try {
             val snapshot = db.getReference(DATA.BOOKS).orderByChild(orderBy).get().await()
             val list = mutableListOf<Book>()
@@ -278,85 +235,61 @@ class BookRepository @Inject constructor(
                     bookDao.insertBook(item)
                 }
             }
-            Resource.Success(list)
-        } catch (e: Exception) {
-            Resource.Error(e.message ?: "An unknown error occurred")
+            list
+        } catch (_: Exception) {
+            emptyList()
         }
     }
 
-    suspend fun uploadBookFile(bookUri: Uri): Resource<String> {
-        return cloudinaryUpload(bookUri)
+    suspend fun uploadBookFile(bookUri: Uri): Result<String> {
+        return try {
+            val url = cloudinaryUpload(bookUri)
+            Result.success(url)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
     }
 
-    suspend fun uploadBookImage(imageUri: Uri): Resource<String> {
-        return cloudinaryUpload(imageUri)
+    suspend fun uploadBookImage(imageUri: Uri): Result<String> {
+        return try {
+            val url = cloudinaryUpload(imageUri)
+            Result.success(url)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
     }
 
-    suspend fun addBook(bookData: Map<String, Any?>): Resource<String> {
+    suspend fun addBook(bookData: Map<String, Any?>): Result<String> {
         return try {
             val id = bookData[DATA.ID] as String
             db.getReference(DATA.BOOKS).child(id).setValue(bookData).await()
-            Resource.Success(id)
+            Result.success(id)
         } catch (e: Exception) {
-            Resource.Error(e.message ?: "An unknown error occurred")
+            Result.failure(e)
         }
     }
 
-    suspend fun updateBook(bookId: String, hashMap: Map<String, Any?>): Resource<Unit> {
+    suspend fun updateBook(bookId: String, hashMap: Map<String, Any?>): Result<Unit> {
         return try {
             db.getReference(DATA.BOOKS).child(bookId).updateChildren(hashMap).await()
             val snapshot = db.getReference(DATA.BOOKS).child(bookId).get().await()
             snapshot.getValue(Book::class.java)?.let { bookDao.insertBook(it) }
-            Resource.Success(Unit)
+            Result.success(Unit)
         } catch (e: Exception) {
-            Resource.Error(e.message ?: "An unknown error occurred")
+            Result.failure(e)
         }
     }
 
-    suspend fun getBooksByPublisher(publisherId: String, orderBy: String): Resource<List<Book>> {
-        return try {
-            val snapshot = db.getReference(DATA.BOOKS).orderByChild(orderBy).get().await()
-            val list = mutableListOf<Book>()
-            for (data in snapshot.children) {
-                val item = data.getValue(Book::class.java)
-                if (item?.publisher == publisherId) {
-                    list.add(item)
-                    bookDao.insertBook(item)
-                }
-            }
-            Resource.Success(list)
-        } catch (e: Exception) {
-            Resource.Error(e.message ?: "An unknown error occurred")
-        }
-    }
-
-    suspend fun getBooksByCategory(categoryId: String, orderBy: String): Resource<List<Book>> {
-        return try {
-            val snapshot = db.getReference(DATA.BOOKS).orderByChild(orderBy).get().await()
-            val list = mutableListOf<Book>()
-            for (data in snapshot.children) {
-                val item = data.getValue(Book::class.java)
-                if (item?.categoryId == categoryId) {
-                    list.add(item)
-                    bookDao.insertBook(item)
-                }
-            }
-            Resource.Success(list)
-        } catch (e: Exception) {
-            Resource.Error(e.message ?: "An unknown error occurred")
-        }
-    }
-
-    fun getBookFile(pdfUrl: String): Resource<ByteArray> {
+    fun getBookFile(pdfUrl: String): Result<ByteArray> {
         return try {
             val bytes = URL(pdfUrl).readBytes()
-            Resource.Success(bytes)
+            Result.success(bytes)
         } catch (e: Exception) {
-            Resource.Error(e.message ?: "An unknown error occurred")
+            Result.failure(e)
         }
     }
 
-    suspend fun incrementViewCount(bookId: String): Resource<Unit> {
+    suspend fun incrementViewCount(bookId: String): Result<Unit> {
         return try {
             val ref = db.getReference(DATA.BOOKS).child(bookId).child(DATA.VIEWS_COUNT)
             val currentCount = ref.get().await().getValue(Int::class.java) ?: 0
@@ -368,9 +301,9 @@ class BookRepository @Inject constructor(
                 it.viewsCount = newCount
                 bookDao.updateBook(it)
             }
-            Resource.Success(Unit)
+            Result.success(Unit)
         } catch (e: Exception) {
-            Resource.Error(e.message ?: "An unknown error occurred")
+            Result.failure(e)
         }
     }
 }

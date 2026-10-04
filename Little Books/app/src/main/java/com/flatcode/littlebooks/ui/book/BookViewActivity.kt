@@ -12,7 +12,6 @@ import com.flatcode.littlebooks.R
 import com.flatcode.littlebooks.databinding.ActivityBookViewBinding
 import com.flatcode.littlebooks.utils.BaseActivity
 import com.flatcode.littlebooks.utils.DATA
-import com.flatcode.littlebooks.utils.Resource
 import com.flatcode.littlebooks.viewmodel.BookViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -50,18 +49,16 @@ class BookViewActivity : BaseActivity() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch {
-                    viewModel.bookDetails.collect { resource ->
-                        if (resource is Resource.Success) {
-                            resource.data?.url?.let { viewModel.loadBookFile(it) }
-                        }
+                    viewModel.bookDetails.collect { book ->
+                        book?.url?.let { viewModel.loadBookFile(it) }
                     }
                 }
                 launch {
-                    viewModel.bookFile.collect { resource ->
-                        when (resource) {
-                            is Resource.Success -> {
-                                binding!!.progressBar.visibility = View.GONE
-                                binding!!.pdfView.fromBytes(resource.data).swipeHorizontal(false)
+                    viewModel.bookFile.collect { result ->
+                        result?.let {
+                            binding!!.progressBar.visibility = View.GONE
+                            if (it.isSuccess) {
+                                binding!!.pdfView.fromBytes(it.getOrNull()).swipeHorizontal(false)
                                     .onPageChange { page: Int, pageCount: Int ->
                                         val correctPage = page + 1
                                         binding!!.toolbar.numberPage.text =
@@ -77,15 +74,12 @@ class BookViewActivity : BaseActivity() {
                                             Toast.LENGTH_SHORT
                                         ).show()
                                     }.load()
-                            }
-
-                            is Resource.Error -> {
-                                binding!!.progressBar.visibility = View.GONE
-                                Toast.makeText(context, resource.message, Toast.LENGTH_SHORT).show()
-                            }
-
-                            is Resource.Loading -> {
-                                binding!!.progressBar.visibility = View.VISIBLE
+                            } else {
+                                Toast.makeText(
+                                    context,
+                                    it.exceptionOrNull()?.message ?: "Error loading file",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                             }
                         }
                     }

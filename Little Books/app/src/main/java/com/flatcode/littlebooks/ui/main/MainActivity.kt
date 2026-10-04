@@ -10,16 +10,13 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavController
-import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.navOptions
 import androidx.navigation.ui.AppBarConfiguration
 import com.flatcode.littlebooks.R
 import com.flatcode.littlebooks.databinding.ActivityMainBinding
 import com.flatcode.littlebooks.ui.profile.ProfileActivity
 import com.flatcode.littlebooks.utils.BaseActivity
 import com.flatcode.littlebooks.utils.DATA
-import com.flatcode.littlebooks.utils.Resource
 import com.flatcode.littlebooks.utils.closeApp
 import com.flatcode.littlebooks.utils.loadImage
 import com.flatcode.littlebooks.utils.openActivity
@@ -104,20 +101,9 @@ class MainActivity : BaseActivity() {
     private fun observeViewModel() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.user.collect { resource ->
-                    when (resource) {
-                        is Resource.Success -> {
-                            val user = resource.data
-                            binding!!.toolbar.image.loadImage(true, user?.profileImage)
-                        }
-
-                        is Resource.Error -> {
-                            // Handle error
-                        }
-
-                        is Resource.Loading -> {
-                            // Handle loading
-                        }
+                viewModel.user.collect { user ->
+                    user?.let {
+                        binding!!.toolbar.image.loadImage(true, it.profileImage)
                     }
                 }
             }
