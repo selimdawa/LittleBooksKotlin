@@ -9,15 +9,11 @@ import com.flatcode.littlebooksadmin.utils.BaseActivity
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import com.flatcode.littlebooksadmin.R
 import com.flatcode.littlebooksadmin.databinding.ActivityBookViewBinding
 import com.flatcode.littlebooksadmin.utils.DATA
-import com.flatcode.littlebooksadmin.utils.Resource
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import java.net.HttpURLConnection
 import java.net.URL
 
 @AndroidEntryPoint
@@ -27,7 +23,7 @@ class BookViewActivity : BaseActivity() {
     private val context: Context = this@BookViewActivity
     private var bookId: String? = null
 
-    private val viewModel: BookEditViewModel by viewModels()
+    private val viewModel: BookDetailsViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,7 +35,7 @@ class BookViewActivity : BaseActivity() {
         initUI()
         observeViewModel()
 
-        bookId?.let { viewModel.loadBook(it) }
+        bookId?.let { viewModel.loadBookDetails(it) }
     }
 
     private fun initUI() {
@@ -50,21 +46,9 @@ class BookViewActivity : BaseActivity() {
     private fun observeViewModel() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.book.collect { resource ->
-                    when (resource) {
-                        is Resource.Loading -> {
-                            binding.progressBar.visibility = View.VISIBLE
-                        }
-
-                        is Resource.Success -> {
-                            resource.data?.url?.let { loadBookFromUrl(it) }
-                        }
-
-                        is Resource.Error -> {
-                            binding.progressBar.visibility = View.GONE
-                            Toast.makeText(context, resource.message, Toast.LENGTH_SHORT).show()
-                        }
-                    }
+                viewModel.book.collect { book ->
+                    binding.progressBar.visibility = View.GONE
+                    book?.url?.let { loadBookFromUrl(it) }
                 }
             }
         }
@@ -74,53 +58,26 @@ class BookViewActivity : BaseActivity() {
         lifecycleScope.launch(Dispatchers.IO) {
             try {
                 val url = URL(pdfUrl)
-                val connection = url.openConnection() as HttpURLConnection
-                connection.connect()
-
-                if (connection.responseCode != HttpURLConnection.HTTP_OK) {
-                    withContext(Dispatchers.Main) {
-                        binding.progressBar.visibility = View.GONE
-                        Toast.makeText(
-                            context,
-                            getString(R.string.server_returned_http, connection.responseCode),
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                    return@launch
-                }
-
-                val inputStream = connection.inputStream
-                val bytes = inputStream.readBytes()
-                inputStream.close()
-
-                withContext(Dispatchers.Main) {
+                val inputStream = url.openStream()
+                launch(Dispatchers.Main) {
+                    binding.pdfView.fromStream(inputStream)
+                        .swipeHorizontal(false)
+                        .onPageChange { page, pageCount ->
+                            binding.toolbar.numberPage.text = "${page + 1} / $pageCount"
+                        }
+                        .onError {
+                            Toast.makeText(context, it.message, Toast.LENGTH_SHORT).show()
+                        }
+                        .onPageError { page, _ ->
+                            Toast.makeText(context, "Error on page $page", Toast.LENGTH_SHORT).show()
+                        }
+                        .load()
                     binding.progressBar.visibility = View.GONE
-                    binding.pdfView.fromBytes(bytes).swipeHorizontal(false)
-                        .onPageChange { page: Int, pageCount: Int ->
-                            val correctPage = page + 1
-                            binding.toolbar.numberPage.text = getString(R.string.pages_count_placeholder, correctPage, pageCount)
-                        }.onError { t: Throwable ->
-                            Toast.makeText(
-                                context,
-                                getString(R.string.error_message, t.message),
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }.onPageError { page: Int, t: Throwable ->
-                            Toast.makeText(
-                                context,
-                                getString(R.string.error_on_page, page, t.message),
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }.load()
                 }
             } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
+                launch(Dispatchers.Main) {
                     binding.progressBar.visibility = View.GONE
-                    Toast.makeText(
-                        context,
-                        getString(R.string.failed_to_load_pdf, e.message),
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    Toast.makeText(context, e.message, Toast.LENGTH_SHORT).show()
                 }
             }
         }

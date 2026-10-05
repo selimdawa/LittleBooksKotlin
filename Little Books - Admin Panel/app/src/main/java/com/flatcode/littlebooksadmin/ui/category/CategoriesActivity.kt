@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
-import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
 import com.flatcode.littlebooksadmin.utils.BaseActivity
@@ -16,7 +15,6 @@ import com.flatcode.littlebooksadmin.R
 import com.flatcode.littlebooksadmin.databinding.ActivityPageStaggeredBinding
 import com.flatcode.littlebooksadmin.model.Category
 import com.flatcode.littlebooksadmin.utils.DATA
-import com.flatcode.littlebooksadmin.utils.Resource
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -53,7 +51,6 @@ class CategoriesActivity : BaseActivity() {
         observeViewModel()
     }
 
-
     private fun initUI() {
         binding.toolbar.nameSpace.setText(R.string.categories)
         binding.toolbar.back.setOnClickListener { onBackPressedDispatcher.onBackPressed() }
@@ -84,23 +81,9 @@ class CategoriesActivity : BaseActivity() {
     private fun observeViewModel() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.categories.collect { resource ->
-                    when (resource) {
-                        is Resource.Loading -> {
-                            binding.progress.visibility = View.VISIBLE
-                        }
-
-                        is Resource.Success -> {
-                            binding.progress.visibility = View.GONE
-                            val categories = resource.data ?: emptyList()
-                            updateList(categories)
-                        }
-
-                        is Resource.Error -> {
-                            binding.progress.visibility = View.GONE
-                            Toast.makeText(context, resource.message, Toast.LENGTH_SHORT).show()
-                        }
-                    }
+                viewModel.categories.collect { categories ->
+                    binding.progress.visibility = View.GONE
+                    updateList(categories)
                 }
             }
         }

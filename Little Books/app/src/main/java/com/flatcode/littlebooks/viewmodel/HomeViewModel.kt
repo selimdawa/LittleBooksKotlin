@@ -50,7 +50,15 @@ class HomeViewModel @Inject constructor(
 
     private fun fetchSliderImages() {
         viewModelScope.launch {
-            _sliderImages.value = bookRepository.getSliderImages()
+            bookRepository.getSliderImages().collect { list ->
+                if (list.isNotEmpty()) {
+                    _sliderImages.value = list
+                } else {
+                    val fallbackImages = editorsChoiceBooks.value.mapNotNull { it.image }
+                        .filter { it.isNotEmpty() && it != DATA.BASIC }
+                    _sliderImages.value = fallbackImages
+                }
+            }
         }
     }
 }

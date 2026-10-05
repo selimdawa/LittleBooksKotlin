@@ -3,7 +3,6 @@ package com.flatcode.littlebooksadmin.repository
 import com.flatcode.littlebooksadmin.model.Book
 import com.flatcode.littlebooksadmin.model.User
 import com.flatcode.littlebooksadmin.utils.DATA
-import com.flatcode.littlebooksadmin.utils.Resource
 import com.google.firebase.database.FirebaseDatabase
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
@@ -14,17 +13,16 @@ class MainRepository @Inject constructor(
     private val db: FirebaseDatabase
 ) {
 
-    suspend fun getUserInfo(userId: String): Resource<User> {
+    suspend fun getUserInfo(userId: String): User? {
         return try {
             val snapshot = db.getReference(DATA.USERS).child(userId).get().await()
-            val user = snapshot.getValue(User::class.java)
-            if (user != null) Resource.Success(user) else Resource.Error("User not found")
-        } catch (e: Exception) {
-            Resource.Error(e.message ?: "Unknown error")
+            snapshot.getValue(User::class.java)
+        } catch (_: Exception) {
+            null
         }
     }
 
-    suspend fun getDashboardStats(): Resource<DashboardStats> {
+    suspend fun getDashboardStats(): DashboardStats? {
         return try {
             val userId = DATA.FirebaseUserUid
 
@@ -71,23 +69,21 @@ class MainRepository @Inject constructor(
             val favoritesCount =
                 db.getReference(DATA.FAVORITES).child(userId).get().await().childrenCount.toInt()
 
-            Resource.Success(
-                DashboardStats(
-                    usersCount,
-                    publishersCount,
-                    myBooksCount,
-                    allBooksCount,
-                    sliderCount,
-                    followersCount,
-                    followingCount,
-                    favoritesCount,
-                    adsUsersCount,
-                    editorsChoiceCount,
-                    myCategoriesCount
-                )
+            DashboardStats(
+                usersCount,
+                publishersCount,
+                myBooksCount,
+                allBooksCount,
+                sliderCount,
+                followersCount,
+                followingCount,
+                favoritesCount,
+                adsUsersCount,
+                editorsChoiceCount,
+                myCategoriesCount
             )
-        } catch (e: Exception) {
-            Resource.Error(e.message ?: "Unknown error")
+        } catch (_: Exception) {
+            null
         }
     }
 

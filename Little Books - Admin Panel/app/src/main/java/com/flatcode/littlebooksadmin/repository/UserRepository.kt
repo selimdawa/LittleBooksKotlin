@@ -7,7 +7,6 @@ import com.cloudinary.android.callback.UploadCallback
 import com.flatcode.littlebooksadmin.model.Book
 import com.flatcode.littlebooksadmin.model.User
 import com.flatcode.littlebooksadmin.utils.DATA
-import com.flatcode.littlebooksadmin.utils.Resource
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
@@ -23,24 +22,23 @@ import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
 
 @Singleton
 class UserRepository @Inject constructor(
     private val db: FirebaseDatabase
 ) {
 
-    suspend fun getUserById(userId: String): Resource<User> {
+    suspend fun getUserById(userId: String): User? {
         return try {
             val snapshot = db.getReference(DATA.USERS).child(userId).get().await()
-            val user = snapshot.getValue(User::class.java)
-            if (user != null) Resource.Success(user) else Resource.Error("User not found")
-        } catch (e: Exception) {
-            Resource.Error(e.message ?: "Unknown error")
+            snapshot.getValue(User::class.java)
+        } catch (_: Exception) {
+            null
         }
     }
 
-    fun getUsers(orderBy: String = DATA.TIMESTAMP): Flow<Resource<List<User>>> = callbackFlow {
-        trySend(Resource.Loading())
+    fun getUsers(orderBy: String = DATA.TIMESTAMP): Flow<List<User>> = callbackFlow {
         val ref = db.getReference(DATA.USERS).orderByChild(orderBy)
         val listener = ref.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -58,19 +56,17 @@ class UserRepository @Inject constructor(
                         // Skip corrupted user nodes
                     }
                 }
-                trySend(Resource.Success(users.reversed()))
+                trySend(users.reversed())
             }
 
             override fun onCancelled(error: DatabaseError) {
-                trySend(Resource.Error(error.message))
+                close(error.toException())
             }
         })
         awaitClose { ref.removeEventListener(listener) }
     }
 
-    fun getProfileStats(userId: String): Flow<Resource<ProfileStats>> = callbackFlow {
-        trySend(Resource.Loading())
-
+    fun getProfileStats(userId: String): Flow<ProfileStats?> = callbackFlow {
         val listener = object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 try {
@@ -89,19 +85,17 @@ class UserRepository @Inject constructor(
                         snapshot.child(DATA.FAVORITES).child(userId).childrenCount.toInt()
 
                     trySend(
-                        Resource.Success(
-                            ProfileStats(
-                                userBooksCount, followersCount, followingCount, favoritesCount
-                            )
+                        ProfileStats(
+                            userBooksCount, followersCount, followingCount, favoritesCount
                         )
                     )
-                } catch (e: Exception) {
-                    trySend(Resource.Error(e.message ?: "Stats error"))
+                } catch (_: Exception) {
+                    trySend(null)
                 }
             }
 
             override fun onCancelled(error: DatabaseError) {
-                trySend(Resource.Error(error.message))
+                close(error.toException())
             }
         }
 
@@ -122,28 +116,23 @@ class UserRepository @Inject constructor(
         awaitClose { ref.removeEventListener(listener) }
     }
 
-    suspend fun toggleFollow(userId: String, isFollowing: Boolean): Resource<Unit> {
-        return try {
-            val myId = DATA.FirebaseUserUid
-            val followingRef =
-                db.getReference(DATA.FOLLOW).child(myId).child(DATA.FOLLOWING).child(userId)
-            val followersRef =
-                db.getReference(DATA.FOLLOW).child(userId).child(DATA.FOLLOWERS).child(myId)
+    suspend fun toggleFollow(userId: String, isFollowing: Boolean) {
+        val myId = DATA.FirebaseUserUid
+        val followingRef =
+            db.getReference(DATA.FOLLOW).child(myId).child(DATA.FOLLOWING).child(userId)
+        val followersRef =
+            db.getReference(DATA.FOLLOW).child(userId).child(DATA.FOLLOWERS).child(myId)
 
-            if (isFollowing) {
-                followingRef.removeValue().await()
-                followersRef.removeValue().await()
-            } else {
-                followingRef.setValue(true).await()
-                followersRef.setValue(true).await()
-            }
-            Resource.Success(Unit)
-        } catch (e: Exception) {
-            Resource.Error(e.message ?: "Follow error")
+        if (isFollowing) {
+            followingRef.removeValue().await()
+            followersRef.removeValue().await()
+        } else {
+            followingRef.setValue(true).await()
+            followersRef.setValue(true).await()
         }
     }
 
-    suspend fun updateUserProfile(username: String, imageUri: Uri?): Resource<Unit> =
+    suspend fun updateUserProfile(username: String, imageUri: Uri?): Unit =
         suspendCancellableCoroutine { continuation ->
             val myId = DATA.FirebaseUserUid
             val updates = mutableMapOf<String, Any>(DATA.USER_NAME to username)
@@ -168,22 +157,16 @@ class UserRepository @Inject constructor(
                                 try {
                                     db.getReference(DATA.USERS).child(myId).updateChildren(updates)
                                         .await()
-                                    continuation.resume(Resource.Success(Unit))
+                                    continuation.resume(Unit)
                                 } catch (e: Exception) {
-                                    continuation.resume(
-                                        Resource.Error(
-                                            e.message ?: "Update failed"
-                                        )
-                                    )
+                                    continuation.resumeWithException(e)
                                 }
                             }
                         }
 
                         override fun onError(requestId: String?, error: ErrorInfo?) {
-                            continuation.resume(
-                                Resource.Error(
-                                    error?.description ?: "Upload failed"
-                                )
+                            continuation.resumeWithException(
+                                Exception(error?.description ?: "Upload failed")
                             )
                         }
 
@@ -193,22 +176,21 @@ class UserRepository @Inject constructor(
                 CoroutineScope(Dispatchers.IO).launch {
                     try {
                         db.getReference(DATA.USERS).child(myId).updateChildren(updates).await()
-                        continuation.resume(Resource.Success(Unit))
+                        continuation.resume(Unit)
                     } catch (e: Exception) {
-                        continuation.resume(Resource.Error(e.message ?: "Update failed"))
+                        continuation.resumeWithException(e)
                     }
                 }
             }
         }
 
-    fun getFollow(userId: String, type: String): Flow<Resource<List<User>>> = callbackFlow {
-        trySend(Resource.Loading())
+    fun getFollow(userId: String, type: String): Flow<List<User>> = callbackFlow {
         val followRef = db.getReference(DATA.FOLLOW).child(userId).child(type)
         val listener = followRef.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val followIds = snapshot.children.mapNotNull { it.key }
                 if (followIds.isEmpty()) {
-                    trySend(Resource.Success(emptyList()))
+                    trySend(emptyList())
                     return
                 }
 
@@ -230,17 +212,17 @@ class UserRepository @Inject constructor(
                             } catch (_: Exception) {
                             }
                         }
-                        trySend(Resource.Success(users.reversed()))
+                        trySend(users.reversed())
                     }
 
                     override fun onCancelled(error: DatabaseError) {
-                        trySend(Resource.Error(error.message))
+                        close(error.toException())
                     }
                 })
             }
 
             override fun onCancelled(error: DatabaseError) {
-                trySend(Resource.Error(error.message))
+                close(error.toException())
             }
         })
         awaitClose { followRef.removeEventListener(listener) }

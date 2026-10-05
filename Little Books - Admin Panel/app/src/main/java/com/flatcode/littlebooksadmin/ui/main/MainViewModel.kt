@@ -2,13 +2,13 @@
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.flatcode.littlebooksadmin.utils.DATA
 import com.flatcode.littlebooksadmin.model.User
 import com.flatcode.littlebooksadmin.repository.MainRepository
-import com.flatcode.littlebooksadmin.utils.Resource
+import com.flatcode.littlebooksadmin.utils.DATA
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -17,11 +17,11 @@ class MainViewModel @Inject constructor(
     private val repository: MainRepository
 ) : ViewModel() {
 
-    private val _user = MutableStateFlow<Resource<User>>(Resource.Loading())
-    val user: StateFlow<Resource<User>> = _user
+    private val _user = MutableStateFlow<User?>(null)
+    val user: StateFlow<User?> = _user.asStateFlow()
 
-    private val _stats = MutableStateFlow<Resource<MainRepository.DashboardStats>>(Resource.Loading())
-    val stats: StateFlow<Resource<MainRepository.DashboardStats>> = _stats
+    private val _stats = MutableStateFlow<MainRepository.DashboardStats?>(null)
+    val stats: StateFlow<MainRepository.DashboardStats?> = _stats.asStateFlow()
 
     init {
         fetchData()
@@ -29,11 +29,6 @@ class MainViewModel @Inject constructor(
 
     fun fetchData(forceLoading: Boolean = false) {
         viewModelScope.launch {
-            if (forceLoading || _stats.value !is Resource.Success) {
-                _user.value = Resource.Loading()
-                _stats.value = Resource.Loading()
-            }
-
             _user.value = repository.getUserInfo(DATA.FirebaseUserUid)
             _stats.value = repository.getDashboardStats()
         }

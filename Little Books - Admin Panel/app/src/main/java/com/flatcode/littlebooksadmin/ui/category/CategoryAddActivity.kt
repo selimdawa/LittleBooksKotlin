@@ -9,20 +9,15 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.IntentCompat
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import com.flatcode.littlebooksadmin.R
 import com.flatcode.littlebooksadmin.databinding.ActivityCategoryAddBinding
 import com.flatcode.littlebooksadmin.utils.BaseActivity
 import com.flatcode.littlebooksadmin.utils.DATA
-import com.flatcode.littlebooksadmin.utils.Resource
 import com.flatcode.littlebooksadmin.utils.cropImage
 import com.flatcode.littlebooksadmin.utils.loadImage
 import com.flatcode.littlebooksadmin.utils.pickImage
 import com.flatcode.littlebooksadmin.utils.requestStorage
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class CategoryAddActivity : BaseActivity() {
@@ -39,7 +34,6 @@ class CategoryAddActivity : BaseActivity() {
         setContentView(binding.root)
 
         initUI()
-        observeViewModel()
     }
 
     private fun initUI() {
@@ -54,41 +48,6 @@ class CategoryAddActivity : BaseActivity() {
         binding.toolbar.ok.setOnClickListener { validateData() }
     }
 
-    private fun observeViewModel() {
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.addState.collect { resource ->
-                    when (resource) {
-                        is Resource.Loading -> {
-                            dialog = AlertDialog.Builder(this@CategoryAddActivity).apply {
-                                setMessage(getString(R.string.uploading_category))
-                            }.show()
-                        }
-
-                        is Resource.Success -> {
-                            dialog?.dismiss()
-                            Toast.makeText(
-                                this@CategoryAddActivity,
-                                R.string.successfully_uploaded,
-                                Toast.LENGTH_SHORT
-                            ).show()
-                            finish()
-                        }
-
-                        is Resource.Error -> {
-                            dialog?.dismiss()
-                            Toast.makeText(
-                                this@CategoryAddActivity, resource.message, Toast.LENGTH_SHORT
-                            ).show()
-                        }
-
-                        null -> {}
-                    }
-                }
-            }
-        }
-    }
-
     private fun validateData() {
         val title = binding.categoryEt.text.toString().trim()
 
@@ -97,7 +56,14 @@ class CategoryAddActivity : BaseActivity() {
         } else if (imageUri == null) {
             Toast.makeText(this, R.string.pick_image, Toast.LENGTH_SHORT).show()
         } else {
-            viewModel.addCategory(title, imageUri)
+            dialog = AlertDialog.Builder(this).apply {
+                setMessage(getString(R.string.uploading_category))
+            }.show()
+            viewModel.addCategory(title, imageUri) { success, message ->
+                dialog?.dismiss()
+                Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+                if (success) finish()
+            }
         }
     }
 

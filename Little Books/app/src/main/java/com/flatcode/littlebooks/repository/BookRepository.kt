@@ -154,39 +154,40 @@ class BookRepository @Inject constructor(
         }
     }
 
-    suspend fun getSliderImages(): List<String> {
-        return try {
-            val snapshot = db.getReference(DATA.SLIDER_SHOW).get().await()
-            val list = mutableListOf<String>()
-            val sliderList = mutableListOf<SliderEntity>()
-            var index = 0
-            for (data in snapshot.children) {
-                val url = data.value?.toString()
-                if (!url.isNullOrEmpty()) {
-                    list.add(url)
-                    sliderList.add(SliderEntity(index.toString(), url, index++))
-                }
-            }
-            sliderDao.deleteAllSliderImages()
-            sliderDao.insertSliderImages(sliderList)
-            list
-        } catch (_: Exception) {
-            sliderDao.getSliderImages().first().map { it.image }
+    fun getSliderImages(): Flow<List<String>> {
+        syncSliderImages()
+        return sliderDao.getSliderImages().map { list ->
+            list.map { it.image }
         }
     }
 
-    suspend fun getBooksCountByPublisher(publisherId: String): Int {
-        return try {
-            val snapshot = db.getReference(DATA.BOOKS).get().await()
-            var count = 0
-            for (data in snapshot.children) {
-                val item = data.getValue(Book::class.java)
-                if (item?.publisher == publisherId) count++
+    private fun syncSliderImages() {
+        db.getReference(DATA.SLIDER_SHOW).addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val sliderList = mutableListOf<SliderEntity>()
+                var index = 0
+                for (data in snapshot.children) {
+                    val url = data.child(DATA.IMAGE).value?.toString()
+                        ?: (data.value as? String)
+                    if (!url.isNullOrEmpty() && url != "null") {
+                        sliderList.add(SliderEntity(index.toString(), url, index++))
+                    }
+                }
+                CoroutineScope(Dispatchers.IO).launch {
+                    sliderDao.deleteAllSliderImages()
+                    sliderDao.insertSliderImages(sliderList)
+                }
             }
-            count
-        } catch (_: Exception) {
-            0
-        }
+
+            override fun onCancelled(error: DatabaseError) {
+                Timber.e(error.toException(), "syncSliderImages failed")
+            }
+        })
+    }
+
+    fun getBooksCountByPublisher(publisherId: String): Flow<Int> {
+        syncBooksFromRemote()
+        return bookDao.getBooksCountByPublisher(publisherId)
     }
 
     suspend fun addComment(bookId: String, commentData: Map<String, Any>): Result<Unit> {
@@ -298,6 +299,10 @@ class BookRepository @Inject constructor(
         } catch (e: Exception) {
             Result.failure(e)
         }
+    }
+
+    suspend fun updateBookInRoom(book: Book) {
+        bookDao.insertBook(book)
     }
 
     fun getBookFile(pdfUrl: String): Result<ByteArray> {

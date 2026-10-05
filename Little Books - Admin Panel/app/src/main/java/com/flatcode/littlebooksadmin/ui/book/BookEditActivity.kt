@@ -18,7 +18,6 @@ import com.flatcode.littlebooksadmin.databinding.ActivityBookEditBinding
 import com.flatcode.littlebooksadmin.model.Category
 import com.flatcode.littlebooksadmin.utils.BaseActivity
 import com.flatcode.littlebooksadmin.utils.DATA
-import com.flatcode.littlebooksadmin.utils.Resource
 import com.flatcode.littlebooksadmin.utils.cropImage
 import com.flatcode.littlebooksadmin.utils.loadImage
 import com.flatcode.littlebooksadmin.utils.pickImage
@@ -30,11 +29,11 @@ import kotlinx.coroutines.launch
 class BookEditActivity : BaseActivity() {
 
     private lateinit var binding: ActivityBookEditBinding
-    private val context: Context = this@BookEditActivity
+    var context: Context = this@BookEditActivity
     private var bookId: String? = null
     private var imageUri: Uri? = null
-    private var dialog: AlertDialog? = null
     private var categoriesList: List<Category> = emptyList()
+    private var dialog: AlertDialog? = null
 
     private val viewModel: BookEditViewModel by viewModels()
 
@@ -53,7 +52,7 @@ class BookEditActivity : BaseActivity() {
 
     private fun initUI() {
         binding.toolbar.nameSpace.setText(R.string.edit_book)
-        binding.toolbar.back.setOnClickListener { onBackPressedDispatcher.onBackPressed() }
+        binding.toolbar.back.setOnClickListener { finish() }
 
         binding.image.setOnClickListener {
             requestStorage(DATA.MIX_BOOK_X) {
@@ -68,72 +67,28 @@ class BookEditActivity : BaseActivity() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch {
-                    viewModel.book.collect { resource ->
-                        when (resource) {
-                            is Resource.Loading -> {}
-                            is Resource.Success -> {
-                                resource.data?.let { book ->
-                                    binding.titleEt.setText(book.title)
-                                    binding.descriptionEt.setText(book.description)
-                                    selectedId = book.categoryId.orEmpty()
-                                    if (imageUri == null) {
-                                        binding.image.loadImage(
-                                            isUser = false, data = book.image ?: DATA.BASIC
-                                        )
-                                    }
-
-                                    // Set category name
-                                    categoriesList.find { it.id == selectedId }?.let {
-                                        binding.category.text = it.category
-                                    }
-                                }
+                    viewModel.book.collect { book ->
+                        book?.let {
+                            binding.titleEt.setText(it.title)
+                            binding.descriptionEt.setText(it.description)
+                            selectedId = it.categoryId.orEmpty()
+                            if (imageUri == null) {
+                                binding.image.loadImage(
+                                    isUser = false, data = it.image ?: DATA.BASIC
+                                )
                             }
 
-                            is Resource.Error -> {
-                                Toast.makeText(context, resource.message, Toast.LENGTH_SHORT).show()
+                            categoriesList.find { cat -> cat.id == selectedId }?.let { cat ->
+                                binding.category.text = cat.category
                             }
                         }
                     }
                 }
                 launch {
-                    viewModel.categories.collect { resource ->
-                        when (resource) {
-                            is Resource.Loading -> {}
-                            is Resource.Success -> {
-                                categoriesList = resource.data ?: emptyList()
-                                // Re-set category name if book was already loaded
-                                categoriesList.find { it.id == selectedId }?.let {
-                                    binding.category.text = it.category
-                                }
-                            }
-
-                            is Resource.Error -> {}
-                        }
-                    }
-                }
-                launch {
-                    viewModel.updateState.collect { resource ->
-                        when (resource) {
-                            is Resource.Loading -> {
-                                dialog = AlertDialog.Builder(context).apply {
-                                    setMessage(getString(R.string.updating_book_info))
-                                }.show()
-                            }
-
-                            is Resource.Success -> {
-                                dialog?.dismiss()
-                                Toast.makeText(
-                                    context, R.string.book_info_updated, Toast.LENGTH_SHORT
-                                ).show()
-                                finish()
-                            }
-
-                            is Resource.Error -> {
-                                dialog?.dismiss()
-                                Toast.makeText(context, resource.message, Toast.LENGTH_SHORT).show()
-                            }
-
-                            null -> {}
+                    viewModel.categories.collect { categories ->
+                        categoriesList = categories
+                        categoriesList.find { cat -> cat.id == selectedId }?.let { cat ->
+                            binding.category.text = cat.category
                         }
                     }
                 }
@@ -154,10 +109,15 @@ class BookEditActivity : BaseActivity() {
         } else if (TextUtils.isEmpty(selectedId)) {
             Toast.makeText(context, R.string.pick_category, Toast.LENGTH_SHORT).show()
         } else {
-            bookId?.let {
-                viewModel.updateBook(
-                    it, title, description, selectedId, imageUri
-                )
+            bookId?.let { id ->
+                dialog = AlertDialog.Builder(context).apply {
+                    setMessage(getString(R.string.updating_book_info))
+                }.show()
+                viewModel.updateBook(id, title, description, selectedId, imageUri) { success, message ->
+                    dialog?.dismiss()
+                    Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                    if (success) finish()
+                }
             }
         }
     }

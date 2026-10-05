@@ -5,10 +5,10 @@ import androidx.lifecycle.viewModelScope
 import com.flatcode.littlebooksadmin.model.User
 import com.flatcode.littlebooksadmin.repository.UserRepository
 import com.flatcode.littlebooksadmin.utils.DATA
-import com.flatcode.littlebooksadmin.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -17,8 +17,8 @@ class UsersViewModel @Inject constructor(
     private val repository: UserRepository
 ) : ViewModel() {
 
-    private val _users = MutableStateFlow<Resource<List<User>>>(Resource.Loading())
-    val users: StateFlow<Resource<List<User>>> = _users
+    private val _users = MutableStateFlow<List<User>>(emptyList())
+    val users: StateFlow<List<User>> = _users.asStateFlow()
 
     fun loadUsers(orderBy: String = DATA.TIMESTAMP) {
         viewModelScope.launch {

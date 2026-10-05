@@ -19,5 +19,6 @@ data class Book(
     var viewsCount: Int = 0,
     var downloadsCount: Int = 0,
     var lovesCount: Int = 0,
-    var editorsChoice: Int = 0
+    var editorsChoice: Int = 0,
+    var size: String? = ".."
 ) : Parcelable

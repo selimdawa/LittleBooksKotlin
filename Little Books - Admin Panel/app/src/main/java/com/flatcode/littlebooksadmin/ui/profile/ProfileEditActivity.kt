@@ -16,7 +16,6 @@ import com.flatcode.littlebooksadmin.R
 import com.flatcode.littlebooksadmin.databinding.ActivityProfileEditBinding
 import com.flatcode.littlebooksadmin.utils.BaseActivity
 import com.flatcode.littlebooksadmin.utils.DATA
-import com.flatcode.littlebooksadmin.utils.Resource
 import com.flatcode.littlebooksadmin.utils.cropImage
 import com.flatcode.littlebooksadmin.utils.loadImage
 import com.flatcode.littlebooksadmin.utils.pickImage
@@ -59,56 +58,13 @@ class ProfileEditActivity : BaseActivity() {
     private fun observeViewModel() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                launch {
-                    viewModel.user.collect { resource ->
-                        when (resource) {
-                            is Resource.Loading -> {}
-                            is Resource.Success -> {
-                                resource.data?.let { user ->
-                                    binding.nameEt.setText(user.username)
-                                    if (imageUri == null) {
-                                        binding.profileImage.loadImage(
-                                            isUser = true, data = user.profileImage ?: DATA.BASIC
-                                        )
-                                    }
-                                }
-                            }
-
-                            is Resource.Error -> {
-                                Toast.makeText(
-                                    this@ProfileEditActivity, resource.message, Toast.LENGTH_SHORT
-                                ).show()
-                            }
-                        }
-                    }
-                }
-                launch {
-                    viewModel.updateState.collect { resource ->
-                        when (resource) {
-                            is Resource.Loading -> {
-                                dialog = AlertDialog.Builder(this@ProfileEditActivity).apply {
-                                    setMessage(getString(R.string.updating_user_profile))
-                                }.show()
-                            }
-
-                            is Resource.Success -> {
-                                dialog?.dismiss()
-                                Toast.makeText(
-                                    this@ProfileEditActivity,
-                                    R.string.profile_updated,
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                                finish()
-                            }
-
-                            is Resource.Error -> {
-                                dialog?.dismiss()
-                                Toast.makeText(
-                                    this@ProfileEditActivity, resource.message, Toast.LENGTH_SHORT
-                                ).show()
-                            }
-
-                            null -> {}
+                viewModel.user.collect { user ->
+                    user?.let {
+                        binding.nameEt.setText(it.username)
+                        if (imageUri == null) {
+                            binding.profileImage.loadImage(
+                                isUser = true, data = it.profileImage ?: DATA.BASIC
+                            )
                         }
                     }
                 }
@@ -121,7 +77,14 @@ class ProfileEditActivity : BaseActivity() {
         if (TextUtils.isEmpty(username)) {
             Toast.makeText(this, R.string.enter_name, Toast.LENGTH_SHORT).show()
         } else {
-            viewModel.updateProfile(username, imageUri)
+            dialog = AlertDialog.Builder(this).apply {
+                setMessage(getString(R.string.updating_user_profile))
+            }.show()
+            viewModel.updateProfile(username, imageUri) { success, message ->
+                dialog?.dismiss()
+                Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+                if (success) finish()
+            }
         }
     }
 

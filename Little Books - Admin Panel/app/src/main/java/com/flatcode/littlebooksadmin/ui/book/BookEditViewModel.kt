@@ -6,10 +6,10 @@ import androidx.lifecycle.viewModelScope
 import com.flatcode.littlebooksadmin.model.Book
 import com.flatcode.littlebooksadmin.model.Category
 import com.flatcode.littlebooksadmin.repository.BookRepository
-import com.flatcode.littlebooksadmin.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -18,14 +18,11 @@ class BookEditViewModel @Inject constructor(
     private val repository: BookRepository
 ) : ViewModel() {
 
-    private val _book = MutableStateFlow<Resource<Book>>(Resource.Loading())
-    val book: StateFlow<Resource<Book>> = _book
+    private val _book = MutableStateFlow<Book?>(null)
+    val book: StateFlow<Book?> = _book.asStateFlow()
 
-    private val _categories = MutableStateFlow<Resource<List<Category>>>(Resource.Loading())
-    val categories: StateFlow<Resource<List<Category>>> = _categories
-
-    private val _updateState = MutableStateFlow<Resource<Unit>?>(null)
-    val updateState: StateFlow<Resource<Unit>?> = _updateState
+    private val _categories = MutableStateFlow<List<Category>>(emptyList())
+    val categories: StateFlow<List<Category>> = _categories.asStateFlow()
 
     init {
         loadCategories()
@@ -50,20 +47,21 @@ class BookEditViewModel @Inject constructor(
         title: String,
         description: String,
         categoryId: String,
-        imageUri: Uri? = null
+        imageUri: Uri? = null,
+        onResult: (Boolean, String?) -> Unit
     ) {
         viewModelScope.launch {
-            _updateState.value = Resource.Loading()
-            val updates = mapOf(
-                "title" to title, "description" to description, "categoryId" to categoryId
-            )
-            val result = repository.updateBook(bookId, updates)
-
-            if (result is Resource.Success && imageUri != null) {
-                val imageResult = repository.uploadBookImage(bookId, imageUri)
-                _updateState.value = imageResult
-            } else {
-                _updateState.value = result
+            try {
+                val updates = mapOf(
+                    "title" to title, "description" to description, "categoryId" to categoryId
+                )
+                repository.updateBook(bookId, updates)
+                if (imageUri != null) {
+                    repository.uploadBookImage(bookId, imageUri)
+                }
+                onResult(true, "Successfully updated...")
+            } catch (e: Exception) {
+                onResult(false, e.message ?: "Update failed")
             }
         }
     }

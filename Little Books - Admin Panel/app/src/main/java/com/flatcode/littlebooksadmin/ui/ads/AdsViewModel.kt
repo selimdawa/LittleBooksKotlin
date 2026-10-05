@@ -2,15 +2,15 @@
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.flatcode.littlebooksadmin.utils.DATA
 import com.flatcode.littlebooksadmin.model.ADs
 import com.flatcode.littlebooksadmin.model.User
 import com.flatcode.littlebooksadmin.repository.AdsRepository
 import com.flatcode.littlebooksadmin.repository.UserRepository
-import com.flatcode.littlebooksadmin.utils.Resource
+import com.flatcode.littlebooksadmin.utils.DATA
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -20,14 +20,14 @@ class AdsViewModel @Inject constructor(
     private val userRepository: UserRepository
 ) : ViewModel() {
 
-    private val _adsUsers = MutableStateFlow<Resource<List<User>>>(Resource.Loading())
-    val adsUsers: StateFlow<Resource<List<User>>> = _adsUsers
+    private val _adsUsers = MutableStateFlow<List<User>>(emptyList())
+    val adsUsers: StateFlow<List<User>> = _adsUsers.asStateFlow()
 
-    private val _userAds = MutableStateFlow<Resource<List<ADs>>>(Resource.Loading())
-    val userAds: StateFlow<Resource<List<ADs>>> = _userAds
+    private val _userAds = MutableStateFlow<List<ADs>>(emptyList())
+    val userAds: StateFlow<List<ADs>> = _userAds.asStateFlow()
 
-    private val _userInfo = MutableStateFlow<Resource<User>>(Resource.Loading())
-    val userInfo: StateFlow<Resource<User>> = _userInfo
+    private val _userInfo = MutableStateFlow<User?>(null)
+    val userInfo: StateFlow<User?> = _userInfo.asStateFlow()
 
     fun loadAdsUsers(orderBy: String = DATA.AD_LOAD) {
         viewModelScope.launch {
@@ -40,7 +40,7 @@ class AdsViewModel @Inject constructor(
     fun loadUserAds(userId: String, orderBy: String = DATA.NAME) {
         viewModelScope.launch {
             _userInfo.value = userRepository.getUserById(userId)
-            
+
             adsRepository.getUserAds(userId, orderBy).collect {
                 _userAds.value = it
             }

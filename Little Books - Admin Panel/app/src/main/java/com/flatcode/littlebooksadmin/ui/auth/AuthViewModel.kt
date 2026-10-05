@@ -3,10 +3,7 @@
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.flatcode.littlebooksadmin.repository.AuthRepository
-import com.flatcode.littlebooksadmin.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -15,13 +12,14 @@ class AuthViewModel @Inject constructor(
     private val repository: AuthRepository
 ) : ViewModel() {
 
-    private val _loginState = MutableStateFlow<Resource<Unit>?>(null)
-    val loginState: StateFlow<Resource<Unit>?> = _loginState
-
-    fun login(email: String, password: String) {
+    fun login(email: String, password: String, onResult: (Boolean, String?) -> Unit) {
         viewModelScope.launch {
-            _loginState.value = Resource.Loading()
-            _loginState.value = repository.login(email, password)
+            val success = repository.login(email, password)
+            if (success) {
+                onResult(true, "Successfully logged in...")
+            } else {
+                onResult(false, "Login failed")
+            }
         }
     }
 

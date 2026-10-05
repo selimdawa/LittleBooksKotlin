@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
-import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
 import com.flatcode.littlebooksadmin.utils.BaseActivity
@@ -15,7 +14,6 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.flatcode.littlebooksadmin.model.Book
 import com.flatcode.littlebooksadmin.R
 import com.flatcode.littlebooksadmin.utils.DATA
-import com.flatcode.littlebooksadmin.utils.Resource
 import com.flatcode.littlebooksadmin.databinding.ActivityPageStaggeredSwitchBinding
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -100,21 +98,9 @@ class AllBooksActivity : BaseActivity() {
     private fun observeViewModel() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.books.collect { resource ->
-                    when (resource) {
-                        is Resource.Loading -> {
-                            binding.progress.visibility = View.VISIBLE
-                        }
-                        is Resource.Success -> {
-                            binding.progress.visibility = View.GONE
-                            val books = resource.data ?: emptyList()
-                            updateList(books)
-                        }
-                        is Resource.Error -> {
-                            binding.progress.visibility = View.GONE
-                            Toast.makeText(context, resource.message, Toast.LENGTH_SHORT).show()
-                        }
-                    }
+                viewModel.books.collect { books ->
+                    binding.progress.visibility = View.GONE
+                    updateList(books)
                 }
             }
         }
@@ -132,7 +118,6 @@ class AllBooksActivity : BaseActivity() {
             binding.emptyText.visibility = View.VISIBLE
         }
     }
-
 
     override fun onResume() {
         super.onResume()

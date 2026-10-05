@@ -1,7 +1,11 @@
 package com.flatcode.littlebooks.repository
 
 import android.net.Uri
+import com.flatcode.littlebooks.db.FavoriteDao
+import com.flatcode.littlebooks.db.InterestedDao
 import com.flatcode.littlebooks.db.UserDao
+import com.flatcode.littlebooks.model.FavoriteEntity
+import com.flatcode.littlebooks.model.InterestedEntity
 import com.flatcode.littlebooks.model.User
 import com.flatcode.littlebooks.utils.DATA
 import com.flatcode.littlebooks.utils.cloudinaryUpload
@@ -20,7 +24,10 @@ import javax.inject.Singleton
 
 @Singleton
 class UserRepository @Inject constructor(
-    private val db: FirebaseDatabase, private val userDao: UserDao
+    private val db: FirebaseDatabase,
+    private val userDao: UserDao,
+    private val favoriteDao: FavoriteDao,
+    private val interestedDao: InterestedDao
 ) {
     private val repositoryScope = CoroutineScope(Dispatchers.IO)
 
@@ -30,6 +37,7 @@ class UserRepository @Inject constructor(
     }
 
     private fun syncUser(userId: String) {
+        if (userId.isEmpty()) return
         db.getReference(DATA.USERS).child(userId)
             .addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
@@ -57,22 +65,52 @@ class UserRepository @Inject constructor(
         }
     }
 
-    suspend fun getFollowCount(userId: String, type: String): Long {
-        return try {
-            val snapshot = db.getReference(DATA.FOLLOW).child(userId).child(type).get().await()
-            snapshot.childrenCount
-        } catch (_: Exception) {
-            0L
-        }
+    fun getFollowCount(userId: String, type: String): Flow<Int> {
+        syncFollow(userId, type)
+        return interestedDao.getInterestedCount(userId, type)
     }
 
-    suspend fun getFavoriteCount(userId: String): Long {
-        return try {
-            val snapshot = db.getReference(DATA.FAVORITES).child(userId).get().await()
-            snapshot.childrenCount
-        } catch (_: Exception) {
-            0L
-        }
+    private fun syncFollow(userId: String, type: String) {
+        if (userId.isEmpty()) return
+        db.getReference(DATA.FOLLOW).child(userId).child(type)
+            .addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    val list = snapshot.children.mapNotNull { it.key }
+                        .map { InterestedEntity(userId, type, it) }
+                    repositoryScope.launch {
+                        interestedDao.deleteAllInterestedForUser(userId, type)
+                        interestedDao.insertInterestedList(list)
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    Timber.e(error.toException(), "syncFollow failed for $type")
+                }
+            })
+    }
+
+    fun getFavoritesCount(userId: String): Flow<Int> {
+        syncFavorites(userId)
+        return favoriteDao.getTotalFavoriteCount(userId)
+    }
+
+    private fun syncFavorites(userId: String) {
+        if (userId.isEmpty()) return
+        db.getReference(DATA.FAVORITES).child(userId)
+            .addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    val favList =
+                        snapshot.children.mapNotNull { it.key }.map { FavoriteEntity(userId, it) }
+                    repositoryScope.launch {
+                        favoriteDao.deleteAllFavoritesForUser(userId)
+                        favoriteDao.insertFavorites(favList)
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    Timber.e(error.toException(), "syncFavorites failed")
+                }
+            })
     }
 
     suspend fun checkFollowing(currentUserId: String, targetUserId: String): Boolean {
@@ -128,20 +166,28 @@ class UserRepository @Inject constructor(
         }
     }
 
-    suspend fun getExplorePublishersCount(currentUserId: String): Int {
-        return try {
-            val snapshot = db.getReference(DATA.USERS).get().await()
-            var count = 0
-            for (data in snapshot.children) {
-                val user = data.getValue(User::class.java)
-                if (user != null && user.id != currentUserId && user.booksCount >= 1) {
-                    count++
+    fun getExplorePublishersCount(currentUserId: String): Flow<Int> {
+        syncUsers()
+        return userDao.getExplorePublishersCount(currentUserId)
+    }
+
+    private fun syncUsers() {
+        db.getReference(DATA.USERS).addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val list = mutableListOf<User>()
+                for (data in snapshot.children) {
+                    val user = data.getValue(User::class.java) ?: continue
+                    list.add(user)
+                }
+                repositoryScope.launch {
+                    userDao.insertUsers(list)
                 }
             }
-            count
-        } catch (_: Exception) {
-            0
-        }
+
+            override fun onCancelled(error: DatabaseError) {
+                Timber.e(error.toException(), "syncUsers failed")
+            }
+        })
     }
 
     suspend fun getExplorePublishers(currentUserId: String): List<User> {

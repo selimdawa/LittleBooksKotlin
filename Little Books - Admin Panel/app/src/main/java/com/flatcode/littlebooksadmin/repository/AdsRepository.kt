@@ -3,7 +3,6 @@ package com.flatcode.littlebooksadmin.repository
 import com.flatcode.littlebooksadmin.model.ADs
 import com.flatcode.littlebooksadmin.model.User
 import com.flatcode.littlebooksadmin.utils.DATA
-import com.flatcode.littlebooksadmin.utils.Resource
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
@@ -19,8 +18,7 @@ class AdsRepository @Inject constructor(
     private val db: FirebaseDatabase
 ) {
 
-    fun getAdsUsers(orderBy: String = DATA.AD_LOAD): Flow<Resource<List<User>>> = callbackFlow {
-        trySend(Resource.Loading())
+    fun getAdsUsers(orderBy: String = DATA.AD_LOAD): Flow<List<User>> = callbackFlow {
         val ref = db.getReference(DATA.USERS).orderByChild(orderBy)
         val listener = ref.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -39,34 +37,32 @@ class AdsRepository @Inject constructor(
                     } catch (_: Exception) {
                     }
                 }
-                trySend(Resource.Success(users.reversed()))
+                trySend(users.reversed())
             }
 
             override fun onCancelled(error: DatabaseError) {
-                trySend(Resource.Error(error.message))
+                close(error.toException())
             }
         })
         awaitClose { ref.removeEventListener(listener) }
     }
 
-    fun getUserAds(userId: String, orderBy: String = DATA.NAME): Flow<Resource<List<ADs>>> =
-        callbackFlow {
-            trySend(Resource.Loading())
-            val ref = db.getReference(DATA.AD_S).child(userId).orderByChild(orderBy)
-            val listener = ref.addValueEventListener(object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    val adsList = mutableListOf<ADs>()
-                    for (data in snapshot.children) {
-                        val ads = data.getValue(ADs::class.java)
-                        ads?.let { adsList.add(it) }
-                    }
-                    trySend(Resource.Success(adsList))
+    fun getUserAds(userId: String, orderBy: String = DATA.NAME): Flow<List<ADs>> = callbackFlow {
+        val ref = db.getReference(DATA.AD_S).child(userId).orderByChild(orderBy)
+        val listener = ref.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val adsList = mutableListOf<ADs>()
+                for (data in snapshot.children) {
+                    val ads = data.getValue(ADs::class.java)
+                    ads?.let { adsList.add(it) }
                 }
+                trySend(adsList)
+            }
 
-                override fun onCancelled(error: DatabaseError) {
-                    trySend(Resource.Error(error.message))
-                }
-            })
-            awaitClose { ref.removeEventListener(listener) }
-        }
+            override fun onCancelled(error: DatabaseError) {
+                close(error.toException())
+            }
+        })
+        awaitClose { ref.removeEventListener(listener) }
+    }
 }

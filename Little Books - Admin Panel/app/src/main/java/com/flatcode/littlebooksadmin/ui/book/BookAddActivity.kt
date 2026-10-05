@@ -20,7 +20,6 @@ import com.flatcode.littlebooksadmin.databinding.ActivityBookAddBinding
 import com.flatcode.littlebooksadmin.model.Category
 import com.flatcode.littlebooksadmin.utils.BaseActivity
 import com.flatcode.littlebooksadmin.utils.DATA
-import com.flatcode.littlebooksadmin.utils.Resource
 import com.flatcode.littlebooksadmin.utils.cropImage
 import com.flatcode.littlebooksadmin.utils.isNetworkAvailable
 import com.flatcode.littlebooksadmin.utils.loadImage
@@ -80,69 +79,8 @@ class BookAddActivity : BaseActivity() {
     private fun observeViewModel() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                launch {
-                    viewModel.categories.collect { resource ->
-                        when (resource) {
-                            is Resource.Loading -> {}
-                            is Resource.Success -> {
-                                categoriesList = resource.data ?: emptyList()
-                            }
-
-                            is Resource.Error -> {
-                                Toast.makeText(context, resource.message, Toast.LENGTH_SHORT).show()
-                            }
-                        }
-                    }
-                }
-                launch {
-                    viewModel.uploadState.collect { resource ->
-                        when (resource) {
-                            is Resource.Loading -> {
-                                dialog = AlertDialog.Builder(context).apply {
-                                    setMessage(getString(R.string.uploading_book))
-                                }.show()
-                            }
-
-                            is Resource.Success -> {
-                                dialog?.dismiss()
-                                Toast.makeText(
-                                    context, R.string.successfully_uploaded, Toast.LENGTH_SHORT
-                                ).show()
-                            }
-
-                            is Resource.Error -> {
-                                dialog?.dismiss()
-                                Toast.makeText(context, resource.message, Toast.LENGTH_SHORT).show()
-                            }
-
-                            null -> {}
-                        }
-                    }
-                }
-                launch {
-                    viewModel.imageUploadState.collect { resource ->
-                        when (resource) {
-                            is Resource.Loading -> {
-                                dialog = AlertDialog.Builder(context).apply {
-                                    setMessage(getString(R.string.updating_image_book))
-                                }.show()
-                            }
-
-                            is Resource.Success -> {
-                                dialog?.dismiss()
-                                Toast.makeText(context, R.string.image_updated, Toast.LENGTH_SHORT)
-                                    .show()
-                                finish()
-                            }
-
-                            is Resource.Error -> {
-                                dialog?.dismiss()
-                                Toast.makeText(context, resource.message, Toast.LENGTH_SHORT).show()
-                            }
-
-                            null -> {}
-                        }
-                    }
+                viewModel.categories.collect { categories ->
+                    categoriesList = categories
                 }
             }
         }
@@ -164,7 +102,14 @@ class BookAddActivity : BaseActivity() {
             Toast.makeText(context, getString(R.string.no_internet_connection), Toast.LENGTH_SHORT)
                 .show()
         } else {
-            viewModel.uploadBook(uri!!, title, description, selectedId ?: "", imageUri)
+            dialog = AlertDialog.Builder(context).apply {
+                setMessage(getString(R.string.uploading_book))
+            }.show()
+            viewModel.uploadBook(uri!!, title, description, selectedId ?: "", imageUri) { success, message ->
+                dialog?.dismiss()
+                Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                if (success) finish()
+            }
         }
     }
 

@@ -5,10 +5,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.flatcode.littlebooksadmin.model.User
 import com.flatcode.littlebooksadmin.repository.UserRepository
-import com.flatcode.littlebooksadmin.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -17,17 +17,14 @@ class ProfileViewModel @Inject constructor(
     private val repository: UserRepository
 ) : ViewModel() {
 
-    private val _user = MutableStateFlow<Resource<User>>(Resource.Loading())
-    val user: StateFlow<Resource<User>> = _user
+    private val _user = MutableStateFlow<User?>(null)
+    val user: StateFlow<User?> = _user.asStateFlow()
 
-    private val _stats = MutableStateFlow<Resource<UserRepository.ProfileStats>>(Resource.Loading())
-    val stats: StateFlow<Resource<UserRepository.ProfileStats>> = _stats
+    private val _stats = MutableStateFlow<UserRepository.ProfileStats?>(null)
+    val stats: StateFlow<UserRepository.ProfileStats?> = _stats.asStateFlow()
 
     private val _isFollowing = MutableStateFlow(false)
-    val isFollowing: StateFlow<Boolean> = _isFollowing
-
-    private val _updateState = MutableStateFlow<Resource<Unit>?>(null)
-    val updateState: StateFlow<Resource<Unit>?> = _updateState
+    val isFollowing: StateFlow<Boolean> = _isFollowing.asStateFlow()
 
     fun loadProfile(profileId: String) {
         viewModelScope.launch {
@@ -51,10 +48,14 @@ class ProfileViewModel @Inject constructor(
         }
     }
 
-    fun updateProfile(username: String, imageUri: Uri?) {
+    fun updateProfile(username: String, imageUri: Uri?, onResult: (Boolean, String?) -> Unit) {
         viewModelScope.launch {
-            _updateState.value = Resource.Loading()
-            _updateState.value = repository.updateUserProfile(username, imageUri)
+            try {
+                repository.updateUserProfile(username, imageUri)
+                onResult(true, "Successfully updated...")
+            } catch (e: Exception) {
+                onResult(false, e.message ?: "Update failed")
+            }
         }
     }
 }

@@ -8,7 +8,6 @@ import com.flatcode.littlebooksadmin.model.Book
 import com.flatcode.littlebooksadmin.model.Category
 import com.flatcode.littlebooksadmin.model.Comment
 import com.flatcode.littlebooksadmin.utils.DATA
-import com.flatcode.littlebooksadmin.utils.Resource
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
@@ -24,14 +23,14 @@ import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
 
 @Singleton
 class BookRepository @Inject constructor(
     private val db: FirebaseDatabase
 ) {
 
-    fun getCategories(): Flow<Resource<List<Category>>> = callbackFlow {
-        trySend(Resource.Loading())
+    fun getCategories(): Flow<List<Category>> = callbackFlow {
         val ref = db.getReference(DATA.CATEGORIES)
         val listener = ref.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -40,11 +39,11 @@ class BookRepository @Inject constructor(
                     val category = data.getValue(Category::class.java)
                     category?.let { categories.add(it) }
                 }
-                trySend(Resource.Success(categories))
+                trySend(categories)
             }
 
             override fun onCancelled(error: DatabaseError) {
-                trySend(Resource.Error(error.message))
+                close(error.toException())
             }
         })
         awaitClose { ref.removeEventListener(listener) }
@@ -52,8 +51,7 @@ class BookRepository @Inject constructor(
 
     fun getBooks(
         orderBy: String = DATA.TIMESTAMP, publisherId: String? = null
-    ): Flow<Resource<List<Book>>> = callbackFlow {
-        trySend(Resource.Loading())
+    ): Flow<List<Book>> = callbackFlow {
         val ref = db.getReference(DATA.BOOKS).orderByChild(orderBy)
         val listener = ref.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -66,24 +64,23 @@ class BookRepository @Inject constructor(
                         }
                     }
                 }
-                trySend(Resource.Success(books.reversed()))
+                trySend(books.reversed())
             }
 
             override fun onCancelled(error: DatabaseError) {
-                trySend(Resource.Error(error.message))
+                close(error.toException())
             }
         })
         awaitClose { ref.removeEventListener(listener) }
     }
 
-    fun getFavorites(userId: String): Flow<Resource<List<Book>>> = callbackFlow {
-        trySend(Resource.Loading())
+    fun getFavorites(userId: String): Flow<List<Book>> = callbackFlow {
         val favoritesRef = db.getReference(DATA.FAVORITES).child(userId)
         val listener = favoritesRef.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val favoriteIds = snapshot.children.mapNotNull { it.key }
                 if (favoriteIds.isEmpty()) {
-                    trySend(Resource.Success(emptyList()))
+                    trySend(emptyList())
                     return
                 }
 
@@ -97,17 +94,17 @@ class BookRepository @Inject constructor(
                                 books.add(book)
                             }
                         }
-                        trySend(Resource.Success(books.reversed()))
+                        trySend(books.reversed())
                     }
 
                     override fun onCancelled(error: DatabaseError) {
-                        trySend(Resource.Error(error.message))
+                        close(error.toException())
                     }
                 })
             }
 
             override fun onCancelled(error: DatabaseError) {
-                trySend(Resource.Error(error.message))
+                close(error.toException())
             }
         })
         awaitClose { favoritesRef.removeEventListener(listener) }
@@ -115,11 +112,11 @@ class BookRepository @Inject constructor(
 
     suspend fun uploadBook(
         uri: Uri, title: String, description: String, categoryId: String
-    ): Resource<String> = suspendCancellableCoroutine { continuation ->
+    ): String = suspendCancellableCoroutine { continuation ->
         val ref = db.getReference(DATA.BOOKS)
         val id = ref.push().key
         if (id == null) {
-            continuation.resume(Resource.Error("Could not generate ID"))
+            continuation.resumeWithException(Exception("Could not generate ID"))
             return@suspendCancellableCoroutine
         }
 
@@ -149,25 +146,19 @@ class BookRepository @Inject constructor(
                                 // Increment book count for user
                                 incrementUserBookCount(DATA.FirebaseUserUid)
 
-                                continuation.resume(Resource.Success(id))
+                                continuation.resume(id)
                             } catch (e: Exception) {
-                                continuation.resume(
-                                    Resource.Error(
-                                        e.message ?: "Database update failed"
-                                    )
-                                )
+                                continuation.resumeWithException(e)
                             }
                         }
                     } else {
-                        continuation.resume(Resource.Error("Cloudinary upload failed: secure_url is null"))
+                        continuation.resumeWithException(Exception("Cloudinary upload failed: secure_url is null"))
                     }
                 }
 
                 override fun onError(requestId: String?, error: ErrorInfo?) {
-                    continuation.resume(
-                        Resource.Error(
-                            error?.description ?: "Cloudinary upload failed"
-                        )
+                    continuation.resumeWithException(
+                        Exception(error?.description ?: "Cloudinary upload failed")
                     )
                 }
 
@@ -177,7 +168,7 @@ class BookRepository @Inject constructor(
 
     suspend fun uploadBookImage(
         bookId: String, uri: Uri
-    ): Resource<Unit> = suspendCancellableCoroutine { continuation ->
+    ): Unit = suspendCancellableCoroutine { continuation ->
         MediaManager.get().upload(uri).unsigned(DATA.CLOUDINARY_UPLOAD_PRESET)
             .option("folder", "BookImages/").option("public_id", bookId)
             .callback(object : UploadCallback {
@@ -190,25 +181,19 @@ class BookRepository @Inject constructor(
                             try {
                                 val ref = db.getReference(DATA.BOOKS).child(bookId)
                                 ref.child(DATA.IMAGE).setValue(downloadUrl).await()
-                                continuation.resume(Resource.Success(Unit))
+                                continuation.resume(Unit)
                             } catch (e: Exception) {
-                                continuation.resume(
-                                    Resource.Error(
-                                        e.message ?: "Database update failed"
-                                    )
-                                )
+                                continuation.resumeWithException(e)
                             }
                         }
                     } else {
-                        continuation.resume(Resource.Error("Cloudinary upload failed: secure_url is null"))
+                        continuation.resumeWithException(Exception("Cloudinary upload failed: secure_url is null"))
                     }
                 }
 
                 override fun onError(requestId: String?, error: ErrorInfo?) {
-                    continuation.resume(
-                        Resource.Error(
-                            error?.description ?: "Cloudinary upload failed"
-                        )
+                    continuation.resumeWithException(
+                        Exception(error?.description ?: "Cloudinary upload failed")
                     )
                 }
 
@@ -216,29 +201,20 @@ class BookRepository @Inject constructor(
             }).dispatch()
     }
 
-    suspend fun getBookById(bookId: String): Resource<Book> {
+    suspend fun getBookById(bookId: String): Book? {
         return try {
             val snapshot = db.getReference(DATA.BOOKS).child(bookId).get().await()
-            val book = snapshot.getValue(Book::class.java)
-            if (book != null) {
-                Resource.Success(book)
-            } else Resource.Error("Book not found")
-        } catch (e: Exception) {
-            Resource.Error(e.message ?: "Unknown error")
+            snapshot.getValue(Book::class.java)
+        } catch (_: Exception) {
+            null
         }
     }
 
-    suspend fun updateBook(bookId: String, updates: Map<String, Any?>): Resource<Unit> {
-        return try {
-            db.getReference(DATA.BOOKS).child(bookId).updateChildren(updates).await()
-            Resource.Success(Unit)
-        } catch (e: Exception) {
-            Resource.Error(e.message ?: "Update failed")
-        }
+    suspend fun updateBook(bookId: String, updates: Map<String, Any?>) {
+        db.getReference(DATA.BOOKS).child(bookId).updateChildren(updates).await()
     }
 
-    fun getComments(bookId: String): Flow<Resource<List<Comment>>> = callbackFlow {
-        trySend(Resource.Loading())
+    fun getComments(bookId: String): Flow<List<Comment>> = callbackFlow {
         val ref = db.getReference(DATA.BOOKS).child(bookId).child(DATA.COMMENTS)
         val listener = ref.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -247,34 +223,29 @@ class BookRepository @Inject constructor(
                     val comment = data.getValue(Comment::class.java)
                     comment?.let { comments.add(it) }
                 }
-                trySend(Resource.Success(comments))
+                trySend(comments)
             }
 
             override fun onCancelled(error: DatabaseError) {
-                trySend(Resource.Error(error.message))
+                close(error.toException())
             }
         })
         awaitClose { ref.removeEventListener(listener) }
     }
 
-    suspend fun addComment(bookId: String, commentText: String): Resource<Unit> {
-        return try {
-            val ref = db.getReference(DATA.BOOKS).child(bookId).child(DATA.COMMENTS)
-            val id = ref.push().key ?: return Resource.Error("Could not generate ID")
+    suspend fun addComment(bookId: String, commentText: String) {
+        val ref = db.getReference(DATA.BOOKS).child(bookId).child(DATA.COMMENTS)
+        val id = ref.push().key ?: throw Exception("Could not generate ID")
 
-            val comment = Comment(
-                id = id,
-                bookId = bookId,
-                timestamp = System.currentTimeMillis(),
-                comment = commentText,
-                publisher = DATA.FirebaseUserUid
-            )
+        val comment = Comment(
+            id = id,
+            bookId = bookId,
+            timestamp = System.currentTimeMillis(),
+            comment = commentText,
+            publisher = DATA.FirebaseUserUid
+        )
 
-            ref.child(id).setValue(comment).await()
-            Resource.Success(Unit)
-        } catch (e: Exception) {
-            Resource.Error(e.message ?: "Comment failed")
-        }
+        ref.child(id).setValue(comment).await()
     }
 
     suspend fun incrementViews(bookId: String) {
@@ -286,8 +257,7 @@ class BookRepository @Inject constructor(
 
     fun getBooksByCategory(
         categoryId: String, orderBy: String = DATA.TIMESTAMP
-    ): Flow<Resource<List<Book>>> = callbackFlow {
-        trySend(Resource.Loading())
+    ): Flow<List<Book>> = callbackFlow {
         val ref = db.getReference(DATA.BOOKS).orderByChild(orderBy)
         val listener = ref.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -298,18 +268,17 @@ class BookRepository @Inject constructor(
                         books.add(book)
                     }
                 }
-                trySend(Resource.Success(books.reversed()))
+                trySend(books.reversed())
             }
 
             override fun onCancelled(error: DatabaseError) {
-                trySend(Resource.Error(error.message))
+                close(error.toException())
             }
         })
         awaitClose { ref.removeEventListener(listener) }
     }
 
-    fun getEditorsChoiceBooks(): Flow<Resource<List<Book>>> = callbackFlow {
-        trySend(Resource.Loading())
+    fun getEditorsChoiceBooks(): Flow<List<Book>> = callbackFlow {
         val ref = db.getReference(DATA.BOOKS)
         val listener = ref.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -320,11 +289,11 @@ class BookRepository @Inject constructor(
                         books.add(book)
                     }
                 }
-                trySend(Resource.Success(books))
+                trySend(books)
             }
 
             override fun onCancelled(error: DatabaseError) {
-                trySend(Resource.Error(error.message))
+                close(error.toException())
             }
         })
         awaitClose { ref.removeEventListener(listener) }

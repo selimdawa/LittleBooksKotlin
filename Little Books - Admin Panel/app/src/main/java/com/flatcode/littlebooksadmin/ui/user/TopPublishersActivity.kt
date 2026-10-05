@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
-import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
 import com.flatcode.littlebooksadmin.utils.BaseActivity
@@ -14,8 +13,8 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.flatcode.littlebooksadmin.R
 import com.flatcode.littlebooksadmin.databinding.ActivityPageStaggeredBinding
+import com.flatcode.littlebooksadmin.model.User
 import com.flatcode.littlebooksadmin.utils.DATA
-import com.flatcode.littlebooksadmin.utils.Resource
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -52,7 +51,6 @@ class TopPublishersActivity : BaseActivity() {
         observeViewModel()
     }
 
-
     private fun initUI() {
         binding.toolbar.nameSpace.setText(R.string.top_publishers)
         binding.toolbar.close.setOnClickListener { onBackPressedDispatcher.onBackPressed() }
@@ -83,28 +81,15 @@ class TopPublishersActivity : BaseActivity() {
     private fun observeViewModel() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.users.collect { resource ->
-                    when (resource) {
-                        is Resource.Loading -> {
-                            binding.progress.visibility = View.VISIBLE
-                        }
-
-                        is Resource.Success -> {
-                            binding.progress.visibility = View.GONE
-                            updateList(resource.data ?: emptyList())
-                        }
-
-                        is Resource.Error -> {
-                            binding.progress.visibility = View.GONE
-                            Toast.makeText(context, resource.message, Toast.LENGTH_SHORT).show()
-                        }
-                    }
+                viewModel.users.collect { users ->
+                    binding.progress.visibility = View.GONE
+                    updateList(users)
                 }
             }
         }
     }
 
-    private fun updateList(users: List<com.flatcode.littlebooksadmin.model.User>) {
+    private fun updateList(users: List<User>) {
         val filteredUsers = users.filter { it.booksCount >= 1 }
         binding.toolbar.number.text = getString(R.string.number_placeholder, filteredUsers.size)
         adapter?.submitUnfilteredList(filteredUsers)
@@ -117,7 +102,6 @@ class TopPublishersActivity : BaseActivity() {
             binding.emptyText.visibility = View.VISIBLE
         }
     }
-
 
     override fun onResume() {
         super.onResume()

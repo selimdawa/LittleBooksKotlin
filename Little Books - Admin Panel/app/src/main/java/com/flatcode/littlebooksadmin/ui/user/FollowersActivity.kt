@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
-import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
 import com.flatcode.littlebooksadmin.utils.BaseActivity
@@ -15,7 +14,6 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.flatcode.littlebooksadmin.model.User
 import com.flatcode.littlebooksadmin.R
 import com.flatcode.littlebooksadmin.utils.DATA
-import com.flatcode.littlebooksadmin.utils.Resource
 import com.flatcode.littlebooksadmin.databinding.ActivityPageStaggeredBinding
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -53,7 +51,6 @@ class FollowersActivity : BaseActivity() {
         observeViewModel()
     }
 
-
     private fun initUI() {
         binding.toolbar.nameSpace.setText(R.string.followers)
         binding.toolbar.back.setOnClickListener { onBackPressedDispatcher.onBackPressed() }
@@ -82,21 +79,9 @@ class FollowersActivity : BaseActivity() {
     private fun observeViewModel() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.users.collect { resource ->
-                    when (resource) {
-                        is Resource.Loading -> {
-                            binding.progress.visibility = View.VISIBLE
-                        }
-                        is Resource.Success -> {
-                            binding.progress.visibility = View.GONE
-                            val users = resource.data ?: emptyList()
-                            updateList(users)
-                        }
-                        is Resource.Error -> {
-                            binding.progress.visibility = View.GONE
-                            Toast.makeText(context, resource.message, Toast.LENGTH_SHORT).show()
-                        }
-                    }
+                viewModel.users.collect { users ->
+                    binding.progress.visibility = View.GONE
+                    updateList(users)
                 }
             }
         }
@@ -114,8 +99,6 @@ class FollowersActivity : BaseActivity() {
             binding.emptyText.visibility = View.VISIBLE
         }
     }
-
-
 
     override fun onResume() {
         super.onResume()

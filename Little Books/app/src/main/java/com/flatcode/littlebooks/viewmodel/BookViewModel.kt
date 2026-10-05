@@ -5,7 +5,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.flatcode.littlebooks.model.Book
 import com.flatcode.littlebooks.model.Comment
+import com.flatcode.littlebooks.model.User
 import com.flatcode.littlebooks.repository.BookRepository
+import com.flatcode.littlebooks.repository.CategoryRepository
+import com.flatcode.littlebooks.repository.UserRepository
 import com.flatcode.littlebooks.utils.DATA
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,13 +21,21 @@ import javax.inject.Inject
 
 @HiltViewModel
 class BookViewModel @Inject constructor(
-    private val repository: BookRepository
+    private val repository: BookRepository,
+    private val userRepository: UserRepository,
+    private val categoryRepository: CategoryRepository
 ) : ViewModel() {
 
     private val _searchQuery = MutableStateFlow("")
 
     private val _bookDetails = MutableStateFlow<Book?>(null)
     val bookDetails: StateFlow<Book?> = _bookDetails
+
+    private val _publisherUser = MutableStateFlow<User?>(null)
+    val publisherUser: StateFlow<User?> = _publisherUser
+
+    private val _categoryName = MutableStateFlow("")
+    val categoryName: StateFlow<String> = _categoryName
 
     private val _isFavorite = MutableStateFlow(false)
     val isFavorite: StateFlow<Boolean> = _isFavorite
@@ -100,6 +111,26 @@ class BookViewModel @Inject constructor(
         }
     }
 
+    fun loadPublisherInfo(publisherId: String) {
+        if (publisherId.isEmpty()) return
+        viewModelScope.launch {
+            userRepository.getUserInfo(publisherId).collect {
+                _publisherUser.value = it
+            }
+        }
+    }
+
+    fun loadCategoryName(categoryId: String) {
+        if (categoryId.isEmpty()) return
+        viewModelScope.launch {
+            categoryRepository.getCategoryName(categoryId).collect { name ->
+                if (!name.isNullOrEmpty()) {
+                    _categoryName.value = name
+                }
+            }
+        }
+    }
+
     fun loadBooksBy(orderBy: String) {
         viewModelScope.launch {
             repository.getBooks(orderBy).collect {
@@ -159,6 +190,12 @@ class BookViewModel @Inject constructor(
     fun updateBook(bookId: String, hashMap: HashMap<String, Any?>) {
         viewModelScope.launch {
             repository.updateBook(bookId, hashMap)
+        }
+    }
+
+    fun updateBookSize(book: Book) {
+        viewModelScope.launch {
+            repository.updateBookInRoom(book)
         }
     }
 

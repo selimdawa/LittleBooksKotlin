@@ -10,6 +10,7 @@ import com.google.firebase.database.ValueEventListener
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
@@ -22,6 +23,13 @@ class CategoryRepository @Inject constructor(
     fun getCategories(): Flow<List<Category>> {
         syncCategories()
         return categoryDao.getAllCategories()
+    }
+
+    fun getCategoryName(categoryId: String): Flow<String?> {
+        syncCategories()
+        return categoryDao.getAllCategories().map { list ->
+            list.find { it.id == categoryId }?.category
+        }
     }
 
     fun syncCategories() {

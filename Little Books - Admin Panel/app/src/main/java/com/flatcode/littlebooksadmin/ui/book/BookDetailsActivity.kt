@@ -2,7 +2,7 @@ package com.flatcode.littlebooksadmin.ui.book
 
 import android.Manifest
 import android.content.Context
-import android.content.pm.PackageManager
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.text.TextUtils
@@ -15,7 +15,6 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -27,9 +26,6 @@ import com.flatcode.littlebooksadmin.model.Comment
 import com.flatcode.littlebooksadmin.ui.profile.ProfileActivity
 import com.flatcode.littlebooksadmin.utils.BaseActivity
 import com.flatcode.littlebooksadmin.utils.DATA
-import com.flatcode.littlebooksadmin.utils.Resource
-import com.flatcode.littlebooksadmin.utils.checkFavorite
-import com.flatcode.littlebooksadmin.utils.checkLove
 import com.flatcode.littlebooksadmin.utils.downloadBook
 import com.flatcode.littlebooksadmin.utils.isFavorite
 import com.flatcode.littlebooksadmin.utils.isLoves
@@ -49,8 +45,8 @@ class BookDetailsActivity : BaseActivity() {
     private var bookId: String? = null
     private var bookTitle: String? = null
     private var bookUrl: String? = null
-    private var dialog: AlertDialog? = null
     private var adapter: CommentAdapter? = null
+    private var dialog: AlertDialog? = null
 
     private val viewModel: BookDetailsViewModel by viewModels()
 
@@ -68,45 +64,25 @@ class BookDetailsActivity : BaseActivity() {
     }
 
     private fun initUI() {
-        binding.toolbar.nameSpace.setText(R.string.details_books)
-        binding.download.visibility = View.GONE
-
-        adapter = CommentAdapter()
-        binding.recyclerView.adapter = adapter
-
-        binding.love.setOnClickListener { binding.love.checkLove(bookId) }
-        binding.favorite.setOnClickListener {
-            binding.favorite.checkFavorite(bookId)
-        }
         binding.toolbar.back.setOnClickListener { onBackPressedDispatcher.onBackPressed() }
-        binding.read.setOnClickListener {
-            context.openActivity<BookViewActivity>(extras = arrayOf(DATA.BOOK_ID to bookId))
-        }
         binding.download.setOnClickListener {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                resultPermissionLauncher.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+            } else {
                 context.downloadBook(
                     DATA.EMPTY + bookId, DATA.EMPTY + bookTitle, DATA.EMPTY + bookUrl
                 )
-            } else {
-                if (ContextCompat.checkSelfPermission(
-                        context, Manifest.permission.WRITE_EXTERNAL_STORAGE
-                    ) == PackageManager.PERMISSION_GRANTED
-                ) {
-                    context.downloadBook(
-                        DATA.EMPTY + bookId, DATA.EMPTY + bookTitle, DATA.EMPTY + bookUrl
-                    )
-                } else {
-                    resultPermissionLauncher.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                }
             }
         }
-        binding.addComment.setOnClickListener {
-            if (DATA.FIREBASE_USER == null) {
-                Toast.makeText(context, R.string.not_logged_in, Toast.LENGTH_SHORT).show()
-            } else {
-                addCommentDialog()
-            }
+        binding.read.setOnClickListener {
+            context.openActivity<BookViewActivity>(
+                extras = arrayOf(DATA.BOOK_ID to bookId)
+            )
         }
+        binding.addComment.setOnClickListener { addCommentDialog() }
+
+        adapter = CommentAdapter()
+        binding.commentsRecyclerView.adapter = adapter
 
         binding.love.isLoves(bookId)
         binding.loves.nrLoves(bookId)
@@ -117,93 +93,46 @@ class BookDetailsActivity : BaseActivity() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch {
-                    viewModel.book.collect { resource ->
-                        when (resource) {
-                            is Resource.Loading -> {}
-                            is Resource.Success -> {
-                                resource.data?.let { book ->
-                                    bookTitle = book.title
-                                    bookUrl = book.url
-                                    binding.download.visibility = View.VISIBLE
+                    viewModel.book.collect { book ->
+                        book?.let {
+                            bookTitle = it.title
+                            bookUrl = it.url
+                            binding.download.visibility = View.VISIBLE
 
-                                    val date: String = Application.formatTimestamp(book.timestamp)
-                                    binding.category.loadCategory(book.categoryId)
-                                    binding.size.loadPdfInfo(book.url)
+                            val date: String = Application.formatTimestamp(it.timestamp)
+                            binding.category.loadCategory(it.categoryId)
+                            binding.size.loadPdfInfo(it.url)
 
-                                    binding.image.loadImage(
-                                        isUser = false, url = book.image ?: DATA.BASIC
-                                    )
-                                    binding.cover.loadImage(
-                                        isUser = false, url = book.image ?: DATA.BASIC
-                                    )
-                                    binding.title.text = book.title
-                                    binding.description.text = book.description
-                                    binding.views.text = book.viewsCount.toString()
-                                    binding.downloads.text = book.downloadsCount.toString()
-                                    binding.date.text = date
-                                }
-                            }
-
-                            is Resource.Error -> {
-                                Toast.makeText(context, resource.message, Toast.LENGTH_SHORT).show()
+                            binding.image.loadImage(
+                                isUser = false, url = it.image ?: DATA.BASIC
+                            )
+                            binding.cover.loadImage(
+                                isUser = false, url = it.image ?: DATA.BASIC
+                            )
+                            binding.title.text = it.title
+                            binding.description.text = it.description
+                            binding.views.text = it.viewsCount.toString()
+                            binding.downloads.text = it.downloadsCount.toString()
+                            binding.date.text = date
+                        }
+                    }
+                }
+                launch {
+                    viewModel.publisher.collect { user ->
+                        user?.let {
+                            binding.publisherName.text = it.username
+                            binding.publisherImage.loadImage(
+                                isUser = true, url = it.profileImage ?: DATA.BASIC
+                            )
+                            binding.userInfo.setOnClickListener {
+                                context.openActivity<ProfileActivity>(extras = arrayOf(DATA.PROFILE_ID to it.id))
                             }
                         }
                     }
                 }
                 launch {
-                    viewModel.publisher.collect { resource ->
-                        when (resource) {
-                            is Resource.Loading -> {}
-                            is Resource.Success -> {
-                                resource.data?.let { user ->
-                                    binding.publisherName.text = user.username
-                                    binding.publisherImage.loadImage(
-                                        isUser = true, url = user.profileImage ?: DATA.BASIC
-                                    )
-                                    binding.userInfo.setOnClickListener {
-                                        context.openActivity<ProfileActivity>(extras = arrayOf(DATA.PROFILE_ID to user.id))
-                                    }
-                                }
-                            }
-
-                            is Resource.Error -> {}
-                        }
-                    }
-                }
-                launch {
-                    viewModel.comments.collect { resource ->
-                        when (resource) {
-                            is Resource.Loading -> {}
-                            is Resource.Success -> {
-                                updateComments(resource.data ?: emptyList())
-                            }
-
-                            is Resource.Error -> {}
-                        }
-                    }
-                }
-                launch {
-                    viewModel.addCommentState.collect { resource ->
-                        when (resource) {
-                            is Resource.Loading -> {
-                                dialog = AlertDialog.Builder(context).apply {
-                                    setMessage(getString(R.string.adding_comment))
-                                }.show()
-                            }
-
-                            is Resource.Success -> {
-                                dialog?.dismiss()
-                                Toast.makeText(context, R.string.comment_added, Toast.LENGTH_SHORT)
-                                    .show()
-                            }
-
-                            is Resource.Error -> {
-                                dialog?.dismiss()
-                                Toast.makeText(context, resource.message, Toast.LENGTH_SHORT).show()
-                            }
-
-                            null -> {}
-                        }
+                    viewModel.comments.collect { comments ->
+                        updateComments(comments)
                     }
                 }
             }
@@ -242,7 +171,15 @@ class BookDetailsActivity : BaseActivity() {
                 Toast.makeText(context, R.string.enter_comment, Toast.LENGTH_SHORT).show()
             } else {
                 alertDialog.dismiss()
-                bookId?.let { viewModel.addComment(it, comment) }
+                dialog = AlertDialog.Builder(context).apply {
+                    setMessage(getString(R.string.adding_comment))
+                }.show()
+                bookId?.let { id ->
+                    viewModel.addComment(id, comment) { success, message ->
+                        dialog?.dismiss()
+                        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                    }
+                }
             }
         }
     }

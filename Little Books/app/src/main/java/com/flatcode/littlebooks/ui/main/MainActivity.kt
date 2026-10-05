@@ -4,7 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.os.Bundle
 import android.view.View
-import androidx.activity.addCallback
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -44,6 +44,17 @@ class MainActivity : BaseActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         val view = binding!!.root
         setContentView(view)
+
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (navController.currentDestination?.id != R.id.homeFragment) {
+                    binding?.bottomNavigation?.show(R.id.homeFragment, false)
+                    navController.navigate(R.id.homeFragment)
+                } else {
+                    context.closeApp()
+                }
+            }
+        })
 
         val navHostFragment =
             supportFragmentManager.findFragmentById(R.id.fragmentContainer) as NavHostFragment
@@ -92,10 +103,6 @@ class MainActivity : BaseActivity() {
         }
         loadUserInfo()
         observeViewModel()
-
-        onBackPressedDispatcher.addCallback(this) {
-            closeApp()
-        }
     }
 
     private fun observeViewModel() {

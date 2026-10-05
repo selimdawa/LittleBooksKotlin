@@ -3,7 +3,6 @@ package com.flatcode.littlebooksadmin.ui.ads
 import android.content.Context
 import android.os.Bundle
 import android.view.View
-import android.widget.Toast
 import androidx.activity.viewModels
 import com.flatcode.littlebooksadmin.utils.BaseActivity
 import androidx.lifecycle.Lifecycle
@@ -12,7 +11,6 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.flatcode.littlebooksadmin.R
 import com.flatcode.littlebooksadmin.databinding.ActivityAdsInfoBinding
 import com.flatcode.littlebooksadmin.utils.DATA
-import com.flatcode.littlebooksadmin.utils.Resource
 import com.flatcode.littlebooksadmin.utils.loadImage
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -52,48 +50,23 @@ class AdsInfoActivity : BaseActivity() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch {
-                    viewModel.userInfo.collect { resource ->
-                        when (resource) {
-                            is Resource.Loading -> {}
-                            is Resource.Success -> {
-                                resource.data?.let { user ->
-                                    binding.username.text = user.username
-                                    binding.profileImage.loadImage(
-                                    true,user.profileImage ?: DATA.BASIC
-                                    )
-                                }
-                            }
-
-                            is Resource.Error -> {
-                                Toast.makeText(context, resource.message, Toast.LENGTH_SHORT).show()
-                            }
+                    viewModel.userInfo.collect { user ->
+                        user?.let {
+                            binding.username.text = it.username
+                            binding.profileImage.loadImage(true, it.profileImage ?: DATA.BASIC)
                         }
                     }
                 }
                 launch {
-                    viewModel.userAds.collect { resource ->
-                        when (resource) {
-                            is Resource.Loading -> {
-                                binding.progress.visibility = View.VISIBLE
-                            }
-
-                            is Resource.Success -> {
-                                binding.progress.visibility = View.GONE
-                                val ads = resource.data ?: emptyList()
-                                adapter?.submitUnfilteredList(ads)
-                                if (ads.isNotEmpty()) {
-                                    binding.recyclerView.visibility = View.VISIBLE
-                                    binding.emptyText.visibility = View.GONE
-                                } else {
-                                    binding.recyclerView.visibility = View.GONE
-                                    binding.emptyText.visibility = View.VISIBLE
-                                }
-                            }
-
-                            is Resource.Error -> {
-                                binding.progress.visibility = View.GONE
-                                Toast.makeText(context, resource.message, Toast.LENGTH_SHORT).show()
-                            }
+                    viewModel.userAds.collect { ads ->
+                        binding.progress.visibility = View.GONE
+                        adapter?.submitUnfilteredList(ads)
+                        if (ads.isNotEmpty()) {
+                            binding.recyclerView.visibility = View.VISIBLE
+                            binding.emptyText.visibility = View.GONE
+                        } else {
+                            binding.recyclerView.visibility = View.GONE
+                            binding.emptyText.visibility = View.VISIBLE
                         }
                     }
                 }

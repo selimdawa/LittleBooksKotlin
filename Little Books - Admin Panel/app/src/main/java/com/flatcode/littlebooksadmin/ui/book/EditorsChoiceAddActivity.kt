@@ -1,12 +1,10 @@
 package com.flatcode.littlebooksadmin.ui.book
 
-import android.app.Activity
 import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
-import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
 import com.flatcode.littlebooksadmin.utils.BaseActivity
@@ -17,7 +15,6 @@ import com.flatcode.littlebooksadmin.R
 import com.flatcode.littlebooksadmin.databinding.ActivityEditorsChoiceAddBinding
 import com.flatcode.littlebooksadmin.model.Book
 import com.flatcode.littlebooksadmin.utils.DATA
-import com.flatcode.littlebooksadmin.utils.Resource
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -25,17 +22,17 @@ import kotlinx.coroutines.launch
 class EditorsChoiceAddActivity : BaseActivity() {
 
     private lateinit var binding: ActivityEditorsChoiceAddBinding
-    private var activity: Activity? = null
-    private val context: Context = also { activity = it as Activity }
+    private val context: Context = this@EditorsChoiceAddActivity
     private var adapter: EditorsChoiceBookAdapter? = null
-    private var editorsChoiceId: String? = null
     private var type: String = DATA.TIMESTAMP
-    private var oldBookId: String? = null
 
     private val viewModel: BooksViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        binding = ActivityEditorsChoiceAddBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 if (DATA.searchStatus) {
@@ -48,23 +45,15 @@ class EditorsChoiceAddActivity : BaseActivity() {
                 }
             }
         })
-        binding = ActivityEditorsChoiceAddBinding.inflate(layoutInflater)
-        setContentView(binding.root)
 
-        editorsChoiceId = intent.getStringExtra(DATA.EDITORS_CHOICE_ID)
-        oldBookId = intent.getStringExtra(DATA.OLD_BOOK_ID)
-        val id = editorsChoiceId!!.toInt()
-
-        initUI(id)
+        initUI()
         observeViewModel()
-
-        viewModel.loadAvailableForEditorsChoice(type)
     }
 
-    private fun initUI(id: Int) {
-        binding.toolbar.nameSpace.setText(R.string.editors_choice)
-        binding.toolbar.close.setOnClickListener { onBackPressedDispatcher.onBackPressed() }
+    private fun initUI() {
+        binding.toolbar.nameSpace.setText(R.string.add_editors_choice)
         binding.toolbar.back.setOnClickListener { onBackPressedDispatcher.onBackPressed() }
+        binding.toolbar.close.setOnClickListener { onBackPressedDispatcher.onBackPressed() }
 
         binding.toolbar.search.setOnClickListener {
             binding.toolbar.root.getChildAt(0).visibility = View.GONE
@@ -84,11 +73,15 @@ class EditorsChoiceAddActivity : BaseActivity() {
             override fun afterTextChanged(s: Editable) {}
         })
 
-        adapter = EditorsChoiceBookAdapter(activity, oldBookId, id)
+        adapter = EditorsChoiceBookAdapter()
         binding.recyclerView.adapter = adapter
 
         binding.all.setOnClickListener {
             type = DATA.TIMESTAMP
+            viewModel.loadAvailableForEditorsChoice(type)
+        }
+        binding.name.setOnClickListener {
+            type = DATA.TITLE
             viewModel.loadAvailableForEditorsChoice(type)
         }
         binding.mostViews.setOnClickListener {
@@ -111,22 +104,9 @@ class EditorsChoiceAddActivity : BaseActivity() {
     private fun observeViewModel() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.books.collect { resource ->
-                    when (resource) {
-                        is Resource.Loading -> {
-                            binding.progress.visibility = View.VISIBLE
-                        }
-
-                        is Resource.Success -> {
-                            binding.progress.visibility = View.GONE
-                            updateList(resource.data ?: emptyList())
-                        }
-
-                        is Resource.Error -> {
-                            binding.progress.visibility = View.GONE
-                            Toast.makeText(context, resource.message, Toast.LENGTH_SHORT).show()
-                        }
-                    }
+                viewModel.books.collect { books ->
+                    binding.progress.visibility = View.GONE
+                    updateList(books)
                 }
             }
         }
@@ -143,5 +123,10 @@ class EditorsChoiceAddActivity : BaseActivity() {
             binding.recyclerView.visibility = View.GONE
             binding.emptyText.visibility = View.VISIBLE
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.loadAvailableForEditorsChoice(type)
     }
 }

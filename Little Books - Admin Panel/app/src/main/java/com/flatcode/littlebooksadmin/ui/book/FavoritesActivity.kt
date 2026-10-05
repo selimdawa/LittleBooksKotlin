@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
-import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
 import com.flatcode.littlebooksadmin.utils.BaseActivity
@@ -13,25 +12,27 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.flatcode.littlebooksadmin.R
-import com.flatcode.littlebooksadmin.databinding.ActivityPageStaggeredSwitchBinding
+import com.flatcode.littlebooksadmin.databinding.ActivityPageLinearSwitchBinding
 import com.flatcode.littlebooksadmin.model.Book
 import com.flatcode.littlebooksadmin.utils.DATA
-import com.flatcode.littlebooksadmin.utils.Resource
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class FavoritesActivity : BaseActivity() {
 
-    private lateinit var binding: ActivityPageStaggeredSwitchBinding
+    private lateinit var binding: ActivityPageLinearSwitchBinding
     private val context: Context = this@FavoritesActivity
-    private var adapter: StaggeredBookAdapter? = null
+    private var adapter: LinearBookAdapter? = null
     private var type: String = DATA.TIMESTAMP
 
     private val viewModel: BooksViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        binding = ActivityPageLinearSwitchBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 if (DATA.searchStatus) {
@@ -44,8 +45,6 @@ class FavoritesActivity : BaseActivity() {
                 }
             }
         })
-        binding = ActivityPageStaggeredSwitchBinding.inflate(layoutInflater)
-        setContentView(binding.root)
 
         initUI()
         observeViewModel()
@@ -53,8 +52,8 @@ class FavoritesActivity : BaseActivity() {
 
     private fun initUI() {
         binding.toolbar.nameSpace.setText(R.string.favorites)
-        binding.toolbar.close.setOnClickListener { onBackPressedDispatcher.onBackPressed() }
         binding.toolbar.back.setOnClickListener { onBackPressedDispatcher.onBackPressed() }
+        binding.toolbar.close.setOnClickListener { onBackPressedDispatcher.onBackPressed() }
 
         binding.toolbar.search.setOnClickListener {
             binding.toolbar.root.getChildAt(0).visibility = View.GONE
@@ -74,7 +73,7 @@ class FavoritesActivity : BaseActivity() {
             override fun afterTextChanged(s: Editable) {}
         })
 
-        adapter = StaggeredBookAdapter()
+        adapter = LinearBookAdapter()
         binding.recyclerView.adapter = adapter
 
         binding.switchBar.all.setOnClickListener {
@@ -102,23 +101,9 @@ class FavoritesActivity : BaseActivity() {
     private fun observeViewModel() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.books.collect { resource ->
-                    when (resource) {
-                        is Resource.Loading -> {
-                            binding.progress.visibility = View.VISIBLE
-                        }
-
-                        is Resource.Success -> {
-                            binding.progress.visibility = View.GONE
-                            val books = resource.data ?: emptyList()
-                            updateList(books)
-                        }
-
-                        is Resource.Error -> {
-                            binding.progress.visibility = View.GONE
-                            Toast.makeText(context, resource.message, Toast.LENGTH_SHORT).show()
-                        }
-                    }
+                viewModel.books.collect { books ->
+                    binding.progress.visibility = View.GONE
+                    updateList(books)
                 }
             }
         }
@@ -136,7 +121,6 @@ class FavoritesActivity : BaseActivity() {
             binding.emptyText.visibility = View.VISIBLE
         }
     }
-
 
     override fun onResume() {
         super.onResume()

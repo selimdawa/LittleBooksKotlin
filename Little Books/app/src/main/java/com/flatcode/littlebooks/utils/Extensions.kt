@@ -182,9 +182,9 @@ fun ImageView.loadBlurImage(url: String?, level: Int) {
     }
 }
 
-fun TextView.loadPdfInfo(pdfUrl: String?) {
+fun TextView.loadPdfInfo(pdfUrl: String?, onSizeFetched: ((String) -> Unit)? = null) {
     pdfUrl ?: return
-    text = context.getString(R.string.pdf_book)
+    text = ".."
     CoroutineScope(Dispatchers.IO).launch {
         try {
             val url = URL(pdfUrl)
@@ -194,11 +194,14 @@ fun TextView.loadPdfInfo(pdfUrl: String?) {
             if (bytes > 0) {
                 val kb = bytes / 1024
                 val mb = kb / 1024
+                val formattedSize = if (mb > 1) "%.2f MB".format(mb)
+                else if (kb > 1) "%.2f KB".format(kb)
+                else "$bytes bytes"
+
                 withContext(Dispatchers.Main) {
-                    text = if (mb > 1) "%.2f MB".format(mb)
-                    else if (kb > 1) "%.2f KB".format(kb)
-                    else "$bytes bytes"
+                    text = formattedSize
                 }
+                onSizeFetched?.invoke(formattedSize)
             }
         } catch (_: Exception) {
             // ignore

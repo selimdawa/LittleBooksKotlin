@@ -33,6 +33,9 @@ interface BookDao {
     @Query("SELECT * FROM books WHERE publisher = :publisherId ORDER BY timestamp DESC")
     fun getBooksByPublisher(publisherId: String): Flow<List<Book>>
 
+    @Query("SELECT COUNT(*) FROM books WHERE publisher = :publisherId")
+    fun getBooksCountByPublisher(publisherId: String): Flow<Int>
+
     @Query("SELECT * FROM books WHERE id = :id")
     fun observeBookById(id: String): Flow<Book?>
 

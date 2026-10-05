@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -31,7 +30,6 @@ import com.flatcode.littlebooksadmin.ui.user.FollowingActivity
 import com.flatcode.littlebooksadmin.ui.user.TopPublishersActivity
 import com.flatcode.littlebooksadmin.ui.user.UsersActivity
 import com.flatcode.littlebooksadmin.utils.DATA
-import com.flatcode.littlebooksadmin.utils.Resource
 import com.flatcode.littlebooksadmin.utils.loadImage
 import com.flatcode.littlebooksadmin.utils.openActivity
 import dagger.hilt.android.AndroidEntryPoint
@@ -81,43 +79,21 @@ class DashboardFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch {
-                    viewModel.user.collect { resource ->
-                        when (resource) {
-                            is Resource.Loading -> {}
-                            is Resource.Success -> {
-                                resource.data?.let { user ->
-                                    binding.toolbar.image.loadImage(
-                                        isUser = true, url = user.profileImage ?: DATA.BASIC
-                                    )
-                                }
-                            }
-
-                            is Resource.Error -> {
-                                Toast.makeText(mContext, resource.message, Toast.LENGTH_SHORT)
-                                    .show()
-                            }
+                    viewModel.user.collect { user ->
+                        user?.let {
+                            binding.toolbar.image.loadImage(
+                                isUser = true, url = it.profileImage ?: DATA.BASIC
+                            )
                         }
                     }
                 }
                 launch {
-                    viewModel.stats.collect { resource ->
-                        when (resource) {
-                            is Resource.Loading -> {
-                                binding.bar.visibility = View.VISIBLE
-                                binding.recyclerView.visibility = View.GONE
-                            }
-
-                            is Resource.Success -> {
-                                resource.data?.let { stats ->
-                                    updateDashboard(stats)
-                                }
-                            }
-
-                            is Resource.Error -> {
-                                binding.bar.visibility = View.GONE
-                                Toast.makeText(mContext, resource.message, Toast.LENGTH_SHORT)
-                                    .show()
-                            }
+                    viewModel.stats.collect { stats ->
+                        if (stats != null) {
+                            updateDashboard(stats)
+                        } else {
+                            binding.bar.visibility = View.VISIBLE
+                            binding.recyclerView.visibility = View.GONE
                         }
                     }
                 }

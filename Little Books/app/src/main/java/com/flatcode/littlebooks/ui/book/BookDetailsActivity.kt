@@ -13,9 +13,9 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.flatcode.littlebooks.R
+import com.flatcode.littlebooks.db.UserDao
 import com.flatcode.littlebooks.databinding.ActivityBookDetailsBinding
 import com.flatcode.littlebooks.databinding.DialogCommentAddBinding
-import com.flatcode.littlebooks.model.User
 import com.flatcode.littlebooks.ui.profile.ProfileActivity
 import com.flatcode.littlebooks.utils.BaseActivity
 import com.flatcode.littlebooks.utils.DATA
@@ -26,10 +26,9 @@ import com.flatcode.littlebooks.utils.loadImage
 import com.flatcode.littlebooks.utils.loadPdfInfo
 import com.flatcode.littlebooks.utils.openActivity
 import com.flatcode.littlebooks.viewmodel.BookViewModel
-import com.google.firebase.database.FirebaseDatabase
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class BookDetailsActivity : BaseActivity() {
@@ -37,6 +36,9 @@ class BookDetailsActivity : BaseActivity() {
     private var binding: ActivityBookDetailsBinding? = null
     var context: Context = this@BookDetailsActivity
     var bookId: String? = null
+
+    @Inject
+    lateinit var userDao: UserDao
 
     private var adapterComment: CommentAdapter? = null
 
@@ -66,7 +68,7 @@ class BookDetailsActivity : BaseActivity() {
         }
         binding!!.addComment.setOnClickListener { addCommentDialog() }
 
-        adapterComment = CommentAdapter { }
+        adapterComment = CommentAdapter(userDao) { }
         binding!!.recyclerView.adapter = adapterComment
 
         observeViewModel()
@@ -93,11 +95,45 @@ class BookDetailsActivity : BaseActivity() {
                             binding!!.category.loadCategory(it.categoryId ?: "")
                             binding!!.image.loadImage(false, it.image)
                             binding!!.cover.loadImage(false, it.image)
-                            binding!!.size.loadPdfInfo(it.url)
+
+                            if (!it.size.isNullOrEmpty() && it.size != "..") {
+                                binding!!.size.text = it.size
+                            } else {
+                                binding!!.size.text = ".."
+                                binding!!.size.loadPdfInfo(it.url) { formattedSize ->
+                                    it.size = formattedSize
+                                    viewModel.updateBookSize(it)
+                                }
+                            }
+
+                            val categoryId = it.categoryId
+                            if (!categoryId.isNullOrEmpty()) {
+                                viewModel.loadCategoryName(categoryId)
+                            }
 
                             val publisherId = it.publisher
                             if (!publisherId.isNullOrEmpty()) {
-                                loadPublisherInfo(publisherId)
+                                viewModel.loadPublisherInfo(publisherId)
+                            }
+                        }
+                    }
+                }
+                launch {
+                    viewModel.categoryName.collect { name ->
+                        if (name.isNotEmpty()) {
+                            binding!!.category.text = name
+                        }
+                    }
+                }
+                launch {
+                    viewModel.publisherUser.collect { user ->
+                        user?.let {
+                            binding!!.publisherName.text = it.username
+                            binding!!.publisherImage.loadImage(true, it.profileImage)
+                            binding!!.userInfo.setOnClickListener { _ ->
+                                context.openActivity<ProfileActivity>(
+                                    clear = false, DATA.PROFILE_ID to it.id
+                                )
                             }
                         }
                     }
@@ -118,26 +154,6 @@ class BookDetailsActivity : BaseActivity() {
                         adapterComment?.submitList(list)
                     }
                 }
-            }
-        }
-    }
-
-    private fun loadPublisherInfo(publisherId: String) {
-        lifecycleScope.launch {
-            val ref = FirebaseDatabase.getInstance().getReference(DATA.USERS).child(publisherId)
-            try {
-                val snapshot = ref.get().await()
-                val user = snapshot.getValue(User::class.java)
-                user?.let {
-                    binding!!.publisherName.text = it.username
-                    binding!!.publisherImage.loadImage(true, it.profileImage)
-                    binding!!.userInfo.setOnClickListener { _ ->
-                        context.openActivity<ProfileActivity>(
-                            clear = false, DATA.PROFILE_ID to it.id
-                        )
-                    }
-                }
-            } catch (_: Exception) {
             }
         }
     }

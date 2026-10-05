@@ -3,7 +3,6 @@
 import android.content.Context
 import android.os.Bundle
 import android.view.View
-import android.widget.Toast
 import androidx.activity.viewModels
 import com.flatcode.littlebooksadmin.utils.BaseActivity
 import androidx.lifecycle.Lifecycle
@@ -12,7 +11,6 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.flatcode.littlebooksadmin.R
 import com.flatcode.littlebooksadmin.databinding.ActivityProfileBinding
 import com.flatcode.littlebooksadmin.utils.DATA
-import com.flatcode.littlebooksadmin.utils.Resource
 import com.flatcode.littlebooksadmin.utils.loadImage
 import com.flatcode.littlebooksadmin.utils.openActivity
 import dagger.hilt.android.AndroidEntryPoint
@@ -64,40 +62,22 @@ class ProfileActivity : BaseActivity() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch {
-                    viewModel.user.collect { resource ->
-                        when (resource) {
-                            is Resource.Loading -> {}
-                            is Resource.Success -> {
-                                resource.data?.let { user ->
-                                    binding.username.text = user.username
-                                    binding.profile.loadImage(
-                                        isUser = true, url = user.profileImage ?: DATA.BASIC
-                                    )
-                                }
-                            }
-
-                            is Resource.Error -> {
-                                Toast.makeText(context, resource.message, Toast.LENGTH_SHORT).show()
-                            }
+                    viewModel.user.collect { user ->
+                        user?.let {
+                            binding.username.text = it.username
+                            binding.profile.loadImage(
+                                isUser = true, url = it.profileImage ?: DATA.BASIC
+                            )
                         }
                     }
                 }
                 launch {
-                    viewModel.stats.collect { resource ->
-                        when (resource) {
-                            is Resource.Loading -> {}
-                            is Resource.Success -> {
-                                resource.data?.let { stats ->
-                                    binding.numberBooks.text = stats.booksCount.toString()
-                                    binding.numberFollowers.text = stats.followersCount.toString()
-                                    binding.numberFollowing.text = stats.followingCount.toString()
-                                    binding.numberFavorites.text = stats.favoritesCount.toString()
-                                }
-                            }
-
-                            is Resource.Error -> {
-                                Toast.makeText(context, resource.message, Toast.LENGTH_SHORT).show()
-                            }
+                    viewModel.stats.collect { stats ->
+                        stats?.let {
+                            binding.numberBooks.text = it.booksCount.toString()
+                            binding.numberFollowers.text = it.followersCount.toString()
+                            binding.numberFollowing.text = it.followingCount.toString()
+                            binding.numberFavorites.text = it.favoritesCount.toString()
                         }
                     }
                 }

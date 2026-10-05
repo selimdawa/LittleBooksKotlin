@@ -6,11 +6,9 @@ import android.net.Uri
 import android.os.Bundle
 import android.text.TextUtils
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.IntentCompat
-import com.cloudinary.android.MediaManager
-import com.cloudinary.android.callback.ErrorInfo
-import com.cloudinary.android.callback.UploadCallback
 import com.flatcode.littlebooksadmin.R
 import com.flatcode.littlebooksadmin.databinding.ActivityCategoryAddBinding
 import com.flatcode.littlebooksadmin.model.Category
@@ -24,13 +22,17 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class CategoryEditActivity : BaseActivity() {
 
     private lateinit var binding: ActivityCategoryAddBinding
     var categoryId: String? = null
     private var imageUri: Uri? = null
     private var dialog: AlertDialog? = null
+
+    private val viewModel: CategoryAddViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,66 +54,21 @@ class CategoryEditActivity : BaseActivity() {
         binding.toolbar.ok.setOnClickListener { validateData() }
     }
 
-    private var name = DATA.EMPTY
     private fun validateData() {
-        name = binding.categoryEt.text.toString().trim { it <= ' ' }
+        val name = binding.categoryEt.text.toString().trim()
         if (TextUtils.isEmpty(name)) {
             Toast.makeText(this, R.string.enter_name, Toast.LENGTH_SHORT).show()
         } else {
-            if (imageUri == null) {
-                updateCategory(DATA.EMPTY)
-            } else {
-                uploadImage()
-            }
-        }
-    }
-
-    private fun uploadImage() {
-        dialog = AlertDialog.Builder(this).apply {
-            setMessage(getString(R.string.updating_category))
-        }.show()
-        MediaManager.get().upload(imageUri).unsigned(DATA.CLOUDINARY_UPLOAD_PRESET)
-            .option("folder", "Images/Category/").option("public_id", categoryId)
-            .callback(object : UploadCallback {
-                override fun onStart(requestId: String?) {}
-                override fun onProgress(requestId: String?, bytes: Long, totalBytes: Long) {}
-                override fun onSuccess(requestId: String?, resultData: Map<*, *>?) {
-                    val uploadedImageUrl = resultData?.get("secure_url") as? String
-                    updateCategory(uploadedImageUrl)
-                }
-
-                override fun onError(requestId: String?, error: ErrorInfo?) {
+            dialog = AlertDialog.Builder(this).apply {
+                setMessage(getString(R.string.updating_category))
+            }.show()
+            categoryId?.let { id ->
+                viewModel.updateCategory(id, name, imageUri) { success, message ->
                     dialog?.dismiss()
-                    Toast.makeText(
-                        this@CategoryEditActivity,
-                        "Failed to upload image due to " + error?.description,
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+                    if (success) finish()
                 }
-
-                override fun onReschedule(requestId: String?, error: ErrorInfo?) {}
-            }).dispatch()
-    }
-
-    private fun updateCategory(imageUrl: String?) {
-        dialog = AlertDialog.Builder(this).apply {
-            setMessage(getString(R.string.updating_category_image))
-        }.show()
-        val hashMap = HashMap<String?, Any>()
-        hashMap[DATA.CATEGORY] = DATA.EMPTY + name
-        if (imageUri != null && imageUrl != null) {
-            hashMap[DATA.IMAGE] = DATA.EMPTY + imageUrl
-        }
-        val reference = FirebaseDatabase.getInstance().getReference(DATA.CATEGORIES)
-        reference.child(categoryId!!).updateChildren(hashMap).addOnSuccessListener {
-            dialog?.dismiss()
-            Toast.makeText(this, R.string.category_updated, Toast.LENGTH_SHORT).show()
-            finish()
-        }.addOnFailureListener { e: Exception ->
-            dialog?.dismiss()
-            Toast.makeText(
-                this, getString(R.string.error_message, e.message), Toast.LENGTH_SHORT
-            ).show()
+            }
         }
     }
 

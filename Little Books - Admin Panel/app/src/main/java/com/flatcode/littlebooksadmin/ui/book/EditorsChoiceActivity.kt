@@ -2,7 +2,6 @@ package com.flatcode.littlebooksadmin.ui.book
 
 import android.content.Context
 import android.os.Bundle
-import android.widget.Toast
 import androidx.activity.viewModels
 import com.flatcode.littlebooksadmin.utils.BaseActivity
 import androidx.lifecycle.Lifecycle
@@ -11,7 +10,6 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.flatcode.littlebooksadmin.R
 import com.flatcode.littlebooksadmin.databinding.ActivityEditorsChoiceBinding
 import com.flatcode.littlebooksadmin.model.EditorsChoice
-import com.flatcode.littlebooksadmin.utils.Resource
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -20,8 +18,8 @@ class EditorsChoiceActivity : BaseActivity() {
 
     private lateinit var binding: ActivityEditorsChoiceBinding
     private val context: Context = this@EditorsChoiceActivity
-    private var list: ArrayList<EditorsChoice> = arrayListOf()
     private var adapter: EditorsChoiceAdapter? = null
+    private val list = mutableListOf<EditorsChoice>()
     private val editorsChoice = EditorsChoice()
 
     private val viewModel: BooksViewModel by viewModels()
@@ -46,17 +44,8 @@ class EditorsChoiceActivity : BaseActivity() {
     private fun observeViewModel() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.books.collect { resource ->
-                    when (resource) {
-                        is Resource.Loading -> {}
-                        is Resource.Success -> {
-                            updateList()
-                        }
-
-                        is Resource.Error -> {
-                            Toast.makeText(context, resource.message, Toast.LENGTH_SHORT).show()
-                        }
-                    }
+                viewModel.books.collect {
+                    updateList()
                 }
             }
         }

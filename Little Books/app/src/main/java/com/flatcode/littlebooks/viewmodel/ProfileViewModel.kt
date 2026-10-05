@@ -73,12 +73,32 @@ class ProfileViewModel @Inject constructor(
             }
         }
         viewModelScope.launch {
-            _booksCount.value = bookRepository.getBooksCountByPublisher(profileId)
-            _followersCount.value = userRepository.getFollowCount(profileId, followTypeFollowers)
-            _followingCount.value = userRepository.getFollowCount(profileId, followTypeFollowing)
-            _favoritesCount.value = userRepository.getFavoriteCount(profileId)
+            bookRepository.getBooksCountByPublisher(profileId).collect {
+                _booksCount.value = it
+            }
+        }
+        viewModelScope.launch {
+            userRepository.getFollowCount(profileId, followTypeFollowers).collect {
+                _followersCount.value = it.toLong()
+            }
+        }
+        viewModelScope.launch {
+            userRepository.getFollowCount(profileId, followTypeFollowing).collect {
+                _followingCount.value = it.toLong()
+            }
+        }
+        viewModelScope.launch {
+            userRepository.getFavoritesCount(profileId).collect {
+                _favoritesCount.value = it.toLong()
+            }
+        }
+        viewModelScope.launch {
             _isFollowing.value = userRepository.checkFollowing(currentUserId, profileId)
-            _explorePublishersCount.value = userRepository.getExplorePublishersCount(currentUserId)
+        }
+        viewModelScope.launch {
+            userRepository.getExplorePublishersCount(currentUserId).collect {
+                _explorePublishersCount.value = it
+            }
         }
     }
 

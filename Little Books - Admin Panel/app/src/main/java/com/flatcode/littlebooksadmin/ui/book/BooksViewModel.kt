@@ -5,10 +5,10 @@ import androidx.lifecycle.viewModelScope
 import com.flatcode.littlebooksadmin.model.Book
 import com.flatcode.littlebooksadmin.repository.BookRepository
 import com.flatcode.littlebooksadmin.utils.DATA
-import com.flatcode.littlebooksadmin.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -17,8 +17,8 @@ class BooksViewModel @Inject constructor(
     private val repository: BookRepository
 ) : ViewModel() {
 
-    private val _books = MutableStateFlow<Resource<List<Book>>>(Resource.Loading())
-    val books: StateFlow<Resource<List<Book>>> = _books
+    private val _books = MutableStateFlow<List<Book>>(emptyList())
+    val books: StateFlow<List<Book>> = _books.asStateFlow()
 
     fun loadBooks(orderBy: String = DATA.TIMESTAMP, publisherId: String? = null) {
         viewModelScope.launch {
@@ -54,13 +54,8 @@ class BooksViewModel @Inject constructor(
 
     fun loadAvailableForEditorsChoice(orderBy: String = DATA.TIMESTAMP) {
         viewModelScope.launch {
-            repository.getBooks(orderBy).collect { resource ->
-                if (resource is Resource.Success) {
-                    val available = resource.data?.filter { it.editorsChoice == 0 } ?: emptyList()
-                    _books.value = Resource.Success(available)
-                } else {
-                    _books.value = resource
-                }
+            repository.getBooks(orderBy).collect { booksList ->
+                _books.value = booksList.filter { it.editorsChoice == 0 }
             }
         }
     }
