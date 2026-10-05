@@ -14,28 +14,9 @@
         android:scaleType="centerCrop"
         android:src="@drawable/background" />
 
-    <ImageView
-        android:id="@+id/backWhite"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:alpha="0.5"
-        android:importantForAccessibility="no"
-        android:src="@color/white"
-        android:visibility="gone" />
-
-    <ImageView
-        android:id="@+id/backBlack"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:alpha="0.5"
-        android:importantForAccessibility="no"
-        android:src="@color/black"
-        android:visibility="gone" />
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fitsSystemWindows="true"
         android:orientation="vertical">
 
         <RelativeLayout
@@ -192,8 +173,7 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="0sp"
-            android:layout_weight="0.5"
+            android:layout_height="wrap_content"
             android:gravity="center">
 
             <ImageButton
