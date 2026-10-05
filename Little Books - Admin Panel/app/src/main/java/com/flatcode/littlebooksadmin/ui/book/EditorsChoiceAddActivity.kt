@@ -1,6 +1,5 @@
 package com.flatcode.littlebooksadmin.ui.book
 
-import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -22,9 +21,10 @@ import kotlinx.coroutines.launch
 class EditorsChoiceAddActivity : BaseActivity() {
 
     private lateinit var binding: ActivityEditorsChoiceAddBinding
-    private val context: Context = this@EditorsChoiceAddActivity
     private var adapter: EditorsChoiceBookAdapter? = null
     private var type: String = DATA.TIMESTAMP
+    private var oldBookId: String? = null
+    private var number: Int = 0
 
     private val viewModel: BooksViewModel by viewModels()
 
@@ -32,6 +32,10 @@ class EditorsChoiceAddActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityEditorsChoiceAddBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        oldBookId = intent.getStringExtra(DATA.OLD_BOOK_ID)
+        number = intent.getStringExtra(DATA.EDITORS_CHOICE_ID)?.toIntOrNull()
+            ?: intent.getIntExtra(DATA.EDITORS_CHOICE_ID, 0)
 
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
@@ -51,7 +55,7 @@ class EditorsChoiceAddActivity : BaseActivity() {
     }
 
     private fun initUI() {
-        binding.toolbar.nameSpace.setText(R.string.add_editors_choice)
+        binding.toolbar.nameSpace.setText(R.string.editors_choice)
         binding.toolbar.back.setOnClickListener { onBackPressedDispatcher.onBackPressed() }
         binding.toolbar.close.setOnClickListener { onBackPressedDispatcher.onBackPressed() }
 
@@ -73,7 +77,7 @@ class EditorsChoiceAddActivity : BaseActivity() {
             override fun afterTextChanged(s: Editable) {}
         })
 
-        adapter = EditorsChoiceBookAdapter()
+        adapter = EditorsChoiceBookAdapter(this, oldBookId, number)
         binding.recyclerView.adapter = adapter
 
         binding.all.setOnClickListener {

@@ -1,6 +1,5 @@
 package com.flatcode.littlebooksadmin.ui.book
 
-import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -22,10 +21,9 @@ import kotlinx.coroutines.launch
 class MyBooksActivity : BaseActivity() {
 
     private lateinit var binding: ActivityPageStaggeredSwitchBinding
-    private val context: Context = this@MyBooksActivity
     private var adapter: StaggeredBookAdapter? = null
     private var type: String = DATA.TIMESTAMP
-    private val list: ArrayList<Book?> = arrayListOf()
+    private val list: ArrayList<Book> = arrayListOf()
 
     private val viewModel: BooksViewModel by viewModels()
 

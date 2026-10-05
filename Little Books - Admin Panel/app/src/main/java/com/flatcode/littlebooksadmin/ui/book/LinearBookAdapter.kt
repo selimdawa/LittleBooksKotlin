@@ -12,7 +12,7 @@ import com.flatcode.littlebooksadmin.utils.DATA
 import com.flatcode.littlebooksadmin.utils.*
 import com.flatcode.littlebooksadmin.databinding.ItemBookLinearBinding
 
-class LinearBookAdapter(private val isUser: Boolean) :
+class LinearBookAdapter(private val isUser: Boolean = false) :
     ListAdapter<Book, LinearBookAdapter.ViewHolder>(BookDiffCallback()), Filterable {
 
     var unfilteredList: List<Book> = emptyList()

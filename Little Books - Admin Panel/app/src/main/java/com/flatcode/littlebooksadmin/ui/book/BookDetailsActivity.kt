@@ -82,7 +82,7 @@ class BookDetailsActivity : BaseActivity() {
         binding.addComment.setOnClickListener { addCommentDialog() }
 
         adapter = CommentAdapter()
-        binding.commentsRecyclerView.adapter = adapter
+        binding.recyclerView.adapter = adapter
 
         binding.love.isLoves(bookId)
         binding.loves.nrLoves(bookId)

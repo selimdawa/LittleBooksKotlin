@@ -167,8 +167,7 @@ class BookRepository @Inject constructor(
                 val sliderList = mutableListOf<SliderEntity>()
                 var index = 0
                 for (data in snapshot.children) {
-                    val url = data.child(DATA.IMAGE).value?.toString()
-                        ?: (data.value as? String)
+                    val url = data.child(DATA.IMAGE).value?.toString() ?: (data.value as? String)
                     if (!url.isNullOrEmpty() && url != "null") {
                         sliderList.add(SliderEntity(index.toString(), url, index++))
                     }

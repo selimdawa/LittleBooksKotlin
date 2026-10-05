@@ -1,6 +1,5 @@
 package com.flatcode.littlebooksadmin.ui.book
 
-import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -22,7 +21,6 @@ import kotlinx.coroutines.launch
 class FavoritesActivity : BaseActivity() {
 
     private lateinit var binding: ActivityPageLinearSwitchBinding
-    private val context: Context = this@FavoritesActivity
     private var adapter: LinearBookAdapter? = null
     private var type: String = DATA.TIMESTAMP
 
@@ -73,7 +71,7 @@ class FavoritesActivity : BaseActivity() {
             override fun afterTextChanged(s: Editable) {}
         })
 
-        adapter = LinearBookAdapter()
+        adapter = LinearBookAdapter(isUser = false)
         binding.recyclerView.adapter = adapter
 
         binding.switchBar.all.setOnClickListener {
