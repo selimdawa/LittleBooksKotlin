@@ -46,7 +46,7 @@ class CropActivity : BaseActivity() {
     private fun setupCropView() {
         val options = CropImageOptions(
             guidelines = CropImageView.Guidelines.ON,
-            multiTouchEnabled = true,
+            multiTouchEnabled = false,
             aspectRatioX = aspectRatioX,
             aspectRatioY = aspectRatioY,
             fixAspectRatio = true,

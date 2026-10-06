@@ -55,7 +55,11 @@ class LoginActivity : BaseActivity() {
                             context.openActivity<MainActivity>(true)
                             finish()
                         } else {
-                            Toast.makeText(context, it.exceptionOrNull()?.message ?: "Login failed", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(
+                                context,
+                                it.exceptionOrNull()?.message ?: "Login failed",
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
                         viewModel.resetStatus()
                     }
