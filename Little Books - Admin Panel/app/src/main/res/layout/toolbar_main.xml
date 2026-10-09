@@ -24,7 +24,8 @@
 
             <io.selimdawa.multicolors.MultiColorButton
                 android:layout_width="@dimen/spacing_30"
-                android:layout_height="@dimen/spacing_30" />
+                android:layout_height="@dimen/spacing_30"
+                app:mc_card_stroke_color="white" />
 
         </LinearLayout>
 
