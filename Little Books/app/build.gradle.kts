@@ -15,8 +15,8 @@ android {
         applicationId = "com.flatcode.littlebooks"
         minSdk = 24
         targetSdk = 37
-        versionCode = 9
-        versionName = "1.40"
+        versionCode = 10
+        versionName = "1.41"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

@@ -45,17 +45,6 @@ class MainActivity : BaseActivity() {
         val view = binding!!.root
         setContentView(view)
 
-        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                if (navController.currentDestination?.id != R.id.homeFragment) {
-                    binding?.bottomNavigation?.show(R.id.homeFragment, false)
-                    navController.navigate(R.id.homeFragment)
-                } else {
-                    context.closeApp()
-                }
-            }
-        })
-
         val navHostFragment =
             supportFragmentManager.findFragmentById(R.id.fragmentContainer) as NavHostFragment
         navController = navHostFragment.navController
@@ -69,14 +58,29 @@ class MainActivity : BaseActivity() {
             )
         )
 
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (navController.currentDestination?.id != R.id.homeFragment) {
+                    if (!navController.popBackStack(R.id.homeFragment, false)) {
+                        navController.navigate(R.id.homeFragment)
+                    }
+                } else {
+                    context.closeApp()
+                }
+            }
+        })
+
         navController.addOnDestinationChangedListener { _, destination, _ ->
             when (destination.id) {
                 R.id.homeFragment -> binding!!.toolbar.card.visibility = View.VISIBLE
                 else -> binding!!.toolbar.card.visibility = View.GONE
             }
+            binding?.bottomNavigation?.show(destination.id, false)
         }
 
         binding?.bottomNavigation?.apply {
+            isBackToHomeEnabled = false
+
             add(Model(R.id.settingsFragment, R.drawable.ic_settings))
             add(Model(R.id.homeFragment, R.drawable.ic_home))
             add(Model(R.id.followersFragment, R.drawable.ic_books))
