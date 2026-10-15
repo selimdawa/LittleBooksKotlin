@@ -30,7 +30,7 @@
                 android:layout_gravity="center"
                 android:layout_marginVertical="100sp"
                 android:progressDrawable="@drawable/progress_bar_2"
-                android:visibility="visible" />
+                android:visibility="gone" />
 
             <LinearLayout
                 android:id="@+id/linearOne"
