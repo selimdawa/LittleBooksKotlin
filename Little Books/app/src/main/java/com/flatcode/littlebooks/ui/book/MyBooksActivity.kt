@@ -76,23 +76,23 @@ class MyBooksActivity : BaseActivity() {
 
         binding!!.switchBar.all.setOnClickListener {
             type = DATA.TIMESTAMP
-            viewModel.loadBooksByPublisher(DATA.FirebaseUserUid)
+            viewModel.setSortType(type)
         }
         binding!!.switchBar.name.setOnClickListener {
             type = DATA.TITLE
-            viewModel.loadBooksByPublisher(DATA.FirebaseUserUid)
+            viewModel.setSortType(type)
         }
         binding!!.switchBar.mostViews.setOnClickListener {
             type = DATA.VIEWS_COUNT
-            viewModel.loadBooksByPublisher(DATA.FirebaseUserUid)
+            viewModel.setSortType(type)
         }
         binding!!.switchBar.mostLoves.setOnClickListener {
             type = DATA.LOVES_COUNT
-            viewModel.loadBooksByPublisher(DATA.FirebaseUserUid)
+            viewModel.setSortType(type)
         }
         binding!!.switchBar.mostDownloads.setOnClickListener {
             type = DATA.DOWNLOADS_COUNT
-            viewModel.loadBooksByPublisher(DATA.FirebaseUserUid)
+            viewModel.setSortType(type)
         }
 
         observeViewModel()

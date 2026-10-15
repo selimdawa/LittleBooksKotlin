@@ -76,23 +76,23 @@ class FavoritesActivity : BaseActivity() {
 
         binding.switchBar.all.setOnClickListener {
             type = DATA.TIMESTAMP
-            viewModel.loadFavorites(DATA.FirebaseUserUid)
+            viewModel.loadFavorites(DATA.FirebaseUserUid, type)
         }
         binding.switchBar.name.setOnClickListener {
             type = DATA.TITLE
-            viewModel.loadFavorites(DATA.FirebaseUserUid)
+            viewModel.loadFavorites(DATA.FirebaseUserUid, type)
         }
         binding.switchBar.mostViews.setOnClickListener {
             type = DATA.VIEWS_COUNT
-            viewModel.loadFavorites(DATA.FirebaseUserUid)
+            viewModel.loadFavorites(DATA.FirebaseUserUid, type)
         }
         binding.switchBar.mostLoves.setOnClickListener {
             type = DATA.LOVES_COUNT
-            viewModel.loadFavorites(DATA.FirebaseUserUid)
+            viewModel.loadFavorites(DATA.FirebaseUserUid, type)
         }
         binding.switchBar.mostDownloads.setOnClickListener {
             type = DATA.DOWNLOADS_COUNT
-            viewModel.loadFavorites(DATA.FirebaseUserUid)
+            viewModel.loadFavorites(DATA.FirebaseUserUid, type)
         }
     }
 
@@ -122,6 +122,6 @@ class FavoritesActivity : BaseActivity() {
 
     override fun onResume() {
         super.onResume()
-        viewModel.loadFavorites(DATA.FirebaseUserUid)
+        viewModel.loadFavorites(DATA.FirebaseUserUid, type)
     }
 }

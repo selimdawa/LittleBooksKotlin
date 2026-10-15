@@ -63,35 +63,50 @@ class BookViewModel @Inject constructor(
     private val _bookFile = MutableStateFlow<Result<ByteArray>?>(null)
     val bookFile: StateFlow<Result<ByteArray>?> = _bookFile
 
-    val filteredAllBooks: StateFlow<List<Book>> = combine(_allBooks, _searchQuery) { list, query ->
-        filterList(list, query)
-    }.stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+    private val _sortType = MutableStateFlow(DATA.TIMESTAMP)
+
+    val filteredAllBooks: StateFlow<List<Book>> =
+        combine(_allBooks, _searchQuery, _sortType) { list, query, sort ->
+            filterAndSortList(list, query, sort)
+        }.stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
     val filteredBooksByCategory: StateFlow<List<Book>> =
-        combine(_booksByCategory, _searchQuery) { list, query ->
-            filterList(list, query)
+        combine(_booksByCategory, _searchQuery, _sortType) { list, query, sort ->
+            filterAndSortList(list, query, sort)
         }.stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
     val filteredBooksByPublisher: StateFlow<List<Book>> =
-        combine(_booksByPublisher, _searchQuery) { list, query ->
-            filterList(list, query)
+        combine(_booksByPublisher, _searchQuery, _sortType) { list, query, sort ->
+            filterAndSortList(list, query, sort)
         }.stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
     val filteredFavorites: StateFlow<List<Book>> =
-        combine(_favorites, _searchQuery) { list, query ->
-            filterList(list, query)
+        combine(_favorites, _searchQuery, _sortType) { list, query, sort ->
+            filterAndSortList(list, query, sort)
         }.stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
-    private fun filterList(list: List<Book>, query: String): List<Book> {
-        return if (query.isNotEmpty()) {
+    private fun filterAndSortList(list: List<Book>, query: String, sortType: String): List<Book> {
+        val filtered = if (query.isNotEmpty()) {
             list.filter { it.title?.contains(query, ignoreCase = true) == true }
         } else {
             list
+        }
+        return when (sortType) {
+            DATA.TITLE -> filtered.sortedBy { it.title?.lowercase() ?: "" }
+            DATA.VIEWS_COUNT -> filtered.sortedByDescending { it.viewsCount }
+            DATA.LOVES_COUNT -> filtered.sortedByDescending { it.lovesCount }
+            DATA.DOWNLOADS_COUNT -> filtered.sortedByDescending { it.downloadsCount }
+            DATA.TIMESTAMP -> filtered.sortedByDescending { it.timestamp }
+            else -> filtered.sortedByDescending { it.timestamp }
         }
     }
 
     fun setSearchQuery(query: String) {
         _searchQuery.value = query
+    }
+
+    fun setSortType(type: String) {
+        _sortType.value = type
     }
 
     fun loadBookDetails(bookId: String, userId: String) {

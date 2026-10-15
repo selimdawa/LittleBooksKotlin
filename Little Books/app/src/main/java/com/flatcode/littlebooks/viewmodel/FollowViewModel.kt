@@ -26,7 +26,23 @@ class FollowViewModel @Inject constructor(
     private val _usersList = MutableStateFlow<List<User>>(emptyList())
 
     private val _booksFromFollowed = MutableStateFlow<List<Book>>(emptyList())
-    val booksFromFollowed: StateFlow<List<Book>> = _booksFromFollowed
+    private val _sortType = MutableStateFlow(DATA.TIMESTAMP)
+
+    val booksFromFollowed: StateFlow<List<Book>> =
+        combine(_booksFromFollowed, _sortType) { list, sortType ->
+            when (sortType) {
+                DATA.TITLE -> list.sortedBy { it.title?.lowercase() ?: "" }
+                DATA.VIEWS_COUNT -> list.sortedByDescending { it.viewsCount }
+                DATA.LOVES_COUNT -> list.sortedByDescending { it.lovesCount }
+                DATA.DOWNLOADS_COUNT -> list.sortedByDescending { it.downloadsCount }
+                DATA.TIMESTAMP -> list.sortedByDescending { it.timestamp }
+                else -> list.sortedByDescending { it.timestamp }
+            }
+        }.stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+
+    fun setSortType(type: String) {
+        _sortType.value = type
+    }
 
     val filteredUsersList: StateFlow<List<User>> =
         combine(_usersList, _searchQuery) { list, query ->

@@ -79,23 +79,23 @@ class ProfileInfoActivity : BaseActivity() {
 
         binding!!.switchBar.all.setOnClickListener {
             type = DATA.TIMESTAMP
-            loadBooks()
+            viewModel.setSortType(type)
         }
         binding!!.switchBar.name.setOnClickListener {
             type = DATA.TITLE
-            loadBooks()
+            viewModel.setSortType(type)
         }
         binding!!.switchBar.mostViews.setOnClickListener {
             type = DATA.VIEWS_COUNT
-            loadBooks()
+            viewModel.setSortType(type)
         }
         binding!!.switchBar.mostLoves.setOnClickListener {
             type = DATA.LOVES_COUNT
-            loadBooks()
+            viewModel.setSortType(type)
         }
         binding!!.switchBar.mostDownloads.setOnClickListener {
             type = DATA.DOWNLOADS_COUNT
-            loadBooks()
+            viewModel.setSortType(type)
         }
 
         observeViewModel()
@@ -114,7 +114,7 @@ class ProfileInfoActivity : BaseActivity() {
                     if (data.isNotEmpty()) {
                         binding!!.recyclerView.visibility = View.VISIBLE
                         binding!!.emptyText.visibility = View.GONE
-                        adapter!!.submitList(data.reversed())
+                        adapter!!.submitList(data)
                     } else {
                         binding!!.recyclerView.visibility = View.GONE
                         binding!!.emptyText.visibility = View.VISIBLE

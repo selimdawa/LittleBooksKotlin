@@ -41,19 +41,19 @@ class FollowersFragment : Fragment() {
 
         binding!!.switchBar.all.setOnClickListener {
             type = DATA.TIMESTAMP
-            viewModel.loadBooksFromFollowed(DATA.FirebaseUserUid, type)
+            viewModel.setSortType(type)
         }
         binding!!.switchBar.mostViews.setOnClickListener {
             type = DATA.VIEWS_COUNT
-            viewModel.loadBooksFromFollowed(DATA.FirebaseUserUid, type)
+            viewModel.setSortType(type)
         }
         binding!!.switchBar.mostLoves.setOnClickListener {
             type = DATA.LOVES_COUNT
-            viewModel.loadBooksFromFollowed(DATA.FirebaseUserUid, type)
+            viewModel.setSortType(type)
         }
         binding!!.switchBar.mostDownloads.setOnClickListener {
             type = DATA.DOWNLOADS_COUNT
-            viewModel.loadBooksFromFollowed(DATA.FirebaseUserUid, type)
+            viewModel.setSortType(type)
         }
 
         observeViewModel()
