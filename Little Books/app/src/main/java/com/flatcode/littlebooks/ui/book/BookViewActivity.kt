@@ -14,6 +14,8 @@ import com.flatcode.littlebooks.utils.BaseActivity
 import com.flatcode.littlebooks.utils.DATA
 import com.flatcode.littlebooks.viewmodel.BookViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
@@ -49,9 +51,12 @@ class BookViewActivity : BaseActivity() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch {
-                    viewModel.bookDetails.collect { book ->
-                        book?.url?.let { viewModel.loadBookFile(it) }
-                    }
+                    viewModel.bookDetails
+                        .map { it?.url }
+                        .distinctUntilChanged()
+                        .collect { url ->
+                            url?.let { viewModel.loadBookFile(it) }
+                        }
                 }
                 launch {
                     viewModel.bookFile.collect { result ->
@@ -63,16 +68,6 @@ class BookViewActivity : BaseActivity() {
                                         val correctPage = page + 1
                                         binding!!.toolbar.numberPage.text =
                                             getString(R.string.page_format, correctPage, pageCount)
-                                    }.onError { t: Throwable ->
-                                        Toast.makeText(
-                                            context, DATA.EMPTY + t.message, Toast.LENGTH_SHORT
-                                        ).show()
-                                    }.onPageError { page: Int, t: Throwable ->
-                                        Toast.makeText(
-                                            context,
-                                            "Error on page " + page + DATA.SPACE + t.message,
-                                            Toast.LENGTH_SHORT
-                                        ).show()
                                     }.load()
                             } else {
                                 Toast.makeText(
@@ -80,6 +75,7 @@ class BookViewActivity : BaseActivity() {
                                     it.exceptionOrNull()?.message ?: "Error loading file",
                                     Toast.LENGTH_SHORT
                                 ).show()
+                                viewModel.resetBookFile()
                             }
                         }
                     }

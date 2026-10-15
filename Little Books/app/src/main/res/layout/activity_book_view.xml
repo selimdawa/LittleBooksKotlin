@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
+    android:background="?colorOnBackground"
     tools:context=".ui.book.BookViewActivity"
     tools:ignore="all">
 
@@ -13,6 +13,7 @@
 
     <com.github.barteksc.pdfviewer.PDFView
         android:id="@+id/pdfView"
+        android:background="?colorOnBackground"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/toolbar" />

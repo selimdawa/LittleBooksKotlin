@@ -131,7 +131,11 @@ class HomeFragment : Fragment() {
                 launch {
                     viewModel.sliderImages.collect { list ->
                         if (list.isNotEmpty()) {
-                            binding!!.imageSlider.setSliderAdapter(ImageSliderAdapter(list))
+                            try {
+                                binding?.imageSlider?.setSliderAdapter(ImageSliderAdapter(list))
+                            } catch (e: Exception) {
+                                e.printStackTrace()
+                            }
                         }
                     }
                 }

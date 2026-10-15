@@ -221,6 +221,10 @@ class BookViewModel @Inject constructor(
         }
     }
 
+    fun resetBookFile() {
+        _bookFile.value = null
+    }
+
     fun resetActionStatus() {
         _addBookStatus.value = null
         _uploadFileStatus.value = null

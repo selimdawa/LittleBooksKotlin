@@ -106,7 +106,7 @@
                     android:textColor="?colorError"
                     android:textSize="14sp"
                     android:textStyle="bold"
-                    app:drawableStartCompat="@drawable/ic_lock_gray"
+                    app:drawableStartCompat="@drawable/ic_lock"
                     app:drawableTint="?colorError" />
 
                 <com.google.android.material.textfield.TextInputLayout

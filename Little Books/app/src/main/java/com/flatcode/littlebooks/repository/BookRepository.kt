@@ -17,6 +17,7 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
@@ -304,12 +305,14 @@ class BookRepository @Inject constructor(
         bookDao.insertBook(book)
     }
 
-    fun getBookFile(pdfUrl: String): Result<ByteArray> {
-        return try {
-            val bytes = URL(pdfUrl).readBytes()
-            Result.success(bytes)
-        } catch (e: Exception) {
-            Result.failure(e)
+    suspend fun getBookFile(pdfUrl: String): Result<ByteArray> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val bytes = URL(pdfUrl).readBytes()
+                Result.success(bytes)
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
         }
     }
 
