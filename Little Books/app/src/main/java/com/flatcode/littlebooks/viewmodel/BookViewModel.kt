@@ -169,6 +169,13 @@ class BookViewModel @Inject constructor(
         }
     }
 
+    fun deleteComment(bookId: String, commentId: String, onResult: (Boolean) -> Unit) {
+        viewModelScope.launch {
+            val result = repository.deleteComment(bookId, commentId)
+            onResult(result.isSuccess)
+        }
+    }
+
     fun uploadBookFile(bookUri: Uri) {
         viewModelScope.launch {
             _uploadFileStatus.value = repository.uploadBookFile(bookUri)

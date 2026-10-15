@@ -21,4 +21,7 @@ interface CommentDao {
 
     @Delete
     suspend fun deleteComment(comment: Comment)
+
+    @Query("DELETE FROM comments WHERE id = :id")
+    suspend fun deleteCommentById(id: String)
 }

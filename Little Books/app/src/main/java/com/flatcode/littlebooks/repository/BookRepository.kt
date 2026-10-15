@@ -199,6 +199,24 @@ class BookRepository @Inject constructor(
         }
     }
 
+    suspend fun deleteComment(bookId: String, commentId: String): Result<Unit> {
+        return try {
+            val ref = db.getReference(DATA.COMMENTS).child(bookId)
+            val snapshot = ref.get().await()
+            for (child in snapshot.children) {
+                val c = child.getValue(Comment::class.java)
+                if (c?.id == commentId || child.key == commentId) {
+                    child.ref.removeValue().await()
+                    break
+                }
+            }
+            commentDao.deleteCommentById(commentId)
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
     suspend fun checkFavorite(userId: String, bookId: String): Boolean {
         return try {
             val snapshot = db.getReference(DATA.FAVORITES).child(userId).child(bookId).get().await()

@@ -77,4 +77,6 @@
 
     <string name="please_wait">Please wait&#8230;</string>
     <string name="loading">Loading&#8230;</string>
+    <string name="do_you_want_to_delete_comment">Do you want to delete this comment?</string>
+    <string name="deleting_comment">Deleting comment&#8230;</string>
 </resources>

@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import com.flatcode.littlebooksadmin.R
+import com.flatcode.littlebooksadmin.databinding.DialogCommentDeleteBinding
 import com.flatcode.littlebooksadmin.databinding.DialogLogoutBinding
 import com.flatcode.littlebooksadmin.model.Book
 import com.flatcode.littlebooksadmin.model.Category
@@ -172,4 +173,27 @@ fun Context.addToEditorsChoice(activity: Activity?, bookId: String?, number: Int
         dialog.dismiss()
         Toast.makeText(this, R.string.error_occurred, Toast.LENGTH_SHORT).show()
     }
+}
+
+fun Context.dialogDeleteComment(onYesClick: () -> Unit) {
+    if (this is Activity && (isFinishing || isDestroyed)) return
+
+    val dialogBinding = DialogCommentDeleteBinding.inflate(LayoutInflater.from(this))
+    val alertDialog = MaterialAlertDialogBuilder(this).setView(dialogBinding.root).create()
+
+    alertDialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+
+    dialogBinding.yes.setOnClickListener {
+        onYesClick()
+        alertDialog.dismiss()
+    }
+
+    dialogBinding.no.setOnClickListener {
+        alertDialog.dismiss()
+    }
+
+    alertDialog.show()
+
+    val widthPx = (300 * resources.displayMetrics.density).toInt()
+    alertDialog.window?.setLayout(widthPx, ViewGroup.LayoutParams.WRAP_CONTENT)
 }

@@ -9,6 +9,7 @@ import androidx.core.net.toUri
 import com.flatcode.littlebooks.R
 import com.flatcode.littlebooks.databinding.DialogAboutAppBinding
 import com.flatcode.littlebooks.databinding.DialogCloseAppBinding
+import com.flatcode.littlebooks.databinding.DialogCommentDeleteBinding
 import com.flatcode.littlebooks.databinding.DialogLogoutBinding
 import com.flatcode.littlebooks.model.Book
 import com.flatcode.littlebooks.ui.auth.AuthActivity
@@ -125,6 +126,30 @@ fun Context.dialogOptionDelete(
         deleteBook(alertDialog, publisher, bookId, bookTitle)
     }
     dialogBinding.no.setOnClickListener { alertDialog.dismiss() }
+
+    alertDialog.show()
+
+    val widthPx = (300 * resources.displayMetrics.density).toInt()
+    alertDialog.window?.setLayout(widthPx, ViewGroup.LayoutParams.WRAP_CONTENT)
+}
+
+fun Context.dialogDeleteComment(onYesClick: () -> Unit) {
+    val activity = this.findActivity() ?: return
+    if (activity.isFinishing || activity.isDestroyed) return
+
+    val dialogBinding = DialogCommentDeleteBinding.inflate(activity.layoutInflater)
+    val alertDialog = MaterialAlertDialogBuilder(this).setView(dialogBinding.root).create()
+
+    alertDialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+
+    dialogBinding.yes.setOnClickListener {
+        onYesClick()
+        alertDialog.dismiss()
+    }
+
+    dialogBinding.no.setOnClickListener {
+        alertDialog.dismiss()
+    }
 
     alertDialog.show()
 

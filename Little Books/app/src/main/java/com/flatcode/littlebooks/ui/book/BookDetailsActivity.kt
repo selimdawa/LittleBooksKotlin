@@ -20,6 +20,7 @@ import com.flatcode.littlebooks.ui.profile.ProfileActivity
 import com.flatcode.littlebooks.utils.BaseActivity
 import com.flatcode.littlebooks.utils.DATA
 import com.flatcode.littlebooks.utils.ProgressDialog
+import com.flatcode.littlebooks.utils.dialogDeleteComment
 import com.flatcode.littlebooks.utils.formatTimestamp
 import com.flatcode.littlebooks.utils.loadCategory
 import com.flatcode.littlebooks.utils.loadImage
@@ -68,7 +69,22 @@ class BookDetailsActivity : BaseActivity() {
         }
         binding!!.addComment.setOnClickListener { addCommentDialog() }
 
-        adapterComment = CommentAdapter(userDao) { }
+        adapterComment = CommentAdapter(userDao) { comment ->
+            if (comment.publisher == DATA.FirebaseUserUid) {
+                dialogDeleteComment {
+                    progressDialog?.setMessage(getString(R.string.deleting_comment))
+                    progressDialog?.show()
+                    viewModel.deleteComment(bookId!!, comment.id) { success ->
+                        progressDialog?.dismiss()
+                        if (success) {
+                            Toast.makeText(this, "Deleted...", Toast.LENGTH_SHORT).show()
+                        } else {
+                            Toast.makeText(this, "Failed to delete...", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                }
+            }
+        }
         binding!!.recyclerView.adapter = adapterComment
 
         observeViewModel()

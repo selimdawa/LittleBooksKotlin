@@ -14,6 +14,8 @@ import com.flatcode.littlebooksadmin.databinding.ItemCommentBinding
 import com.flatcode.littlebooksadmin.model.Comment
 import com.flatcode.littlebooksadmin.model.User
 import com.flatcode.littlebooksadmin.utils.DATA
+import com.flatcode.littlebooksadmin.utils.ProgressDialog
+import com.flatcode.littlebooksadmin.utils.dialogDeleteComment
 import com.flatcode.littlebooksadmin.utils.loadImage
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -49,22 +51,27 @@ class CommentAdapter : ListAdapter<Comment, CommentAdapter.ViewHolder>(CommentDi
     }
 
     private fun deleteComment(context: Context, commentId: String?, bookId: String?) {
-        AlertDialog.Builder(context).setTitle(R.string.delete_comment)
-            .setMessage(R.string.are_you_sure_delete_comment)
-            .setPositiveButton(R.string.delete) { dialog, _ ->
-                val ref = FirebaseDatabase.getInstance().getReference(DATA.BOOKS)
-                ref.child(bookId!!).child(DATA.COMMENTS).child(commentId!!).removeValue()
-                    .addOnSuccessListener {
-                        Toast.makeText(context, R.string.deleted, Toast.LENGTH_SHORT).show()
-                    }.addOnFailureListener { e: Exception ->
-                        Toast.makeText(
-                            context,
-                            context.getString(R.string.error_message, e.message),
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                dialog.dismiss()
-            }.setNegativeButton(R.string.cancel) { dialog, _ -> dialog.dismiss() }.show()
+        context.dialogDeleteComment {
+            val progressDialog = ProgressDialog(context).apply {
+                setTitle(context.getString(R.string.please_wait))
+                setMessage(context.getString(R.string.deleting_comment))
+                setCanceledOnTouchOutside(false)
+                show()
+            }
+            val ref = FirebaseDatabase.getInstance().getReference(DATA.BOOKS)
+            ref.child(bookId!!).child(DATA.COMMENTS).child(commentId!!).removeValue()
+                .addOnSuccessListener {
+                    progressDialog.dismiss()
+                    Toast.makeText(context, R.string.deleted, Toast.LENGTH_SHORT).show()
+                }.addOnFailureListener { e: Exception ->
+                    progressDialog.dismiss()
+                    Toast.makeText(
+                        context,
+                        context.getString(R.string.error_message, e.message),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+        }
     }
 
     class ViewHolder(val binding: ItemCommentBinding) : RecyclerView.ViewHolder(binding.root)
